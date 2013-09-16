@@ -56,9 +56,14 @@ endif()
 # TODO set visibility = hidden as standard 
 # There is a Makro in the BALL project to do this
 
-set(CMAKE_CXX_FLAGS 
-	"-std=c++0x -pedantic -Wall ${CMAKE_CXX_FLAGS}"
-)
+if(CMAKE_COMPILER_IS_GNUCXX)
+	set(CMAKE_CXX_FLAGS 
+		"-std=c++0x -pedantic -Wall ${CMAKE_CXX_FLAGS}"
+	)
+else()
+	message(STATUS "At the moment, GeneTrail2 supports only the GNU Compiler Collection.")
+	return()
+endif()
 
 ###################################################################################################
 # Build libraries

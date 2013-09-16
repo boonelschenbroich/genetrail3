@@ -5,7 +5,7 @@ project(FiDePa)
 ####################################################################################################
 
 if(NOT Boost_FOUND)
-    MESSAGE(STATUS "Boost not found, cannot build FiDePa")
+    message(STATUS "Boost not found, cannot build FiDePa")
     return()
 endif()
 
@@ -23,7 +23,7 @@ set_target_properties(fidepa PROPERTIES
 # Build executable
 ####################################################################################################
 
-INSTALL(TARGETS fidepa
+install(TARGETS fidepa
     RUNTIME DESTINATION bin 
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib

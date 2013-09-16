@@ -5,7 +5,7 @@ project(GENETRAIL2_CORE_LIBRARY)
 ####################################################################################################
 
 if(NOT Boost_FOUND)
-	MESSAGE(STATUS "Boost not found, cannot build GeneTrail2 core library")
+	message(STATUS "Boost not found, cannot build GeneTrail2 core library")
     return()
 endif()
 
@@ -46,7 +46,7 @@ INSTALL(TARGETS gtcore
 # gtest src directory has been set
 
 if(NOT GTEST_SRC_DIR)
-    MESSAGE(STATUS "GTEST_SRC_DIR not set, disabling unit tests")
+    message(STATUS "GTEST_SRC_DIR not set, disabling unit tests")
 	return()
 endif()
 

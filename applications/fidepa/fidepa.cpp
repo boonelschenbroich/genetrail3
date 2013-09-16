@@ -113,7 +113,7 @@ int main(int argc, char* argv[])
 
 	CommandLineParser p("\nFiDePa - Finding Deregulated Paths (Keller et al. 2009) \n\nhttp://bioinformatics.oxfordjournals.org/content/25/21/2787.full \n\nUSAGE");
 	p.addOption("help,h", "Display this message");
-	p.addTypedOption<int>("path_length,l", "Maximal length of deregulated the paths");
+	p.addTypedOption<int>("path_length,l", "Maximal length of the deregulated paths");
 	p.addTypedOption<std::string>("kegg,k", "[.sif] file containing the network information");
 	p.addTypedOption<std::string>("scores,s", "[.txt] file containing gene scores");
 	p.addOption("up_regulated,up","Specify to compute up regulated paths");
