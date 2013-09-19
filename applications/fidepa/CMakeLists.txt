@@ -14,7 +14,7 @@ endif()
 ####################################################################################################
 
 add_executable(fidepa fidepa.cpp)
-target_link_libraries(fidepa gtcore ${Boost_LIBRARIES})
+target_link_libraries(fidepa gtcore)
 set_target_properties(fidepa PROPERTIES
     INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
 )
