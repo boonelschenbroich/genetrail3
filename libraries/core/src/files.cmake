@@ -13,6 +13,7 @@ SET(DIR ${PROJECT_SOURCE_DIR}/src/)
 # Headers
 SET(CORE_HEADERS
 	${DIR}/commandline_parser.h
+	${DIR}/DenseMatrix.h
 	${DIR}/graph.h
 	${DIR}/graph_parser.h
 	${DIR}/graph_processor.h
@@ -23,6 +24,7 @@ SET(CORE_HEADERS
 # Sources
 SET(CORE_SOURCES
 	${DIR}/commandline_parser.cpp
+	${DIR}/DenseMatrix.cpp
 	${DIR}/graph_processor.cpp
 	${DIR}/pathfinder.cpp
 	${DIR}/scoring_file_parser.cpp
