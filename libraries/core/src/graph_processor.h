@@ -27,7 +27,7 @@ namespace GeneTrail
 			 * This method returns a set of vertex identifiers that are contained in the graph.
 			 *
 			 * @param Boost graph
-             * @return Set of vertex identifiers that are contained in the graph
+			 * @return Set of vertex identifiers that are contained in the graph
 			 */
 			std::set<std::string> getVertexSet(GraphType graph);
 	};

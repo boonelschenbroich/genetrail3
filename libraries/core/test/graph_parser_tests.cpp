@@ -24,15 +24,16 @@ TEST(GraphParser, readAndWrite)
 	parser.writeCytoscapeFile(TEST_DATA_PATH("test"),g);
 
 	std::ifstream input_sif;
-    std::string current = "";
+	std::string current = "";
 	std::set<std::string> dups;
 
 	//open sif file
-    input_sif.open ( TEST_DATA_PATH("test_kegg.sif") );
-    while ( std::getline( input_sif, current ) )
-    {
-    	if ( current != "" )
-        {
+	input_sif.open ( TEST_DATA_PATH("test_kegg.sif") );
+
+	while ( std::getline( input_sif, current ) )
+	{
+		if ( current != "" )
+		{
 			boost::erase_all(current, " ");
 			boost::erase_all(current, "\t");
 			dups.insert(current);
@@ -44,21 +45,23 @@ TEST(GraphParser, readAndWrite)
 	bool equal = true;
 
 	input_sif.open ( TEST_DATA_PATH("test.sif") );
+
 	while ( std::getline( input_sif, current ) )
-    {
-        if ( current != "" )
-        {
-            boost::erase_all(current, " ");
-            boost::erase_all(current, "\t");
-            std::set<std::string>::iterator it = dups.find(current);
+	{
+		if ( current != "" )
+		{
+			boost::erase_all(current, " ");
+			boost::erase_all(current, "\t");
+			std::set<std::string>::iterator it = dups.find(current);
+
 			if(it == dups.end())
-			{	
+			{
 				equal = false;
 			}
-        }
-    }
+		}
+	}
 
 
-    EXPECT_TRUE(equal);
+	EXPECT_TRUE(equal);
 }
 

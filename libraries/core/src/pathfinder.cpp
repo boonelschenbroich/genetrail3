@@ -45,9 +45,9 @@ std::vector<std::vector<int>> running_sums;
 
 void Pathfinder::printMatrix(std::vector<std::vector<int> > m)
 {
-for(std::vector<int> row : m)
+	for(std::vector<int> row : m)
 	{
-for(int v : row)
+		for(int v : row)
 		{
 			std::string s = (v < 0)?"": " ";
 			std::cout << s << v << ", ";

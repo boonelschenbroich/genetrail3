@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
 	int pathlength = 0;
 	std::string kegg = "";
 	std::string scores = "";
-	
+
 
 	CommandLineParser p("\nFiDePa - Finding Deregulated Paths (Keller et al. 2009) \n\nhttp://bioinformatics.oxfordjournals.org/content/25/21/2787.full \n\nUSAGE");
 	p.addOption("help,h", "Display this message");
@@ -120,7 +120,7 @@ int main(int argc, char* argv[])
 	p.addOption("down_regulated,down","Specify to compute down regulated paths");
 	p.addOption("absolute,abs","Specify to use absolute scores");
 
-	p.parse(argc, argv);   
+	p.parse(argc, argv);
 
 	p.getParameter("path_length",pathlength);
 	p.getParameter("kegg",kegg);
@@ -128,7 +128,7 @@ int main(int argc, char* argv[])
 	bool up_regulated = p.checkParameter("up_regulated");
 	bool down_regulated = p.checkParameter("down_regulated");
 	bool absolute = p.checkParameter("absolute");
-	
+
 	if(pathlength > 0 && (up_regulated || down_regulated || absolute) && kegg != "" && scores != "" && !p.checkParameter("help"))
 	{
 		bool descending = down_regulated ? false : true;
@@ -137,7 +137,7 @@ int main(int argc, char* argv[])
 	else
 	{
 		p.printHelp();
-	}	
-	
+	}
+
 	return 0;
 }

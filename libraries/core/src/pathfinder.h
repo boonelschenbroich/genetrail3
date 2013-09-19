@@ -33,7 +33,7 @@ namespace GeneTrail
 			 * @param Number of genes in List
 			 * @param The current rank
 			 * @param The current length of path
-             * @return The computed Running Sum
+			       * @return The computed Running Sum
 			 */
 			int computeRunningSum(int bpi, int n, int i , int l);
 

@@ -31,9 +31,9 @@ namespace GeneTrail
 			 *
 			 * @param Identifier string to specify the searched vertex
 			 * @param Map to find a vertex based on a given identifier
-			 * @param Boost graph structure 
-			 * 
-             * @return Pointer to the searched vertex
+			 * @param Boost graph structure
+			 *
+			 * @return Pointer to the searched vertex
 			 */
 			template <typename Graph> vertex_descriptor checkForVertexInGraph ( std::string identifier, std::map<std::string, vertex_descriptor>& vertex_map, Graph& graph)
 			{
@@ -121,50 +121,50 @@ namespace GeneTrail
 			//...
 			/*template <typename Graph, typename PropertyMap> void mapCytoscapeNodeAttributes ( const std::string& attribute_filename, Graph& graph, PropertyMap& prop )
 			{
-				std::ifstream input_na;
-				std::string current = "";
-				std::vector<std::string> entries, labels;
-				std::map<std::string, typename PropertyMap::value_type> node2label;
-				typename boost::property_map<Graph, vertex_vbnpp_t>::type vindex = boost::get ( vertex_vbnpp, graph );
-				typename boost::graph_traits<Graph>::vertex_iterator vi, vi_end;
+			  std::ifstream input_na;
+			  std::string current = "";
+			  std::vector<std::string> entries, labels;
+			  std::map<std::string, typename PropertyMap::value_type> node2label;
+			  typename boost::property_map<Graph, vertex_vbnpp_t>::type vindex = boost::get ( vertex_vbnpp, graph );
+			  typename boost::graph_traits<Graph>::vertex_iterator vi, vi_end;
 
-				//open na file
-				input_na.open ( attribute_filename.c_str() );
+			  //open na file
+			  input_na.open ( attribute_filename.c_str() );
 
-				if ( !input_na )
-				{
-					std::cerr << "mapCytoscapeNodeAttributes -> cannot open: " << attribute_filename << std::endl;
-				}
-				else
-				{
-					while ( pd_.readline ( input_na, current ) )
-					{
-						if ( current != "" )
-						{
-							boost::iter_split ( entries, current, boost::first_finder ( " = " ) ); //split line at " = "; first line is description -> is to be ignored
+			  if ( !input_na )
+			  {
+			    std::cerr << "mapCytoscapeNodeAttributes -> cannot open: " << attribute_filename << std::endl;
+			  }
+			  else
+			  {
+			    while ( pd_.readline ( input_na, current ) )
+			    {
+			      if ( current != "" )
+			      {
+			        boost::iter_split ( entries, current, boost::first_finder ( " = " ) ); //split line at " = "; first line is description -> is to be ignored
 
-							if ( entries.size() > 1 )
-							{
-								boost::trim ( entries[0] );
-								boost::trim ( entries[1] );
-								boost::split ( labels, entries[1], boost::is_any_of ( ";" ) );
-								node2label[entries[0]].insert ( node2label[entries[0]].end(), labels.begin(), labels.end() );
-							}
-						}
-					}
-				}
+			        if ( entries.size() > 1 )
+			        {
+			          boost::trim ( entries[0] );
+			          boost::trim ( entries[1] );
+			          boost::split ( labels, entries[1], boost::is_any_of ( ";" ) );
+			          node2label[entries[0]].insert ( node2label[entries[0]].end(), labels.begin(), labels.end() );
+			        }
+			      }
+			    }
+			  }
 
-				//iterate over vertices and add labels to PropertyMap
-				for ( boost::tie ( vi, vi_end ) = boost::vertices ( graph ); vi != vi_end; vi++ )
-				{
-					vertex_descriptor vd = *vi;
-					std::string bnpp_id = vindex[vd];
+			  //iterate over vertices and add labels to PropertyMap
+			  for ( boost::tie ( vi, vi_end ) = boost::vertices ( graph ); vi != vi_end; vi++ )
+			  {
+			    vertex_descriptor vd = *vi;
+			    std::string bnpp_id = vindex[vd];
 
-					if ( node2label.find ( bnpp_id ) != node2label.end() )
-					{
-						prop[vd] = node2label[bnpp_id];
-					}
-				}
+			    if ( node2label.find ( bnpp_id ) != node2label.end() )
+			    {
+			      prop[vd] = node2label[bnpp_id];
+			    }
+			  }
 			}*/
 
 			/**
@@ -200,6 +200,7 @@ namespace GeneTrail
 					for ( std::tie ( vi2, vi2_end ) = boost::out_edges ( vd, graph ); vi2 != vi2_end; vi2++ )
 					{
 						output_sif << vertex_ids[vd];
+
 						if (edge_regulations[*vi2] != "")
 						{
 							output_sif << "\t" << edge_regulations[*vi2] << "\t";
