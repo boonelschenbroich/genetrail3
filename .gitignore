@@ -1,0 +1,6 @@
+build/
+*~
+*.orig
+*.swp
+*.kdev4
+*.bak
