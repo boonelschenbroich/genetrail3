@@ -1,0 +1,83 @@
+/**
+
+\page CodingStyle Coding Style
+
+Coding Style
+============
+
+General
+-------
+
+### License ###
+All new code should be licensed as LGPL v3 and should contain
+the respective headers. Please add yourself as a copyright
+holder if you change code in a file.
+
+### Files ###
+
+One class per file, except for _good_ reasons.
+Files are named like the classes they contain.
+Header files end with ".h" and source files end with ".cpp"
+
+### Include Guards ###
+Include guards are structured as follows:
+
+myClass.h:
+
+    #ifndef GT2_MY_CLASS_H
+    #define GT2_MY_CLASS_H
+    ...
+    #endif //GT2_MY_CLASS_H
+
+### Unit Tests ###
+Only classes with unit tests are allowed in the repository
+Tests are stored in a folder called test and are suffixed by "_tests"
+
+Naming Conventions
+------------------
+
+### Variables: ###
+
+Lower case, separated by '_'
+
+    int loop_count;
+
+### Member variables: ###
+Like variables, but suffixed with an underscore
+
+    int num_genes_;
+
+### Pointers: ###
+The asterisk is attached to the type:
+
+    int* tmp;
+
+### Classes and Structs: ###
+
+Camel case, first letter upper case. If the class name starts
+with an abbreviation, the whole abrreviation is upper case.
+
+    class DenseMatrixReader {};
+    class TXTFileReader {};
+
+### Functions: ###
+Camel case, first letter lowercase.
+
+    void someFunction();
+
+### Public methods: ###
+Like functions
+
+### Private or protected methods: ###
+Like functions, but suffixed with a '_'
+
+    private:
+      void myHelper_();
+
+### Getters and Setters: ###
+Getters are _not_ prefixed with get, setters have a set prefix
+
+    const std::string& name() const;
+    void setName(const std::string& name);
+
+*/
