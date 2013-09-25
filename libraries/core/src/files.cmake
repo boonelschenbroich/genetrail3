@@ -17,6 +17,7 @@ SET(CORE_HEADERS
 	${DIR}/graph.h
 	${DIR}/graph_parser.h
 	${DIR}/graph_processor.h
+	${DIR}/DenseMatrixReader.h
 	${DIR}/pathfinder.h
 	${DIR}/scoring_file_parser.h
 )
@@ -26,6 +27,7 @@ SET(CORE_SOURCES
 	${DIR}/commandline_parser.cpp
 	${DIR}/DenseMatrix.cpp
 	${DIR}/graph_processor.cpp
+	${DIR}/DenseMatrixReader.cpp
 	${DIR}/pathfinder.cpp
 	${DIR}/scoring_file_parser.cpp
 )
