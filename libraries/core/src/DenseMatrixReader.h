@@ -40,7 +40,7 @@ namespace GeneTrail
 			ADDITIONAL_COL_NAME = 1 << 3
 			};
 
-			DenseMatrix read(std::istream& input, unsigned int opts = READ_ROW_NAMES | READ_COL_NAMES) const;
+			virtual DenseMatrix read(std::istream& input, unsigned int opts = READ_ROW_NAMES | READ_COL_NAMES) const;
 
 		private:
 			DenseMatrix textRead_ (std::istream& input, unsigned int opts) const;
