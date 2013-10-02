@@ -7,7 +7,7 @@
 #include <map>
 #include <set>
 
-#include "graph.h"
+#include "BoostGraph.h"
 
 namespace GeneTrail
 {

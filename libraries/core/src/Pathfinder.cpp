@@ -1,4 +1,4 @@
-#include "pathfinder.h"
+#include "Pathfinder.h"
 #include <algorithm>
 #include <map>
 

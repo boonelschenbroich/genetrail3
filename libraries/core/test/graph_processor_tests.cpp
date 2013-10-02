@@ -9,10 +9,10 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 
-#include "../src/graph.h"
-#include "../src/scoring_file_parser.h"
-#include "../src/graph_parser.h"
-#include "../src/graph_processor.h"
+#include "../src/BoostGraph.h"
+#include "../src/ScoringFileParser.h"
+#include "../src/BoostGraphParser.h"
+#include "../src/BoostGraphProcessor.h"
 
 #include <config.h>
 
@@ -20,8 +20,8 @@ using namespace GeneTrail;
 
 TEST(GraphProcessor, vertexSet)
 {
-	GraphParser parser;
-	GraphProcessor processor;
+	BoostGraphParser parser;
+	BoostGraphProcessor processor;
 	GraphType g;
 
 	parser.readCytoscapeFile(TEST_DATA_PATH("test_kegg.sif"),g);
@@ -40,8 +40,8 @@ TEST(GraphProcessor, vertexSet)
 TEST(GraphProcessor, graphProcessing)
 {
 	ScoringFileParser scoring_file_parser;
-	GraphParser parser;
-	GraphProcessor processor;
+	BoostGraphParser parser;
+	BoostGraphProcessor processor;
 	GraphType g;
 
 	parser.readCytoscapeFile(TEST_DATA_PATH("graph_processor_test.sif"),g);

@@ -12,10 +12,10 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 
-#include "../src/scoring_file_parser.h"
-#include "../src/graph_parser.h"
-#include "../src/graph_processor.h"
-#include "../src/pathfinder.h"
+#include "../src/ScoringFileParser.h"
+#include "../src/BoostGraphParser.h"
+#include "../src/BoostGraphProcessor.h"
+#include "../src/Pathfinder.h"
 
 #include <config.h>
 

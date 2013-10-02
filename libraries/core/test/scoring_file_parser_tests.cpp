@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "../src/scoring_file_parser.h"
+#include "../src/ScoringFileParser.h"
 
 #include <config.h>
 

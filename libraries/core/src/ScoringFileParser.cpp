@@ -1,4 +1,4 @@
-#include "scoring_file_parser.h"
+#include "ScoringFileParser.h"
 
 using namespace GeneTrail;
 

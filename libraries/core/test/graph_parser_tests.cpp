@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "../src/graph.h"
-#include "../src/scoring_file_parser.h"
-#include "../src/graph_parser.h"
+#include "../src/BoostGraph.h"
+#include "../src/ScoringFileParser.h"
+#include "../src/BoostGraphParser.h"
 #include <config.h>
 
 #include <set>
@@ -18,7 +18,7 @@ using namespace GeneTrail;
 
 TEST(GraphParser, readAndWrite)
 {
-	GraphParser parser;
+	BoostGraphParser parser;
 	GraphType g;
 	parser.readCytoscapeFile(TEST_DATA_PATH("test_kegg.sif"),g);
 	parser.writeCytoscapeFile(TEST_DATA_PATH("test"),g);

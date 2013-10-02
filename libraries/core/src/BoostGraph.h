@@ -67,3 +67,4 @@ typedef boost::graph_traits < GraphType >::vertex_descriptor vertex_descriptor;
 typedef boost::graph_traits < GraphType >::edge_descriptor edge_descriptor;
 
 #endif
+

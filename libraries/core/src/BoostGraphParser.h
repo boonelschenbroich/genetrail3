@@ -1,5 +1,5 @@
-#ifndef GRAPH_PARSER_H
-#define GRAPH_PARSER_H
+#ifndef BOOST_GRAPH_PARSER_H
+#define BOOST_GRAPH_PARSER_H
 
 #include <string>
 #include <tuple>
@@ -10,7 +10,7 @@
 #include <fstream>
 #include <sstream>
 
-#include "graph.h"
+#include "BoostGraph.h"
 
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -18,12 +18,12 @@
 namespace GeneTrail
 {
 
-	class GraphParser
+	class BoostGraphParser
 	{
 		public:
 
-			GraphParser() {};
-			~GraphParser() {};
+			BoostGraphParser() {};
+			~BoostGraphParser() {};
 
 			/**
 			 * This method checks if there is a vertex with given identifier contained in the graph.
@@ -219,5 +219,5 @@ namespace GeneTrail
 	};
 }
 
-#endif
+#endif //BOOST_GRAPH_PARSER_H
 

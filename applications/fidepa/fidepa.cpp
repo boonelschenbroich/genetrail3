@@ -1,8 +1,8 @@
-#include "../../libraries/core/src/scoring_file_parser.h"
-#include "../../libraries/core/src/graph_parser.h"
-#include "../../libraries/core/src/graph_processor.h"
-#include "../../libraries/core/src/pathfinder.h"
-#include "../../libraries/core/src/commandline_parser.h"
+#include "../../libraries/core/src/ScoringFileParser.h"
+#include "../../libraries/core/src/BoostGraphParser.h"
+#include "../../libraries/core/src/BoostGraphProcessor.h"
+#include "../../libraries/core/src/Pathfinder.h"
+#include "../../libraries/core/src/CommandLineParser.h"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
@@ -63,8 +63,8 @@ void writeSifFiles(std::vector<std::vector<std::string> > best_paths, std::map<s
 void computeDeregulatedPaths(std::string kegg, std::string scores, int pathlength, bool descending, bool absolute)
 {
 	GraphType graph;
-	GraphParser graph_parser;
-	GraphProcessor graph_processor;
+	BoostGraphParser graph_parser;
+	BoostGraphProcessor graph_processor;
 	ScoringFileParser scoring_file_parser;
 
 	Pathfinder path_finder;

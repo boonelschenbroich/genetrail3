@@ -1,8 +1,8 @@
-#include "graph_processor.h"
+#include "BoostGraphProcessor.h"
 
 using namespace GeneTrail;
 
-void GraphProcessor::adeptGraph(GraphType& graph, std::set<std::string> gene_set)
+void BoostGraphProcessor::adeptGraph(GraphType& graph, std::set<std::string> gene_set)
 {
 
 	std::set<std::string>::iterator gene_iter;
@@ -93,7 +93,7 @@ void GraphProcessor::adeptGraph(GraphType& graph, std::set<std::string> gene_set
 	}
 }
 
-std::set<std::string> GraphProcessor::getVertexSet(GraphType graph)
+std::set<std::string> BoostGraphProcessor::getVertexSet(GraphType graph)
 {
 	std::set<std::string> vertex_set;
 

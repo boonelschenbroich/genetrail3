@@ -1,7 +1,7 @@
-#ifndef GRAPH_PROCESSOR_H
-#define GRAPH_PROCESSOR_H
+#ifndef BOOST_GRAPH_PROCESSOR_H
+#define BOOST_GRAPH_PROCESSOR_H
 
-#include "graph.h"
+#include "BoostGraph.h"
 
 #include <set>
 #include <vector>
@@ -10,7 +10,7 @@
 namespace GeneTrail
 {
 
-	class GraphProcessor
+	class BoostGraphProcessor
 	{
 		public:
 
@@ -33,4 +33,4 @@ namespace GeneTrail
 	};
 }
 
-#endif
+#endif //BOOST_GRAPH_PROCESSOR_H
