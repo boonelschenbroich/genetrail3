@@ -22,7 +22,7 @@
 #include "../../libraries/core/src/DenseMatrixReader.h"
 #include "../../libraries/core/src/DenseMatrixWriter.h"
 
-#include "../../libraries/core/src/commandline_parser.h"
+#include "../../libraries/core/src/CommandLineParser.h"
 
 #include <fstream>
 
