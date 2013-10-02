@@ -20,6 +20,7 @@
 
 #include "../../libraries/core/src/DenseMatrix.h"
 #include "../../libraries/core/src/DenseMatrixReader.h"
+#include "../../libraries/core/src/RMAExpressMatrixReader.h"
 #include "../../libraries/core/src/DenseMatrixWriter.h"
 
 #include "../../libraries/core/src/CommandLineParser.h"
@@ -40,6 +41,7 @@ int main(int argc, char** argv)
 	p.addDefaultOption<bool>("no-row-names,r", false, "The input has no row names (This only affects text matrices)");
 	p.addDefaultOption<bool>("no-col-names,c", false, "The input has no column names (This only affects text matrices)");
 	p.addDefaultOption<bool>("add-col-name,a", false, "The input has n+1 column names (This only affects text matrices)");
+	p.addDefaultOption<bool>("rmaexpress,e", false, "Read the RMAExpress format for the input matrix");
 
 	p.parse(argc, argv);
 
@@ -78,7 +80,17 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
-	DenseMatrixReader reader;
+	DenseMatrixReader* reader;
+
+	bool rmaexpress;
+	p.getParameter("rmaexpress", rmaexpress);
+
+	if(rmaexpress) {
+		reader = new RMAExpressMatrixReader();
+	} else {
+		reader = new DenseMatrixReader();
+	}
+
 	DenseMatrixWriter writer;
 
 	unsigned int opts = DenseMatrixReader::NO_OPTIONS;
@@ -112,14 +124,17 @@ int main(int argc, char** argv)
 	std::string out_format;
 	p.getParameter("out-format", out_format);
 
+	int errorcode = 0;
 	if(out_format == "binary") {
-		writer.writeBinary(ostrm, reader.read(istrm, opts));
+		writer.writeBinary(ostrm, reader->read(istrm, opts));
 	} else if(out_format == "ascii") {
-		writer.writeText(ostrm, reader.read(istrm, opts));
+		writer.writeText(ostrm, reader->read(istrm, opts));
 	} else {
 		std::cerr << "Invalid output format " << out_format << std::endl;
-		return -1;
+		errorcode = -1;
 	}
 
-	return 0;
+	delete reader;
+
+	return errorcode;
 }
