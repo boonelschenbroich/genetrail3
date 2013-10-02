@@ -21,6 +21,7 @@ SET(CORE_HEADERS
 	${DIR}/BoostGraphProcessor.h
 	${DIR}/Pathfinder.h
 	${DIR}/ScoringFileParser.h
+	${DIR}/RMAExpressMatrixReader.h
 )
 
 # Sources
@@ -32,5 +33,6 @@ SET(CORE_SOURCES
 	${DIR}/BoostGraphProcessor.cpp
 	${DIR}/Pathfinder.cpp
 	${DIR}/ScoringFileParser.cpp
+	${DIR}/RMAExpressMatrixReader.cpp
 )
 
