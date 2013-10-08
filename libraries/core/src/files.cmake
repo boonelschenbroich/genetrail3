@@ -23,6 +23,7 @@ SET(CORE_HEADERS
 	${DIR}/Pathfinder.h
 	${DIR}/RMAExpressMatrixReader.h
 	${DIR}/ScoringFileParser.h
+	${DIR}/SparseMatrix.h
 )
 
 # Sources
@@ -36,5 +37,6 @@ SET(CORE_SOURCES
 	${DIR}/Pathfinder.cpp
 	${DIR}/RMAExpressMatrixReader.cpp
 	${DIR}/ScoringFileParser.cpp
+	${DIR}/SparseMatrix.cpp
 )
 
