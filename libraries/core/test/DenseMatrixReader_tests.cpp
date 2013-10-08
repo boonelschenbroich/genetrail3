@@ -108,7 +108,7 @@ TEST_F(DenseMatrixReaderTest, read_invalid_stream)
 
 	EXPECT_EQ(-1, mat.rowIndex("blablubb"));
 //	EXPECT_EQ("", mat.rowName(0));
-	EXPECT_EQ(DenseMatrix::Matrix(), mat.matrix());
+	EXPECT_EQ(DenseMatrix::DMatrix(), mat.matrix());
 }
 
 TEST_F(DenseMatrixReaderTest, read_valid_names)

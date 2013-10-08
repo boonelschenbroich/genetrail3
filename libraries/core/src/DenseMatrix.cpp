@@ -27,62 +27,37 @@ namespace GeneTrail
 {
 
 	DenseMatrix::DenseMatrix(index_type rows, index_type cols)
-		: m_(rows, cols),
-		  index_to_rowname_(rows),
-		  index_to_colname_(cols)
+		: Matrix(rows, cols),
+		  m_(rows, cols)
 	{
 	}
 
 	DenseMatrix::DenseMatrix(const std::vector<std::string>& rows, const std::vector<std::string>& cols)
-		: m_(rows.size(), cols.size()),
-		  index_to_rowname_(rows),
-		  index_to_colname_(cols)
+		: Matrix(rows, cols),
+		  m_(this->rows(), this->cols())
 	{
-		updateRowAndColNames_();
 	}
 
 	DenseMatrix::DenseMatrix(std::vector<std::string>&& rows, const std::vector<std::string>& cols)
-		: m_(rows.size(), cols.size()),
-		  index_to_rowname_(std::move(rows)),
-		  index_to_colname_(cols)
+		: Matrix(std::move(rows), cols),
+		  m_(this->rows(), this->cols())
 	{
-		updateRowAndColNames_();
 	}
 
 	DenseMatrix::DenseMatrix(const std::vector<std::string>& rows, std::vector<std::string>&& cols)
-		: m_(rows.size(), cols.size()),
-		  index_to_rowname_(rows),
-		  index_to_colname_(std::move(cols))
+		: Matrix(rows, std::move(cols)),
+		  m_(this->rows(), this->cols())
 	{
-		updateRowAndColNames_();
 	}
 
 	DenseMatrix::DenseMatrix(std::vector<std::string>&& rows, std::vector<std::string>&& cols)
-		: m_(rows.size(), cols.size()),
-		  index_to_rowname_(std::move(rows)),
-		  index_to_colname_(std::move(cols))
+		: Matrix(std::move(rows), std::move(cols)),
+		  m_(this->rows(), this->cols())
 	{
-		updateRowAndColNames_();
-	}
-
-	void DenseMatrix::updateRowAndColNames_()
-	{
-		index_type i = 0;
-		for(const auto& s : index_to_rowname_) {
-			rowname_to_index_.insert(std::make_pair(s, i++));
-		}
-
-		i = 0;
-		for(const auto& s : index_to_colname_) {
-			colname_to_index_.insert(std::make_pair(s, i++));
-		}
 	}
 
 	DenseMatrix::DenseMatrix(DenseMatrix&& matrix)
-		: index_to_rowname_(std::move(matrix.index_to_rowname_)),
-		  rowname_to_index_(std::move(matrix.rowname_to_index_)),
-		  index_to_colname_(std::move(matrix.index_to_colname_)),
-		  colname_to_index_(std::move(matrix.colname_to_index_))
+		: Matrix(std::move(matrix))
 	{
 		//TODO Replace this by the Eigen move constructor when it gets implemented
 		m_.swap(matrix.m_);
@@ -90,68 +65,29 @@ namespace GeneTrail
 
 	DenseMatrix& DenseMatrix::operator=(DenseMatrix&& matrix)
 	{
-		// Write this as an assert as moving to oneself is usually a grave client mistake...
-		assert(this != &matrix);
-
-		index_to_rowname_ = std::move(matrix.index_to_rowname_);
-		rowname_to_index_ = std::move(matrix.rowname_to_index_);
-		index_to_colname_ = std::move(matrix.index_to_colname_);
-		colname_to_index_ = std::move(matrix.colname_to_index_);
-
 		//TODO Replace this by the Eigen move constructor when it gets implemented
 		m_.swap(matrix.m_);
+		Matrix::operator=(std::move(matrix));
 
 		return *this;
 	}
 
-	DenseMatrix::Matrix::ColXpr DenseMatrix::col(index_type j)
+	DenseMatrix::DMatrix::ColXpr DenseMatrix::col(index_type j)
 	{
 		return m_.col(j);
 	}
 
-	DenseMatrix::Matrix::ConstColXpr DenseMatrix::col(index_type j) const
+	DenseMatrix::DMatrix::ConstColXpr DenseMatrix::col(index_type j) const
 	{
 		return m_.col(j);
 	}
 
-	DenseMatrix::index_type DenseMatrix::colIndex(const std::string& col) const
-	{
-		auto res = colname_to_index_.find(col);
-
-		if(res != colname_to_index_.end()) {
-			return res->second;
-		}
-
-		return std::numeric_limits<index_type>::max();
-	}
-
-	const std::string& DenseMatrix::colName(index_type j) const
-	{
-		assert(j >= 0 && j < index_to_colname_.size());
-		return index_to_colname_[j];
-	}
-
-	DenseMatrix::index_type DenseMatrix::cols() const
-	{
-		return m_.cols();
-	}
-
-	bool DenseMatrix::hasCol(const std::string& name) const
-	{
-		return colname_to_index_.find(name) != colname_to_index_.end();
-	}
-
-	bool DenseMatrix::hasRow(const std::string& name) const
-	{
-		return rowname_to_index_.find(name) != rowname_to_index_.end();
-	}
-
-	DenseMatrix::Matrix& DenseMatrix::matrix()
+	DenseMatrix::DMatrix& DenseMatrix::matrix()
 	{
 		return m_;
 	}
 
-	const DenseMatrix::Matrix& DenseMatrix::matrix() const
+	const DenseMatrix::DMatrix& DenseMatrix::matrix() const
 	{
 		return m_;
 	}
@@ -164,6 +100,30 @@ namespace GeneTrail
 	DenseMatrix::value_type DenseMatrix::operator()(index_type i, index_type j) const
 	{
 		return m_(i,j);
+	}
+
+	DenseMatrix::DMatrix::RowXpr DenseMatrix::row(index_type i)
+	{
+		return m_.row(i);
+	}
+
+	DenseMatrix::DMatrix::ConstRowXpr DenseMatrix::row(index_type i) const
+	{
+		return m_.row(i);
+	}
+
+	void DenseMatrix::setCol(const std::string& name, const DenseMatrix::Vector& v)
+	{
+		auto res = colname_to_index_.find(name);
+
+		if(res != colname_to_index_.end()) {
+			m_.col(res->second) = v;
+		}
+	}
+
+	void DenseMatrix::setCol(index_type j, const DenseMatrix::Vector& v)
+	{
+		m_.col(j) = v;
 	}
 
 	void DenseMatrix::remove_(const std::vector<index_type>& indices,
@@ -243,139 +203,6 @@ namespace GeneTrail
 		index_to_rowname_.resize(m_.rows());
 	}
 
-	DenseMatrix::Matrix::RowXpr DenseMatrix::row(index_type i)
-	{
-		return m_.row(i);
-	}
-
-	DenseMatrix::Matrix::ConstRowXpr DenseMatrix::row(index_type i) const
-	{
-		return m_.row(i);
-	}
-
-	DenseMatrix::index_type DenseMatrix::rowIndex(const std::string& row) const
-	{
-		auto res = rowname_to_index_.find(row);
-
-		if(res != rowname_to_index_.end()) {
-			return res->second;
-		}
-
-		return std::numeric_limits<index_type>::max();
-	}
-
-	const std::string& DenseMatrix::rowName(index_type i) const
-	{
-		assert(i >= 0 && i < index_to_rowname_.size());
-		return index_to_rowname_[i];
-	}
-
-	DenseMatrix::index_type DenseMatrix::rows() const
-	{
-		return m_.rows();
-	}
-
-	void DenseMatrix::setCol(const std::string& name, const DenseMatrix::Vector& v)
-	{
-		auto res = colname_to_index_.find(name);
-
-		if(res != colname_to_index_.end()) {
-			m_.col(res->second) = v;
-		}
-	}
-
-	void DenseMatrix::setCol(index_type j, const DenseMatrix::Vector& v)
-	{
-		m_.col(j) = v;
-	}
-
-	void DenseMatrix::setColName(const std::string& old_name, const std::string& new_name)
-	{
-		setName_(old_name, new_name, colname_to_index_, index_to_colname_);
-	}
-
-	void DenseMatrix::setColName(index_type j, const std::string& new_name)
-	{
-		setName_(j, new_name, colname_to_index_, index_to_colname_);
-	}
-
-	void DenseMatrix::setColNames(const std::vector< std::string >& col_names)
-	{
-		assert(col_names.size() == (size_t)m_.cols());
-
-		colname_to_index_.clear();
-
-		index_to_colname_ = col_names;
-
-		index_type i = 0;
-		for(const auto& name : col_names) {
-			colname_to_index_.insert(std::make_pair(name, i++));
-		}
-	}
-
-	void DenseMatrix::setName_(index_type j,
-	                           const std::string& new_name,
-	                           std::map<std::string, index_type>& name_to_index,
-	                           std::vector<std::string>& index_to_name)
-	{
-		assert(j >= 0 && j < index_to_name.size());
-
-		auto it = name_to_index.find(index_to_name[j]);
-		if(it != name_to_index.end()) {
-			name_to_index.erase(it);
-		}
-
-		it = name_to_index.find(new_name);
-		
-		// Steal the name from a possible previous assignment
-		if(it != name_to_index.end()) {
-			index_to_name[it->second] = "";
-			it->second = j;
-		} else {
-			name_to_index.insert(std::make_pair(new_name, j));
-		}
-
-		index_to_name[j] = new_name;
-	}
-
-	void DenseMatrix::setName_(const std::string& old_name,
-	                           const std::string& new_name,
-	                           std::map<std::string, index_type>& name_to_index,
-	                           std::vector<std::string>& index_to_name)
-	{
-		auto res = name_to_index.find(old_name);
-
-		if(res == name_to_index.end()) {
-			return;
-		}
-
-		int index = res->second;
-
-		name_to_index.erase(res);
-
-		// Steal the index of existing rows
-		res = name_to_index.find(new_name);
-
-		if(res != name_to_index.end()) {
-			index_to_name[res->second] = "";
-			res->second = index;
-		} else {
-			name_to_index.insert(std::make_pair(new_name, index));
-		}
-
-		index_to_name[index] = new_name;
-	}
-
-	const std::vector<std::string>& DenseMatrix::colNames() const
-	{
-		return index_to_colname_;
-	}
-
-	const std::vector<std::string>& DenseMatrix::rowNames() const
-	{
-		return index_to_rowname_;
-	}
-
 	void DenseMatrix::setRow(const std::string& name, const DenseMatrix::Vector& v)
 	{
 		auto res = rowname_to_index_.find(name);
@@ -388,30 +215,6 @@ namespace GeneTrail
 	void DenseMatrix::setRow(index_type i, const DenseMatrix::Vector& v)
 	{
 		m_.row(i) = v.transpose();
-	}
-
-	void DenseMatrix::setRowName(const std::string& old_name, const std::string& new_name)
-	{
-		setName_(old_name, new_name, rowname_to_index_, index_to_rowname_);
-	}
-
-	void DenseMatrix::setRowName(index_type i, const std::string& new_name)
-	{
-		setName_(i, new_name, rowname_to_index_, index_to_rowname_);
-	}
-
-	void DenseMatrix::setRowNames(const std::vector< std::string >& row_names)
-	{
-		assert(row_names.size() == (size_t)m_.rows());
-
-		rowname_to_index_.clear();
-
-		index_to_rowname_ = row_names;
-
-		index_type i = 0;
-		for(const auto& name : row_names) {
-			rowname_to_index_.insert(std::make_pair(name, i++));
-		}
 	}
 
 	void DenseMatrix::shuffleCols(const std::vector< index_type >& perm)
@@ -429,8 +232,6 @@ namespace GeneTrail
 	void DenseMatrix::transpose()
 	{
 		m_.transposeInPlace();
-		std::swap(index_to_colname_, index_to_rowname_);
-		std::swap(colname_to_index_, rowname_to_index_);
 	}
 
 }

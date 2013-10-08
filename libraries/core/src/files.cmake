@@ -19,6 +19,7 @@ SET(CORE_HEADERS
 	${DIR}/BoostGraph.h
 	${DIR}/BoostGraphParser.h
 	${DIR}/BoostGraphProcessor.h
+	${DIR}/Matrix.h
 	${DIR}/Pathfinder.h
 	${DIR}/ScoringFileParser.h
 	${DIR}/RMAExpressMatrixReader.h
@@ -31,6 +32,7 @@ SET(CORE_SOURCES
 	${DIR}/DenseMatrixWriter.cpp
 	${DIR}/CommandLineParser.cpp
 	${DIR}/BoostGraphProcessor.cpp
+	${DIR}/Matrix.cpp
 	${DIR}/Pathfinder.cpp
 	${DIR}/ScoringFileParser.cpp
 	${DIR}/RMAExpressMatrixReader.cpp
