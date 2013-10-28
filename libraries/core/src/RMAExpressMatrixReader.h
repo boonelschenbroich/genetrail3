@@ -21,6 +21,8 @@
 #ifndef RMAEXPRESSMATRIXREADER_H
 #define RMAEXPRESSMATRIXREADER_H
 
+#include "config.h"
+
 #include "DenseMatrixReader.h"
 
 #include <vector>
@@ -35,7 +37,7 @@ namespace GeneTrail
 	 * RMAExpressConsole and convert them into our internal
 	 * DenseMatrix format.
 	 */
-	class RMAExpressMatrixReader : public DenseMatrixReader
+	class GT2_EXPORT RMAExpressMatrixReader : public DenseMatrixReader
 	{
 		public:
 			/**

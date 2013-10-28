@@ -31,6 +31,8 @@ include_directories(${CLN_INCLUDE_DIR})
 
 link_directories(${Boost_LIBRARY_DIRS})
 
+include(GT2CompilerSpecific)
+
 ####################################################################################################
 # Check if a build type is given
 ####################################################################################################
@@ -55,15 +57,6 @@ endif()
 
 # TODO set visibility = hidden as standard 
 # There is a Makro in the BALL project to do this
-
-if(CMAKE_COMPILER_IS_GNUCXX)
-	set(CMAKE_CXX_FLAGS 
-		"-std=c++0x -pedantic -Wall ${CMAKE_CXX_FLAGS}"
-	)
-else()
-	message(STATUS "At the moment, GeneTrail2 supports only the GNU Compiler Collection.")
-	return()
-endif()
 
 ###################################################################################################
 # Build libraries

@@ -20,6 +20,8 @@ add_library(gtcore SHARED
 	${CORE_HEADERS}
 )
 
+GT2_COMPILE_FLAGS(gtcore)
+
 target_link_libraries(gtcore
 	${Boost_LIBRARIES}
 )

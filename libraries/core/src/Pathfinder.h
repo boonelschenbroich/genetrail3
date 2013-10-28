@@ -21,6 +21,8 @@
 #ifndef PATHFINDER_H
 #define PATHFINDER_H
 
+#include "config.h"
+
 #include <string>
 #include <tuple>
 #include <vector>
@@ -32,7 +34,7 @@
 namespace GeneTrail
 {
 
-	class Pathfinder
+	class GT2_EXPORT Pathfinder
 	{
 		public:
 

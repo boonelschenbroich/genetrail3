@@ -21,13 +21,15 @@
 #ifndef GT2_SPARSE_MATRIX_H
 #define GT2_SPARSE_MATRIX_H
 
+#include "config.h"
+
 #include "Matrix.h"
 
 #include <Eigen/Sparse>
 
 namespace GeneTrail
 {
-	class SparseMatrix : public Matrix
+	class GT2_EXPORT SparseMatrix : public Matrix
 	{
 		public:
 			/// The Eigen class used for representing the internal matrix

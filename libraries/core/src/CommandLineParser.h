@@ -21,6 +21,8 @@
 #ifndef COMMANDLINE_PARSER_H
 #define COMMANDLINE_PARSER_H
 
+#include "config.h"
+
 #include <iostream>
 #include <cstring>
 #include <string>
@@ -35,7 +37,7 @@ namespace GeneTrail
 	/**
      *	Wrapper for the boost program options library.
      */
-	class CommandLineParser
+	class GT2_EXPORT CommandLineParser
 	{
 		public:
 

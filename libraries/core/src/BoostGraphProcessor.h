@@ -21,6 +21,8 @@
 #ifndef BOOST_GRAPH_PROCESSOR_H
 #define BOOST_GRAPH_PROCESSOR_H
 
+#include "config.h"
+
 #include "BoostGraph.h"
 
 #include <set>
@@ -30,7 +32,7 @@
 namespace GeneTrail
 {
 
-	class BoostGraphProcessor
+	class GT2_EXPORT BoostGraphProcessor
 	{
 		public:
 

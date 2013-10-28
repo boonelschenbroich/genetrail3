@@ -21,6 +21,8 @@
 #ifndef GT2_DENSE_MATRIX_WRITER_H
 #define GT2_DENSE_MATRIX_WRITER_H
 
+#include "config.h"
+
 #include <ostream>
 #include <vector>
 
@@ -28,7 +30,7 @@ namespace GeneTrail
 {
 	class DenseMatrix;
 
-	class DenseMatrixWriter
+	class GT2_EXPORT DenseMatrixWriter
 	{
 		public:
 			void writeText(std::ostream& output, const DenseMatrix& matrix) const;

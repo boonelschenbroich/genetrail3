@@ -21,6 +21,8 @@
 #ifndef GT2_DENSE_MATRIX_READER_H
 #define GT2_DENSE_MATRIX_READER_H
 
+#include "config.h"
+
 #include <istream>
 #include <vector>
 
@@ -28,7 +30,7 @@ namespace GeneTrail
 {
 	class DenseMatrix;
 
-	class DenseMatrixReader
+	class GT2_EXPORT DenseMatrixReader
 	{
 		public:
 			enum ReaderOptions

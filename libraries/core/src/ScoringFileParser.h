@@ -14,6 +14,8 @@
 #include <algorithm>
 #include <stdlib.h>
 
+#include "config.h"
+
 namespace GeneTrail
 {
 
@@ -43,7 +45,7 @@ namespace GeneTrail
 		}
 	};
 
-	class ScoringFileParser
+	class GT2_EXPORT ScoringFileParser
 	{
 		public:
 

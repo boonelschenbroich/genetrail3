@@ -21,6 +21,8 @@
 #ifndef DENSEMATRIX_H
 #define DENSEMATRIX_H
 
+#include "config.h"
+
 #include "Matrix.h"
 
 #include <Eigen/Core>
@@ -41,7 +43,7 @@ namespace GeneTrail
 	 * this means it is efficient to return temporary objects from a
 	 * function.
 	 */
-	class DenseMatrix : public Matrix
+	class GT2_EXPORT DenseMatrix : public Matrix
 	{
 		public:
 			/// The Eigen class used for representing the internal matrix

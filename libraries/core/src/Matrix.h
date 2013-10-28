@@ -21,13 +21,15 @@
 #ifndef GT2_MATRIX_H
 #define GT2_MATRIX_H
 
+#include "config.h"
+
 #include <map>
 #include <vector>
 #include <string>
 
 namespace GeneTrail
 {
-	class Matrix
+	class GT2_EXPORT Matrix
 	{
 		public:
 			/// The precision used in the matrix
