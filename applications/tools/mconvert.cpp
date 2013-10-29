@@ -23,67 +23,56 @@
 #include "../../libraries/core/src/RMAExpressMatrixReader.h"
 #include "../../libraries/core/src/DenseMatrixWriter.h"
 
-#include "../../libraries/core/src/CommandLineParser.h"
-
 #include <fstream>
 
+#include <boost/program_options.hpp>
+
 using namespace GeneTrail;
+namespace bpo = boost::program_options;
 
 int main(int argc, char** argv)
 {
-	CommandLineParser p("Matrix Converter - Import into and conversion between GeneTrail matrix formats");
+	bpo::variables_map vm;
+	bpo::options_description desc;
 
-	p.addOption("help,h", "Display this message");
-	p.addTypedOption<std::string>("in,i", "Input file");
-	p.addTypedOption<std::string>("out,o", "Output file");
-	p.addDefaultOption<std::string>("out-format,f", "binary", "Output format");
-	p.addDefaultOption<bool>("transpose,t", false, "Transpose the input matrix");
-	p.addDefaultOption<bool>("no-row-names,r", false, "The input has no row names (This only affects text matrices)");
-	p.addDefaultOption<bool>("no-col-names,c", false, "The input has no column names (This only affects text matrices)");
-	p.addDefaultOption<bool>("add-col-name,a", false, "The input has n+1 column names (This only affects text matrices)");
-	p.addDefaultOption<bool>("rmaexpress,e", false, "Read the RMAExpress format for the input matrix");
+	std::string infile, outfile, out_format;
+	bool transpose, no_row_names, no_col_names, add_col_name, rmaexpress;
 
-	p.parse(argc, argv);
+	desc.add_options()
+		("help,h", "Display this message")
+		("in,i",           bpo::value<std::string>(&infile)->required(), "Input file")
+		("out,o",          bpo::value<std::string>(&outfile)->required(), "Output file")
+		("out-format,f",   bpo::value<std::string>(&out_format)->default_value("binary"), "Output format")
+		("transpose,t",    bpo::value<bool>(&transpose)->default_value(false), "Transpose the input matrix")
+		("no-row-names,r", bpo::value<bool>(&no_row_names)->default_value(false), "The input has no row names (This only affects text matrices)")
+		("no-col-names,c", bpo::value<bool>(&no_col_names)->default_value(false), "The input has no column names (This only affects text matrices)")
+		("add-col-name,a", bpo::value<bool>(&add_col_name)->default_value(false), "The input has n+1 column names (This only affects text matrices)")
+		("rmaexpress,e",   bpo::value<bool>(&rmaexpress)->default_value(false), "Read the RMAExpress format for the input matrix");
 
-	if(p.checkParameter("help")) {
-		p.printHelp();
-		return 0;
-	}
-
-	if(!p.checkParameter("in")) {
-		std::cerr << "Missing parameter in" << std::endl;
-		p.printHelp();
+	try {
+		bpo::store(bpo::command_line_parser(argc, argv).options(desc).run(), vm);
+		bpo::notify(vm);
+	} catch(bpo::error& e) {
+		std::cerr << "Error: " << e.what() << "\n";
+		desc.print(std::cerr);
 		return -1;
 	}
 
-	if(!p.checkParameter("out")) {
-		std::cerr << "Missing parameter in" << std::endl;
-		p.printHelp();
-		return -1;
-	}
-
-	std::string in;
-	p.getParameter("in", in);
-	std::ifstream istrm(in, std::ios::binary);
+	std::ifstream istrm(infile, std::ios::binary);
 
 	if(!istrm) {
-		std::cerr << "Could not open " << in << " for reading" << std::endl;
+		std::cerr << "Could not open " << infile << " for reading" << std::endl;
 		return -1;
 	}
 
-	std::string out;
-	p.getParameter("out", out);
-	std::ofstream ostrm(out, std::ios::binary);
+	std::ofstream ostrm(outfile, std::ios::binary);
 
 	if(!ostrm) {
-		std::cerr << "Could not open " << out << " for writing" << std::endl;
+		std::cerr << "Could not open " << outfile << " for writing" << std::endl;
 		return -1;
 	}
 
 	DenseMatrixReader* reader;
-
-	bool rmaexpress;
-	p.getParameter("rmaexpress", rmaexpress);
 
 	if(rmaexpress) {
 		reader = new RMAExpressMatrixReader();
@@ -94,16 +83,6 @@ int main(int argc, char** argv)
 	DenseMatrixWriter writer;
 
 	unsigned int opts = DenseMatrixReader::NO_OPTIONS;
-
-	bool transpose;
-	bool no_row_names;
-	bool no_col_names;
-	bool add_col_name;
-
-	p.getParameter("transpose", transpose);
-	p.getParameter("no-row-names", no_row_names);
-	p.getParameter("no-col-names", no_col_names);
-	p.getParameter("add-col-name", add_col_name);
 
 	if(transpose) {
 		opts |= DenseMatrixReader::TRANSPOSE;
@@ -120,9 +99,6 @@ int main(int argc, char** argv)
 	if(add_col_name) {
 		opts |= DenseMatrixReader::ADDITIONAL_COL_NAME;
 	}
-
-	std::string out_format;
-	p.getParameter("out-format", out_format);
 
 	int errorcode = 0;
 	if(out_format == "binary") {
