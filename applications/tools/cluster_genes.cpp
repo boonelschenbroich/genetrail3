@@ -37,7 +37,7 @@ void dumpGraphviz(std::ostream& out, SparseMatrix& graph, const std::vector<int>
 void writeGrouping(std::ostream& out, const DenseMatrix& mat, const std::vector<int>& grouping)
 {
 	for(unsigned int i = 0; i < grouping.size(); ++i) {
-		std::cout << mat.rowName(i) << "\t" << grouping[i] << "\n";
+		out << mat.rowName(i) << "\t" << grouping[i] << "\n";
 	}
 }
 
