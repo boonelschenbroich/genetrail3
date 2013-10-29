@@ -2,6 +2,7 @@ project(GENETRAIL2_LIBRARIES)
 
 if(Boost_FOUND)
 	add_subdirectory(core)
+	add_subdirectory(cluster)
 else()
 	message(STATUS "Boost libraries not found, cannot build any library")
 	return()
