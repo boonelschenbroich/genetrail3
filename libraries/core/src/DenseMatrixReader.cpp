@@ -35,6 +35,10 @@
 
 namespace GeneTrail
 {
+	unsigned int DenseMatrixReader::defaultOptions()
+	{
+		return READ_COL_NAMES | READ_ROW_NAMES;
+	}
 
 	void DenseMatrixReader::skipEmptyLines_(std::istream& input, std::string& line) const
 	{
