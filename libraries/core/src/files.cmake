@@ -27,6 +27,9 @@ SET(CORE_HEADERS
 	${DIR}/Ontology.h
 	${DIR}/Parameter.h
 	${DIR}/Dataset.h
+	${DIR}/DenseDataset.h
+	${DIR}/DenseDatasetImpl.h
+	${DIR}/DenseSubset.h
 )
 
 # Sources
@@ -43,6 +46,7 @@ SET(CORE_SOURCES
 	${DIR}/SparseMatrix.cpp
 	${DIR}/Ontology.cpp
 	${DIR}/Parameter.cpp
-	${DIR}/Dataset.cpp
+	${DIR}/DenseDatasetImpl.cpp
+	${DIR}/DenseSubset.cpp
 )
 
