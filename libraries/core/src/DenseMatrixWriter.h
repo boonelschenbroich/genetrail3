@@ -28,12 +28,15 @@
 
 namespace GeneTrail
 {
+	class Matrix;
 	class DenseMatrix;
+	class DenseMatrixSubset;
 
 	class GT2_EXPORT DenseMatrixWriter
 	{
 		public:
 			void writeText(std::ostream& output, const DenseMatrix& matrix) const;
+			void writeText(std::ostream& output, const DenseMatrixSubset& matrix) const;
 
 			/**
 			 * Reads a matrix from a binary file.
@@ -41,14 +44,16 @@ namespace GeneTrail
 			 * \see DenseMatrixReader::binaryRead_
 			 */
 			void writeBinary(std::ostream& output, const DenseMatrix& matrix) const;
+			void writeBinary(std::ostream& output, const DenseMatrixSubset& matrix) const;
 
 	private:
 			void writeChunkHeader_(std::ostream& output, uint8_t type, uint64_t size) const;
-			void writeHeader_     (std::ostream& output, const DenseMatrix& matrix) const;
-			void writeData_       (std::ostream& output, const DenseMatrix& matrix) const;
-			void writeRowNames_   (std::ostream& output, const DenseMatrix& matrix) const;
-			void writeColNames_   (std::ostream& output, const DenseMatrix& matrix) const;
 			void writeNames_      (std::ostream& output, const std::vector<std::string>& names) const;
+			void writeHeader_     (std::ostream& output, const Matrix& matrix) const;
+			void writeRowNames_   (std::ostream& output, const Matrix& matrix) const;
+			void writeColNames_   (std::ostream& output, const Matrix& matrix) const;
+			void writeData_       (std::ostream& output, const DenseMatrix& matrix) const;
+			void writeData_       (std::ostream& output, const DenseMatrixSubset& matrix) const;
 	};
 }
 

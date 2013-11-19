@@ -21,6 +21,8 @@
 #include "DenseMatrixWriter.h"
 
 #include "DenseMatrix.h"
+#include "DenseMatrixSubset.h"
+
 #include <iterator>
 
 #include <iostream>
@@ -28,6 +30,17 @@
 namespace GeneTrail
 {
 	void DenseMatrixWriter::writeBinary(std::ostream& output, const DenseMatrix& matrix) const
+	{
+		output.write("BINARYMATRIX", 12);
+
+		// Write Header Chunk
+		writeHeader_(output, matrix);
+		writeRowNames_(output, matrix);
+		writeColNames_(output, matrix);
+		writeData_(output, matrix);
+	}
+
+	void DenseMatrixWriter::writeBinary(std::ostream& output, const DenseMatrixSubset& matrix) const
 	{
 		output.write("BINARYMATRIX", 12);
 
@@ -72,32 +85,6 @@ namespace GeneTrail
 		output.write((char*)&size, 8);
 	}
 
-	void DenseMatrixWriter::writeHeader_(std::ostream& output, const DenseMatrix& matrix) const
-	{
-		writeChunkHeader_(output, 0x0, 0x9);
-		uint32_t row_count = matrix.rows();
-		uint32_t col_count = matrix.cols();
-		uint8_t storage_order = 0x1;
-
-		output.write((char*)&row_count, 4);
-		output.write((char*)&col_count, 4);
-		output.write((char*)&storage_order, 1);
-	}
-
-	void DenseMatrixWriter::writeRowNames_(std::ostream& output, const DenseMatrix& matrix) const
-	{
-		writeChunkHeader_(output, 0x1, 0x0);
-		writeNames_(output, matrix.rowNames());
-	}
-
-	void DenseMatrixWriter::writeColNames_(std::ostream& output, const DenseMatrix& matrix) const
-	{
-		// Write the chunk header. We temporarily put in 0x0 for the size
-		// this will be rectified by writeNames_
-		writeChunkHeader_(output, 0x2, 0x0);
-		writeNames_(output, matrix.colNames());
-	}
-
 	void DenseMatrixWriter::writeNames_(std::ostream& output, const std::vector<std::string>& names) const
 	{
 		uint64_t bytes_written = 0;
@@ -113,6 +100,32 @@ namespace GeneTrail
 		output.seekp(bytes_written, std::ios::cur);
 	}
 
+	void DenseMatrixWriter::writeHeader_(std::ostream& output, const Matrix& matrix) const
+	{
+		writeChunkHeader_(output, 0x0, 0x9);
+		uint32_t row_count = matrix.rows();
+		uint32_t col_count = matrix.cols();
+		uint8_t storage_order = 0x1;
+
+		output.write((char*)&row_count, 4);
+		output.write((char*)&col_count, 4);
+		output.write((char*)&storage_order, 1);
+	}
+
+	void DenseMatrixWriter::writeRowNames_(std::ostream& output, const Matrix& matrix) const
+	{
+		writeChunkHeader_(output, 0x1, 0x0);
+		writeNames_(output, matrix.rowNames());
+	}
+
+	void DenseMatrixWriter::writeColNames_(std::ostream& output, const Matrix& matrix) const
+	{
+		// Write the chunk header. We temporarily put in 0x0 for the size
+		// this will be rectified by writeNames_
+		writeChunkHeader_(output, 0x2, 0x0);
+		writeNames_(output, matrix.colNames());
+	}
+
 	void DenseMatrixWriter::writeData_(std::ostream& output, const DenseMatrix& matrix) const
 	{
 		const uint64_t n = matrix.rows() * matrix.cols() * sizeof(DenseMatrix::value_type);
@@ -121,5 +134,20 @@ namespace GeneTrail
 		// As we are writing column major we can just
 		// pipe the data to the output
 		output.write((const char*)matrix.matrix().data(), n);
+	}
+
+	void DenseMatrixWriter::writeData_(std::ostream& output, const DenseMatrixSubset& matrix) const
+	{
+		const uint64_t n = matrix.rows() * matrix.cols() * sizeof(Matrix::value_type);
+		writeChunkHeader_(output, 0x3, n);
+
+		// As we are writing column major we can just
+		// pipe the data to the output
+		for(Matrix::index_type j = 0; j < matrix.cols(); ++j) {
+			for(Matrix::index_type i = 0; i < matrix.rows(); ++i) {
+				Matrix::value_type tmp = matrix(i,j);
+				output.write((const char*)&tmp, sizeof(Matrix::value_type));
+			}
+		}
 	}
 }
