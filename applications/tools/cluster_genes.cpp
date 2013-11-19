@@ -1,11 +1,14 @@
 #include <DenseMatrix.h>
 #include <DenseMatrixReader.h>
+#include <DenseMatrixSubset.h>
+#include <DenseMatrixWriter.h>
 #include <SparseMatrix.h>
 
 #include <METISClusterer.h>
 #include <NeighborhoodBuilder.h>
 
 #include <boost/program_options.hpp>
+#include <boost/algorithm/string/replace.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -59,7 +62,7 @@ int main(int argc, char* argv[])
 		("help,h", "Display this message")
 		("in,i",         bpo::value<std::string>(&infile)->required(), "Input file")
 		("out,o",        bpo::value<std::string>(&outfile)->default_value("stdout"), "Output file")
-		("partition,p",  bpo::value<std::string>(&partfile), "Write the partitioned data into files. The supplied file name should contain a % wildcard which will be replaced with the partition number. (Not implemented yet)")
+		("partition,p",  bpo::value<std::string>(&partfile), "Write the partitioned data into files. The supplied file name should contain a % wildcard which will be replaced with the partition number.")
 		("clusters,c",   bpo::value<unsigned int>(&num_cluster)->required(), "The number of clusters that should be computed")
 		("neighbors,n",  bpo::value<unsigned int>(&num_neighbors)->required(), "The number of neighbors in the neighborhood graph")
 		("similarity,s", bpo::value<std::string>(&similarity)->default_value("pearson"), "The similarity measure that should be used for building the neighborhood. (Not implemented yet)")
@@ -148,14 +151,27 @@ int main(int argc, char* argv[])
 	}
 
 	if(!vm["partition"].empty()) {
-		std::ofstream out(partfile);
+		DenseMatrixSubset::ISubset subset;
+		subset.reserve(mat.rows() / num_cluster);
+		for(int i = 0; i < (int)num_cluster; ++i) {
+			subset.resize(0);
+			int k = 0;
+			for(auto j : clusterer.grouping()) {
+				if(j == i) {
+					subset.push_back(k);
+				}
+				++k;
+			}
 
-		if(!out) {
-			std::cerr << "Could not open " << partfile << " for writing.";
-			return -1;
+			std::ofstream outfile(boost::replace_first_copy(partfile, "%", boost::lexical_cast<std::string>(i)));
+
+			DenseMatrixSubset sub = DenseMatrixSubset::createRowSubset(&mat, subset);
+
+			std::cout << sub.rows() << " " << sub.cols() << "\n";
+
+			DenseMatrixWriter writer;
+			writer.writeBinary(outfile, sub);
 		}
-
-		writePartitions(out, mat, clusterer.grouping());
 	}
 
 	return 0;
