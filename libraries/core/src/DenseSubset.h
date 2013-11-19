@@ -35,7 +35,7 @@ namespace GeneTrail
 			
 			DenseSubset();
 
-			~DenseSubset();
+			virtual ~DenseSubset();
 			
 			DenseSubset(labelVector_type& row_subset, labelVector_type& col_subset, DenseDataset* dataset);
 			

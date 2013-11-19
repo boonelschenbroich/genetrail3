@@ -33,6 +33,7 @@ namespace GeneTrail
 	{
 		
 		public:
+			virtual ~DenseDataset() {};
 			
 			typedef DenseMatrix::DMatrix matrix_type;
 			typedef matrix_type::RowXpr rowXpr_type;
