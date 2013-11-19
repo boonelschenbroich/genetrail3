@@ -44,6 +44,7 @@ namespace GeneTrail
 
 			static unsigned int defaultOptions();
 
+			virtual ~DenseMatrixReader() {}
 			virtual DenseMatrix read(std::istream& input, unsigned int opts = defaultOptions()) const;
 
 		private:
