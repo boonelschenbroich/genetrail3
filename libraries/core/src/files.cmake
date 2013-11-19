@@ -12,6 +12,7 @@ SET(DIR ${PROJECT_SOURCE_DIR}/src/)
 
 # Headers
 SET(CORE_HEADERS
+	${DIR}/AbstractMatrix.h
 	${DIR}/BoostGraph.h
 	${DIR}/BoostGraphParser.h
 	${DIR}/BoostGraphProcessor.h
@@ -34,12 +35,12 @@ SET(CORE_HEADERS
 
 # Sources
 SET(CORE_SOURCES
+	${DIR}/AbstractMatrix.cpp
 	${DIR}/BoostGraphProcessor.cpp
 	${DIR}/CommandLineParser.cpp
 	${DIR}/DenseMatrix.cpp
 	${DIR}/DenseMatrixReader.cpp
 	${DIR}/DenseMatrixWriter.cpp
-	${DIR}/Matrix.cpp
 	${DIR}/Pathfinder.cpp
 	${DIR}/RMAExpressMatrixReader.cpp
 	${DIR}/ScoringFileParser.cpp

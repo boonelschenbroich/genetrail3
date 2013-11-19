@@ -27,37 +27,19 @@ namespace GeneTrail
 {
 
 	DenseMatrix::DenseMatrix(index_type rows, index_type cols)
-		: Matrix(rows, cols),
+		: AbstractMatrix(rows, cols),
 		  m_(rows, cols)
 	{
 	}
 
-	DenseMatrix::DenseMatrix(const std::vector<std::string>& rows, const std::vector<std::string>& cols)
-		: Matrix(rows, cols),
-		  m_(this->rows(), this->cols())
-	{
-	}
-
-	DenseMatrix::DenseMatrix(std::vector<std::string>&& rows, const std::vector<std::string>& cols)
-		: Matrix(std::move(rows), cols),
-		  m_(this->rows(), this->cols())
-	{
-	}
-
-	DenseMatrix::DenseMatrix(const std::vector<std::string>& rows, std::vector<std::string>&& cols)
-		: Matrix(rows, std::move(cols)),
-		  m_(this->rows(), this->cols())
-	{
-	}
-
-	DenseMatrix::DenseMatrix(std::vector<std::string>&& rows, std::vector<std::string>&& cols)
-		: Matrix(std::move(rows), std::move(cols)),
+	DenseMatrix::DenseMatrix(std::vector<std::string> rows, std::vector<std::string> cols)
+		: AbstractMatrix(std::move(rows), std::move(cols)),
 		  m_(this->rows(), this->cols())
 	{
 	}
 
 	DenseMatrix::DenseMatrix(DenseMatrix&& matrix)
-		: Matrix(std::move(matrix))
+		: AbstractMatrix(std::move(matrix))
 	{
 		//TODO Replace this by the Eigen move constructor when it gets implemented
 		m_.swap(matrix.m_);
@@ -67,7 +49,7 @@ namespace GeneTrail
 	{
 		//TODO Replace this by the Eigen move constructor when it gets implemented
 		m_.swap(matrix.m_);
-		Matrix::operator=(std::move(matrix));
+		AbstractMatrix::operator=(std::move(matrix));
 
 		return *this;
 	}
@@ -231,6 +213,7 @@ namespace GeneTrail
 
 	void DenseMatrix::transpose()
 	{
+		AbstractMatrix::transpose();
 		m_.transposeInPlace();
 	}
 

@@ -1,4 +1,3 @@
-
 /*
  * GeneTrail2 - An efficent library for interpreting genetic data
  * Copyright (C) 2013 Daniel Stöckel <dstoeckel@bioinf.uni-sb.de>
@@ -19,10 +18,12 @@
  *
  */
 
-#ifndef GT2_MATRIX_H
-#define GT2_MATRIX_H
+#ifndef GT2_ABSTRACT_MATRIX_H
+#define GT2_ABSTRACT_MATRIX_H
 
 #include "config.h"
+
+#include "Matrix.h"
 
 #include <map>
 #include <vector>
@@ -30,7 +31,7 @@
 
 namespace GeneTrail
 {
-	class GT2_EXPORT Matrix
+	class GT2_EXPORT AbstractMatrix : public Matrix
 	{
 		public:
 			/// The precision used in the matrix
@@ -39,33 +40,71 @@ namespace GeneTrail
 			/// The index type used in the matrix
 			typedef unsigned int index_type;
 
+			///\ingroup Constructors
+			///@{
+			/**
+			 * Default constructor
+			 *
+			 * Reserves the storage for a rows * cols matrix.
+			 * The matrix will not be initialised.
+			 */
+			AbstractMatrix(index_type rows, index_type cols);
+
+			/**
+			 * Row-name constructor
+			 *
+			 * This constructs a rows.size() x cols.size() matrix and sets the row and column names
+			 * to rows and cols respectively
+			 */
+			AbstractMatrix(std::vector<std::string>   rows, std::vector<std::string>   cols);
+
+			/**
+			 * Default copy constructor
+			 */
+			AbstractMatrix(const AbstractMatrix&) = default;
+
+			/**
+			 * Move Constructor
+			 */
+			AbstractMatrix(AbstractMatrix&& matrix);
+
 			/**
 			 * Virtual Destructor
 			 */
-			virtual ~Matrix() {};
+			virtual ~AbstractMatrix() {};
 
+			///@}
+			///\ingroup Operators
+			///@{
+
+			/**
+			 * Move assignment operator
+			 */
+			AbstractMatrix& operator=(AbstractMatrix&& matrix);
+
+			///@}
 			///\ingroup Accessors
 			///@{
 
 			/**
 			 * Sets the row names of the matrix to the values specified in row_names
 			 */
-			virtual void setRowNames(const std::vector<std::string>& row_names) = 0;
+			void setRowNames(const std::vector<std::string>& row_names);
 
 			/**
 			 * Sets the column names of the matrix to the values specified in col_names
 			 */
-			virtual void setColNames(const std::vector<std::string>& col_names) = 0;
+			void setColNames(const std::vector<std::string>& col_names);
 
 			/**
 			 * Return the column names
 			 */
-			virtual const std::vector<std::string>& colNames() const = 0;
+			const std::vector<std::string>& colNames() const;
 
 			/**
 			 * Return the row names
 			 */
-			virtual const std::vector<std::string>& rowNames() const = 0;
+			const std::vector<std::string>& rowNames() const;
 
 			/**
 			 * Rename row old_name to new_name
@@ -75,7 +114,7 @@ namespace GeneTrail
 			 * \warning If a row with name "new_name" is alread present
 			 *          its row name will be set to the empty string
 			 */
-			virtual void setRowName(const std::string& old_name, const std::string& new_name) = 0;
+			void setRowName(const std::string& old_name, const std::string& new_name);
 
 			/**
 			 * Rename row i to new_name
@@ -83,12 +122,12 @@ namespace GeneTrail
 			 * \warning If a row with name "new_name" is alread present
 			 *          its row name will be set to the empty string
 			 */
-			virtual void setRowName(index_type i, const std::string& new_name) = 0;
+			void setRowName(index_type i, const std::string& new_name);
 
 			/**
 			 * Get the name of row i
 			 */
-			virtual const std::string& rowName(index_type i) const = 0;
+			const std::string& rowName(index_type i) const;
 
 			/**
 			 * Rename column old_name to new_name
@@ -98,7 +137,7 @@ namespace GeneTrail
 			 * \warning If a column with name "new_name" is alread present
 			 *          its colum name will be set to the empty string
 			 */
-			virtual void setColName(const std::string& old_name, const std::string& new_name) = 0;
+			void setColName(const std::string& old_name, const std::string& new_name);
 
 			/**
 			 * Rename column j to new_name
@@ -106,12 +145,12 @@ namespace GeneTrail
 			 * \warning If a column with name "new_name" is alread present
 			 *          its colum name will be set to the empty string
 			 */
-			virtual void setColName(index_type j, const std::string& new_name) = 0;
+			void setColName(index_type j, const std::string& new_name);
 
 			/**
 			 * Get the name of column j
 			 */
-			virtual const std::string& colName(index_type j) const = 0;
+			const std::string& colName(index_type j) const;
 
 			/**
 			 * Return the row index of the column identified by
@@ -120,7 +159,7 @@ namespace GeneTrail
 			 * \warning the result of this method is undefined if
 			 *          row is not a valid row name
 			 */
-			virtual index_type rowIndex(const std::string& row) const = 0;
+			index_type rowIndex(const std::string& row) const;
 
 			/**
 			 * Return the column index of the column identified by
@@ -129,29 +168,29 @@ namespace GeneTrail
 			 * \warning the result of this method is undefined if
 			 *          column is not a valid column name
 			 */
-			virtual index_type colIndex(const std::string& col) const = 0;
+			index_type colIndex(const std::string& col) const;
 
 			/**
 			 * Return true if the matrix contains a row with row name
 			 * "name". False otherwise.
 			 */
-			virtual bool hasRow(const std::string& name) const = 0;
+			bool hasRow(const std::string& name) const;
 
 			/**
 			 * Return true if the matrix contains a column with column name
 			 * "name". False otherwise.
 			 */
-			virtual bool hasCol(const std::string& name) const = 0;
+			bool hasCol(const std::string& name) const;
 
 			/**
 			 * The number of columns in the matrix
 			 */
-			virtual index_type cols() const = 0;
+			index_type cols() const;
 
 			/**
 			 * The number of rows in the matrix
 			 */
-			virtual index_type rows() const = 0;
+			index_type rows() const;
 
 			///@}
 			///\ingroup Matrix Operations
@@ -199,9 +238,31 @@ namespace GeneTrail
 			 * \note If you just need the transpose of the matrix in a computation use
 			 *       .matrix().transpose()
 			 */
-			virtual void transpose() = 0;
+			virtual void transpose();
 
 			///@}
+
+		protected:
+			// Containers for mapping row names
+			std::vector<std::string> index_to_rowname_;
+			std::map<std::string, index_type> rowname_to_index_;
+
+			// Containers for mapping column names
+			std::vector<std::string> index_to_colname_;
+			std::map<std::string, index_type> colname_to_index_;
+
+			void updateRowAndColNames_();
+
+			// Helper for renaming rows or columns
+			void setName_(index_type j,
+			              const std::string& new_name,
+			              std::map<std::string, index_type>& name_to_index,
+			              std::vector<std::string>& index_to_name);
+
+			void setName_(const std::string& old_name,
+			              const std::string& new_name,
+			              std::map<std::string, index_type>& name_to_index,
+			              std::vector<std::string>& index_to_name);
 	};
 }
 

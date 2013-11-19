@@ -23,37 +23,19 @@
 namespace GeneTrail
 {
 	SparseMatrix::SparseMatrix(Matrix::index_type rows, Matrix::index_type cols)
-		: Matrix(rows, cols),
+		: AbstractMatrix(rows, cols),
 		  m_(this->rows(), this->cols())
 	{
 	}
 
-	SparseMatrix::SparseMatrix(const std::vector< std::string >& rows, const std::vector< std::string >& cols)
-		: Matrix(rows, cols),
-		  m_(this->rows(), this->cols())
-	{
-	}
-
-	SparseMatrix::SparseMatrix(std::vector< std::string >&& rows, const std::vector< std::string >& cols)
-		: Matrix(cols, cols),
-		  m_(this->rows(), this->cols())
-	{
-	}
-
-	SparseMatrix::SparseMatrix(const std::vector< std::string >& rows, std::vector< std::string >&& cols)
-		: Matrix(rows, rows),
-		  m_(this->rows(), this->cols())
-	{
-	}
-
-	SparseMatrix::SparseMatrix(std::vector< std::string >&& rows, std::vector< std::string >&& cols)
-		: Matrix(rows, cols),
+	SparseMatrix::SparseMatrix(std::vector< std::string > rows, std::vector< std::string > cols)
+		: AbstractMatrix(std::move(rows), std::move(cols)),
 		  m_(this->rows(), this->cols())
 	{
 	}
 
 	SparseMatrix::SparseMatrix(SparseMatrix&& matrix)
-		: Matrix(std::move(matrix))
+		: AbstractMatrix(std::move(matrix))
 	{
 		m_.swap(matrix.m_);
 	}
@@ -62,7 +44,7 @@ namespace GeneTrail
 	{
 		m_.swap(matrix.m_);
 
-		Matrix::operator=(std::move(matrix));
+		AbstractMatrix::operator=(std::move(matrix));
 
 		return *this;
 	}
@@ -109,6 +91,6 @@ namespace GeneTrail
 
 	void SparseMatrix::transpose()
 	{
-		Matrix::transpose();
+		AbstractMatrix::transpose();
 	}
 }

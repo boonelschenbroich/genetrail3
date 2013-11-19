@@ -23,7 +23,7 @@
 
 #include "config.h"
 
-#include "Matrix.h"
+#include "AbstractMatrix.h"
 
 #include <Eigen/Core>
 
@@ -43,7 +43,7 @@ namespace GeneTrail
 	 * this means it is efficient to return temporary objects from a
 	 * function.
 	 */
-	class GT2_EXPORT DenseMatrix : public Matrix
+	class GT2_EXPORT DenseMatrix : public AbstractMatrix
 	{
 		public:
 			/// The Eigen class used for representing the internal matrix
@@ -66,22 +66,7 @@ namespace GeneTrail
 			 * This constructs a rows.size() x cols.size() matrix and sets the row and column names
 			 * to rows and cols respectively
 			 */
-			DenseMatrix(const std::vector<std::string>&  rows, const std::vector<std::string>&  cols);
-
-			/**
-			 * @see DenseMatrix(const std::vector<std::string>&, const std::vector<std::string>&)
-			 */
-			DenseMatrix(std::vector<std::string>&& rows, const std::vector<std::string>&  cols);
-
-			/**
-			 * @see DenseMatrix(const std::vector<std::string>&, const std::vector<std::string>&)
-			 */
-			DenseMatrix(const std::vector<std::string>&  rows, std::vector<std::string>&& cols);
-
-			/**
-			 * @see DenseMatrix(const std::vector<std::string>&, const std::vector<std::string>&)
-			 */
-			DenseMatrix(std::vector<std::string>&& rows, std::vector<std::string>&& cols);
+			DenseMatrix(std::vector<std::string> rows, std::vector<std::string> cols);
 
 			/**
 			 * Default copy constructor

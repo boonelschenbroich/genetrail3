@@ -23,13 +23,13 @@
 
 #include "config.h"
 
-#include "Matrix.h"
+#include "AbstractMatrix.h"
 
 #include <Eigen/Sparse>
 
 namespace GeneTrail
 {
-	class GT2_EXPORT SparseMatrix : public Matrix
+	class GT2_EXPORT SparseMatrix : public AbstractMatrix
 	{
 		public:
 			/// The Eigen class used for representing the internal matrix
@@ -49,22 +49,7 @@ namespace GeneTrail
 			 * This constructs a rows.size() x cols.size() matrix and sets the row and column names
 			 * to rows and cols respectively
 			 */
-			SparseMatrix(const std::vector<std::string>&  rows, const std::vector<std::string>&  cols);
-
-			/**
-			 * @see SparseMatrix(const std::vector<std::string>&, const std::vector<std::string>&)
-			 */
-			SparseMatrix(std::vector<std::string>&& rows, const std::vector<std::string>&  cols);
-
-			/**
-			 * @see SparseMatrix(const std::vector<std::string>&, const std::vector<std::string>&)
-			 */
-			SparseMatrix(const std::vector<std::string>&  rows, std::vector<std::string>&& cols);
-
-			/**
-			 * @see SparseMatrix(const std::vector<std::string>&, const std::vector<std::string>&)
-			 */
-			SparseMatrix(std::vector<std::string>&& rows, std::vector<std::string>&& cols);
+			SparseMatrix(std::vector<std::string> rows, std::vector<std::string> cols);
 
 			/**
 			 * Default copy constructor

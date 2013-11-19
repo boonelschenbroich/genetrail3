@@ -18,49 +18,29 @@
  *
  */
 
-#include "Matrix.h"
+#include "AbstractMatrix.h"
 
 #include <cassert>
 #include <limits>
+#include <utility>
 
 namespace GeneTrail
 {
 
-	Matrix::Matrix(index_type rows, index_type cols)
+	AbstractMatrix::AbstractMatrix(index_type rows, index_type cols)
 		: index_to_rowname_(rows),
 		  index_to_colname_(cols)
 	{
 	}
 
-	Matrix::Matrix(const std::vector<std::string>& rows, const std::vector<std::string>& cols)
-		: index_to_rowname_(rows),
-		  index_to_colname_(cols)
-	{
-		updateRowAndColNames_();
-	}
-
-	Matrix::Matrix(std::vector<std::string>&& rows, const std::vector<std::string>& cols)
-		: index_to_rowname_(std::move(rows)),
-		  index_to_colname_(cols)
-	{
-		updateRowAndColNames_();
-	}
-
-	Matrix::Matrix(const std::vector<std::string>& rows, std::vector<std::string>&& cols)
-		: index_to_rowname_(rows),
-		  index_to_colname_(std::move(cols))
-	{
-		updateRowAndColNames_();
-	}
-
-	Matrix::Matrix(std::vector<std::string>&& rows, std::vector<std::string>&& cols)
+	AbstractMatrix::AbstractMatrix(std::vector<std::string> rows, std::vector<std::string> cols)
 		: index_to_rowname_(std::move(rows)),
 		  index_to_colname_(std::move(cols))
 	{
 		updateRowAndColNames_();
 	}
 
-	Matrix::Matrix(Matrix&& matrix)
+	AbstractMatrix::AbstractMatrix(AbstractMatrix&& matrix)
 		: index_to_rowname_(std::move(matrix.index_to_rowname_)),
 		  rowname_to_index_(std::move(matrix.rowname_to_index_)),
 		  index_to_colname_(std::move(matrix.index_to_colname_)),
@@ -68,7 +48,7 @@ namespace GeneTrail
 	{
 	}
 
-	Matrix& Matrix::operator=(Matrix&& matrix)
+	AbstractMatrix& AbstractMatrix::operator=(AbstractMatrix&& matrix)
 	{
 		// Write this as an assert as moving to oneself is usually a grave client mistake...
 		assert(this != &matrix);
@@ -81,7 +61,7 @@ namespace GeneTrail
 		return *this;
 	}
 
-	void Matrix::updateRowAndColNames_()
+	void AbstractMatrix::updateRowAndColNames_()
 	{
 		index_type i = 0;
 		for(const auto& s : index_to_rowname_) {
@@ -95,7 +75,7 @@ namespace GeneTrail
 	}
 
 
-	Matrix::index_type Matrix::colIndex(const std::string& col) const
+	AbstractMatrix::index_type AbstractMatrix::colIndex(const std::string& col) const
 	{
 		auto res = colname_to_index_.find(col);
 
@@ -106,30 +86,30 @@ namespace GeneTrail
 		return std::numeric_limits<index_type>::max();
 	}
 
-	const std::string& Matrix::colName(index_type j) const
+	const std::string& AbstractMatrix::colName(index_type j) const
 	{
 		assert(j >= 0 && j < index_to_colname_.size());
 		return index_to_colname_[j];
 	}
 
-	Matrix::index_type Matrix::cols() const
+	AbstractMatrix::index_type AbstractMatrix::cols() const
 	{
 		return index_to_colname_.size();
 	}
 
-	bool Matrix::hasCol(const std::string& name) const
+	bool AbstractMatrix::hasCol(const std::string& name) const
 	{
 		return colname_to_index_.find(name) != colname_to_index_.end();
 	}
 
-	bool Matrix::hasRow(const std::string& name) const
+	bool AbstractMatrix::hasRow(const std::string& name) const
 	{
 		return rowname_to_index_.find(name) != rowname_to_index_.end();
 	}
 
 
 
-	Matrix::index_type Matrix::rowIndex(const std::string& row) const
+	AbstractMatrix::index_type AbstractMatrix::rowIndex(const std::string& row) const
 	{
 		auto res = rowname_to_index_.find(row);
 
@@ -140,28 +120,28 @@ namespace GeneTrail
 		return std::numeric_limits<index_type>::max();
 	}
 
-	const std::string& Matrix::rowName(index_type i) const
+	const std::string& AbstractMatrix::rowName(index_type i) const
 	{
 		assert(i >= 0 && i < index_to_rowname_.size());
 		return index_to_rowname_[i];
 	}
 
-	Matrix::index_type Matrix::rows() const
+	AbstractMatrix::index_type AbstractMatrix::rows() const
 	{
 		return index_to_rowname_.size();
 	}
 
-	void Matrix::setColName(const std::string& old_name, const std::string& new_name)
+	void AbstractMatrix::setColName(const std::string& old_name, const std::string& new_name)
 	{
 		setName_(old_name, new_name, colname_to_index_, index_to_colname_);
 	}
 
-	void Matrix::setColName(index_type j, const std::string& new_name)
+	void AbstractMatrix::setColName(index_type j, const std::string& new_name)
 	{
 		setName_(j, new_name, colname_to_index_, index_to_colname_);
 	}
 
-	void Matrix::setColNames(const std::vector< std::string >& col_names)
+	void AbstractMatrix::setColNames(const std::vector< std::string >& col_names)
 	{
 		assert(col_names.size() == cols());
 
@@ -175,7 +155,7 @@ namespace GeneTrail
 		}
 	}
 
-	void Matrix::setName_(index_type j,
+	void AbstractMatrix::setName_(index_type j,
 	                           const std::string& new_name,
 	                           std::map<std::string, index_type>& name_to_index,
 	                           std::vector<std::string>& index_to_name)
@@ -200,7 +180,7 @@ namespace GeneTrail
 		index_to_name[j] = new_name;
 	}
 
-	void Matrix::setName_(const std::string& old_name,
+	void AbstractMatrix::setName_(const std::string& old_name,
 	                           const std::string& new_name,
 	                           std::map<std::string, index_type>& name_to_index,
 	                           std::vector<std::string>& index_to_name)
@@ -228,27 +208,27 @@ namespace GeneTrail
 		index_to_name[index] = new_name;
 	}
 
-	const std::vector<std::string>& Matrix::colNames() const
+	const std::vector<std::string>& AbstractMatrix::colNames() const
 	{
 		return index_to_colname_;
 	}
 
-	const std::vector<std::string>& Matrix::rowNames() const
+	const std::vector<std::string>& AbstractMatrix::rowNames() const
 	{
 		return index_to_rowname_;
 	}
 
-	void Matrix::setRowName(const std::string& old_name, const std::string& new_name)
+	void AbstractMatrix::setRowName(const std::string& old_name, const std::string& new_name)
 	{
 		setName_(old_name, new_name, rowname_to_index_, index_to_rowname_);
 	}
 
-	void Matrix::setRowName(index_type i, const std::string& new_name)
+	void AbstractMatrix::setRowName(index_type i, const std::string& new_name)
 	{
 		setName_(i, new_name, rowname_to_index_, index_to_rowname_);
 	}
 
-	void Matrix::setRowNames(const std::vector< std::string >& row_names)
+	void AbstractMatrix::setRowNames(const std::vector< std::string >& row_names)
 	{
 		assert(row_names.size() == rows());
 
@@ -262,7 +242,7 @@ namespace GeneTrail
 		}
 	}
 
-	void Matrix::transpose()
+	void AbstractMatrix::transpose()
 	{
 		std::swap(index_to_colname_, index_to_rowname_);
 		std::swap(colname_to_index_, rowname_to_index_);
