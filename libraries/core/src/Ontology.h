@@ -103,6 +103,9 @@ namespace GeneTrail{
 			 * 
 			 **/
 			void readOntology(std::istream& in);
+
+			Ontology& operator=(const Ontology&) = default;
+			Ontology& operator=(Ontology&&) = default;
 			
 		private:
 			
