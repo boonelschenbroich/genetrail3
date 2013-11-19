@@ -23,9 +23,7 @@ function(add_gtest TEST_NAME)
     add_executable(${TEST_NAME} "${TEST_NAME}.cpp" ${MY_ARGS_SOURCE_FILES})
     target_link_libraries(${TEST_NAME} gtest gtest_main test_driver ${MY_ARGS_LIBRARIES})
 
-    if(COMPILER_FLAGS)
-        set_target_properties(${TEST_NAME} PROPERTIES COMPILE_FLAGS ${COMPILER_FLAGS})
-    endif()
+    GT2_COMPILE_FLAGS(${TEST_NAME})
 
     # Add the test to CTest
     add_test(NAME ${TEST_NAME} WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test" COMMAND ${TEST_NAME})
