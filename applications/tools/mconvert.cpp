@@ -24,6 +24,7 @@
 #include "../../libraries/core/src/DenseMatrixWriter.h"
 
 #include <fstream>
+#include <iostream>
 
 #include <boost/program_options.hpp>
 
