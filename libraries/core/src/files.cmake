@@ -19,6 +19,7 @@ SET(CORE_HEADERS
 	${DIR}/CommandLineParser.h
 	${DIR}/DenseMatrix.h
 	${DIR}/DenseMatrixReader.h
+	${DIR}/DenseMatrixSubset.h
 	${DIR}/DenseMatrixWriter.h
 	${DIR}/Matrix.h
 	${DIR}/Pathfinder.h
@@ -40,6 +41,7 @@ SET(CORE_SOURCES
 	${DIR}/CommandLineParser.cpp
 	${DIR}/DenseMatrix.cpp
 	${DIR}/DenseMatrixReader.cpp
+	${DIR}/DenseMatrixSubset.cpp
 	${DIR}/DenseMatrixWriter.cpp
 	${DIR}/Pathfinder.cpp
 	${DIR}/RMAExpressMatrixReader.cpp
