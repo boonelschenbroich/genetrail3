@@ -268,6 +268,12 @@ namespace GeneTrail
 		ontology_.writeOntology(ontologyStrm);
 		ontologyStrm.close();
 	}
+
+	DenseDatasetImpl* DenseDatasetImpl::clone() const
+	{
+		return new DenseDatasetImpl(*this);
+	}
+
 	
 DenseMatrix DenseDatasetImpl::readMatrix(Dataset::file_type& in)
 {

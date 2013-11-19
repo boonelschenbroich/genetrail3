@@ -65,7 +65,7 @@ namespace GeneTrail
 			virtual subset_type& subsets() = 0;
 			
 			
-			
+			virtual DenseDataset* clone() const override = 0;
 			
 		
 		protected:

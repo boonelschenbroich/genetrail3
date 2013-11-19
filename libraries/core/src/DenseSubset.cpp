@@ -266,4 +266,9 @@ namespace GeneTrail
 		return dataset_->parameter();
 	}
 
+	DenseSubset* DenseSubset::clone() const
+	{
+		return new DenseSubset(*this);
+	}
+
 }

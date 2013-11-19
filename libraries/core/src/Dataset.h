@@ -125,7 +125,10 @@ namespace GeneTrail{
 			 **/
 			virtual Parameter parameter() = 0;
 			
-			
+			/**
+			 * Creates a copy of this dataset
+			 */
+			virtual Dataset* clone() const = 0;
 		protected:
 			virtual void readMetadata(file_type& in) = 0;
 			virtual void writeMetadata(file_type& out) = 0;

@@ -76,6 +76,7 @@ namespace GeneTrail
 			Parameter parameter();
 			
 			
+			virtual DenseDatasetImpl* clone() const override;
 			
 			
 		protected:

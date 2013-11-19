@@ -72,6 +72,8 @@ namespace GeneTrail
 		
 			Ontology ontology();
 			Parameter parameter();
+
+			virtual DenseSubset* clone() const override;
 			
 			
 		protected:
