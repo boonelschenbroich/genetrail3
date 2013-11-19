@@ -34,7 +34,7 @@ namespace GeneTrail
 		
 		public:
 			
-			typedef DenseMatrix::Matrix matrix_type;
+			typedef DenseMatrix::DMatrix matrix_type;
 			typedef matrix_type::RowXpr rowXpr_type;
 			typedef matrix_type::ColXpr colXpr_type;
 			typedef std::vector<DenseSubset> subset_type;
