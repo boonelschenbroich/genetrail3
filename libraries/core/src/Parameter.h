@@ -90,7 +90,8 @@ namespace GeneTrail{
 			parameter_map col_parameter();
 			
 			
-			
+			Parameter& operator=(const Parameter&) = default;
+			Parameter& operator=(Parameter&&) = default;
 			
 			
 		private:
