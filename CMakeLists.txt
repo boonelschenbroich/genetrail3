@@ -25,11 +25,17 @@ find_package(CLN)
 find_package(CPPUnit)
 find_package(Eigen3 REQUIRED)
 
+SET(Boost_LIBRARIES
+	${Boost_IOSTREAMS_LIBRARY}
+	${Boost_REGEX_LIBRARY}
+	${Boost_FILESYSTEM_LIBRARY}
+	${Boost_SYSTEM_LIBRARY}
+	${Boost_PROGRAM_OPTIONS_LIBRARY}
+)
+
 include_directories(${EIGEN3_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${CLN_INCLUDE_DIR})
-
-link_directories(${Boost_LIBRARY_DIRS})
 
 include(GT2CompilerSpecific)
 
