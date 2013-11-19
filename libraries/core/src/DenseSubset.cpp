@@ -34,28 +34,29 @@ namespace GeneTrail
 
 	DenseSubset::DenseSubset(Dataset::labelVector_type& row_subset, Dataset::labelVector_type& col_subset, DenseDataset* dataset)
 		: row_subset_(row_subset.begin(), row_subset.end()),
-			col_subset_(col_subset.begin(), col_subset.end()),
-			dataset_(dataset),
-			subsets_(),
-			pointer_is_valid_(true)
+		  col_subset_(col_subset.begin(), col_subset.end()),
+		  dataset_(dataset)
 	{
 	}
 
 	DenseSubset::DenseSubset()
-		: row_subset_(),
-			col_subset_(),
-			dataset_(),
-			subsets_(),
-			pointer_is_valid_(false)
+		: dataset_(nullptr)
 	{
+	}
+
+	DenseSubset::DenseSubset(const DenseSubset& subs)
+		: row_subset_(subs.row_subset_),
+		  col_subset_(subs.col_subset_),
+		  subsets_(subs.subsets_)
+	{
+		if(subs.dataset_) {
+			dataset_ = subs.dataset_->clone();
+		}
 	}
 
 	DenseSubset::~DenseSubset()
 	{
-		if(!pointer_is_valid_)
-		{
-			free(dataset_);
-		}
+		delete dataset_;
 	}
 
 	DenseSubset& DenseSubset::createSubset(Dataset::labelVector_type& row_subset, Dataset::labelVector_type& col_subset)
@@ -164,13 +165,10 @@ namespace GeneTrail
 
 	void DenseSubset::readDataset(Dataset::file_type& in)
 	{
-		if(!pointer_is_valid_)
-		{
-			//TODO what if we have a DenseSubset subset???
-			dataset_ = new DenseDatasetImpl(in);
-		}
+		delete dataset_;
+		dataset_ = new DenseDatasetImpl(in);
 
- 		dataset_->readDataset(in);		
+		dataset_->readDataset(in);
 		
 		file_type subsetPath = in + "/Subset.txt";
 		

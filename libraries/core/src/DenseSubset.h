@@ -34,6 +34,7 @@ namespace GeneTrail
 			typedef std::set<std::string> label_subset_type;
 			
 			DenseSubset();
+			DenseSubset(const DenseSubset& );
 
 			virtual ~DenseSubset();
 			
@@ -85,7 +86,6 @@ namespace GeneTrail
 			label_subset_type col_subset_;
 			DenseDataset* dataset_;
 			subset_type subsets_;
-			bool pointer_is_valid_;
 	};
 }
 
