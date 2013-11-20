@@ -30,9 +30,9 @@ namespace GeneTrail
 {
 
 
-	Parameter::Parameter(const parameter_map& row_parameter,const parameter_map& column_parameter)
-		: row_parameter_(row_parameter),
-			column_parameter_(column_parameter)
+	Parameter::Parameter(parameter_map row_parameter,parameter_map column_parameter)
+		: row_parameter_(std::move(row_parameter)),
+		  column_parameter_(std::move(column_parameter))
 	{
 	}
 	

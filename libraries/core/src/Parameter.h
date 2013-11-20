@@ -48,7 +48,7 @@ namespace GeneTrail{
 			/**
 			 * Default construictor
 			 **/
-			Parameter(const parameter_map& row_parameter,const parameter_map& column_parameter);
+			Parameter(parameter_map row_parameter, parameter_map column_parameter);
 			
 			Parameter(const Parameter& parameter) = default;
 			
