@@ -47,7 +47,7 @@ namespace GeneTrail
 			 *
 			 * \see DenseMatrixReader::read
 			 */
-			virtual DenseMatrix read(std::istream& input, unsigned int opts = READ_ROW_NAMES | READ_COL_NAMES) const;
+			virtual DenseMatrix read(std::istream& input, unsigned int opts = READ_ROW_NAMES | READ_COL_NAMES) const override;
 
 		private:
 			std::string readString_(std::istream& input) const;

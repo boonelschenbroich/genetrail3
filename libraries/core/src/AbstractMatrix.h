@@ -89,22 +89,22 @@ namespace GeneTrail
 			/**
 			 * Sets the row names of the matrix to the values specified in row_names
 			 */
-			void setRowNames(const std::vector<std::string>& row_names);
+			void setRowNames(const std::vector<std::string>& row_names) override;
 
 			/**
 			 * Sets the column names of the matrix to the values specified in col_names
 			 */
-			void setColNames(const std::vector<std::string>& col_names);
+			void setColNames(const std::vector<std::string>& col_names) override;
 
 			/**
 			 * Return the column names
 			 */
-			const std::vector<std::string>& colNames() const;
+			const std::vector<std::string>& colNames() const override;
 
 			/**
 			 * Return the row names
 			 */
-			const std::vector<std::string>& rowNames() const;
+			const std::vector<std::string>& rowNames() const override;
 
 			/**
 			 * Rename row old_name to new_name
@@ -114,7 +114,7 @@ namespace GeneTrail
 			 * \warning If a row with name "new_name" is alread present
 			 *          its row name will be set to the empty string
 			 */
-			void setRowName(const std::string& old_name, const std::string& new_name);
+			void setRowName(const std::string& old_name, const std::string& new_name) override;
 
 			/**
 			 * Rename row i to new_name
@@ -122,12 +122,12 @@ namespace GeneTrail
 			 * \warning If a row with name "new_name" is alread present
 			 *          its row name will be set to the empty string
 			 */
-			void setRowName(index_type i, const std::string& new_name);
+			void setRowName(index_type i, const std::string& new_name) override;
 
 			/**
 			 * Get the name of row i
 			 */
-			const std::string& rowName(index_type i) const;
+			const std::string& rowName(index_type i) const override;
 
 			/**
 			 * Rename column old_name to new_name
@@ -137,7 +137,7 @@ namespace GeneTrail
 			 * \warning If a column with name "new_name" is alread present
 			 *          its colum name will be set to the empty string
 			 */
-			void setColName(const std::string& old_name, const std::string& new_name);
+			void setColName(const std::string& old_name, const std::string& new_name) override;
 
 			/**
 			 * Rename column j to new_name
@@ -145,12 +145,12 @@ namespace GeneTrail
 			 * \warning If a column with name "new_name" is alread present
 			 *          its colum name will be set to the empty string
 			 */
-			void setColName(index_type j, const std::string& new_name);
+			void setColName(index_type j, const std::string& new_name) override;
 
 			/**
 			 * Get the name of column j
 			 */
-			const std::string& colName(index_type j) const;
+			const std::string& colName(index_type j) const override;
 
 			/**
 			 * Return the row index of the column identified by
@@ -159,7 +159,7 @@ namespace GeneTrail
 			 * \warning the result of this method is undefined if
 			 *          row is not a valid row name
 			 */
-			index_type rowIndex(const std::string& row) const;
+			index_type rowIndex(const std::string& row) const override;
 
 			/**
 			 * Return the column index of the column identified by
@@ -168,29 +168,29 @@ namespace GeneTrail
 			 * \warning the result of this method is undefined if
 			 *          column is not a valid column name
 			 */
-			index_type colIndex(const std::string& col) const;
+			index_type colIndex(const std::string& col) const override;
 
 			/**
 			 * Return true if the matrix contains a row with row name
 			 * "name". False otherwise.
 			 */
-			bool hasRow(const std::string& name) const;
+			bool hasRow(const std::string& name) const override;
 
 			/**
 			 * Return true if the matrix contains a column with column name
 			 * "name". False otherwise.
 			 */
-			bool hasCol(const std::string& name) const;
+			bool hasCol(const std::string& name) const override;
 
 			/**
 			 * The number of columns in the matrix
 			 */
-			index_type cols() const;
+			index_type cols() const override;
 
 			/**
 			 * The number of rows in the matrix
 			 */
-			index_type rows() const;
+			index_type rows() const override;
 
 			///@}
 			///\ingroup Matrix Operations
@@ -238,7 +238,7 @@ namespace GeneTrail
 			 * \note If you just need the transpose of the matrix in a computation use
 			 *       .matrix().transpose()
 			 */
-			virtual void transpose();
+			virtual void transpose() override;
 
 			///@}
 

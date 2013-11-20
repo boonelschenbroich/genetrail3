@@ -164,7 +164,7 @@ namespace GeneTrail
 			 *             contained in perm in the order they were
 			 *             specified.
 			 */
-			void shuffleRows(const std::vector<index_type>& perm);
+			void shuffleRows(const std::vector<index_type>& perm) override;
 
 			/**
 			 * Reorder the columns of the matrix according to a given
@@ -172,7 +172,7 @@ namespace GeneTrail
 			 *
 			 * \see DenseMatrix::shuffleRows
 			 */
-			void shuffleCols(const std::vector<index_type>& perm);
+			void shuffleCols(const std::vector<index_type>& perm) override;
 
 			/**
 			 * Remove the rows identified by the passed indices
@@ -180,14 +180,14 @@ namespace GeneTrail
 			 * \param indices a vector of row indices
 			 * \warning the passed indices must be sorted in ascending order
 			 */
-			void removeRows(const std::vector<index_type>& indices);
+			void removeRows(const std::vector<index_type>& indices) override;
 
 			/**
 			 * Remove the columns identified by the passed indices
 			 *
 			 * \see DenseMatrix::removeRows
 			 */
-			void removeCols(const std::vector<index_type>& indices);
+			void removeCols(const std::vector<index_type>& indices) override;
 
 			/**
 			 * Transpose the matrix.
@@ -197,7 +197,7 @@ namespace GeneTrail
 			 * \note If you just need the transpose of the matrix in a computation use
 			 *       .matrix().transpose()
 			 */
-			void transpose();
+			void transpose() override;
 
 			///@}
 		private:

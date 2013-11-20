@@ -40,47 +40,47 @@ namespace GeneTrail
 			
 			DenseSubset(labelVector_type& row_subset, labelVector_type& col_subset, DenseDataset* dataset);
 			
-			DenseSubset& createSubset(labelVector_type& row_subset, labelVector_type& col_subset);
+			DenseSubset& createSubset(labelVector_type& row_subset, labelVector_type& col_subset) override;
 			
 			DenseSubset& operator=(DenseSubset&& dataset);
 			
 			
-			colXpr_type col(const label_type i);
-			value_type colIndex(const label_type key);
-			index_type cols();
-			bool hasCol(const label_type key);
+			colXpr_type col(const label_type i) override;
+			value_type colIndex(const label_type key) override;
+			index_type cols() override;
+			bool hasCol(const label_type key) override;
 			
 			
-			rowXpr_type row(const label_type i);
-			value_type rowIndex(const label_type key);
-			index_type rows();
-			bool hasRow(const label_type key);
+			rowXpr_type row(const label_type i) override;
+			value_type rowIndex(const label_type key) override;
+			index_type rows() override;
+			bool hasRow(const label_type key) override;
 			
-			subset_type& subsets();
+			subset_type& subsets() override;
 			
-			void readDataset(file_type& in);
-			void writeDataset(file_type& out);
+			void readDataset(file_type& in) override;
+			void writeDataset(file_type& out) override;
 			
-			bool disjunct(const Dataset& d);
-			bool disjunctColumns(const Dataset& d);
-			bool disjunctRows(const Dataset& d);
+			bool disjunct(const Dataset& d) override;
+			bool disjunctColumns(const Dataset& d) override;
+			bool disjunctRows(const Dataset& d) override;
 			
-			const labelVector_type colNames() const;
-			const labelVector_type rowNames() const;
+			const labelVector_type colNames() const override;
+			const labelVector_type rowNames() const override;
 			
-			value_type value(const label_type i, const label_type j);
-			value_type value(const index_type i, const index_type j);
+			value_type value(const label_type i, const label_type j) override;
+			value_type value(const index_type i, const index_type j) override;
 		
-			Ontology ontology();
-			Parameter parameter();
+			Ontology ontology() override;
+			Parameter parameter() override;
 
 			virtual DenseSubset* clone() const override;
 			
 			
 		protected:
-    	void readMetadata(file_type& in);
-    	void writeMetadata(file_type& out);
-			
+			void readMetadata(file_type& in) override;
+			void writeMetadata(file_type& out) override;
+
 		private:
 			label_subset_type row_subset_;
 			label_subset_type col_subset_;
