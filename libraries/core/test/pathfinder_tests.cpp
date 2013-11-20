@@ -48,7 +48,7 @@ TEST(Pathfinder, length4)
 
 	input_sif.close();
 	EXPECT_EQ(dups.size(),1);
-	std::set<std::string>::iterator it = dups.find("AppB");
+	auto it = dups.find("AppB");
 	EXPECT_TRUE(it != dups.end());
 
 	//K3

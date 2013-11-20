@@ -46,7 +46,7 @@ class DenseMatrixWriterTest : public ::testing::Test
 			srand(time(nullptr));
 		}
 
-		virtual void TearDown() {
+		virtual void TearDown() override {
 			// Delete the temporary file
 			fs::remove(temp_file_name_);
 		};

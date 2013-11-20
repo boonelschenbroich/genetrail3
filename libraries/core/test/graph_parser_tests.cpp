@@ -52,7 +52,7 @@ TEST(GraphParser, readAndWrite)
 		{
 			boost::erase_all(current, " ");
 			boost::erase_all(current, "\t");
-			std::set<std::string>::iterator it = dups.find(current);
+			auto it = dups.find(current);
 
 			if(it == dups.end())
 			{
