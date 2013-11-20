@@ -66,9 +66,9 @@ namespace GeneTrail
 			void readDataset(file_type& in) override;
 			void writeDataset(file_type& out) override;
 			
-			bool disjunct(const Dataset& d) override;
-			bool disjunctColumns(const Dataset& d) override;
-			bool disjunctRows(const Dataset& d) override;
+			bool disjoint(const Dataset& d) override;
+			bool disjointColumns(const Dataset& d) override;
+			bool disjointRows(const Dataset& d) override;
 			
 			subset_type& subsets() override;
 			

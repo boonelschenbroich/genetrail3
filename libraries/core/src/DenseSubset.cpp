@@ -134,12 +134,12 @@ namespace GeneTrail
 		return row_subset_.find(key) != row_subset_.end();
 	}
 
-	bool DenseSubset::disjunct(const Dataset& d)
+	bool DenseSubset::disjoint(const Dataset& d)
 	{
-		return disjunctColumns(d) && disjunctRows(d);
+		return disjointColumns(d) && disjointRows(d);
 	}
 
-	bool DenseSubset::disjunctColumns(const Dataset& d)
+	bool DenseSubset::disjointColumns(const Dataset& d)
 	{
 		for(auto& col : d.colNames())
 		{
@@ -151,7 +151,7 @@ namespace GeneTrail
 		return true;
 	}
 
-	bool DenseSubset::disjunctRows(const Dataset& d)
+	bool DenseSubset::disjointRows(const Dataset& d)
 	{
 		for(auto& row : d.rowNames())
 		{ 

@@ -78,12 +78,12 @@ namespace GeneTrail
 		return subsets_.back();
 	}
 
-	bool DenseDatasetImpl::disjunct(const Dataset& d)
+	bool DenseDatasetImpl::disjoint(const Dataset& d)
 	{
-		return disjunctColumns(d) && disjunctRows(d);
+		return disjointColumns(d) && disjointRows(d);
 	}
 
-	bool DenseDatasetImpl::disjunctColumns(const Dataset& d)
+	bool DenseDatasetImpl::disjointColumns(const Dataset& d)
 	{
 		Dataset::labelVector_type labels = matrix_.colNames();
 		std::set<label_type> ownLabels(labels.begin(), labels.end());
@@ -98,7 +98,7 @@ namespace GeneTrail
 		return true;
 	}
 
-	bool DenseDatasetImpl::disjunctRows(const Dataset& d)
+	bool DenseDatasetImpl::disjointRows(const Dataset& d)
 	{
 		Dataset::labelVector_type labels = matrix_.rowNames();
 		std::set<label_type> ownLabels(labels.begin(), labels.end());

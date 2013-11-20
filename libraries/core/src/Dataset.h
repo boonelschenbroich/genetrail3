@@ -103,17 +103,17 @@ namespace GeneTrail{
 			/**
 			 * 
 			 **/
-			virtual bool disjunct(const Dataset& d) = 0;
+			virtual bool disjoint(const Dataset& d) = 0;
 			
 			/**
 			 * 
 			 **/
-			virtual bool disjunctRows(const Dataset& d) = 0;
+			virtual bool disjointRows(const Dataset& d) = 0;
 			
 			/**
 			 * 
 			 **/
-			virtual bool disjunctColumns(const Dataset& d) = 0;
+			virtual bool disjointColumns(const Dataset& d) = 0;
 			
 			/**
 			 * 
