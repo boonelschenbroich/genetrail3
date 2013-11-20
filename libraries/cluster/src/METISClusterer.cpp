@@ -93,12 +93,12 @@ namespace GeneTrail
 		switch(algorithm_) {
 			case Recursive:
 				METIS_PartGraphRecursive(&nvtxs, &ncon, mat.outerIndexPtr(), mat.innerIndexPtr(),
-				                         NULL, NULL, &eweights[0], &k_, NULL, NULL, options,
+				                         nullptr, nullptr, &eweights[0], &k_, nullptr, nullptr, options,
 				                         &objval, &grouping_[0]);
 				break;
 			case KWay:
 				METIS_PartGraphKway(&nvtxs, &ncon, mat.outerIndexPtr(), mat.innerIndexPtr(),
-				                    NULL, NULL, &eweights[0], &k_, NULL, NULL, options,
+				                    nullptr, nullptr, &eweights[0], &k_, nullptr, nullptr, options,
 				                    &objval, &grouping_[0]);
 				break;
 		}
