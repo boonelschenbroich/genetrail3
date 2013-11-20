@@ -124,14 +124,14 @@ std::vector<std::string> ScoringFileParser::getAllInSet(std::set<std::string> my
 
 	std::vector<std::string> all;
 
-	for(unsigned int i=0; i<sorted_scores_.size(); ++i)
+	for(auto& elem : sorted_scores_)
 	{
 		std::set<std::string>::iterator setIt;
-		setIt = myset.find(std::get<0>(sorted_scores_[i]));
+		setIt = myset.find(std::get<0>(elem));
 
 		if(setIt != myset.end())
 		{
-			all.push_back(std::get<0>(sorted_scores_[i]));
+			all.push_back(std::get<0>(elem));
 		}
 	}
 
@@ -142,14 +142,14 @@ std::vector<std::string> ScoringFileParser::getAllInSet(std::set<std::string> my
 {
 	std::vector<std::string> all;
 
-	for(unsigned int i=0; i<sorted_scores_.size(); ++i)
+	for(auto& elem : sorted_scores_)
 	{
 		std::set<std::string>::iterator setIt;
-		setIt = myset.find(std::get<0>(sorted_scores_[i]));
+		setIt = myset.find(std::get<0>(elem));
 
 		if(setIt != myset.end())
 		{
-			all.push_back(std::get<0>(sorted_scores_[i]));
+			all.push_back(std::get<0>(elem));
 		}
 	}
 

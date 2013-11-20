@@ -50,19 +50,19 @@ void BoostGraphProcessor::adeptGraph(GraphType& graph, std::set<std::string> gen
 			}
 
 			//remove edges
-			for ( unsigned int h = 0; h < vit.size(); h++ )
+			for (auto& elem : vit)
 			{
-				boost::remove_edge ( *vit[h], graph );
+				boost::remove_edge ( *elem, graph );
 			}
 
-			for ( unsigned int h = 0; h < vot.size(); h++ )
+			for (auto& elem : vot)
 			{
-				vertex_descriptor vd_target = target ( *vot[h], graph );
-				vertex_descriptor vd_source = source ( *vot[h], graph );
+				vertex_descriptor vd_target = target ( *elem, graph );
+				vertex_descriptor vd_source = source ( *elem, graph );
 
 				if ( vd_source != vd_target )
 				{
-					boost::remove_edge ( *vot[h], graph );
+					boost::remove_edge ( *elem, graph );
 				}
 			}
 
