@@ -210,6 +210,11 @@ namespace GeneTrail
 			                   std::map<std::string, index_type>& name_to_index,
 			                   std::vector<std::string>& index_to_name,
 			                   std::function<void(index_type, index_type)> copy);
+
+			void shuffle_(std::vector<index_type> perm,
+			              std::map<std::string, index_type>& name_to_index,
+			              std::vector<std::string>& index_to_name,
+			              std::function<void(index_type, index_type)> swap);
 	};
 }
 

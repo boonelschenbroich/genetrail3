@@ -199,16 +199,43 @@ namespace GeneTrail
 		m_.row(i) = v.transpose();
 	}
 
+	void DenseMatrix::shuffle_(std::vector<index_type> perm,
+	                           std::map<std::string, index_type>& name_to_index,
+	                           std::vector<std::string>& index_to_name,
+	                           std::function<void(index_type, index_type)> swap)
+	{
+		for(size_t i = 0; i < perm.size(); ++i) {
+			// Push the data through one cycle of the permutation
+			index_type next = i;
+
+			// Invariant: Everything below i is shuffled correctly
+			while(perm[next] > i) {
+				// Swap names and data
+				swap(perm[next], next);
+				std::swap(name_to_index[index_to_name[perm[next]]], name_to_index[index_to_name[next]]);
+				std::swap(index_to_name[perm[next]], index_to_name[next]);
+
+				// Get the next target we swap to
+				std::swap(next, perm[next]);
+			}
+
+			// The last part of the cycle is ordered too
+			perm[next] = next;
+		}
+	}
+
 	void DenseMatrix::shuffleCols(const std::vector< index_type >& perm)
 	{
-		//TODO implement
-		assert(false);
+		shuffle_(perm, colname_to_index_, index_to_colname_, [this](index_type i, index_type j) {
+			m_.col(i).swap(m_.col(j));
+		});
 	}
 
 	void DenseMatrix::shuffleRows(const std::vector< index_type >& perm)
 	{
-		//TODO implement
-		assert(false);
+		shuffle_(perm, rowname_to_index_, index_to_rowname_, [this](index_type i, index_type j) {
+			m_.row(i).swap(m_.row(j));
+		});
 	}
 
 	void DenseMatrix::transpose()
