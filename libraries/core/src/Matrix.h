@@ -153,6 +153,9 @@ namespace GeneTrail
 			 */
 			virtual index_type rows() const = 0;
 
+			virtual value_type& operator()(index_type i, index_type j) = 0;
+			virtual value_type  operator()(index_type i, index_type j) const = 0;
+
 			///@}
 			///\ingroup Matrix Operations
 			///@{
