@@ -110,7 +110,7 @@ namespace GeneTrail
 		return row_subset_.size();
 	}
 
-	bool DenseMatrixSubset::hasCol(const std::string& name) const
+	bool DenseMatrixSubset::hasRow(const std::string& name) const
 	{
 		for(auto i : row_subset_) {
 			if(mat_->rowName(i) == name) {
@@ -121,7 +121,7 @@ namespace GeneTrail
 		return false;
 	}
 
-	bool DenseMatrixSubset::hasRow(const std::string& name) const
+	bool DenseMatrixSubset::hasCol(const std::string& name) const
 	{
 		for(auto i : col_subset_) {
 			if(mat_->colName(i) == name) {
@@ -169,7 +169,7 @@ namespace GeneTrail
 
 		for(auto i : col_subset_) {
 
-			if(mat_->rowName(i) == col) {
+			if(mat_->colName(i) == col) {
 				return idx;
 			}
 			++idx;
@@ -277,12 +277,24 @@ namespace GeneTrail
 
 	void DenseMatrixSubset::shuffleCols(const std::vector< Matrix::index_type >& perm)
 	{
-		col_subset_ = perm;
+		ISubset tmp(col_subset_.size());
+
+		for(int i = 0; i < perm.size(); ++i) {
+			tmp[i] = col_subset_[perm[i]];
+		}
+
+		std::swap(col_subset_, tmp);
 	}
 
 	void DenseMatrixSubset::shuffleRows(const std::vector< Matrix::index_type >& perm)
 	{
-		row_subset_ = perm;
+		ISubset tmp(row_subset_.size());
+
+		for(int i = 0; i < perm.size(); ++i) {
+			tmp[i] = row_subset_[perm[i]];
+		}
+
+		std::swap(row_subset_, tmp);
 	}
 
 	void DenseMatrixSubset::transpose()
