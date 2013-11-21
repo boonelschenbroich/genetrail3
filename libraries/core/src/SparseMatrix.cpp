@@ -92,5 +92,7 @@ namespace GeneTrail
 	void SparseMatrix::transpose()
 	{
 		AbstractMatrix::transpose();
+		SMatrix tmp(m_.transpose());
+		m_.swap(tmp);
 	}
 }
