@@ -45,6 +45,16 @@ namespace GeneTrail
 			static unsigned int defaultOptions();
 
 			virtual ~DenseMatrixReader() {}
+
+			/**
+			 * Reads a DenseMatrix from the provided input stream.
+			 *
+			 * @param input a (seekable) stream of a matrix implementation
+			 * @param opts a set of options that manipulate the behaviour of the reader
+			 *
+			 * @throws IOError an IOError is thrown if the provided stream is invalid or the
+			 *                 matrix description is invalid.
+			 */
 			virtual DenseMatrix read(std::istream& input, unsigned int opts = defaultOptions()) const;
 
 		private:

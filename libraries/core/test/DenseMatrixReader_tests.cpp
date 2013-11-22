@@ -22,6 +22,7 @@
 
 #include "../src/DenseMatrix.h"
 #include "../src/DenseMatrixReader.h"
+#include "../src/Exception.h"
 #include <config.h>
 
 #include <fstream>
@@ -102,13 +103,7 @@ TEST_F(DenseMatrixReaderTest, read_invalid_stream)
 	ASSERT_FALSE(strm.good());
 
 	DenseMatrixReader reader;
-	DenseMatrix mat = reader.read(strm);
-	//TODO fix this
-//	EXPECT_FALSE(reader.readMatrix(strm));
-
-	EXPECT_EQ(-1, mat.rowIndex("blablubb"));
-//	EXPECT_EQ("", mat.rowName(0));
-	EXPECT_EQ(DenseMatrix::DMatrix(), mat.matrix());
+	EXPECT_THROW(reader.read(strm), IOError);
 }
 
 TEST_F(DenseMatrixReaderTest, read_valid_names)

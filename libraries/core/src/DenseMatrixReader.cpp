@@ -32,6 +32,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include "DenseMatrix.h"
+#include "Exception.h"
 
 namespace GeneTrail
 {
@@ -63,6 +64,10 @@ namespace GeneTrail
 
 	DenseMatrix DenseMatrixReader::read(std::istream& input, unsigned int opts) const
 	{
+		if(!input) {
+			throw IOError("Invalid input stream!");
+		}
+
 		if(isBinary_(input)) {
 			return binaryRead_(input);
 		}
@@ -169,10 +174,13 @@ namespace GeneTrail
 		// Read the header
 		readChunkHeader_(input, chunk_type, chunk_size);
 
-		if(chunk_type != 0x0 || chunk_size != 9) {
-			//TODO throw an exception!
-			std::cerr << "Inconsistent header size!" << std::endl;
-			return DenseMatrix(0,0);
+		if(chunk_type != 0x0)
+		{
+			throw new IOError("Unexpected chunk: expected 0 (matrix header), got " + boost::lexical_cast<std::string>(chunk_type));
+		}
+
+		if(chunk_size != 9) {
+			throw IOError("Inconsistent header size: expected 9 got " + boost::lexical_cast<std::string>(chunk_size));
 		}
 
 		uint8_t  storage_order;
@@ -187,9 +195,7 @@ namespace GeneTrail
 
 			switch(chunk_type) {
 				case DenseMatrixReader::HEADER:
-					//TODO throw an exception!
-					std::cerr << "Unexpected header! " << std::endl;
-					return DenseMatrix(0,0);
+					throw IOError("Unexpected chunk: did not expect header chunk!");
 				case DenseMatrixReader::ROWNAMES:
 					readRowNames_(input, result, chunk_size);
 					break;
@@ -216,11 +222,6 @@ namespace GeneTrail
 	//TODO this is a bloody mess! Fix asap!
 	DenseMatrix DenseMatrixReader::textRead_(std::istream& input, unsigned int opts) const
 	{
-		if(!input)
-		{
-			return DenseMatrix(0,0);
-		}
-
 		std::string line;
 		// Get the first interesting line
 		skipEmptyLines_(input, line);
@@ -266,8 +267,7 @@ namespace GeneTrail
 		}
 		catch(boost::bad_lexical_cast& e)
 		{
-			std::cerr << e.what() << std::endl;
-			return DenseMatrix(0,0);
+			throw IOError(e.what());
 		}
 
 		unsigned int cur_line = 1;
@@ -285,8 +285,11 @@ namespace GeneTrail
 
 			if(fields.size() != num_fields)
 			{
-				std::cerr << "Expected " << num_fields << " columns in line " << cur_line << ". Got " << fields.size() << "\n";
-				return DenseMatrix(0,0);
+				throw IOError(
+					"Expected " + boost::lexical_cast<std::string>(num_fields) +
+					" columns in line " + boost::lexical_cast<std::string>(cur_line) +
+					", got " + boost::lexical_cast<std::string>(fields.size())
+				);
 			}
 
 			if(start)
@@ -304,8 +307,7 @@ namespace GeneTrail
 			}
 			catch(boost::bad_lexical_cast& e)
 			{
-				std::cerr << e.what() << std::endl;
-				return DenseMatrix(0,0);
+				throw IOError(e.what());
 			}
 
 			++cur_line;
