@@ -33,17 +33,28 @@ namespace GeneTrail
 	class GT2_EXPORT DenseMatrixReader
 	{
 		public:
+			/**
+			 * Options that modify the behaviour of the
+			 * reader. The flags can be combined using bitwise or (|)
+			 */
 			enum ReaderOptions
 			{
-			NO_OPTIONS          = 0,
-			READ_ROW_NAMES      = 1 << 0,
-			READ_COL_NAMES      = 1 << 1,
-			TRANSPOSE           = 1 << 2,
-			ADDITIONAL_COL_NAME = 1 << 3
+				NO_OPTIONS          = 0,      /// No special option should be set
+				READ_ROW_NAMES      = 1 << 0, /// The file contains row names (only ascii)
+				READ_COL_NAMES      = 1 << 1, /// The file contains column names (only ascii)
+				TRANSPOSE           = 1 << 2, /// Read a transposed version of the matrix
+				ADDITIONAL_COL_NAME = 1 << 3  /// The row names have a column name assigned to them (only ascii)
 			};
 
+			/**
+			 * Returns a set of default options. These are:
+			 * READ_COL_NAMES | READ_ROW_NAMES
+			 */
 			static unsigned int defaultOptions();
 
+			/**
+			 * Virtual destructor
+			 */
 			virtual ~DenseMatrixReader() {}
 
 			/**
