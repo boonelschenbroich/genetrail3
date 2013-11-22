@@ -20,6 +20,8 @@
 
 #include "DenseMatrixSubset.h"
 
+#include "Exception.h"
+
 namespace GeneTrail
 {
 	/*
@@ -299,7 +301,7 @@ namespace GeneTrail
 
 	void DenseMatrixSubset::transpose()
 	{
-		assert(false);
+		throw NotImplemented(__FILE__, __LINE__, "DenseMatrixSubset::transpose()");
 	}
 
 }
