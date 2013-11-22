@@ -20,6 +20,8 @@
 
 #include "SparseMatrix.h"
 
+#include "Exception.h"
+
 namespace GeneTrail
 {
 	SparseMatrix::SparseMatrix(Matrix::index_type rows, Matrix::index_type cols)
@@ -71,22 +73,22 @@ namespace GeneTrail
 
 	void SparseMatrix::removeCols(const std::vector< Matrix::index_type >& indices)
 	{
-		assert(false);
+		throw NotImplemented(__FILE__, __LINE__, "SparseMatrix::removeCols(const std::vector<Matrix::index_type>&)");
 	}
 
 	void SparseMatrix::removeRows(const std::vector< Matrix::index_type >& indices)
 	{
-		assert(false);
+		throw NotImplemented(__FILE__, __LINE__, "SparseMatrix::removeRows(const std::vector<Matrix::index_type>&)");
 	}
 
 	void SparseMatrix::shuffleCols(const std::vector< Matrix::index_type >& perm)
 	{
-		assert(false);
+		throw NotImplemented(__FILE__, __LINE__, "SparseMatrix::shuffleCols(const std::vector<Matrix::index_type>&)");
 	}
 
 	void SparseMatrix::shuffleRows(const std::vector< Matrix::index_type >& perm)
 	{
-		assert(false);
+		throw NotImplemented(__FILE__, __LINE__, "SparseMatrix::shuffleRows(const std::vector<Matrix::index_type>&)");
 	}
 
 	void SparseMatrix::transpose()
