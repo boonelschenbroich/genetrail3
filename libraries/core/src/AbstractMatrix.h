@@ -231,12 +231,7 @@ namespace GeneTrail
 			virtual void removeCols(const std::vector<index_type>& indices) = 0;
 
 			/**
-			 * Transpose the matrix.
-			 *
-			 * Row names and col names will also be switched.
-			 *
-			 * \note If you just need the transpose of the matrix in a computation use
-			 *       .matrix().transpose()
+			 * \copydoc Matrix::transpose
 			 */
 			virtual void transpose() override;
 

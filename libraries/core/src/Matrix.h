@@ -198,9 +198,6 @@ namespace GeneTrail
 			 * Transpose the matrix.
 			 *
 			 * Row names and col names will also be switched.
-			 *
-			 * \note If you just need the transpose of the matrix in a computation use
-			 *       .matrix().transpose()
 			 */
 			virtual void transpose() = 0;
 
