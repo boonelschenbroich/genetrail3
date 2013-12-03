@@ -28,6 +28,8 @@
 #include <vector>
 #include <string>
 
+#include "Exception.h"
+
 namespace GeneTrail
 {
 	class GT2_EXPORT Matrix
@@ -155,6 +157,30 @@ namespace GeneTrail
 
 			virtual value_type& operator()(index_type i, index_type j) = 0;
 			virtual value_type  operator()(index_type i, index_type j) const = 0;
+
+			value_type set(index_type i, index_type j, value_type v) {
+				if(i >= rows()) {
+					throw InvalidIndex(i, rows());
+				}
+
+				if(j >= cols()) {
+					throw InvalidIndex(i, cols());
+				}
+
+				return (*this)(i,j) = v;
+			}
+
+			value_type  get(index_type i, index_type j) const {
+				if(i >= rows()) {
+					throw InvalidIndex(i, rows());
+				}
+
+				if(j >= cols()) {
+					throw InvalidIndex(i, cols());
+				}
+
+				return (*this)(i,j);
+			}
 
 			///@}
 			///\ingroup Matrix Operations
