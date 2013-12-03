@@ -229,7 +229,7 @@ namespace GeneTrail
 	{
 		int i = 0;
 		for(const auto& s : row_names) {
-			mat_->setRowName(col_subset_[i], s);
+			mat_->setRowName(row_subset_[i], s);
 			++i;
 		}
 	}
