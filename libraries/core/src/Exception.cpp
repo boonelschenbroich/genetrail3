@@ -42,7 +42,7 @@ namespace GeneTrail
 		try {
 			msg_ += boost::lexical_cast<std::string>(line);
 		} catch(boost::bad_lexical_cast& e) {
-			// Ignore
+			msg_ = "Error creating exception. (Bad lexical cast)";
 		}
 	}
 
@@ -50,4 +50,20 @@ namespace GeneTrail
 	{
 		return msg_.c_str();
 	}
+
+	InvalidIndex::InvalidIndex(unsigned int i, unsigned int max) noexcept
+	{
+		try {
+			msg_ = std::string("Invalid index ") + boost::lexical_cast<std::string>(i)
+			     + ". Strict upper bound is " + boost::lexical_cast<std::string>(max) + ".";
+		} catch(boost::bad_lexical_cast& e) {
+			msg_ = std::string("Error creating exception. (Bad lexical cast)");
+		}
+	}
+
+	const char* InvalidIndex::what() const noexcept
+	{
+		return msg_.c_str();
+	}
+
 }

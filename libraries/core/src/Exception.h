@@ -49,6 +49,16 @@ namespace GeneTrail
 		private:
 			std::string msg_;
 	};
+
+	class GT2_EXPORT InvalidIndex : public std::exception
+	{
+		public:
+			InvalidIndex(unsigned int i, unsigned int max) noexcept;
+			const char* what() const noexcept override;
+
+		private:
+			std::string msg_;
+	};
 }
 
 #endif // GT2_EXCEPTION_H
