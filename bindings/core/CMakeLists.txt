@@ -1,0 +1,37 @@
+INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
+
+SET(SWIG_CORE_SRC_FILES
+	core.i
+)
+
+SET_SOURCE_FILES_PROPERTIES(${SWIG_CORE_SRC_FILES} PROPERTIES
+	CPLUSPLUS ON
+)
+
+if(${PYTHONLIBS_FOUND})
+#	set(CMAKE_SWIG_OUTDIR "${PROJECT_BINARY_DIR}/bindings/python/gt2/core/")
+#	file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/bindings/python/gt2/core/")
+
+	set(CMAKE_SWIG_FLAGS -py3)
+
+	SWIG_ADD_MODULE(gtcore python ${SWIG_CORE_SRC_FILES})
+
+	SWIG_LINK_LIBRARIES(gtcore ${PYTHON_LIBRARIES} gtcore)
+	GT2_COMPILE_FLAGS(_gtcore)
+endif()
+
+find_package(JNI)
+
+IF(${JNI_FOUND})
+#	set(CMAKE_SWIG_OUTDIR "${PROJECT_BINARY_DIR}/bindings/java/org/gt2/core/")
+#	file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/bindings/java/org/gt2/core/")
+
+	set(CMAKE_SWIG_FLAGS -package "org.gt2.core")
+
+	include_directories(${JNI_INCLUDE_DIRS})
+	SWIG_ADD_MODULE(jgtcore java ${SWIG_CORE_SRC_FILES})
+
+	SWIG_LINK_LIBRARIES(jgtcore ${JNI_LIBRARIES} gtcore)
+	GT2_COMPILE_FLAGS(jgtcore)
+endif()
