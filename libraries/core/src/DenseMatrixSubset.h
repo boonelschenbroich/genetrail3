@@ -48,9 +48,13 @@ namespace GeneTrail
 			static DenseMatrixSubset createColSubset(DenseMatrix* mat, const SSubset& cols);
 
 			DenseMatrixSubset(DenseMatrix* mat, ISubset  rows, ISubset  cols);
+
+			DenseMatrixSubset(const DenseMatrixSubset& subs) = default;
 			DenseMatrixSubset(DenseMatrixSubset&& subs);
 
+			DenseMatrixSubset& operator=(const DenseMatrixSubset& subs) = default;
 			DenseMatrixSubset& operator=(DenseMatrixSubset&& subs);
+
 			value_type& operator()(index_type i, index_type j);
 			value_type  operator()(index_type i, index_type j) const;
 
