@@ -44,6 +44,7 @@ namespace GeneTrail
 		int i = 0;
 		for(const auto& s : cols) {
 			subs[i] = mat->colIndex(s);
+			++i;
 		}
 
 		return createColSubset(mat, subs);
@@ -66,9 +67,30 @@ namespace GeneTrail
 		int i = 0;
 		for(const auto& s : rows) {
 			subs[i] = mat->rowIndex(s);
+			++i;
 		}
 
 		return createRowSubset(mat, subs);
+	}
+
+	DenseMatrixSubset DenseMatrixSubset::createSubset(DenseMatrix* mat, const SSubset& rows, const SSubset& cols)
+	{
+		ISubset rsubs(rows.size());
+		ISubset csubs(cols.size());
+
+		int i = 0;
+		for(const auto& s : rows) {
+			rsubs[i] = mat->rowIndex(s);
+			++i;
+		}
+
+		i = 0;
+		for(const auto& s : cols) {
+			csubs[i] = mat->colIndex(s);
+			++i;
+		}
+
+		return DenseMatrixSubset(mat, rsubs, csubs);
 	}
 
 	/*

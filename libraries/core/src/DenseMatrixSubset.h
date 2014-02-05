@@ -46,6 +46,7 @@ namespace GeneTrail
 			static DenseMatrixSubset createRowSubset(DenseMatrix* mat, const SSubset& rows);
 			static DenseMatrixSubset createColSubset(DenseMatrix* mat, ISubset cols);
 			static DenseMatrixSubset createColSubset(DenseMatrix* mat, const SSubset& cols);
+			static DenseMatrixSubset createSubset   (DenseMatrix* mat, const SSubset& rows, const SSubset& cols);
 
 			DenseMatrixSubset(DenseMatrix* mat, ISubset  rows, ISubset  cols);
 
