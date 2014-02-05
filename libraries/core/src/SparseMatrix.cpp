@@ -28,12 +28,14 @@ namespace GeneTrail
 		: AbstractMatrix(rows, cols),
 		  m_(this->rows(), this->cols())
 	{
+		m_.setZero();
 	}
 
 	SparseMatrix::SparseMatrix(std::vector< std::string > rows, std::vector< std::string > cols)
 		: AbstractMatrix(std::move(rows), std::move(cols)),
 		  m_(this->rows(), this->cols())
 	{
+		m_.setZero();
 	}
 
 	SparseMatrix::SparseMatrix(SparseMatrix&& matrix)
