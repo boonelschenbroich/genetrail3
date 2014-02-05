@@ -23,6 +23,7 @@ SET(CORE_HEADERS
 	${DIR}/DenseMatrixWriter.h
 	${DIR}/Exception.h
 	${DIR}/Matrix.h
+	${DIR}/MatrixWriter.h
 	${DIR}/Pathfinder.h
 	${DIR}/RMAExpressMatrixReader.h
 	${DIR}/ScoringFileParser.h
@@ -45,6 +46,7 @@ SET(CORE_SOURCES
 	${DIR}/DenseMatrixSubset.cpp
 	${DIR}/DenseMatrixWriter.cpp
 	${DIR}/Exception.cpp
+	${DIR}/MatrixWriter.cpp
 	${DIR}/Pathfinder.cpp
 	${DIR}/RMAExpressMatrixReader.cpp
 	${DIR}/ScoringFileParser.cpp
