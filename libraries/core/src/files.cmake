@@ -28,6 +28,7 @@ SET(CORE_HEADERS
 	${DIR}/RMAExpressMatrixReader.h
 	${DIR}/ScoringFileParser.h
 	${DIR}/SparseMatrix.h
+	${DIR}/SparseMatrixReader.h
 	${DIR}/SparseMatrixWriter.h
 	${DIR}/Ontology.h
 	${DIR}/Parameter.h
@@ -52,10 +53,10 @@ SET(CORE_SOURCES
 	${DIR}/RMAExpressMatrixReader.cpp
 	${DIR}/ScoringFileParser.cpp
 	${DIR}/SparseMatrix.cpp
+	${DIR}/SparseMatrixReader.cpp
 	${DIR}/SparseMatrixWriter.cpp
 	${DIR}/Ontology.cpp
 	${DIR}/Parameter.cpp
 	${DIR}/DenseDatasetImpl.cpp
 	${DIR}/DenseSubset.cpp
 )
-
