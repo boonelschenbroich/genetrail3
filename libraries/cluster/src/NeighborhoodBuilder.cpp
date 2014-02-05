@@ -36,11 +36,11 @@ namespace GeneTrail
 		return a.row() < b.row() || ((a.row() == (b.row())) && a.col() < b.col());
 	}
 
-	SparseMatrix NeighborhoodBuilder::build(const DenseMatrix& mat) const
+	SparseMatrix NeighborhoodBuilder::build(DenseMatrix mat) const
 	{
 		/*
 		 * This matrix contains the k_ best neighbors for every vertex.
-		 * The candidates are sorted in ascending order
+		 * The candidates are sorted in ascending order.
 		 *
 		 * The matrix is updated for entry as correlations are computed.
 		 * This allows us to cut the computation time in half!
@@ -51,15 +51,19 @@ namespace GeneTrail
 		 */
 		std::vector<T> entries(2 * k_ * mat.rows());
 
+		std::vector<DenseMatrix::value_type> sd(mat.rows());
+
 		DenseMatrix::Vector mu = mat.matrix().rowwise().mean();
 
 		for(unsigned int i = 0; i < mat.rows(); ++i) {
-			DenseMatrix::Vector row_i = mat.row(i);
-			row_i.array() -= mu[i];
+			mat.row(i) = mat.row(i).array() - mu[i];
+			sd[i] = mat.row(i).norm();
+		}
 
+		for(unsigned int i = 0; i < mat.rows(); ++i) {
 			for(unsigned int j = i + 1; j < mat.rows(); ++j) {
-				double cov = row_i.dot((mat.row(j).array() - mu[j]).matrix());
-				cov = fabs(cov) / (mat.cols() - 1);
+				double cov = mat.row(i).dot(mat.row(j));
+				cov = fabs(cov) / (sd[i] * sd[j]);
 
 				// Insert into the entries vector
 				insert_(T(i, j, cov), entries.begin() + i * k_);

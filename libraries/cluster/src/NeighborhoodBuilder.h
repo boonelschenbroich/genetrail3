@@ -45,7 +45,7 @@ namespace GeneTrail
 			 *          for each variable the k most similar datapoints are chosen.
 			 *          This leads to a maximum number of edges of 2 * |V| * k
 			 */
-			SparseMatrix build(const DenseMatrix& mat) const;
+			SparseMatrix build(DenseMatrix mat) const;
 
 			/**
 			 * Set the number of neighbors to k
