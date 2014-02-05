@@ -22,21 +22,63 @@
 #include "../../libraries/core/src/DenseMatrixReader.h"
 #include "../../libraries/core/src/RMAExpressMatrixReader.h"
 #include "../../libraries/core/src/DenseMatrixWriter.h"
+#include <DenseMatrixSubset.h>
 
 #include <fstream>
 #include <iostream>
 
 #include <boost/program_options.hpp>
+#include <boost/algorithm/string/trim.hpp>
 
 using namespace GeneTrail;
 namespace bpo = boost::program_options;
+
+bool readSubset(const std::string& file, std::vector<std::string>& out)
+{
+	std::ifstream in(file);
+
+	if(!in) {
+		std::cerr << "Could not open file " << file << " for reading!" << std::endl;
+		return false;
+	}
+
+	std::string line;
+	while(std::getline(in, line)) {
+		boost::trim(line);
+
+		if(line == "") {
+			continue;
+		}
+
+		out.push_back(line);
+	}
+
+	return true;
+}
+
+template<class Mat>
+int writeMatrix(std::ostream& ostrm, std::string out_format, const Mat& inmat)
+{
+	DenseMatrixWriter writer;
+
+	if(out_format == "binary") {
+		writer.writeBinary(ostrm, inmat);
+	} else if(out_format == "ascii") {
+		writer.writeText(ostrm, inmat);
+	} else {
+		std::cerr << "Invalid output format " << out_format << std::endl;
+		return -1;
+	}
+
+	return 0;
+}
 
 int main(int argc, char** argv)
 {
 	bpo::variables_map vm;
 	bpo::options_description desc;
 
-	std::string infile, outfile, out_format;
+	std::string infile, outfile, out_format, col_subset, row_subset;
 	bool transpose, no_row_names, no_col_names, add_col_name, rmaexpress;
 
 	desc.add_options()
@@ -48,6 +90,8 @@ int main(int argc, char** argv)
 		("no-row-names,r", bpo::value<bool>(&no_row_names)->default_value(false), "The input has no row names (This only affects text matrices)")
 		("no-col-names,c", bpo::value<bool>(&no_col_names)->default_value(false), "The input has no column names (This only affects text matrices)")
 		("add-col-name,a", bpo::value<bool>(&add_col_name)->default_value(false), "The input has n+1 column names (This only affects text matrices)")
+		("col-subset,s",   bpo::value<std::string>(&col_subset), "An optional file containing column names that should be selected from the matrix")
+		("row-subset,d",   bpo::value<std::string>(&row_subset), "An optional file containing row names that should be selected from the matrix")
 		("rmaexpress,e",   bpo::value<bool>(&rmaexpress)->default_value(false), "Read the RMAExpress format for the input matrix");
 
 	try {
@@ -81,7 +125,6 @@ int main(int argc, char** argv)
 		reader = new DenseMatrixReader();
 	}
 
-	DenseMatrixWriter writer;
 
 	unsigned int opts = DenseMatrixReader::NO_OPTIONS;
 
@@ -101,17 +144,32 @@ int main(int argc, char** argv)
 		opts |= DenseMatrixReader::ADDITIONAL_COL_NAME;
 	}
 
-	int errorcode = 0;
-	if(out_format == "binary") {
-		writer.writeBinary(ostrm, reader->read(istrm, opts));
-	} else if(out_format == "ascii") {
-		writer.writeText(ostrm, reader->read(istrm, opts));
-	} else {
-		std::cerr << "Invalid output format " << out_format << std::endl;
-		errorcode = -1;
-	}
-
+	DenseMatrix inmat = reader->read(istrm, opts);
 	delete reader;
 
-	return errorcode;
+	if(!vm["col-subset"].empty() || !vm["row-subset"].empty()) {
+
+		std::vector<std::string> cs;
+		if(vm["col-subset"].empty()) {
+			cs = inmat.colNames();
+		} else {
+			if(!readSubset(col_subset, cs)) {
+				return -1;
+			}
+		}
+		std::vector<std::string> rs;
+		if(vm["row-subset"].empty()) {
+			rs = inmat.rowNames();
+		} else {
+			if(!readSubset(row_subset, rs)) {
+				return -1;
+			}
+		}
+
+		DenseMatrixSubset ds = DenseMatrixSubset::createSubset(&inmat, rs, cs);
+
+		return writeMatrix(ostrm, out_format, ds);
+	}
+
+	return writeMatrix(ostrm, out_format, inmat);
 }
