@@ -29,46 +29,27 @@
 
 namespace GeneTrail
 {
-	void DenseMatrixWriter::writeBinary(std::ostream& output, const DenseMatrix& matrix) const
+	uint64_t DenseMatrixWriter::writeBinary(std::ostream& output, const DenseMatrix& matrix) const
 	{
-		output.write("BINARYMATRIX", 12);
+		uint64_t
+		total  = writeBinary_(output, matrix);
+		total += writeData_(output, matrix);
 
-		// Write Header Chunk
-		writeHeader_(output, matrix);
-		writeRowNames_(output, matrix);
-		writeColNames_(output, matrix);
-		writeData_(output, matrix);
+		return total;
 	}
 
-	void DenseMatrixWriter::writeBinary(std::ostream& output, const DenseMatrixSubset& matrix) const
+	uint64_t DenseMatrixWriter::writeBinary(std::ostream& output, const DenseMatrixSubset& matrix) const
 	{
-		output.write("BINARYMATRIX", 12);
+		uint64_t
+		total  = writeBinary_(output, matrix);
+		total += writeData_(output, matrix);
 
-		// Write Header Chunk
-		writeHeader_(output, matrix);
-		writeRowNames_(output, matrix);
-		writeColNames_(output, matrix);
-		writeData_(output, matrix);
+		return total;
 	}
 
 	void DenseMatrixWriter::writeText(std::ostream& output, const DenseMatrix& matrix) const
 	{
-		if(matrix.cols() == 0) {
-			return;
-		}
-
-		output << matrix.colName(0);
-		if(matrix.colName(0) == "") {
-			std::cerr << "Warning: empty column name supplied in column 0.\n";
-		}
-
-		for(DenseMatrix::index_type j = 1; j < matrix.cols(); ++j) {
-			if(matrix.colName(j) == "") {
-				std::cerr << "Warning: empty column name supplied in column " << j << ".\n";
-			}
-
-			output << "\t" << matrix.colName(j);
-		}
+		writeText_(output, matrix);
 
 		for(DenseMatrix::index_type i = 0; i < matrix.rows(); ++i) {
 			output << "\n" << matrix.rowName(i);
@@ -79,75 +60,43 @@ namespace GeneTrail
 		}
 	}
 
-	void DenseMatrixWriter::writeChunkHeader_(std::ostream& output, uint8_t type, uint64_t size) const
+	void DenseMatrixWriter::writeText(std::ostream& output, const DenseMatrixSubset& matrix) const
 	{
-		output.write((char*)&type, 1);
-		output.write((char*)&size, 8);
-	}
+		writeText_(output, matrix);
 
-	void DenseMatrixWriter::writeNames_(std::ostream& output, const std::vector<std::string>& names) const
-	{
-		uint64_t bytes_written = 0;
+		for(DenseMatrix::index_type i = 0; i < matrix.rows(); ++i) {
+			output << "\n" << matrix.rowName(i);
 
-		for(const auto& s : names) {
-			output.write(s.c_str(), s.length() + 1);
-			bytes_written += s.length() + 1;
+			for(DenseMatrix::index_type j = 0; j < matrix.cols(); ++j) {
+				output << "\t" << matrix(i,j);
+			}
 		}
-
-		// Fill in the chunk size
-		output.seekp(-bytes_written - 8, std::ios::cur);
-		output.write((char*)&bytes_written, 8);
-		output.seekp(bytes_written, std::ios::cur);
 	}
 
-	void DenseMatrixWriter::writeHeader_(std::ostream& output, const Matrix& matrix) const
-	{
-		writeChunkHeader_(output, 0x0, 0x9);
-		uint32_t row_count = matrix.rows();
-		uint32_t col_count = matrix.cols();
-		uint8_t storage_order = 0x1;
-
-		output.write((char*)&row_count, 4);
-		output.write((char*)&col_count, 4);
-		output.write((char*)&storage_order, 1);
-	}
-
-	void DenseMatrixWriter::writeRowNames_(std::ostream& output, const Matrix& matrix) const
-	{
-		writeChunkHeader_(output, 0x1, 0x0);
-		writeNames_(output, matrix.rowNames());
-	}
-
-	void DenseMatrixWriter::writeColNames_(std::ostream& output, const Matrix& matrix) const
-	{
-		// Write the chunk header. We temporarily put in 0x0 for the size
-		// this will be rectified by writeNames_
-		writeChunkHeader_(output, 0x2, 0x0);
-		writeNames_(output, matrix.colNames());
-	}
-
-	void DenseMatrixWriter::writeData_(std::ostream& output, const DenseMatrix& matrix) const
+	uint64_t DenseMatrixWriter::writeData_(std::ostream& output, const DenseMatrix& matrix) const
 	{
 		const uint64_t n = matrix.rows() * matrix.cols() * sizeof(DenseMatrix::value_type);
-		writeChunkHeader_(output, 0x3, n);
+		uint64_t total = writeChunkHeader_(output, 0x3, n);
 
 		// As we are writing column major we can just
 		// pipe the data to the output
 		output.write((const char*)matrix.matrix().data(), n);
+
+		return total + n;
 	}
 
-	void DenseMatrixWriter::writeData_(std::ostream& output, const DenseMatrixSubset& matrix) const
+	uint64_t DenseMatrixWriter::writeData_(std::ostream& output, const DenseMatrixSubset& matrix) const
 	{
 		const uint64_t n = matrix.rows() * matrix.cols() * sizeof(Matrix::value_type);
-		writeChunkHeader_(output, 0x3, n);
+		uint64_t total = writeChunkHeader_(output, 0x3, n);
 
-		// As we are writing column major we can just
-		// pipe the data to the output
 		for(Matrix::index_type j = 0; j < matrix.cols(); ++j) {
 			for(Matrix::index_type i = 0; i < matrix.rows(); ++i) {
 				Matrix::value_type tmp = matrix(i,j);
 				output.write((const char*)&tmp, sizeof(Matrix::value_type));
 			}
 		}
+
+		return total + n;
 	}
 }
