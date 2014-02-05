@@ -18,6 +18,7 @@ endif()
 ## Enable C++11 mode
 if    ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	LIST(APPEND CXX_FLAGS "-std=c++11")
+	LIST(APPEND CXX_FLAGS "-Wno-deprecated-register")
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	LIST(APPEND CXX_FLAGS "-std=c++0x")
 endif()
