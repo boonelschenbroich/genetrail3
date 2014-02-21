@@ -148,3 +148,4 @@ namespace GeneTrail
 }
 
 #endif // GT2_SPARSE_MATRIX_H
+

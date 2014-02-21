@@ -101,3 +101,4 @@ namespace GeneTrail
 }
 
 #endif // GT2_DENSE_MATRIX_SUBSET_H
+

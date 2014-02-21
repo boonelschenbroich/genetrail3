@@ -62,3 +62,4 @@ namespace GeneTrail
 }
 
 #endif // GT2_EXCEPTION_H
+

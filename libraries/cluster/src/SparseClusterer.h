@@ -32,3 +32,4 @@ class GT2_EXPORT SparseClusterer
 };
 
 #endif // GT2_SPARSE_CLUSTERER_H
+

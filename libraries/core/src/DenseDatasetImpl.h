@@ -99,3 +99,4 @@ namespace GeneTrail
 
 
 #endif // DENSE_DATASET_IMPL_H
+

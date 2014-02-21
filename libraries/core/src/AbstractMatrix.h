@@ -262,3 +262,4 @@ namespace GeneTrail
 }
 
 #endif //GT2_MATRIX_H
+

@@ -1,4 +1,3 @@
-
 /*
  * GeneTrail2 - An efficent library for interpreting genetic data
  * Copyright (C) 2013 Daniel Stöckel <dstoeckel@bioinf.uni-sb.de>
@@ -232,3 +231,4 @@ namespace GeneTrail
 }
 
 #endif //GT2_MATRIX_H
+

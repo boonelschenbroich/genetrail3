@@ -90,3 +90,4 @@ namespace GeneTrail
 }
 
 #endif // DENSE_SUBSET_H
+

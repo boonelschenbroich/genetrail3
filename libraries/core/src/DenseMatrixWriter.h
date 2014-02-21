@@ -54,3 +54,4 @@ namespace GeneTrail
 }
 
 #endif //GT2_DENSE_MATRIX_WRITER_H
+
