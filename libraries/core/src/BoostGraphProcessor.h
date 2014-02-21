@@ -29,31 +29,28 @@
 #include <vector>
 #include <iostream>
 
-namespace GeneTrail
-{
+namespace GeneTrail {
 
-	class GT2_EXPORT BoostGraphProcessor
-	{
-		public:
+    class GT2_EXPORT BoostGraphProcessor {
+    public:
 
-			/**
-			 * This method adepts a given graph.
-			 * If vertices of the graph are not contained in the gene set they are deleted and their predecessors and successors are connected.
-			 *
-			 * @param Boost graph structure
-			 * @param set of gene that are allowed in the graph
-			 */
-			void adeptGraph(GraphType& graph, std::set<std::string> gene_set);
+        /**
+         * This method adepts a given graph.
+         * If vertices of the graph are not contained in the gene set they are deleted and their predecessors and successors are connected.
+         *
+         * @param Boost graph structure
+         * @param set of gene that are allowed in the graph
+         */
+        void adeptGraph(GraphType& graph, std::set<std::string> gene_set);
 
-			/**
-			 * This method returns a set of vertex identifiers that are contained in the graph.
-			 *
-			 * @param Boost graph
-			 * @return Set of vertex identifiers that are contained in the graph
-			 */
-			std::set<std::string> getVertexSet(GraphType graph);
-	};
+        /**
+         * This method returns a set of vertex identifiers that are contained in the graph.
+         *
+         * @param Boost graph
+         * @return Set of vertex identifiers that are contained in the graph
+         */
+        std::set<std::string> getVertexSet(const GraphType& graph);
+    };
 }
 
 #endif //BOOST_GRAPH_PROCESSOR_H
-

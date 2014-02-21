@@ -16,65 +16,64 @@
 
 #include "config.h"
 
-namespace GeneTrail
-{
+namespace GeneTrail {
 
-	typedef std::tuple<std::string,double> mytuple;
+    typedef std::tuple<std::string, double> mytuple;
 
-	struct descending_compare
-	{
-		bool operator() (mytuple a, mytuple b)
-		{
-			return (std::get<1>(a) > std::get<1>(b));
-		}
-	};
+    struct descending_compare {
 
-	struct decreasing_compare
-	{
-		bool operator() (mytuple a, mytuple b)
-		{
-			return (std::get<1>(a) < std::get<1>(b));
-		}
-	};
+        bool operator() (mytuple a, mytuple b) {
+            return (std::get<1>(a) > std::get<1>(b));
+        }
+    };
 
-	struct absolute_compare
-	{
-		bool operator() (mytuple a, mytuple b)
-		{
-			return (std::abs(std::get<1>(a)) > std::abs(std::get<1>(b)));
-		}
-	};
+    struct decreasing_compare {
 
-	class GT2_EXPORT ScoringFileParser
-	{
-		public:
+        bool operator() (mytuple a, mytuple b) {
+            return (std::get<1>(a) < std::get<1>(b));
+        }
+    };
 
-			ScoringFileParser() {};
-			~ScoringFileParser() {};
+    struct absolute_compare {
 
-			void readScoringFile(std::string file);
+        bool operator() (mytuple a, mytuple b) {
+            return (std::abs(std::get<1>(a)) > std::abs(std::get<1>(b)));
+        }
+    };
 
-			void sortScoringFile(bool descending);
-			void sortScoringFileAbsolute();
-			void sortScoringFileDescending();
-			void sortScoringFileDecreasing();
+    class GT2_EXPORT ScoringFileParser {
+    public:
 
-			std::vector<std::tuple<std::string,double> > getScores();
-			std::vector<std::tuple<std::string,double> > getSortedScores(bool descending);
-			std::vector<std::tuple<std::string,double> > getDescendinglySortedScores();
-			std::vector<std::tuple<std::string,double> > getDecreasinglySortedScores();
-			std::vector<std::tuple<std::string,double> > getAbsoluteSortedScores();
+        ScoringFileParser() {
+        };
 
-			std::vector<std::string> getFirstK(int k);
-			std::vector<std::string> getFirstKInSet(int k, std::set<std::string> myset);
-			std::vector<std::string> getAllInSet(std::set<std::string> myset, bool descending);
-			std::vector<std::string> getAllInSet(std::set<std::string> myset);
+        ~ScoringFileParser() {
+        };
 
-		protected:
+        void readScoringFile(std::string file);
 
-			std::vector<std::tuple<std::string,double> > scores_;
-			std::vector<std::tuple<std::string,double> > sorted_scores_;
-	};
+        void sortScoringFile(bool descending);
+        void sortScoringFileAbsolute();
+        void sortScoringFileDescending();
+        void sortScoringFileDecreasing();
+
+        std::vector<std::tuple<std::string, double> > getScores();
+        std::vector<std::tuple<std::string, double> > getSortedScores(bool descending);
+        std::vector<std::tuple<std::string, double> > getDescendinglySortedScores();
+        std::vector<std::tuple<std::string, double> > getDecreasinglySortedScores();
+        std::vector<std::tuple<std::string, double> > getAbsoluteSortedScores();
+
+        std::vector<std::string> getFirstK(int k);
+        std::vector<std::string> getFirstKInSet(int k, std::set<std::string> myset);
+        std::vector<std::string> getAllInSet(std::set<std::string> myset, bool descending);
+        std::vector<std::string> getAllInSet(std::set<std::string> myset);
+
+    protected:
+
+        std::vector<std::tuple<std::string, double> > scores_;
+        std::vector<std::tuple<std::string, double> > sorted_scores_;
+    };
 }
 
 #endif
+

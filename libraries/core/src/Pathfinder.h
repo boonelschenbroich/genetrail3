@@ -46,7 +46,7 @@ namespace GeneTrail
 			 *
 			 * @param Two dimensional vector representing a matrix
 			 */
-			void printMatrix(std::vector<std::vector<int> > m);
+			void printMatrix(const std::vector<std::vector<int> >& m);
 
 			/**
 			 * Computes the RunningSum (Simplified version of the formula from the FiDePa paper)
@@ -68,7 +68,7 @@ namespace GeneTrail
 			 * @param Saves for all k the best path (according to the possibilities of FiDePa)
 			 * @param Map containing all edge regulations (GENE_ID + GENE_ID) -> REGULATION
 			 */
-			void initializeFields(GraphType& graph, std::vector<std::string>& sorted_gene_list, int& length, std::vector<std::vector<std::string> >& best_paths, std::map<std::string,std::string>& regulations);
+			void initializeFields(const GraphType& graph, const std::vector<std::string>& sorted_gene_list, int& length, std::vector<std::vector<std::string> >& best_paths, std::map<std::string,std::string>& regulations);
 
 			/**
 			 * Finds the predecessor with best running sum
@@ -80,7 +80,7 @@ namespace GeneTrail
 			 * @param The current layer
 			 * @param The current vertex
 			 */
-			void findBestPredecessor(GraphType graph, int& best_pred_k, int& best_pred_k_running_sum, int& pred_flag, int l, vertex_descriptor& vd);
+			void findBestPredecessor(const GraphType& graph, int& best_pred_k, int& best_pred_k_running_sum, int& pred_flag, int l, vertex_descriptor& vd);
 
 			/**
 			 * Fills the next layer based on the best predecessor
@@ -108,8 +108,39 @@ namespace GeneTrail
 			 * @param Saves for all k the best path (according to the possibilities of FiDePa)
 			 * @param Map containing all edge regulations (GENE_ID + GENE_ID) -> REGULATION
 			 */
-			void computeDeregulatedPath(GraphType graph, std::vector<std::string> sorted_gene_list, int length, std::vector<std::vector<std::string> >& best_paths, std::map<std::string,std::string>& regulations);
+			void computeDeregulatedPath(const GraphType& graph, const std::vector<std::string>& sorted_gene_list, int length, std::vector<std::vector<std::string> >& best_paths, std::map<std::string,std::string>& regulations);
+
+		private:
+			//Map from name to rank in gene list
+			std::map<std::string, int> name2rank;
+			
+			//Map from rank to vertex_descriptor
+			std::map<vertex_descriptor,int> vertex_map;
+			
+			std::vector<vertex_descriptor> nodes;
+			
+			//Layers of the matrix 
+			std::vector<std::vector<int>> M_1;
+			std::vector<std::vector<int>> M_2;
+			
+			// 
+			boost::graph_traits<GraphType>::vertex_iterator vi, vi_end;
+			
+			// Iterator for all ingoing edges of a vertex
+			boost::graph_traits<GraphType>::in_edge_iterator iei, iei_end;
+			
+			// Iterator for all outgoing edges of a vertex
+			boost::graph_traits<GraphType>::out_edge_iterator oei, oei_end;
+			
+			// This map contains for each layer a mapping for each vertex to its predecessor
+			std::vector<std::map<int,int> > best_preds_v;
+			
+			//Compute RS for all paths of length 1
+			std::vector<std::vector<int>> running_sums;
+
+
 	};
 }
 
 #endif
+

@@ -3,6 +3,7 @@
 #include "../../libraries/core/src/BoostGraphProcessor.h"
 #include "../../libraries/core/src/Pathfinder.h"
 #include "../../libraries/core/src/CommandLineParser.h"
+#include "../../libraries/core/src/FiDePaRunner.h"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
@@ -21,7 +22,7 @@
 
 using namespace GeneTrail;
 
-std::string convertInt(int number)
+/*std::string convertInt(int number)
 {
 	std::stringstream ss;//create a stringstream
 	ss << number;//add number to the stream
@@ -102,7 +103,7 @@ void computeDeregulatedPaths(std::string kegg, std::string scores, int pathlengt
 	path_finder.computeDeregulatedPath(graph, sorted_gene_list, pathlength, best_paths, regulations);
 
 	writeSifFiles(best_paths, regulations, scores);
-}
+}*/
 
 int main(int argc, char* argv[])
 {
@@ -132,7 +133,8 @@ int main(int argc, char* argv[])
 	if(pathlength > 0 && (up_regulated || down_regulated || absolute) && kegg != "" && scores != "" && !p.checkParameter("help"))
 	{
 		bool descending = down_regulated ? false : true;
-		computeDeregulatedPaths(kegg, scores, pathlength, descending, absolute);
+		FiDePaRunner f;
+		f.computeDeregulatedPaths(kegg, scores, pathlength, descending, absolute);
 	}
 	else
 	{
