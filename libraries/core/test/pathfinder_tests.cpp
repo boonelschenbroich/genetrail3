@@ -1,95 +1,141 @@
 #include <gtest/gtest.h>
 
-#include <set>
-#include <map>
-#include <vector>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <stdlib.h>
+#include "../src/ScoringFileParser.h"
+#include "../src/BoostGraphParser.h"
+#include "../src/BoostGraphProcessor.h"
+#include "../src/Pathfinder.h"
+#include "../src/FiDePaRunner.h"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 
-#include "../src/ScoringFileParser.h"
-#include "../src/BoostGraphParser.h"
-#include "../src/BoostGraphProcessor.h"
-#include "../src/Pathfinder.h"
-
+#include <string>
+#include <cstring>
+#include <tuple>
+#include <fstream>
+#include <set>
+#include <vector>
+#include <iostream>
+#include <ostream>
+#include <sstream>
+#include <algorithm>
 #include <config.h>
 
 using namespace GeneTrail;
 
-TEST(Pathfinder, length4)
-{
+std::set<std::string> checkFile(std::string file) {
+    std::ifstream input_sif;
+    std::string current = "";
+    std::set<std::string> dups;
 
-	//Execute FiDePa
+    input_sif.open(file);
 
-	std::system("/home/student/tkehl/workspace/FiDePa/build/fidepa -k /home/student/tkehl/workspace/FiDePa/data/pathfinder_test.sif -s /home/student/tkehl/workspace/FiDePa/data/pathfinder_test_scores.txt -l 4 -up");
+    while (std::getline(input_sif, current)) {
+        if (current != "") {
+            boost::erase_all(current, " ");
+            boost::erase_all(current, "\t");
+            dups.insert(current);
+        }
+    }
 
-	//TEST
-	std::ifstream input_sif;
-	std::string current = "";
-	std::set<std::string> dups,dups2,dups3;
+    input_sif.close();
+    return dups;
+}
 
-	//K2
-	input_sif.open ( TEST_DATA_PATH("pathfinder_test_scores.k2.sif") );
+TEST(Pathfinder, length_5) {
+    //Execute FiDePa
+    FiDePaRunner* f = new FiDePaRunner();
+    f->computeDeregulatedPaths(TEST_DATA_PATH("pathfinder_test.sif"), TEST_DATA_PATH("pathfinder_test_scores.txt"), 5, true, true);
 
-	while ( std::getline( input_sif, current ) )
-	{
-		if ( current != "" )
-		{
-			boost::erase_all(current, " ");
-			boost::erase_all(current, "\t");
-			dups.insert(current);
-		}
-	}
+    //K2
+    std::set<std::string> dups = checkFile(TEST_DATA_PATH("pathfinder_test_scores.k2.sif"));
+    EXPECT_EQ(dups.size(), 1);
+    auto it = dups.find("AppB");
+    EXPECT_TRUE(it != dups.end());
 
-	input_sif.close();
-	EXPECT_EQ(dups.size(),1);
-	auto it = dups.find("AppB");
-	EXPECT_TRUE(it != dups.end());
+    //K3
+    dups = checkFile(TEST_DATA_PATH("pathfinder_test_scores.k3.sif"));
+    EXPECT_EQ(2, dups.size());
+    it = dups.find("BppC");
+    EXPECT_TRUE(it != dups.end());
+    it = dups.find("CppA");
+    EXPECT_TRUE(it != dups.end());
 
-	//K3
-	input_sif.open ( TEST_DATA_PATH("pathfinder_test_scores.k3.sif") );
+    //K4
+    dups = checkFile(TEST_DATA_PATH("pathfinder_test_scores.k4.sif"));
+    EXPECT_EQ(3, dups.size());
+    it = dups.find("BppC");
+    EXPECT_TRUE(it != dups.end());
+    it = dups.find("CppA");
+    EXPECT_TRUE(it != dups.end());
+    it = dups.find("AppD");
+    EXPECT_TRUE(it != dups.end());
 
-	while ( std::getline( input_sif, current ) )
-	{
-		if ( current != "" )
-		{
-			boost::erase_all(current, " ");
-			boost::erase_all(current, "\t");
-			dups2.insert(current);
-		}
-	}
+    //K5
+    dups = checkFile(TEST_DATA_PATH("pathfinder_test_scores.k5.sif"));
+    EXPECT_EQ(4, dups.size());
+    it = dups.find("BppC");
+    EXPECT_TRUE(it != dups.end());
+    it = dups.find("CppA");
+    EXPECT_TRUE(it != dups.end());
+    it = dups.find("AppD");
+    EXPECT_TRUE(it != dups.end());
+    it = dups.find("DppE");
+    EXPECT_TRUE(it != dups.end());
 
-	input_sif.close();
-	EXPECT_EQ(2,dups2.size());
-	it = dups.find("BppC");
-	EXPECT_TRUE(it != dups2.end());
-	it = dups.find("CppA");
-	EXPECT_TRUE(it != dups2.end());
+    delete f;
+}
 
-	//K4
-	input_sif.open ( TEST_DATA_PATH("pathfinder_test_scores.k4.sif") );
+TEST(Pathfinder, pathLengthToHigh) {
+    //Execute FiDePa
+    FiDePaRunner* f = new FiDePaRunner();
+    f->computeDeregulatedPaths(TEST_DATA_PATH("pathfinder_test_pathLengthToHigh.sif"), TEST_DATA_PATH("pathfinder_test_pathLengthToHigh_scores.txt"), 10, true, true);
 
-	while ( std::getline( input_sif, current ) )
-	{
-		if ( current != "" )
-		{
-			boost::erase_all(current, " ");
-			boost::erase_all(current, "\t");
-			dups3.insert(current);
-		}
-	}
+    //K2
+    std::set<std::string> dups = checkFile(TEST_DATA_PATH("pathfinder_test_pathLengthToHigh_scores.k2.sif"));
+    EXPECT_EQ(dups.size(), 1);
+    auto it = dups.find("AppB");
+    EXPECT_TRUE(it != dups.end());
 
-	input_sif.close();
-	EXPECT_EQ(3,dups3.size());
-	it = dups.find("BppC");
-	EXPECT_TRUE(it != dups3.end());
-	it = dups.find("CppA");
-	EXPECT_TRUE(it != dups3.end());
-	it = dups.find("AppD");
-	EXPECT_TRUE(it != dups3.end());
+    //K3
+    dups = checkFile(TEST_DATA_PATH("pathfinder_test_pathLengthToHigh_scores.k3.sif"));
+    EXPECT_EQ(2, dups.size());
+    it = dups.find("BppC");
+    EXPECT_TRUE(it != dups.end());
+    it = dups.find("CppA");
+    EXPECT_TRUE(it != dups.end());
+
+    //K4
+    dups = checkFile(TEST_DATA_PATH("pathfinder_test_pathLengthToHigh_scores.k4.sif"));
+    EXPECT_EQ(3, dups.size());
+    it = dups.find("BppC");
+    EXPECT_TRUE(it != dups.end());
+    it = dups.find("CppA");
+    EXPECT_TRUE(it != dups.end());
+    it = dups.find("AppD");
+    EXPECT_TRUE(it != dups.end());
+
+    //K5
+    dups = checkFile(TEST_DATA_PATH("pathfinder_test_pathLengthToHigh_scores.k5.sif"));
+    EXPECT_EQ(4, dups.size());
+    it = dups.find("BppC");
+    EXPECT_TRUE(it != dups.end());
+    it = dups.find("CppA");
+    EXPECT_TRUE(it != dups.end());
+    it = dups.find("AppD");
+    EXPECT_TRUE(it != dups.end());
+    it = dups.find("DppE");
+    EXPECT_TRUE(it != dups.end());
+
+    delete f;
+}
+
+TEST(Pathfinder, circle) {
+    FiDePaRunner* f = new FiDePaRunner();
+    f->computeDeregulatedPaths(TEST_DATA_PATH("pathfinder_test_circle.sif"), TEST_DATA_PATH("pathfinder_test_circle_scores.txt"), 10, true, true);
+    
+    
+    
+    delete f;
 }
