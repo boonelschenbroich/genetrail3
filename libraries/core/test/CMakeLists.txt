@@ -6,11 +6,11 @@ include(../../../test/GeneTrail2TestExecuter.cmake)
 # Add tests
 ####################################################################################################
 
-add_gtest(scoring_file_parser_tests LIBRARIES gtcore)
-add_gtest(graph_parser_tests        LIBRARIES gtcore)
-add_gtest(graph_processor_tests     LIBRARIES gtcore)
+add_gtest(ScoringFileParser_tests   LIBRARIES gtcore)
+add_gtest(BoostGraphParser_tests    LIBRARIES gtcore)
+add_gtest(BoostGraphProcessor_tests LIBRARIES gtcore)
 add_gtest(Matrix_tests              LIBRARIES gtcore)
-add_gtest(pathfinder_tests          LIBRARIES gtcore)
+add_gtest(FiDePaRunner_tests        LIBRARIES gtcore)
 add_gtest(DenseMatrix_tests         LIBRARIES gtcore)
 add_gtest(DenseMatrixReader_tests   LIBRARIES gtcore)
 add_gtest(DenseMatrixWriter_tests   LIBRARIES gtcore)
