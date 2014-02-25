@@ -27,7 +27,7 @@ void ScoringFileParser::sortScoringFile(bool descending) {
     sorted_scores_ = scores_;
 
     if (descending) {
-        std::sort(sorted_scores_.begin(), sorted_scores_.end(), descending_compare());
+        std::sort(sorted_scores_.begin(), sorted_scores_.end(), increasing_compare());
     } else {
         std::sort(sorted_scores_.begin(), sorted_scores_.end(), decreasing_compare());
     }
@@ -38,11 +38,11 @@ void ScoringFileParser::sortScoringFileAbsolute() {
     std::sort(sorted_scores_.begin(), sorted_scores_.end(), absolute_compare());
 }
 
-void ScoringFileParser::sortScoringFileDescending() {
+void ScoringFileParser::sortScoringFileIncreasingly() {
     sortScoringFile(true);
 }
 
-void ScoringFileParser::sortScoringFileDecreasing() {
+void ScoringFileParser::sortScoringFileDecreasingly() {
     sortScoringFile(false);
 }
 
@@ -55,7 +55,7 @@ std::vector<std::tuple<std::string, double> > ScoringFileParser::getSortedScores
     return sorted_scores_;
 }
 
-std::vector<std::tuple<std::string, double> > ScoringFileParser::getDescendinglySortedScores() {
+std::vector<std::tuple<std::string, double> > ScoringFileParser::getIncreasinglySortedScores() {
     return getSortedScores(true);
 }
 

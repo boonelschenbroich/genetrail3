@@ -20,17 +20,17 @@ namespace GeneTrail {
 
     typedef std::tuple<std::string, double> mytuple;
 
-    struct descending_compare {
+    struct increasing_compare {
 
         bool operator() (mytuple a, mytuple b) {
-            return (std::get<1>(a) > std::get<1>(b));
+            return (std::get<1>(a) < std::get<1>(b));
         }
     };
 
     struct decreasing_compare {
 
         bool operator() (mytuple a, mytuple b) {
-            return (std::get<1>(a) < std::get<1>(b));
+            return (std::get<1>(a) > std::get<1>(b));
         }
     };
 
@@ -54,12 +54,12 @@ namespace GeneTrail {
 
         void sortScoringFile(bool descending);
         void sortScoringFileAbsolute();
-        void sortScoringFileDescending();
-        void sortScoringFileDecreasing();
+        void sortScoringFileIncreasingly();
+        void sortScoringFileDecreasingly();
 
         std::vector<std::tuple<std::string, double> > getScores();
         std::vector<std::tuple<std::string, double> > getSortedScores(bool descending);
-        std::vector<std::tuple<std::string, double> > getDescendinglySortedScores();
+        std::vector<std::tuple<std::string, double> > getIncreasinglySortedScores();
         std::vector<std::tuple<std::string, double> > getDecreasinglySortedScores();
         std::vector<std::tuple<std::string, double> > getAbsoluteSortedScores();
 
