@@ -5,7 +5,7 @@
 using namespace GeneTrail;
 
 // If true the matrix in every step is printed
-bool debug = true;
+bool debug = false;
 
 void Pathfinder::printMatrix(const std::vector<std::vector<int> >& m) {
     for (std::vector<int> row : m) {
@@ -143,6 +143,7 @@ void Pathfinder::computeDeregulatedPath(const GraphType& graph, const std::vecto
     // Initialize fields and first layer of the matrix	
     //initializeFields(graph, sorted_gene_list, length, best_paths, regulations);
     const int numberOfGeneIds = nodes.size();
+    
     //Extend the path
     //Fill the layers 2..(length)
     for (int l = 2; l <= length; ++l) {
@@ -155,7 +156,7 @@ void Pathfinder::computeDeregulatedPath(const GraphType& graph, const std::vecto
         // Initialize second layer
         std::vector < std::vector<int >> M2(std::vector<std::vector<int> > (numberOfGeneIds, std::vector<int> (numberOfGeneIds, -1)));
         M_2 = M2;
-
+        
         for (int k = 0; k < numberOfGeneIds; ++k) {
             // Find vertex that corresponds to k
             vertex_descriptor vd = nodes[k];
