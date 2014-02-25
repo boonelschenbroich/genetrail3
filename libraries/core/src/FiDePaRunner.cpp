@@ -34,7 +34,7 @@ void FiDePaRunner::writeSifFiles(std::vector<std::vector<std::string> > best_pat
     }
 }
 
-void FiDePaRunner::computeDeregulatedPaths(std::string kegg, std::string scores, int pathlength, bool descending, bool absolute) const {
+void FiDePaRunner::computeDeregulatedPaths(std::string kegg, std::string scores, int pathlength, bool increasing, bool absolute) const {
     GraphType graph;
     BoostGraphParser graph_parser;
     BoostGraphProcessor graph_processor;
@@ -51,7 +51,7 @@ void FiDePaRunner::computeDeregulatedPaths(std::string kegg, std::string scores,
     if (absolute) {
         scoring_file_parser.sortScoringFileAbsolute();
     } else {
-        scoring_file_parser.sortScoringFile(descending);
+        scoring_file_parser.sortScoringFile(increasing);
     }
 
     std::set<std::string> vertex_set = graph_processor.getVertexSet(graph);
@@ -69,7 +69,7 @@ void FiDePaRunner::computeDeregulatedPaths(std::string kegg, std::string scores,
     std::vector<std::vector<std::string> > best_paths;
     std::map<std::string, std::string> regulations;
 
-    pathlength = (pathlength < (signed)sorted_gene_list.size() - 1) ? pathlength : (signed)sorted_gene_list.size() - 1;
+    pathlength = (pathlength < (signed)sorted_gene_list.size()) ? pathlength : (signed)sorted_gene_list.size();
 
     path_finder.computeDeregulatedPath(graph, sorted_gene_list, pathlength, best_paths, regulations);
 
