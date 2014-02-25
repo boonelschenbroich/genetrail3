@@ -83,3 +83,17 @@ add_subdirectory(bindings)
 ####################################################################################################
 
 include(cmake/documentation.cmake)
+
+####################################################################################################
+# Build Tests
+####################################################################################################
+
+# Configure unit tests. This will only happen if the path to the
+# gtest src directory has been set
+
+if(NOT GTEST_SRC_DIR)
+    message(STATUS "GTEST_SRC_DIR not set, disabling unit tests")
+    return()
+endif()
+
+enable_testing()
