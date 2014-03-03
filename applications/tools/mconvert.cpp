@@ -73,6 +73,39 @@ int writeMatrix(std::ostream& ostrm, std::string out_format, const Mat& inmat)
 	return 0;
 }
 
+// RAII class that handles the destruction of the output stream.
+// This makes the main code much cleaner.
+// TODO: Maybe move this to an auxillary header.
+class Outstream {
+	public:
+		Outstream(const std::string& strm)
+			: deconstruct_(false), strm_(nullptr)
+		{
+			if(strm == "stdout") {
+				strm_ = &std::cout;
+			} else if(strm == "stderr") {
+				strm_ = &std::cerr;
+			} else {
+				deconstruct_ = true;
+			    strm_ = new std::ofstream(strm, std::ios::binary);
+		    }
+		}
+
+	    ~Outstream()
+	    {
+		    if(deconstruct_)
+			    delete strm_;
+	    }
+
+		std::ostream& operator()() {
+			return *strm_;
+		}
+
+	private:
+		bool deconstruct_;
+		std::ostream* strm_;
+};
+
 int main(int argc, char** argv)
 {
 	bpo::variables_map vm;
@@ -84,15 +117,15 @@ int main(int argc, char** argv)
 	desc.add_options()
 		("help,h", "Display this message")
 		("in,i",           bpo::value<std::string>(&infile)->required(), "Input file")
-		("out,o",          bpo::value<std::string>(&outfile)->required(), "Output file")
+		("out,o",          bpo::value<std::string>(&outfile)->required(), "Output file. Use stdout or stderr to write to console.")
 		("out-format,f",   bpo::value<std::string>(&out_format)->default_value("binary"), "Output format")
-		("transpose,t",    bpo::value<bool>(&transpose)->default_value(false), "Transpose the input matrix")
-		("no-row-names,r", bpo::value<bool>(&no_row_names)->default_value(false), "The input has no row names (This only affects text matrices)")
-		("no-col-names,c", bpo::value<bool>(&no_col_names)->default_value(false), "The input has no column names (This only affects text matrices)")
-		("add-col-name,a", bpo::value<bool>(&add_col_name)->default_value(false), "The input has n+1 column names (This only affects text matrices)")
+		("transpose,t",    bpo::value<bool>(&transpose)->default_value(false)->zero_tokens(), "Transpose the input matrix")
+		("no-row-names,r", bpo::value<bool>(&no_row_names)->default_value(false)->zero_tokens(), "The input has no row names (This only affects text matrices)")
+		("no-col-names,c", bpo::value<bool>(&no_col_names)->default_value(false)->zero_tokens(), "The input has no column names (This only affects text matrices)")
+		("add-col-name,a", bpo::value<bool>(&add_col_name)->default_value(false)->zero_tokens(), "The input has n+1 column names (This only affects text matrices)")
 		("col-subset,s",   bpo::value<std::string>(&col_subset), "An optional file containing column names that should be selected from the matrix")
 		("row-subset,d",   bpo::value<std::string>(&row_subset), "An optional file containing row names that should be selected from the matrix")
-		("rmaexpress,e",   bpo::value<bool>(&rmaexpress)->default_value(false), "Read the RMAExpress format for the input matrix");
+		("rmaexpress,e",   bpo::value<bool>(&rmaexpress)->default_value(false)->zero_tokens(), "Read the RMAExpress format for the input matrix");
 
 	try {
 		bpo::store(bpo::command_line_parser(argc, argv).options(desc).run(), vm);
@@ -110,21 +143,13 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
-	std::ofstream ostrm(outfile, std::ios::binary);
+	// Instantiate a RAII class that manages the output stream
+	Outstream ostrm(outfile);
 
-	if(!ostrm) {
+	if(!ostrm()) {
 		std::cerr << "Could not open " << outfile << " for writing" << std::endl;
 		return -1;
 	}
-
-	DenseMatrixReader* reader;
-
-	if(rmaexpress) {
-		reader = new RMAExpressMatrixReader();
-	} else {
-		reader = new DenseMatrixReader();
-	}
-
 
 	unsigned int opts = DenseMatrixReader::NO_OPTIONS;
 
@@ -144,8 +169,10 @@ int main(int argc, char** argv)
 		opts |= DenseMatrixReader::ADDITIONAL_COL_NAME;
 	}
 
+	auto reader = rmaexpress ? std::make_shared<RMAExpressMatrixReader>()
+	                         : std::make_shared<DenseMatrixReader>();
+
 	DenseMatrix inmat = reader->read(istrm, opts);
-	delete reader;
 
 	if(!vm["col-subset"].empty() || !vm["row-subset"].empty()) {
 
@@ -168,8 +195,9 @@ int main(int argc, char** argv)
 
 		DenseMatrixSubset ds = DenseMatrixSubset::createSubset(&inmat, rs, cs);
 
-		return writeMatrix(ostrm, out_format, ds);
+		return writeMatrix(ostrm(), out_format, ds);
 	}
 
-	return writeMatrix(ostrm, out_format, inmat);
+	return writeMatrix(ostrm(), out_format, inmat);
 }
+
