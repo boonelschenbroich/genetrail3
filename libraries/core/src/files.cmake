@@ -30,6 +30,7 @@ add_header_to_library(ZScore.h)
 # Sources
 add_to_library(AbstractMatrix)
 add_to_library(BoostGraphProcessor)
+add_to_library(Category)
 add_to_library(CommandLineParser)
 add_to_library(DenseMatrix)
 add_to_library(DenseMatrixReader)
