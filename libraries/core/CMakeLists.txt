@@ -49,7 +49,7 @@ INSTALL(TARGETS gtcore
 
 if(NOT GTEST_SRC_DIR)
     message(STATUS "GTEST_SRC_DIR not set, disabling unit tests")
-	return()
+    return()
 endif()
 
 enable_testing()

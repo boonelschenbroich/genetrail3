@@ -22,9 +22,11 @@ SET(CORE_HEADERS
 	${DIR}/DenseMatrixSubset.h
 	${DIR}/DenseMatrixWriter.h
 	${DIR}/Exception.h
-        ${DIR}/FiDePaRunner.h
+    ${DIR}/FiDePaRunner.h
 	${DIR}/Matrix.h
 	${DIR}/MatrixWriter.h
+	${DIR}/Parameter.h
+	${DIR}/Path.h
 	${DIR}/Pathfinder.h
 	${DIR}/RMAExpressMatrixReader.h
 	${DIR}/ScoringFileParser.h
@@ -32,7 +34,6 @@ SET(CORE_HEADERS
 	${DIR}/SparseMatrixReader.h
 	${DIR}/SparseMatrixWriter.h
 	${DIR}/Ontology.h
-	${DIR}/Parameter.h
 	${DIR}/Dataset.h
 	${DIR}/DenseDataset.h
 	${DIR}/DenseDatasetImpl.h
@@ -49,8 +50,9 @@ SET(CORE_SOURCES
 	${DIR}/DenseMatrixSubset.cpp
 	${DIR}/DenseMatrixWriter.cpp
 	${DIR}/Exception.cpp
-        ${DIR}/FiDePaRunner.cpp
+    ${DIR}/FiDePaRunner.cpp
 	${DIR}/MatrixWriter.cpp
+	${DIR}/Path.cpp
 	${DIR}/Pathfinder.cpp
 	${DIR}/RMAExpressMatrixReader.cpp
 	${DIR}/ScoringFileParser.cpp
