@@ -2,38 +2,6 @@
 
 using namespace GeneTrail;
 
-std::string FiDePaRunner::convertInt(int number) const {
-    std::stringstream ss; //create a stringstream
-    ss << number; //add number to the stream
-    return ss.str(); //return a string with the contents of the stream
-}
-
-void FiDePaRunner::writeSifFiles(std::vector<std::vector<std::string> > best_paths, std::map<std::string, std::string> regulations, std::string scores) const {
-    std::vector<std::string> strs;
-    boost::split(strs, scores, boost::is_any_of("."));
-    std::cout << strs[0] << std::endl;
-    int ki = 2;
-
-    for (std::vector<std::string> path : best_paths) {
-        std::ofstream myfile;
-        std::string file = strs[0] + ".k" + convertInt(ki) + ".sif";
-        myfile.open(file.c_str());
-        ++ki;
-
-        for (unsigned int i = 0; i < path.size() - 1; ++i) {
-            auto res = regulations.find(path[i] + path[i + 1]);
-
-            if (res != regulations.end() && res->second != "") {
-                myfile << path[i] << "\t" << res->second << "\t" << path[i + 1] << std::endl;
-            } else {
-                myfile << path[i] << "\tpp\t" << path[i + 1] << std::endl;
-            }
-        }
-
-        myfile.close();
-    }
-}
-
 void FiDePaRunner::computeDeregulatedPaths(std::string kegg, std::string scores, int pathlength, bool increasing, bool absolute) const {
     GraphType graph;
     BoostGraphParser graph_parser;
@@ -71,7 +39,14 @@ void FiDePaRunner::computeDeregulatedPaths(std::string kegg, std::string scores,
 
     pathlength = (pathlength < (signed)sorted_gene_list.size()) ? pathlength : (signed)sorted_gene_list.size();
 
-    path_finder.computeDeregulatedPath(graph, sorted_gene_list, pathlength, best_paths, regulations);
+	std::vector<Path> paths = path_finder.computeDeregulatedPath(graph, sorted_gene_list, pathlength);
 
-    writeSifFiles(best_paths, regulations, scores);
+	std::vector<std::string> strs;
+	boost::split(strs, scores, boost::is_any_of("."));
+
+	int i=2;
+	for(auto p : paths){
+		p.writeToSIFFile(strs[0] + ".k" + boost::lexical_cast<std::string>(i) + ".sif");
+		i = i +1;
+	}
 }

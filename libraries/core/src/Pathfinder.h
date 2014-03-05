@@ -30,116 +30,117 @@
 #include <set>
 
 #include "BoostGraph.h"
+#include "Path.h"
 
-namespace GeneTrail
-{
+namespace GeneTrail {
 
-	class GT2_EXPORT Pathfinder
-	{
-		public:
+    class GT2_EXPORT Pathfinder {
+    public:
 
-			Pathfinder() {};
-			~Pathfinder() {};
+        Pathfinder() {
+        };
 
-			/**
-			 * Prints the given matrix
-			 *
-			 * @param Two dimensional vector representing a matrix
-			 */
-			void printMatrix(const std::vector<std::vector<int> >& m);
+        ~Pathfinder() {
+        };
 
-			/**
-			 * Computes the RunningSum (Simplified version of the formula from the FiDePa paper)
-			 *
-			 * @param Number of genes with rank less or equal to i
-			 * @param Number of genes in List
-			 * @param The current rank
-			 * @param The current length of path
-			       * @return The computed Running Sum
-			 */
-			int computeRunningSum(int bpi, int n, int i , int l);
+        /**
+         * Prints the given matrix
+         *
+         * @param Two dimensional vector representing a matrix
+         */
+        void printMatrix(const std::vector<std::vector<int> >& m);
 
-			/**
-			 * Initializes all fields and and the first layer of the matrix
-			 *
-			 * @param KEGG network as Boost graph structure
-			 * @param Gene list sorted by rank
-			 * @param Maximal length of path
-			 * @param Saves for all k the best path (according to the possibilities of FiDePa)
-			 * @param Map containing all edge regulations (GENE_ID + GENE_ID) -> REGULATION
-			 */
-			void initializeFields(const GraphType& graph, const std::vector<std::string>& sorted_gene_list, int& length, std::vector<std::vector<std::string> >& best_paths, std::map<std::string,std::string>& regulations);
+        /**
+         * Computes the RunningSum (Simplified version of the formula from the FiDePa paper)
+         *
+         * @param Number of genes with rank less or equal to i
+         * @param Number of genes in List
+         * @param The current rank
+         * @param The current length of path
+         * @return The computed Running Sum
+         */
+        int computeRunningSum(int bpi, int n, int i, int l);
 
-			/**
-			 * Finds the predecessor with best running sum
-			 *
-			 * @param KEGG network as Boost graph object
-			 * @param Saves the index of the best predecessor
-			 * @param Saves the running sum for the best predecessor
-			 * @param Saves the number of predecessors
-			 * @param The current layer
-			 * @param The current vertex
-			 */
-			void findBestPredecessor(const GraphType& graph, int& best_pred_k, int& best_pred_k_running_sum, int& pred_flag, int l, vertex_descriptor& vd);
+        /**
+         * Initializes all fields and and the first layer of the matrix
+         *
+         * @param KEGG network as Boost graph structure
+         * @param Gene list sorted by rank
+         * @param Maximal length of path
+         * @param Saves for all k the best path (according to the possibilities of FiDePa)
+         * @param Map containing all edge regulations (GENE_ID + GENE_ID) -> REGULATION
+         */
+        void initializeFields(const GraphType& graph, const std::vector<std::string>& sorted_gene_list, const int& length);
 
-			/**
-			 * Fills the next layer based on the best predecessor
-			 *
-			 * @param Best predecessor of k
-			 * @param Current vertex
-			 */
-			void fillNextLayer(int best_pred_k, int k);
+        /**
+         * Finds the predecessor with best running sum
+         *
+         * @param KEGG network as Boost graph object
+         * @param Saves the index of the best predecessor
+         * @param Saves the running sum for the best predecessor
+         * @param Saves the number of predecessors
+         * @param The current layer
+         * @param The current vertex
+         */
+        void findBestPredecessor(const GraphType& graph, int& best_pred_k, int& best_pred_k_running_sum, int& pred_flag, int l, vertex_descriptor& vd);
 
-			/**
-			 * Computes the running sum for a path of length l ending in vertex k
-			 *
-			 * @param Current vertex
-			 * @param Length of the path
-			 * @param Saves the running sum
-			 */
-			void computeRunningSum(int k, int l, int& max_runnig_sum_k);
+        /**
+         * Fills the next layer based on the best predecessor
+         *
+         * @param Best predecessor of k
+         * @param Current vertex
+         */
+        void fillNextLayer(int best_pred_k, int k);
 
-			/**
-			 * Computes best possible deregulated paths according to the FiDePa algorithm.
-			 *
-			 * @param KEGG network as BOOST graph object
-			 * @param Gene list sorted by rank
-			 * @param Maximal length of path
-			 * @param Saves for all k the best path (according to the possibilities of FiDePa)
-			 * @param Map containing all edge regulations (GENE_ID + GENE_ID) -> REGULATION
-			 */
-			void computeDeregulatedPath(const GraphType& graph, const std::vector<std::string>& sorted_gene_list, int length, std::vector<std::vector<std::string> >& best_paths, std::map<std::string,std::string>& regulations);
+        /**
+         * Computes the running sum for a path of length l ending in vertex k
+         *
+         * @param Current vertex
+         * @param Length of the path
+         * @param Saves the running sum
+         */
+        void computeRunningSum(int k, int l, int& max_runnig_sum_k);
 
-		private:
-			//Map from name to rank in gene list
-			std::map<std::string, int> name2rank;
-			
-			//Map from rank to vertex_descriptor
-			std::map<vertex_descriptor,int> vertex_map;
-			
-			std::vector<vertex_descriptor> nodes;
-			
-			//Layers of the matrix 
-			std::vector<std::vector<int>> M_1;
-			std::vector<std::vector<int>> M_2;
-			
-			// 
-			boost::graph_traits<GraphType>::vertex_iterator vi, vi_end;
-			
-			// Iterator for all ingoing edges of a vertex
-			boost::graph_traits<GraphType>::in_edge_iterator iei, iei_end;
-			
-			// Iterator for all outgoing edges of a vertex
-			boost::graph_traits<GraphType>::out_edge_iterator oei, oei_end;
-			
-			// This map contains for each layer a mapping for each vertex to its predecessor
-			std::vector<std::map<int,int> > best_preds_v;
-			
-			//Compute RS for all paths of length 1
-			std::vector<std::vector<int>> running_sums;
+        /**
+         * Computes best possible deregulated paths according to the FiDePa algorithm.
+         *
+         * @param KEGG network as BOOST graph object
+         * @param Gene list sorted by rank
+         * @param Maximal length of path
+         * @param Saves for all k the best path (according to the possibilities of FiDePa)
+         * @param Map containing all edge regulations (GENE_ID + GENE_ID) -> REGULATION
+         */
+        std::vector<GeneTrail::Path> computeDeregulatedPath(const GraphType& graph, const std::vector<std::string>& sorted_gene_list, const int& length);
+        
+    private:
+        //Map from name to rank in gene list
+        std::map<std::string, int> name2rank;
 
+        //Map from rank to vertex_descriptor
+        std::map<vertex_descriptor, int> vertex_map;
 
-	};
+        std::vector<vertex_descriptor> nodes;
+
+        //Layers of the matrix 
+        std::vector<std::vector<int >> M_1;
+        std::vector<std::vector<int >> M_2;
+
+        // Iterator for vertices
+        boost::graph_traits<GraphType>::vertex_iterator vi, vi_end;
+
+        // Iterator for all ingoing edges of a vertex
+        boost::graph_traits<GraphType>::in_edge_iterator iei, iei_end;
+
+        // Iterator for all outgoing edges of a vertex
+        boost::graph_traits<GraphType>::out_edge_iterator oei, oei_end;
+
+        // This map contains for each layer a mapping for each vertex to its predecessor
+        std::vector<std::map<int, int> > best_preds_v;
+
+        //Compute RS for all paths
+        std::vector<std::vector<int >> running_sums;
+        
+    };
 }
 
 #endif

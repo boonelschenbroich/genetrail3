@@ -26,6 +26,7 @@
 #include "ScoringFileParser.h"
 #include "BoostGraphParser.h"
 #include "BoostGraphProcessor.h"
+#include "Path.h"
 #include "Pathfinder.h"
 #include "CommandLineParser.h"
 

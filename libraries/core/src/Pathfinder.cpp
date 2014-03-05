@@ -18,7 +18,7 @@ void Pathfinder::printMatrix(const std::vector<std::vector<int> >& m) {
 }
 
 int Pathfinder::computeRunningSum(int bpi, int n, int i, int l) {
-    return bpi * n - i*l;
+    return bpi*n - i*l;
 }
 
 bool geneListValid(const std::vector<std::string>& sorted_gene_list) {
@@ -31,7 +31,7 @@ bool geneListValid(const std::vector<std::string>& sorted_gene_list) {
     return sorted.size() == sorted_gene_list.size();
 }
 
-void Pathfinder::initializeFields(const GraphType& graph, const std::vector<std::string>& sorted_gene_list, int& length, std::vector<std::vector<std::string> >& best_paths, std::map<std::string, std::string>& regulations) {
+void Pathfinder::initializeFields(const GraphType& graph, const std::vector<std::string>& sorted_gene_list, const int& length) {
     assert(geneListValid(sorted_gene_list));
     assert(boost::num_vertices(graph) == sorted_gene_list.size());
 
@@ -136,13 +136,16 @@ void Pathfinder::computeRunningSum(int k, int l, int& max_runnig_sum_k) {
     }
 }
 
-void Pathfinder::computeDeregulatedPath(const GraphType& graph, const std::vector<std::string>& sorted_gene_list, int length, std::vector<std::vector<std::string> >& best_paths, std::map<std::string, std::string>& regulations) {
+std::vector<Path> Pathfinder::computeDeregulatedPath(const GraphType& graph, const std::vector<std::string>& sorted_gene_list, const int& length) {
 
-    initializeFields(graph, sorted_gene_list, length, best_paths, regulations);
+    initializeFields(graph, sorted_gene_list, length);
 
     // Initialize fields and first layer of the matrix	
     //initializeFields(graph, sorted_gene_list, length, best_paths, regulations);
     const int numberOfGeneIds = nodes.size();
+    
+    //Holds the best path for each l
+    std::vector<Path> best_paths;
     
     //Extend the path
     //Fill the layers 2..(length)
@@ -194,7 +197,6 @@ void Pathfinder::computeDeregulatedPath(const GraphType& graph, const std::vecto
             // Fill the next layer
             fillNextLayer(best_pred_k, k);
 
-
             // Compute the running sum for the current path
             int max_runnig_sum_k;
             computeRunningSum(k, l, max_runnig_sum_k);
@@ -208,11 +210,6 @@ void Pathfinder::computeDeregulatedPath(const GraphType& graph, const std::vecto
             }
         }
 
-        // Print all running sums
-        if (debug) {
-            printMatrix(running_sums);
-        }
-
         if (bestk == -1) {
             std::cout << "WARNING: No path of length " << l << " found" << std::endl;
             break;
@@ -223,6 +220,14 @@ void Pathfinder::computeDeregulatedPath(const GraphType& graph, const std::vecto
         if (debug) {
             std::cout << std::endl;
             printMatrix(M_2);
+        }
+        
+        if (debug) {
+            auto rsums = running_sums[l-1];
+            for(int r=0; r < rsums.size(); ++r){
+                std::cout << "RS* (k = " << r << "): " << running_sums[l-1][r] << std::endl;
+            }
+            std::cout << "--> Best RS* (k = " << bestk << "): " << running_sums[l-1][bestk] << std::endl;
         }
 
         // Estimate the reversed order
@@ -242,37 +247,44 @@ void Pathfinder::computeDeregulatedPath(const GraphType& graph, const std::vecto
         if (debug) {
             std::cout << "Best path: ";
         }
+        
         for (int i = rev_path.size() - 1; i >= 0; --i) {
             path.push_back(rev_path[i]);
             if (debug) {
                 std::cout << rev_path[i] << "-->";
             }
         }
+        
         if (debug) {
             std::cout << std::endl;
         }
 
-        // Save all edges with regulations
+        Path p;
+        // Save path
+		p.addVertex(path[0]);
         for (int i = 0; i < (signed)path.size() - 1; ++i) {
-            // get edge regulation
-            bool exists;
+            p.addVertex(path[i+1]);
+            
             vertex_descriptor vd1 = nodes[name2rank[path[i]]];
             vertex_descriptor vd2 = nodes[name2rank[path[i + 1]]];
 
             edge_descriptor ed;
+            bool exists;
             boost::tie(ed, exists) = boost::edge(vd1, vd2, graph);
             if (exists) {
-                regulations[path[i] + path[i + 1]] = boost::get(edge_regulation_type, graph, ed);
+                p.addRegulation(path[i], path[i+1], boost::get(edge_regulation_type, graph, ed));
             } else {
                 std::cout << "ERROR: No edge between " << path[i] << " " << boost::get(vertex_identifier, graph, vd1) << " and " << path[i + 1] << " " << boost::get(vertex_identifier, graph, vd2) << std::endl;
             }
         }
 
-        best_paths.push_back(path);
+        best_paths.push_back(p);
 
         // As each layer only depends on the layer before we only need to save two layers at once
         std::swap(M_1, M_2);
 
         std::cout << "Layer " << l << std::endl;
     }
+    
+    return best_paths;
 }
