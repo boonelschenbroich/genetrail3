@@ -3,64 +3,42 @@
 ####################################################################################################
 
 SET(DIR ${PROJECT_SOURCE_DIR}/src/)
+SET(LIBNAME "CORE")
 
 ####################################################################################################
 # All files of this directory
 ####################################################################################################
 
-# We list all files separatly to be able to leave some out, if we do not want to compile them. 
+# We list all files separatly to be able to leave some out, if we do not want to compile them.
 
 # Headers
-SET(CORE_HEADERS
-	${DIR}/AbstractMatrix.h
-	${DIR}/BoostGraph.h
-	${DIR}/BoostGraphParser.h
-	${DIR}/BoostGraphProcessor.h
-	${DIR}/CommandLineParser.h
-	${DIR}/DenseMatrix.h
-	${DIR}/DenseMatrixReader.h
-	${DIR}/DenseMatrixSubset.h
-	${DIR}/DenseMatrixWriter.h
-	${DIR}/Exception.h
-    ${DIR}/FiDePaRunner.h
-	${DIR}/Matrix.h
-	${DIR}/MatrixWriter.h
-	${DIR}/Parameter.h
-	${DIR}/Path.h
-	${DIR}/Pathfinder.h
-	${DIR}/RMAExpressMatrixReader.h
-	${DIR}/ScoringFileParser.h
-	${DIR}/SparseMatrix.h
-	${DIR}/SparseMatrixReader.h
-	${DIR}/SparseMatrixWriter.h
-	${DIR}/Ontology.h
-	${DIR}/Dataset.h
-	${DIR}/DenseDataset.h
-	${DIR}/DenseDatasetImpl.h
-	${DIR}/DenseSubset.h
-)
+add_header_to_library(BoostGraph.h)
+add_header_to_library(BoostGraphParser.h)
+add_header_to_library(Matrix.h)
+add_header_to_library(Dataset.h)
+add_header_to_library(DenseDataset.h)
+add_header_to_library(DenseSubset.h)
 
 # Sources
-SET(CORE_SOURCES
-	${DIR}/AbstractMatrix.cpp
-	${DIR}/BoostGraphProcessor.cpp
-	${DIR}/CommandLineParser.cpp
-	${DIR}/DenseMatrix.cpp
-	${DIR}/DenseMatrixReader.cpp
-	${DIR}/DenseMatrixSubset.cpp
-	${DIR}/DenseMatrixWriter.cpp
-	${DIR}/Exception.cpp
-    ${DIR}/FiDePaRunner.cpp
-	${DIR}/MatrixWriter.cpp
-	${DIR}/Path.cpp
-	${DIR}/Pathfinder.cpp
-	${DIR}/RMAExpressMatrixReader.cpp
-	${DIR}/ScoringFileParser.cpp
-	${DIR}/SparseMatrix.cpp
-	${DIR}/SparseMatrixReader.cpp
-	${DIR}/SparseMatrixWriter.cpp
-	${DIR}/Ontology.cpp
-	${DIR}/Parameter.cpp
-	${DIR}/DenseDatasetImpl.cpp
-	${DIR}/DenseSubset.cpp
-)
+add_to_library(AbstractMatrix)
+add_to_library(BoostGraphProcessor)
+add_to_library(CommandLineParser)
+add_to_library(DenseMatrix)
+add_to_library(DenseMatrixReader)
+add_to_library(DenseMatrixSubset)
+add_to_library(DenseMatrixWriter)
+add_to_library(Exception)
+add_to_library(FiDePaRunner)
+add_to_library(MatrixWriter)
+add_to_library(Path)
+add_to_library(Pathfinder)
+add_to_library(RMAExpressMatrixReader)
+add_to_library(ScoringFileParser)
+add_to_library(SparseMatrix)
+add_to_library(SparseMatrixReader)
+add_to_library(SparseMatrixWriter)
+add_to_library(Ontology)
+add_to_library(Parameter)
+add_to_library(DenseDatasetImpl)
+add_to_library(DenseSubset)
+

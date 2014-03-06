@@ -4,6 +4,7 @@
 ####################################################################################################
 
 SET(DIR ${PROJECT_SOURCE_DIR}/src/)
+SET(LIBNAME "CLUSTER")
 
 ####################################################################################################
 # All files of this directory
@@ -11,16 +12,7 @@ SET(DIR ${PROJECT_SOURCE_DIR}/src/)
 
 # We list all files separatly to be able to leave some out, if we do not want to compile them.
 
-# Headers
-SET(CLUSTER_HEADERS
-	${DIR}/METISClusterer.h
-	${DIR}/NeighborhoodBuilder.h
-	${DIR}/SparseClusterer.h
-)
+add_to_library(METISClusterer)
+add_to_library(NeighborhoodBuilder)
+add_to_library(SparseClusterer)
 
-# Sources
-SET(CLUSTER_SOURCES
-	${DIR}/METISClusterer.cpp
-	${DIR}/NeighborhoodBuilder.cpp
-	${DIR}/SparseClusterer.cpp
-)

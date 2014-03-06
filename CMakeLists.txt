@@ -38,6 +38,7 @@ include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${CLN_INCLUDE_DIR})
 
 include(GT2CompilerSpecific)
+include(GT2Macros)
 
 ####################################################################################################
 # Check if a build type is given
