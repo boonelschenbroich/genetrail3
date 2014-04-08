@@ -23,8 +23,8 @@ add_header_to_library(DenseSubset.h)
 add_header_to_library(DependentTTest.h)
 add_header_to_library(FTest.h)
 add_header_to_library(IndependentTTest.h)
-add_header_to_library(PValue.h)
 add_header_to_library(WilcoxonMannWhitneyTest.h)
+add_header_to_library(PValue.h)
 add_header_to_library(ScoringFile.h)
 
 # Sources
