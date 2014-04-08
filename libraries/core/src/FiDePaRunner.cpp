@@ -2,11 +2,11 @@
 
 using namespace GeneTrail;
 
-void FiDePaRunner::computeDeregulatedPaths(std::string kegg, std::string scores, int pathlength, bool increasing, bool absolute) const {
+void FiDePaRunner::computeDeregulatedPaths(std::string kegg, std::string scores, int pathlength, bool decreasing, bool absolute) const {
     GraphType graph;
     BoostGraphParser graph_parser;
     BoostGraphProcessor graph_processor;
-    ScoringFileParser scoring_file_parser;
+    GeneSetReader reader;
 
     Pathfinder path_finder;
 
@@ -14,17 +14,18 @@ void FiDePaRunner::computeDeregulatedPaths(std::string kegg, std::string scores,
 
     boost::graph_traits<GraphType>::vertex_iterator vid, vid_end;
 
-    scoring_file_parser.readScoringFile(scores);
+    ScoringFile<double> scoring_file = reader.readNAFile<double>(scores);
 
+	std::vector<std::pair<std::string, double> > sorted_scores;
     if (absolute) {
-        scoring_file_parser.sortScoringFileAbsolute();
+        sorted_scores = scoring_file.getAbsoluteSortedScores();
     } else {
-        scoring_file_parser.sortScoringFile(increasing);
+        sorted_scores = scoring_file.getSortedScores(decreasing);
     }
 
     std::set<std::string> vertex_set = graph_processor.getVertexSet(graph);
 
-    std::vector<std::string> sorted_gene_list = scoring_file_parser.getAllInSet(vertex_set);
+    std::vector<std::string> sorted_gene_list = scoring_file.intersect(sorted_scores ,vertex_set);
 
     std::set<std::string> vertex_set_with_scores;
 

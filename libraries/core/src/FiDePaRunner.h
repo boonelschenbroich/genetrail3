@@ -23,12 +23,12 @@
 
 #include "config.h"
 
-#include "ScoringFileParser.h"
+#include "ScoringFile.h"
+#include "GeneSetReader.h"
 #include "BoostGraphParser.h"
 #include "BoostGraphProcessor.h"
 #include "Path.h"
 #include "Pathfinder.h"
-#include "CommandLineParser.h"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>

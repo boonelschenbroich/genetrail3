@@ -10,9 +10,10 @@
 #include <boost/algorithm/string.hpp>
 
 #include "../src/BoostGraph.h"
-#include "../src/ScoringFileParser.h"
 #include "../src/BoostGraphParser.h"
 #include "../src/BoostGraphProcessor.h"
+#include "../src/GeneSetReader.h"
+#include "../src/ScoringFile.h"
 
 #include <config.h>
 
@@ -39,7 +40,7 @@ TEST(GraphProcessor, vertexSet)
 
 TEST(GraphProcessor, graphProcessing)
 {
-	ScoringFileParser scoring_file_parser;
+	GeneSetReader reader;
 	BoostGraphParser parser;
 	BoostGraphProcessor processor;
 	GraphType g;
@@ -47,8 +48,8 @@ TEST(GraphProcessor, graphProcessing)
 	parser.readCytoscapeFile(TEST_DATA_PATH("graph_processor_test.sif"),g);
 	std::set<std::string> vertex_set =  processor.getVertexSet(g);
 
-	scoring_file_parser.readScoringFile(TEST_DATA_PATH("graph_processor_test_scores.txt"));
-	std::vector<std::string> gene_list = scoring_file_parser.getAllInSet(vertex_set);
+	ScoringFile<double> scores = reader.readScoringFile<double>(TEST_DATA_PATH("graph_processor_test_scores.txt"));
+	std::vector<std::string> gene_list = scores.intersect(vertex_set);
 
 	std::set<std::string> vertex_set_with_scores;
 

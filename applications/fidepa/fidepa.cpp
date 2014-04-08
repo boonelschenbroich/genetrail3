@@ -1,4 +1,3 @@
-#include "../../libraries/core/src/ScoringFileParser.h"
 #include "../../libraries/core/src/BoostGraphParser.h"
 #include "../../libraries/core/src/BoostGraphProcessor.h"
 #include "../../libraries/core/src/Pathfinder.h"

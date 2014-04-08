@@ -1,24 +1,25 @@
 #include <gtest/gtest.h>
 
 #include <vector>
-#include <tuple>
 #include <algorithm>
 #include <stdlib.h>
 #include <iostream>
+#include <utility>
 
-#include "../src/ScoringFileParser.h"
+#include "../src/ScoringFile.h"
+#include "../src/GeneSetReader.h"
 
 #include <config.h>
 
 using namespace GeneTrail;
 
 TEST(Parsing, sortIncreasingly) {
-    ScoringFileParser parser;
-    parser.readScoringFile(TEST_DATA_PATH("test_scores.txt"));
-    std::vector<std::tuple<std::string, double> > scores = parser.getIncreasinglySortedScores();
+    GeneSetReader parser;
+    ScoringFile<double> file = parser.readScoringFile<double>(TEST_DATA_PATH("test_scores.txt"));
+    std::vector<std::pair<std::string, double> > scores = file.getIncreasinglySortedScores();
     bool sorted = true;
     for (unsigned int i = 1; i < scores.size(); ++i) {
-        if (std::get<1>(scores[i-1]) > std::get<1>(scores[i])) {
+        if (scores[i-1].second > scores[i].second) {
             sorted = false;
             break;
         }
@@ -28,12 +29,12 @@ TEST(Parsing, sortIncreasingly) {
 }
 
 TEST(Parsing, sortDecreasingly) {
-    ScoringFileParser parser;
-    parser.readScoringFile(TEST_DATA_PATH("test_scores.txt"));
-    std::vector<std::tuple<std::string, double> > scores = parser.getDecreasinglySortedScores();
+    GeneSetReader parser;
+    ScoringFile<double> file =parser.readScoringFile<double>(TEST_DATA_PATH("test_scores.txt"));
+    std::vector<std::pair<std::string, double> > scores = file.getDecreasinglySortedScores();
     bool sorted = true;
     for (unsigned int i = 1; i < scores.size(); ++i) {
-        if (std::get<1>(scores[i-1]) < std::get<1>(scores[i])) {
+        if (scores[i-1].second < scores[i].second) {
             sorted = false;
             break;
         }
@@ -43,13 +44,12 @@ TEST(Parsing, sortDecreasingly) {
 }
 
 TEST(Parsing, sortAbsolute) {
-    ScoringFileParser parser;
-    parser.readScoringFile(TEST_DATA_PATH("test_scores.txt"));
-    parser.sortScoringFileAbsolute();
-    std::vector<std::tuple<std::string, double> > scores = parser.getAbsoluteSortedScores();
+    GeneSetReader parser;
+    ScoringFile<double> file = parser.readScoringFile<double>(TEST_DATA_PATH("test_scores.txt"));
+    std::vector<std::pair<std::string, double> > scores = file.getAbsoluteSortedScores();
     bool sorted = true;
     for (unsigned int i = 1; i < scores.size(); ++i) {
-        if (std::abs(std::get<1>(scores[i-1])) < std::abs(std::get<1>(scores[i]))) {
+        if (std::abs(scores[i-1].second) < std::abs(scores[i].second)) {
             sorted = false;
             break;
         }

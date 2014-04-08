@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../src/ScoringFileParser.h"
+#include "../src/ScoringFile.h"
 #include "../src/BoostGraphParser.h"
 #include "../src/BoostGraphProcessor.h"
 #include "../src/Pathfinder.h"
