@@ -26,8 +26,10 @@
 #include <string>
 #include <tuple>
 #include <vector>
+#include <algorithm>
 #include <map>
 #include <set>
+#include  <cstdint>
 
 #include "BoostGraph.h"
 #include "Path.h"
@@ -122,8 +124,8 @@ namespace GeneTrail {
         std::vector<vertex_descriptor> nodes;
 
         //Layers of the matrix 
-        std::vector<std::vector<int >> M_1;
-        std::vector<std::vector<int >> M_2;
+        std::vector<std::vector<int> > M_1;
+        std::vector<std::vector<int> > M_2;
 
         // Iterator for vertices
         boost::graph_traits<GraphType>::vertex_iterator vi, vi_end;
@@ -138,8 +140,7 @@ namespace GeneTrail {
         std::vector<std::map<int, int> > best_preds_v;
 
         //Compute RS for all paths
-        std::vector<std::vector<int >> running_sums;
-        
+        std::vector<std::vector<int > > running_sums;
     };
 }
 

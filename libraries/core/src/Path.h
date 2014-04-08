@@ -47,9 +47,13 @@ namespace GeneTrail
 			std::string getRegulation(const std::string& v1, const std::string& v2);
 			
 			int length();
-			
+		
+			void setRunningSum(int r);
+
 			int runningSum();
 			
+			void setPValue(double p);
+
 			double pValue();
 
 		protected:

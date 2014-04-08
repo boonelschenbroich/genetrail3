@@ -1,6 +1,4 @@
 #include "Pathfinder.h"
-#include <algorithm>
-#include <map>
 
 using namespace GeneTrail;
 
@@ -221,7 +219,7 @@ std::vector<Path> Pathfinder::computeDeregulatedPath(const GraphType& graph, con
             std::cout << std::endl;
             printMatrix(M_2);
         }
-        
+    
         if (debug) {
             auto rsums = running_sums[l-1];
             for(int r=0; r < rsums.size(); ++r){
@@ -247,24 +245,24 @@ std::vector<Path> Pathfinder::computeDeregulatedPath(const GraphType& graph, con
         if (debug) {
             std::cout << "Best path: ";
         }
-        
+    
         for (int i = rev_path.size() - 1; i >= 0; --i) {
             path.push_back(rev_path[i]);
             if (debug) {
                 std::cout << rev_path[i] << "-->";
             }
         }
-        
+    
         if (debug) {
             std::cout << std::endl;
         }
 
         Path p;
+		p.setRunningSum(running_sums[l-1][bestk]);
         // Save path
 		p.addVertex(path[0]);
         for (int i = 0; i < (signed)path.size() - 1; ++i) {
             p.addVertex(path[i+1]);
-            
             vertex_descriptor vd1 = nodes[name2rank[path[i]]];
             vertex_descriptor vd2 = nodes[name2rank[path[i + 1]]];
 
@@ -285,6 +283,6 @@ std::vector<Path> Pathfinder::computeDeregulatedPath(const GraphType& graph, con
 
         std::cout << "Layer " << l << std::endl;
     }
-    
+
     return best_paths;
 }

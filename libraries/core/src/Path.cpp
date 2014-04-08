@@ -38,8 +38,16 @@ int Path::length() {
     return this->identifier_.size();
 }
 
+void Path::setRunningSum(int r){
+	this->runningSum_ = r;
+}
+
 int Path::runningSum() {
     return this->runningSum_;
+}
+
+void Path::setPValue(double p){
+	this->pValue_ = p;
 }
 
 double Path::pValue() {
