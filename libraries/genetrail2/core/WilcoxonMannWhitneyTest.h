@@ -36,6 +36,25 @@ namespace GeneTrail {
         WilcoxonMannWhitneyTest(value_type tol = 1e-4) : tolerance_(tol) {
         }
 
+
+		value_type computeU(size_t size1, size_t size2, int rank_sum1){
+			return (size1 * size2) + (size1 * (size1 + 1)) / 2 - rank_sum1;
+		}
+
+		value_type computeZScore(size_t size1, size_t size2, value_type u){
+			value_type mean = (size1 + size2) / 2.0;
+			value_type sd = std::sqrt((size1 * size2 * (size1 + size2 + 1)) / 12.0);
+			return (u - mean) / sd;
+		}
+
+		value_type computeZScore(int rank_sum1, size_t size1, int rank_sum2, size_t size2){
+			value_type u1 = computeU(size1, size2, rank_sum1);
+			value_type u2 = computeU(size2, size1, rank_sum2);
+			depleted_ = (u1 < u2);
+			value_type u = depleted_ ? u1 : u2;
+			return computeZScore(size1, size2, u);
+		}
+
         /**
          * This method implements a variant of the Wilcoxon Mann Whitney Test
          * 
@@ -77,19 +96,7 @@ namespace GeneTrail {
                 }
             }
 
-            // U score for s1
-            value_type u1 = (size1 * size2) + (size1 * (size1 + 1)) / 2 - rank_sum1;
-            // U score for s2
-            value_type u2 = (size1 * size2) + (size2 * (size2 + 1)) / 2 - rank_sum2;
-
-            // Minimum 
-            value_type u = (u1 < u2) ? u1 : u2;
-
-            // Calculate Z-Score
-            value_type mean = (size1 + size2) / 2.0;
-            value_type sd = std::sqrt((size1 * size2 * (size1 + size2 + 1)) / 12.0);
-
-            score_ = (u - mean) / sd;
+			score_ = computeZScore(rank_sum1, size1, rank_sum2, size2);
 
             return score_;
         }
@@ -104,10 +111,15 @@ namespace GeneTrail {
 			return std::make_pair(score_ / conf, score_ * conf);
 		}
 
+		bool enriched(){
+			return !depleted_;
+		}
+
     protected:
 
         value_type tolerance_;
 		value_type score_;
+		bool depleted_;
     };
 }
 
