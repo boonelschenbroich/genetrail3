@@ -20,7 +20,9 @@
 #ifndef STATISTIC_NEW_H
 #define STATISTIC_NEW_H
 
+#include <cmath>
 #include <algorithm>
+#include <vector>
 
 namespace GeneTrail {
 
@@ -29,11 +31,77 @@ namespace GeneTrail {
      */
     namespace statistic {
 
+		/**
+		 * This method calculates the absolute value for each entry of a given container.
+		 *
+		 * @param begin InputIterator
+		 * @param end InputIterator
+		 */
+		template <typename value_type, typename InputIterator>
+		void abs(InputIterator begin, InputIterator end) {
+			std::transform (begin, end , begin, static_cast< value_type(*)(value_type) >( std::abs ));
+		}
+
+		/**
+		 * This method calculates the square root for each entry of a given container.
+		 *
+		 * @param begin InputIterator
+		 * @param end InputIterator
+		 */
+		template <typename value_type, typename InputIterator>
+		void sqrt(InputIterator begin, InputIterator end){
+			std::transform (begin, end , begin, static_cast< value_type(*)(value_type) >( std::sqrt ));
+		}
+
+		/**
+		 * This method calculates the natural logarithm for each entry of a given container.
+		 *
+		 * @param begin InputIterator
+		 * @param end InputIterator
+		 */
+		template <typename value_type, typename InputIterator>
+		void log(InputIterator begin, InputIterator end){
+			std::transform (begin, end , begin, static_cast< value_type(*)(value_type) >( std::log ));
+		}
+
+		/**
+		 * This method calculates the logarithm (base 10) for each entry of a given container.
+		 *
+		 * @param begin InputIterator
+		 * @param end InputIterator
+		 */
+		template <typename value_type, typename InputIterator>
+		void log10(InputIterator begin, InputIterator end){
+			std::transform (begin, end , begin, static_cast< value_type(*)(value_type) >( std::log10 ));
+		}
+
+		/**
+		 * This method calculates the logarithm (base 2) for each entry of a given container.
+		 *
+		 * @param begin InputIterator
+		 * @param end InputIterator
+		 */
+		template <typename value_type, typename InputIterator>
+		void log2(InputIterator begin, InputIterator end){
+			std::transform (begin, end , begin, static_cast< value_type(*)(value_type) >( std::log2 ));
+		}
+
+		/**
+		 * This method calculates the n-th power for each entry of a given container.
+		 * @param begin InputIterator
+		 * @param end InputIterator
+		 */
+		template <typename value_type, typename InputIterator>
+		void pow(InputIterator begin, InputIterator end, int n){
+			std::transform (begin, end , begin, [n](value_type x){ return std::pow(x,n);});
+		}
+
         /**
          * This method calculates the maximal value of a given container.
          *
-         * @param c Standard C++ container holding values of type Type
-         * @return Maximum of container c
+         * @param begin InputIterator
+		 * @param end InputIterator
+         * @return Maximum of the given range
          */
         template <typename value_type, typename InputIterator>
         value_type max(InputIterator begin, InputIterator end) {
@@ -43,8 +111,9 @@ namespace GeneTrail {
         /**
          * This method calculates the minimal value of a given container.
          *
-         * @param c Standard C++ container holding values of type Type
-         * @return Minimum of container c
+         * @param begin InputIterator
+		 * @param end InputIterator
+         * @return Minimum of the given range
          */
 		template <typename value_type, typename InputIterator>
         value_type min(InputIterator begin, InputIterator end) {
@@ -54,31 +123,58 @@ namespace GeneTrail {
         /**
          * This method calculates the mean of a given container.
          *
-         * @param c Standard C++ container holding values of type Type
-         * @return Mean of container c
+         * @param begin InputIterator
+		 * @param end InputIterator
+         * @return Mean of the given range
          */
         template <typename value_type, typename InputIterator>
         double mean(InputIterator begin, InputIterator end) {
             return (std::accumulate(begin, end,  0.0) / ((value_type)std::distance(begin,end)));
         }
 
-        /**
+		/**
+		 * This method calculates the max-mean statistic of a given container.
+		 *
+		 * @param begin InputIterator
+		 * @param end InputIterator
+		 * @return Max-mean statistic of the given range
+		 */
+		template <typename value_type, typename InputIterator>
+		value_type max_mean(InputIterator begin, InputIterator end){
+			value_type positive_sum = 0;
+			value_type negative_sum = 0;
+			for(auto iter = begin; iter != end; ++iter) {
+				if(*iter < 0) {
+					negative_sum -= *iter;
+				} else {
+					positive_sum += *iter;
+				}
+			}
+			value_type n = std::distance(begin,end);
+			return std::max(negative_sum / n, positive_sum / n);
+		}
+
+		/**
          * This method calculates the median of a given container.
          *
-         * @param c Standard C++ container holding values of type Type
-         * @return Median of container c
+         * @param begin InputIterator
+		 * @param end InputIterator
+         * @return Median of the given range
          */
         template <typename value_type, typename InputIterator>
         value_type median(InputIterator begin, InputIterator end) {
-            std::nth_element(begin, begin + (((std::distance(begin,end) + 1) / 2) - 1), end);
-            return *(begin + (((std::distance(begin,end) + 1) / 2) - 1));
+			std::vector<value_type> tmp(begin,end);
+			unsigned int median_position = (((std::distance(tmp.begin(),tmp.end()) + 1) / 2) - 1);
+            std::nth_element(tmp.begin(), tmp.begin() + median_position, tmp.end());
+            return *(tmp.begin() + median_position);
         }
 
         /**
          * This method calculates the pooled variance of a given container.
          *
-         * @param c Standard C++ container holding values of type Type
-         * @return Variance of container c
+         * @param begin InputIterator
+		 * @param end InputIterator
+         * @return Variance of the given range
          */
         template <typename value_type, typename InputIterator>
         value_type var(InputIterator begin, InputIterator end) {
@@ -102,12 +198,13 @@ namespace GeneTrail {
         /**
          * This method calculates the standard deviation of a given container.
          *
-         * @param c Standard C++ container holding values of type Type
-         * @return Standard deviation of container c
+         * @param begin InputIterator
+		 * @param end InputIterator
+         * @return Standard deviation of the given range
          */
         template <typename value_type, typename InputIterator>
         value_type sd(InputIterator begin, InputIterator end) {
-            return std::sqrt(var(begin,end));
+            return std::sqrt(var<value_type,InputIterator>(begin,end));
         }
     }
 }
