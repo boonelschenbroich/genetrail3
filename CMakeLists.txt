@@ -16,14 +16,18 @@ set(GENETRAIL2_PACKAGE_VERSION_PATCH "0")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
+include(GT2CompilerSpecific)
+include(GT2Macros)
+
 ####################################################################################################
 # Find third party libraries
 ####################################################################################################
 
-find_package(Boost 1.46.1 COMPONENTS iostreams regex filesystem system program_options REQUIRED)
-find_package(CLN)
-find_package(CPPUnit)
-find_package(Eigen3 REQUIRED)
+find_package(Boost 1.55.0 COMPONENTS iostreams regex filesystem system program_options REQUIRED)
+
+if(NOT Boost_FOUND)
+	message(FATAL_ERROR "Boost version 1.55.0 or higher is required by GeneTrail 2")
+endif()
 
 SET(Boost_LIBRARIES
 	${Boost_IOSTREAMS_LIBRARY}
@@ -33,12 +37,12 @@ SET(Boost_LIBRARIES
 	${Boost_PROGRAM_OPTIONS_LIBRARY}
 )
 
+find_package(CLN)
+find_package(Eigen3 REQUIRED)
+
 include_directories(${EIGEN3_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIRS})
 include_directories(${CLN_INCLUDE_DIR})
-
-include(GT2CompilerSpecific)
-include(GT2Macros)
 
 ####################################################################################################
 # Check if a build type is given

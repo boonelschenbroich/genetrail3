@@ -2,6 +2,18 @@
 # Compile flags
 ####################################################################################################
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+	if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "3.4.0")
+		message(FATAL_ERROR "GeneTrail 2 requires a clang version >= 3.4")
+	endif()
+endif()
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+	if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.8.0")
+		message(FATAL_ERROR "GeneTrail 2 requires a GCC version >= 4.8.0")
+	endif()
+endif()
+
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	LIST(APPEND CXX_FLAGS "-fvisibility=hidden")
 	LIST(APPEND CXX_FLAGS "-pedantic")
@@ -11,7 +23,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" ST
 	SET(GT2_LOCAL                  "__attribute__((visibility (\"hidden\")))")
 	SET(GT2_EXTERN_VARIABLE "extern __attribute__((visibility (\"default\")))")
 else()
-	message(STATUS "At the moment, GeneTrail2 supports only the GNU Compiler Collection.")
+	message(STATUS "At the moment, GeneTrail2 supports only Clang and the GNU Compiler Collection.")
 	return()
 endif()
 
@@ -20,12 +32,9 @@ if    ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	LIST(APPEND CXX_FLAGS "-std=c++11")
 	LIST(APPEND CXX_FLAGS "-Wno-deprecated-register")
 elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-	LIST(APPEND CXX_FLAGS "-std=c++0x")
+	LIST(APPEND CXX_FLAGS "-std=c++11")
 endif()
 
-## Glue the compile flags together
-string(REPLACE ";" " " GT2_COMPILE_FLAGS "${CXX_FLAGS}")
-
 function(GT2_COMPILE_FLAGS target)
-	set_target_properties(${target} PROPERTIES COMPILE_FLAGS ${GT2_COMPILE_FLAGS})
+	target_compile_options(${target} PUBLIC ${CXX_FLAGS})
 endfunction()
