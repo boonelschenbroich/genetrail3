@@ -27,7 +27,7 @@
 #include <utility>
 #include <algorithm>
 
-#include "config.h"
+#include "macros.h"
 #include "Category.h"
 
 namespace GeneTrail {

@@ -21,7 +21,7 @@
 #ifndef GT2_Path_H
 #define GT2_Path_H
 
-#include "config.h"
+#include "macros.h"
 
 #include <map>
 #include <vector>

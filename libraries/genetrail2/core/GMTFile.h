@@ -4,7 +4,7 @@
 #include "CategoryFile.h"
 #include "Category.h"
 
-#include "config.h"
+#include "macros.h"
 
 namespace GeneTrail
 {

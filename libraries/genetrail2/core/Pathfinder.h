@@ -21,7 +21,7 @@
 #ifndef PATHFINDER_H
 #define PATHFINDER_H
 
-#include "config.h"
+#include "macros.h"
 
 #include <string>
 #include <tuple>

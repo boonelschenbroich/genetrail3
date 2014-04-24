@@ -21,7 +21,7 @@
 #ifndef GT2_GeneSetEnrichmentAnalysis_H
 #define GT2_GeneSetEnrichmentAnalysis_H
 
-#include "config.h"
+#include "macros.h"
 #include "Category.h"
 
 #include <boost/math/special_functions/binomial.hpp>

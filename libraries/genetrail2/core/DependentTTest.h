@@ -23,7 +23,7 @@
 #include <list>
 #include <cmath>
 
-#include "config.h"
+#include "macros.h"
 
 #include "Statistic.h"
 

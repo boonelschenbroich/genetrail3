@@ -21,7 +21,7 @@
 #ifndef GT2_SPARSE_MATRIX_H
 #define GT2_SPARSE_MATRIX_H
 
-#include "config.h"
+#include "macros.h"
 
 #include "AbstractMatrix.h"
 

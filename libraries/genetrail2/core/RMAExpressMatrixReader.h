@@ -21,7 +21,7 @@
 #ifndef RMAEXPRESSMATRIXREADER_H
 #define RMAEXPRESSMATRIXREADER_H
 
-#include "config.h"
+#include "macros.h"
 
 #include "DenseMatrixReader.h"
 

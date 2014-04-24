@@ -20,7 +20,7 @@
 #ifndef GT2_HYPERGEOMETRIC_TEST_H
 #define GT2_HYPERGEOMETRIC_TEST_H
 
-#include "config.h"
+#include "macros.h"
 
 #include <boost/math/special_functions/binomial.hpp>
 #include <iostream>

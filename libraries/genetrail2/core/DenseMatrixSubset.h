@@ -23,7 +23,7 @@
 
 #include "DenseMatrix.h"
 
-#include "config.h"
+#include "macros.h"
 
 namespace GeneTrail
 {

@@ -21,7 +21,7 @@
 #ifndef DENSEMATRIX_H
 #define DENSEMATRIX_H
 
-#include "config.h"
+#include "macros.h"
 
 #include "AbstractMatrix.h"
 

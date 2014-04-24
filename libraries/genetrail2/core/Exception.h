@@ -24,7 +24,7 @@
 #include <exception>
 #include <string>
 
-#include "config.h"
+#include "macros.h"
 
 namespace GeneTrail
 {

@@ -21,7 +21,7 @@
 #ifndef BOOST_GRAPH_PROCESSOR_H
 #define BOOST_GRAPH_PROCESSOR_H
 
-#include "config.h"
+#include "macros.h"
 
 #include "BoostGraph.h"
 

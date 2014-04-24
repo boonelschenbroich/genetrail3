@@ -21,7 +21,7 @@
 #ifndef COMMANDLINE_PARSER_H
 #define COMMANDLINE_PARSER_H
 
-#include "config.h"
+#include "macros.h"
 
 #include <iostream>
 #include <cstring>

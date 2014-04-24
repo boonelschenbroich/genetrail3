@@ -21,7 +21,7 @@
 #ifndef FIDEPA_H
 #define FIDEPA_H
 
-#include "config.h"
+#include "macros.h"
 
 #include "ScoringFile.h"
 #include "GeneSetReader.h"

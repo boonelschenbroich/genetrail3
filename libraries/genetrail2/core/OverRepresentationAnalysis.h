@@ -20,7 +20,7 @@
 #ifndef GT2_OVER_REPRESENTATION_ANALYSIS_H
 #define GT2_OVER_REPRESENTATION_ANALYSIS_H
 
-#include "config.h"
+#include "macros.h"
 
 #include "Category.h"
 #include "FishersExactTest.h"

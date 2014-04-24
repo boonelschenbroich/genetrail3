@@ -6,7 +6,7 @@
 
 #include <ios>
 
-#include "config.h"
+#include "macros.h"
 
 namespace GeneTrail
 {

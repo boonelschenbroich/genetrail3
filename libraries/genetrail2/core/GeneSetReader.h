@@ -15,7 +15,7 @@
 #include "Category.h"
 #include "ScoringFile.h"
 
-#include "config.h"
+#include "macros.h"
 
 namespace GeneTrail
 {

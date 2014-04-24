@@ -20,7 +20,7 @@
 #ifndef GT2_NEIGHBORHOOD_BUILDER_H
 #define GT2_NEIGHBORHOOD_BUILDER_H
 
-#include <genetrail2/core/config.h>
+#include <genetrail2/core/macros.h>
 
 #include <genetrail2/core/DenseMatrix.h>
 #include <genetrail2/core/SparseMatrix.h>

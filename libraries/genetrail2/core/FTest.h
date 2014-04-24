@@ -20,7 +20,7 @@
 #ifndef F_TTEST_H
 #define F_TTEST_H
 
-#include "config.h"
+#include "macros.h"
 
 #include "Statistic.h"
 

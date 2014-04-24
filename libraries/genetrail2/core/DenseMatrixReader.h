@@ -21,7 +21,7 @@
 #ifndef GT2_DENSE_MATRIX_READER_H
 #define GT2_DENSE_MATRIX_READER_H
 
-#include "config.h"
+#include "macros.h"
 
 #include <istream>
 #include <vector>
