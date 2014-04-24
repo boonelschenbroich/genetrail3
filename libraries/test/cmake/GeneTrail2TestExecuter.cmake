@@ -1,5 +1,4 @@
 add_subdirectory(${GTEST_SRC_DIR} "gtest")
-add_library(test_driver ../../../test/main_test.cpp)
 
 # This function allows to add a new Google Test based
 # test case to CTest. It takes the following arguments:
@@ -31,7 +30,7 @@ endfunction()
 
 function(create_test_config_file)
 	set(TEST_DATA_PATH "${PROJECT_SOURCE_DIR}/data/")
-	configure_file(${CMAKE_SOURCE_DIR}/test/config.h.in config.h)
+	configure_file(${CMAKE_SOURCE_DIR}/libraries/test/cmake/config.h.in config.h)
 	include_directories(${PROJECT_BINARY_DIR})
 endfunction()
 

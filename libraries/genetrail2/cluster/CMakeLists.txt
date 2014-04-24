@@ -46,19 +46,3 @@ install(TARGETS gtcluster
 	LIBRARY DESTINATION lib COMPONENT libraries
 	ARCHIVE DESTINATION lib COMPONENT libraries
 )
-
-####################################################################################################
-# Build Tests
-####################################################################################################
-
-# Configure unit tests. This will only happen if the path to the
-# gtest src directory has been set
-
-if(NOT GTEST_SRC_DIR)
-	message(STATUS "GTEST_SRC_DIR not set, disabling unit tests")
-	return()
-endif()
-
-enable_testing()
-
-#add_subdirectory(test)

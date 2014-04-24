@@ -20,6 +20,23 @@ include(GT2CompilerSpecific)
 include(GT2Macros)
 
 ####################################################################################################
+# Build Tests
+####################################################################################################
+
+# This call needs to be in the top level file before any
+# add_subdirectory calls in order to allow the testing
+# framework to pick up all unit test.
+
+# We require the gtest src directory to be set
+if(NOT GTEST_SRC_DIR)
+    message(STATUS "GTEST_SRC_DIR not set, disabling unit tests")
+	SET(GT2_ENABLE_TESTING FALSE)
+else()
+	enable_testing()
+	SET(GT2_ENABLE_TESTING TRUE)
+endif()
+
+####################################################################################################
 # Find third party libraries
 ####################################################################################################
 
@@ -89,16 +106,4 @@ add_subdirectory(bindings)
 
 include(cmake/documentation.cmake)
 
-####################################################################################################
-# Build Tests
-####################################################################################################
 
-# Configure unit tests. This will only happen if the path to the
-# gtest src directory has been set
-
-if(NOT GTEST_SRC_DIR)
-    message(STATUS "GTEST_SRC_DIR not set, disabling unit tests")
-    return()
-endif()
-
-enable_testing()
