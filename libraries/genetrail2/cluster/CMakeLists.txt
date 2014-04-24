@@ -38,7 +38,7 @@ target_link_libraries(gtcluster
 ####################################################################################################
 
 install(FILES ${CLUSTER_HEADERS}
-	DESTINATION include/cluster/
+	DESTINATION include/genetrail2/cluster/
 )
 
 install(TARGETS gtcluster

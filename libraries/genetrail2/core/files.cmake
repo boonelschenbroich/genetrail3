@@ -27,6 +27,7 @@ add_header_to_library(IndependentTTest.h)
 add_header_to_library(WilcoxonMannWhitneyTest.h)
 add_header_to_library(PValue.h)
 add_header_to_library(ScoringFile.h)
+add_header_to_library(macros.h)
 
 # Sources
 add_to_library(AbstractMatrix)

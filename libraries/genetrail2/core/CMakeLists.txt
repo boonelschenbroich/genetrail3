@@ -31,7 +31,7 @@ target_link_libraries(gtcore
 ####################################################################################################
 
 INSTALL(FILES ${CORE_HEADERS}
-    DESTINATION include/genetrail/core/
+    DESTINATION include/genetrail2/core/
 )
 
 INSTALL(TARGETS gtcore
