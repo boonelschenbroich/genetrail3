@@ -1,5 +1,9 @@
 project(GENETRAIL2_APPLICATIONS)
 
+if(NOT TARGET gtcore)
+	return()
+endif()
+
 include_directories("${CMAKE_SOURCE_DIR}/libraries/")
 
 add_subdirectory(enrichment)
