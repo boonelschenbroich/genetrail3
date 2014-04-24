@@ -1,9 +1,9 @@
-#include "../../libraries/core/src/Category.h"
-#include "../../libraries/core/src/GMTFile.h"
-#include "../../libraries/core/src/GeneSetReader.h"
-#include "../../libraries/core/src/OverRepresentationAnalysis.h"
-#include "../../libraries/core/src/PValue.h"
-#include "../../libraries/core/src/ScoringFile.h"
+#include <genetrail2/core/Category.h>
+#include <genetrail2/core/GMTFile.h>
+#include <genetrail2/core/GeneSetReader.h>
+#include <genetrail2/core/OverRepresentationAnalysis.h>
+#include <genetrail2/core/PValue.h>
+#include <genetrail2/core/ScoringFile.h>
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/lexical_cast.hpp>

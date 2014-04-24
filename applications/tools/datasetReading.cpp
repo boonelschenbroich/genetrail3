@@ -19,16 +19,16 @@
  *
  */
 
-#include "../../libraries/core/src/DenseMatrix.h"
-#include "../../libraries/core/src/DenseMatrixReader.h"
+#include <genetrail2/core/DenseMatrix.h>
+#include <genetrail2/core/DenseMatrixReader.h>
 
-#include "../../libraries/core/src/Dataset.h"
-#include "../../libraries/core/src/DenseDatasetImpl.h"
-#include "../../libraries/core/src/Parameter.h"
-#include "../../libraries/core/src/Ontology.h"
-#include "../../libraries/core/src/DenseSubset.h"
+#include <genetrail2/core/Dataset.h>
+#include <genetrail2/core/DenseDatasetImpl.h>
+#include <genetrail2/core/Parameter.h>
+#include <genetrail2/core/Ontology.h>
+#include <genetrail2/core/DenseSubset.h>
 
-#include "../../libraries/core/src/CommandLineParser.h"
+#include <genetrail2/core/CommandLineParser.h>
 
 #include <fstream>
 #include <boost/filesystem.hpp>

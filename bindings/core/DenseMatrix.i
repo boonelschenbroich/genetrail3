@@ -1,6 +1,6 @@
 %module gtcore
 %{
-#include "../../libraries/core/src/DenseMatrix.h"
+#include <genetrail2/core/DenseMatrix.h>
 
 typedef GeneTrail::DenseMatrix::index_type index_type;
 %}

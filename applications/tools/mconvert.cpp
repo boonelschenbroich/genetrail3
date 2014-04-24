@@ -18,11 +18,11 @@
  *
  */
 
-#include "../../libraries/core/src/DenseMatrix.h"
-#include "../../libraries/core/src/DenseMatrixReader.h"
-#include "../../libraries/core/src/RMAExpressMatrixReader.h"
-#include "../../libraries/core/src/DenseMatrixWriter.h"
-#include <DenseMatrixSubset.h>
+#include <genetrail2/core/DenseMatrix.h>
+#include <genetrail2/core/DenseMatrixReader.h>
+#include <genetrail2/core/RMAExpressMatrixReader.h>
+#include <genetrail2/core/DenseMatrixWriter.h>
+#include <genetrail2/core/DenseMatrixSubset.h>
 
 #include <fstream>
 #include <iostream>

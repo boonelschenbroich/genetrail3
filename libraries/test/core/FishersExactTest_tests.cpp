@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../src/FishersExactTest.h"
+#include <genetrail2/core/FishersExactTest.h>
 
 using namespace GeneTrail;
 

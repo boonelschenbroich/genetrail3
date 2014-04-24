@@ -1,6 +1,6 @@
 %module gtcore
 %{
-#include "../../libraries/core/src/Exception.h"
+#include <genetrail2/core/Exception.h>
 %}
 
 namespace GeneTrail

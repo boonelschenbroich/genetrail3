@@ -1,8 +1,8 @@
 #include "glasso.h"
 
-#include <DenseMatrix.h>
-#include <DenseMatrixReader.h>
-#include <DenseMatrixWriter.h>
+#include <genetrail2/core/DenseMatrix.h>
+#include <genetrail2/core/DenseMatrixReader.h>
+#include <genetrail2/core/DenseMatrixWriter.h>
 
 #include <iostream>
 #include <fstream>

@@ -6,8 +6,8 @@
 #include <iostream>
 #include <utility>
 
-#include "../src/ScoringFile.h"
-#include "../src/GeneSetReader.h"
+#include <genetrail2/core/ScoringFile.h>
+#include <genetrail2/core/GeneSetReader.h>
 
 #include <config.h>
 

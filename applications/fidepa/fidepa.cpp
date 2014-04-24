@@ -1,8 +1,8 @@
-#include "../../libraries/core/src/BoostGraphParser.h"
-#include "../../libraries/core/src/BoostGraphProcessor.h"
-#include "../../libraries/core/src/Pathfinder.h"
-#include "../../libraries/core/src/CommandLineParser.h"
-#include "../../libraries/core/src/FiDePaRunner.h"
+#include <genetrail2/core/BoostGraphParser.h>
+#include <genetrail2/core/BoostGraphProcessor.h>
+#include <genetrail2/core/Pathfinder.h>
+#include <genetrail2/core/CommandLineParser.h>
+#include <genetrail2/core/FiDePaRunner.h>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>

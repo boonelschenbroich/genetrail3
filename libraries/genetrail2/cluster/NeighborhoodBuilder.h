@@ -20,10 +20,10 @@
 #ifndef GT2_NEIGHBORHOOD_BUILDER_H
 #define GT2_NEIGHBORHOOD_BUILDER_H
 
-#include <config.h>
+#include <genetrail2/core/config.h>
 
-#include <DenseMatrix.h>
-#include <SparseMatrix.h>
+#include <genetrail2/core/DenseMatrix.h>
+#include <genetrail2/core/SparseMatrix.h>
 
 namespace GeneTrail
 {

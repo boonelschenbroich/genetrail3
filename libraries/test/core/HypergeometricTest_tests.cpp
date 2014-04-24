@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../src/HypergeometricTest.h"
+#include <genetrail2/core/HypergeometricTest.h>
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/multiprecision/cpp_dec_float.hpp>
 

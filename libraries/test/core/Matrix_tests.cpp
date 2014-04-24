@@ -20,9 +20,9 @@
 
 #include <gtest/gtest.h>
 
-#include "../src/DenseMatrix.h"
-#include "../src/DenseMatrixSubset.h"
-#include "../src/SparseMatrix.h"
+#include <genetrail2/core/DenseMatrix.h>
+#include <genetrail2/core/DenseMatrixSubset.h>
+#include <genetrail2/core/SparseMatrix.h>
 #include <config.h>
 #include <Eigen/src/SparseCore/SparseMatrix.h>
 

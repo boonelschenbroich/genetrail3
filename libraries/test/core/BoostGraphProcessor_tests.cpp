@@ -9,11 +9,11 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 
-#include "../src/BoostGraph.h"
-#include "../src/BoostGraphParser.h"
-#include "../src/BoostGraphProcessor.h"
-#include "../src/GeneSetReader.h"
-#include "../src/ScoringFile.h"
+#include <genetrail2/core/BoostGraph.h>
+#include <genetrail2/core/BoostGraphParser.h>
+#include <genetrail2/core/BoostGraphProcessor.h>
+#include <genetrail2/core/GeneSetReader.h>
+#include <genetrail2/core/ScoringFile.h>
 
 #include <config.h>
 

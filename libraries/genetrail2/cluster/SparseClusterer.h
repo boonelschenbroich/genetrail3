@@ -20,7 +20,7 @@
 #ifndef GT2_SPARSE_CLUSTERER_H
 #define GT2_SPARSE_CLUSTERER_H
 
-#include <config.h>
+#include <genetrail2/core/config.h>
 
 /**
  * Base class stub for clustering algorithms operating on

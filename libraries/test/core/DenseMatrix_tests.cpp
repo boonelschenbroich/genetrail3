@@ -20,7 +20,7 @@
 
 #include <gtest/gtest.h>
 
-#include "../src/DenseMatrix.h"
+#include <genetrail2/core/DenseMatrix.h>
 #include <config.h>
 
 using namespace GeneTrail;

@@ -1,13 +1,13 @@
-#include <DenseMatrix.h>
-#include <DenseMatrixReader.h>
-#include <DenseMatrixSubset.h>
-#include <DenseMatrixWriter.h>
-#include <SparseMatrix.h>
-#include <SparseMatrixReader.h>
-#include <SparseMatrixWriter.h>
+#include <genetrail2/core/DenseMatrix.h>
+#include <genetrail2/core/DenseMatrixReader.h>
+#include <genetrail2/core/DenseMatrixSubset.h>
+#include <genetrail2/core/DenseMatrixWriter.h>
+#include <genetrail2/core/SparseMatrix.h>
+#include <genetrail2/core/SparseMatrixReader.h>
+#include <genetrail2/core/SparseMatrixWriter.h>
 
-#include <METISClusterer.h>
-#include <NeighborhoodBuilder.h>
+#include <genetrail2/cluster/METISClusterer.h>
+#include <genetrail2/cluster/NeighborhoodBuilder.h>
 
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string/replace.hpp>

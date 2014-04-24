@@ -1,37 +1,42 @@
-project(Glasso)
+project(GENETRAIL2_CORE_LIBRARY)
 
 ####################################################################################################
 # Check if the needed libraries are available
 ####################################################################################################
 
 if(NOT Boost_FOUND)
-    message(STATUS "Boost not found, cannot build FiDePa")
+	message(STATUS "Boost not found, cannot build GeneTrail2 core library")
     return()
 endif()
 
 ####################################################################################################
-# Build executable
+# Build a shared library
 ####################################################################################################
 
-enable_language(Fortran)
+include(files.cmake)
 
-add_library(lglasso STATIC glasso.f90)
-set_target_properties(lglasso PROPERTIES LINKER_LANGUAGE Fortran)
-
-add_executable(glasso main.cpp glasso.h)
-target_link_libraries(glasso gtcore lglasso)
-set_target_properties(glasso PROPERTIES
-    INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
+add_library(gtcore SHARED 
+	${CORE_SOURCES} 
+	${CORE_HEADERS}
 )
 
-GT2_COMPILE_FLAGS(glasso)
+GT2_COMPILE_FLAGS(gtcore)
 
-####################################################################################################
-# Build executable
-####################################################################################################
-
-install(TARGETS glasso
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
+target_link_libraries(gtcore
+	${Boost_LIBRARIES}
 )
+
+####################################################################################################
+# Install the library
+####################################################################################################
+
+INSTALL(FILES ${CORE_HEADERS}
+    DESTINATION include/genetrail/core/
+)
+
+INSTALL(TARGETS gtcore
+    RUNTIME DESTINATION bin COMPONENT libraries
+    LIBRARY DESTINATION lib COMPONENT libraries
+    ARCHIVE DESTINATION lib COMPONENT libraries
+)
+

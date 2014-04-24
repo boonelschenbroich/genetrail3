@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 
-#include "../src/HTest.h"
-#include "../src/FTest.h"
-#include "../src/IndependentTTest.h"
-#include "../src/DependentTTest.h"
-#include "../src/WilcoxonMannWhitneyTest.h"
+#include <genetrail2/core/HTest.h>
+#include <genetrail2/core/FTest.h>
+#include <genetrail2/core/IndependentTTest.h>
+#include <genetrail2/core/DependentTTest.h>
+#include <genetrail2/core/WilcoxonMannWhitneyTest.h>
 
 #include <config.h>
 

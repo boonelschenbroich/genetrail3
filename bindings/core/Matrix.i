@@ -1,6 +1,6 @@
 %module gtcore
 %{
-#include "../../libraries/core/src/Matrix.h"
+#include <genetrail2/core/Matrix.h>
 %}
 
 namespace GeneTrail

@@ -20,9 +20,9 @@
 #ifndef GT2_METIS_CLUSTERER_H
 #define GT2_METIS_CLUSTERER_H
 
-#include <config.h>
+#include <genetrail2/core/config.h>
 
-#include <SparseMatrix.h>
+#include <genetrail2/core/SparseMatrix.h>
 #include "SparseClusterer.h"
 
 #include <vector>

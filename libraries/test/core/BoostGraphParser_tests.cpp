@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "../src/BoostGraph.h"
-#include "../src/BoostGraphParser.h"
+#include <genetrail2/core/BoostGraph.h>
+#include <genetrail2/core/BoostGraphParser.h>
 #include <config.h>
 
 #include <set>

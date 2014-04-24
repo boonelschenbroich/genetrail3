@@ -1,43 +1,50 @@
-project(GENETRAIL2_CORE_LIBRARY)
+project(GENETRAIL2_CLUSTER_LIBRARY)
 
 ####################################################################################################
 # Check if the needed libraries are available
 ####################################################################################################
 
-if(NOT Boost_FOUND)
-	message(STATUS "Boost not found, cannot build GeneTrail2 core library")
-    return()
+find_package(METIS)
+
+if(NOT METIS_FOUND)
+	message(STATUS "Metis not found, cannot build cluster library")
+	return()
 endif()
 
 ####################################################################################################
 # Build a shared library
 ####################################################################################################
 
-include(src/files.cmake)
+include(files.cmake)
 
-add_library(gtcore SHARED 
-	${CORE_SOURCES} 
-	${CORE_HEADERS}
+include_directories(
+	"${CMAKE_SOURCE_DIR}/libraries/"
+	${METIS_INCLUDE_DIRS}
 )
 
-GT2_COMPILE_FLAGS(gtcore)
+add_library(gtcluster SHARED
+	${CLUSTER_SOURCES}
+	${CLUSTER_HEADERS}
+)
 
-target_link_libraries(gtcore
-	${Boost_LIBRARIES}
+GT2_COMPILE_FLAGS(gtcluster)
+
+target_link_libraries(gtcluster
+	${METIS_LIBRARIES}
 )
 
 ####################################################################################################
 # Install the library
 ####################################################################################################
 
-INSTALL(FILES ${CORE_HEADERS}
-    DESTINATION include/core/
+install(FILES ${CLUSTER_HEADERS}
+	DESTINATION include/cluster/
 )
 
-INSTALL(TARGETS gtcore
-    RUNTIME DESTINATION bin COMPONENT libraries
-    LIBRARY DESTINATION lib COMPONENT libraries
-    ARCHIVE DESTINATION lib COMPONENT libraries
+install(TARGETS gtcluster
+	RUNTIME DESTINATION bin COMPONENT libraries
+	LIBRARY DESTINATION lib COMPONENT libraries
+	ARCHIVE DESTINATION lib COMPONENT libraries
 )
 
 ####################################################################################################
@@ -48,11 +55,10 @@ INSTALL(TARGETS gtcore
 # gtest src directory has been set
 
 if(NOT GTEST_SRC_DIR)
-    message(STATUS "GTEST_SRC_DIR not set, disabling unit tests")
-    return()
+	message(STATUS "GTEST_SRC_DIR not set, disabling unit tests")
+	return()
 endif()
 
 enable_testing()
 
-add_subdirectory(test)
-
+#add_subdirectory(test)

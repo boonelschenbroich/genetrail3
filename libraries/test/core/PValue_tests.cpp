@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../src/PValue.h"
+#include <genetrail2/core/PValue.h>
 
 #include<vector>
 

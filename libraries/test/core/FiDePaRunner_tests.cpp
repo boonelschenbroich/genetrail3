@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 
-#include "../src/ScoringFile.h"
-#include "../src/BoostGraphParser.h"
-#include "../src/BoostGraphProcessor.h"
-#include "../src/Pathfinder.h"
-#include "../src/FiDePaRunner.h"
+#include <genetrail2/core/ScoringFile.h>
+#include <genetrail2/core/BoostGraphParser.h>
+#include <genetrail2/core/BoostGraphProcessor.h>
+#include <genetrail2/core/Pathfinder.h>
+#include <genetrail2/core/FiDePaRunner.h>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>

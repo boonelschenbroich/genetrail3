@@ -20,9 +20,9 @@
 
 #include <gtest/gtest.h>
 
-#include "../src/DenseMatrix.h"
-#include "../src/DenseMatrixReader.h"
-#include "../src/Exception.h"
+#include <genetrail2/core/DenseMatrix.h>
+#include <genetrail2/core/DenseMatrixReader.h>
+#include <genetrail2/core/Exception.h>
 #include <config.h>
 
 #include <fstream>

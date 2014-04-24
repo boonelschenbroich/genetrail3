@@ -4,8 +4,8 @@
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/multiprecision/cpp_dec_float.hpp>
 
-#include "../src/OverRepresentationAnalysis.h"
-#include "../src/Category.h"
+#include <genetrail2/core/OverRepresentationAnalysis.h>
+#include <genetrail2/core/Category.h>
 
 using namespace GeneTrail;
 

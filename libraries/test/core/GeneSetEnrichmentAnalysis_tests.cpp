@@ -7,11 +7,11 @@
 
 #include <gtest/gtest.h>
 
-#include "../src/Category.h"
-#include "../src/GeneSetEnrichmentAnalysis.h"
-#include "../src/GeneSetReader.h"
-#include "../src/ScoringFile.h"
-#include "../src/GMTFile.h"
+#include <genetrail2/core/Category.h>
+#include <genetrail2/core/GeneSetEnrichmentAnalysis.h>
+#include <genetrail2/core/GeneSetReader.h>
+#include <genetrail2/core/ScoringFile.h>
+#include <genetrail2/core/GMTFile.h>
 
 #include <boost/lexical_cast.hpp>
 #include <boost/multiprecision/cpp_int.hpp>

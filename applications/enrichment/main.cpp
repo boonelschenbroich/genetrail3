@@ -1,6 +1,6 @@
-#include "../../libraries/core/src/GMTFile.h"
-#include "../../libraries/core/src/DenseMatrix.h"
-#include "../../libraries/core/src/DenseMatrixReader.h"
+#include <genetrail2/core/GMTFile.h>
+#include <genetrail2/core/DenseMatrix.h>
+#include <genetrail2/core/DenseMatrixReader.h>
 
 #include <Eigen/Dense>
 #include <Eigen/Eigen>

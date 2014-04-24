@@ -9,5 +9,7 @@ include(${SWIG_USE_FILE})
 
 find_package(PythonLibs)
 
+include_directories("${CMAKE_SOURCE_DIR}/libraries")
+
 add_subdirectory(core)
 #add_subdirectory(cluster)

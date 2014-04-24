@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "../src/Category.h"
-#include "../src/GMTFile.h"
+#include <genetrail2/core/Category.h>
+#include <genetrail2/core/GMTFile.h>
 
 #include <config.h>
 
