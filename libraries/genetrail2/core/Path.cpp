@@ -7,7 +7,7 @@ using namespace GeneTrail;
 void Path::writeToSIFFile(const std::string& name) {
     std::ofstream myfile;
     myfile.open(name);
-    for (unsigned int i = 1; i < this->length(); ++i) {
+    for (int i = 1; i < this->length(); ++i) {
         auto regulation = this->regulations_.find(this->identifier_[i-1] + this->identifier_[i]);
         if(regulation != this->regulations_.end()){
             myfile << this->identifier_[i-1] << "\tpp\t" << this->identifier_[i] << std::endl;
