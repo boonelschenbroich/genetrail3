@@ -416,10 +416,10 @@ TYPED_TEST(MatrixTest, shuffleRows)
 	ASSERT_EQ(5, mat.rows());
 	ASSERT_EQ(3, mat.cols());
 
-	for(int i = 0; i < mat_orig.rows(); ++i) {
+	for(unsigned int i = 0; i < mat_orig.rows(); ++i) {
 		EXPECT_EQ(mat_orig.rowName(perm[i]), mat.rowName(i));
 
-		for(int j = 0; j < mat_orig.cols(); ++j) {
+		for(unsigned int j = 0; j < mat_orig.cols(); ++j) {
 			EXPECT_EQ(mat_orig(perm[i], j), mat(i, j));
 		}
 	}
@@ -445,10 +445,10 @@ TYPED_TEST(MatrixTest, shuffleCols)
 	ASSERT_EQ(5, mat.rows());
 	ASSERT_EQ(3, mat.cols());
 
-	for(int j = 0; j < mat_orig.cols(); ++j) {
+	for(unsigned int j = 0; j < mat_orig.cols(); ++j) {
 		EXPECT_EQ(mat_orig.colName(perm[j]), mat.colName(j));
 
-		for(int i = 0; i < mat_orig.rows(); ++i) {
+		for(unsigned int i = 0; i < mat_orig.rows(); ++i) {
 			EXPECT_EQ(mat_orig(i, perm[j]), mat(i, j));
 		}
 	}
@@ -477,7 +477,7 @@ TYPED_TEST(MatrixTest, removeRows)
 	EXPECT_EQ(2, matrix.rows());
 	EXPECT_EQ(3, matrix.cols());
 
-	for(int i = 0; i < matrix.cols(); ++i) {
+	for(unsigned int i = 0; i < matrix.cols(); ++i) {
 		EXPECT_EQ(matrix_copy(0, i), matrix(0, i));
 		EXPECT_EQ(matrix_copy(3, i), matrix(1, i));
 	}
@@ -515,7 +515,7 @@ TYPED_TEST(MatrixTest, removeCols)
 	EXPECT_EQ(2, matrix.cols());
 	EXPECT_EQ(3, matrix.rows());
 
-	for(int i = 0; i < matrix.rows(); ++i) {
+	for(unsigned int i = 0; i < matrix.rows(); ++i) {
 		EXPECT_EQ(matrix_copy(i, 0), matrix(i, 0));
 		EXPECT_EQ(matrix_copy(i, 3), matrix(i, 1));
 	}
