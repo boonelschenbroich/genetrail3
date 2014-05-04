@@ -222,7 +222,7 @@ std::vector<Path> Pathfinder::computeDeregulatedPath(const GraphType& graph, con
     
         if (debug) {
             auto rsums = running_sums[l-1];
-            for(int r=0; r < rsums.size(); ++r){
+            for(size_t r=0; r < rsums.size(); ++r){
                 std::cout << "RS* (k = " << r << "): " << running_sums[l-1][r] << std::endl;
             }
             std::cout << "--> Best RS* (k = " << bestk << "): " << running_sums[l-1][bestk] << std::endl;
