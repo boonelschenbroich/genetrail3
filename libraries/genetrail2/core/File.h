@@ -10,6 +10,8 @@
 
 namespace GeneTrail
 {
+	// Note: This generates an warning in gcc. This is
+	//       a compiler bug and can be ignored.
 	enum class GT2_EXPORT FileOpenMode {
 		READ,
 		WRITE,
@@ -72,8 +74,10 @@ namespace GeneTrail
 		virtual ReturnType read() = 0;
 		virtual bool write(const ReturnType& r) = 0;
 
-		friend File& operator<<(File&, const ReturnType&);
-		friend File& operator>>(File&, ReturnType&);
+		template<typename R>
+		friend File<R>& operator<<(File<R>&, const R&);
+		template<typename R>
+		friend File<R>& operator>>(File<R>&, R&);
 	};
 
 	template <typename ReturnType>
