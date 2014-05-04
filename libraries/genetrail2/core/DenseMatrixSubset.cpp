@@ -303,7 +303,7 @@ namespace GeneTrail
 	{
 		ISubset tmp(col_subset_.size());
 
-		for(int i = 0; i < perm.size(); ++i) {
+		for(size_t i = 0; i < perm.size(); ++i) {
 			tmp[i] = col_subset_[perm[i]];
 		}
 
@@ -314,7 +314,7 @@ namespace GeneTrail
 	{
 		ISubset tmp(row_subset_.size());
 
-		for(int i = 0; i < perm.size(); ++i) {
+		for(size_t i = 0; i < perm.size(); ++i) {
 			tmp[i] = row_subset_[perm[i]];
 		}
 
