@@ -302,8 +302,8 @@ namespace GeneTrail
 		{
 			std::vector<pValue<float_type>> pvals(pvalues);
 			float_type x = 0.0;
-			for(int i = 0; i < pvals.size(); ++i) {
-				x += std::log(pvals[i].second);
+			for(const auto& pval : pvals) {
+				x += std::log(pval.second);
 			}
 			boost::math::chi_squared dist(2 * pvalues.size());
 			return boost::math::cdf(boost::math::complement(dist, -2.0 * x));
@@ -322,7 +322,7 @@ namespace GeneTrail
 			boost::math::normal dist(0.0, 1.0);
 			float_type zi = 0.0;
 			float_type ws = 0.0;
-			for(int i = 0; i < pvalues.size(); ++i) {
+			for(size_t i = 0; i < pvalues.size(); ++i) {
 				ws += weights[i] * weights[i];
 				zi +=
 				    quantile(complement(dist, pvalues[i].second)) * weights[i];
