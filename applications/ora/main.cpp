@@ -155,7 +155,7 @@ int main(int argc, char* argv[])
 	for(auto p : all_results){
 		std::ofstream myfile2;
 		myfile2.open (out + "." + p.first + ".txt");
-		for(int i = 0; i < all_results[p.first].size(); ++i) {
+		for(size_t i = 0; i < all_results[p.first].size(); ++i) {
 			if(all_results[p.first][i].second <= significance) {
 				myfile2 << all_results[p.first][i].first << "\t" << all_name2reference[p.first][all_results[p.first][i].first] << "\t" << all_name2ExpectedHits[p.first][all_results[p.first][i].first] << "\t" << all_name2hits[p.first][all_results[p.first][i].first] << "\t" << all_results[p.first][i].second << "\t" << all_name2info[p.first][all_results[p.first][i].first] << "\n";
 			}
