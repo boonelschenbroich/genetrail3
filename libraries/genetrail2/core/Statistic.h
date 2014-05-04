@@ -109,7 +109,7 @@ namespace GeneTrail {
         value_type sd(InputIterator begin, InputIterator end) {
             return std::sqrt(var(begin,end));
         }
-    };
+    }
 }
 
 #endif // STATISTIC_H
