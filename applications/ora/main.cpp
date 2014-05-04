@@ -85,8 +85,10 @@ int main(int argc, char* argv[])
 
 	if(scores != "" && identifier != ""){
 		std::cerr << "ERROR: Please specify only one input file." << "\n";
+		return -1;
 	}else if (scores == "" && identifier == ""){
 		std::cerr << "ERROR: Please specify a input file." << "\n";
+		return -1;
 	}
 
 	auto test_set = parseTestSet();
@@ -96,9 +98,11 @@ int main(int argc, char* argv[])
 	std::ifstream cat(categories);
 	if(!cat) {
 		std::cerr << "ERROR: Could not open " << categories << " for reading." << std::endl;
+		return -1;
 	}
 
-	for(std::string line; getline(cat, line);) {
+	size_t lineno = 0;
+	for(std::string line; getline(cat, line); ++lineno) {
 
 		std::vector<std::pair<std::string, double>> results;
 		std::map<std::string, std::string> name2reference;
@@ -108,6 +112,11 @@ int main(int argc, char* argv[])
 
 		std::vector<std::string> strs;
 		boost::split(strs,line,boost::is_any_of("\t"));
+
+		if(strs.size() != 2) {
+			std::cerr << "Invalid line " << lineno << " in file " << categories << std::endl;
+			return -1;
+		}
 
 		std::string categoryName = strs[0];
 		std::string category = strs[1];
