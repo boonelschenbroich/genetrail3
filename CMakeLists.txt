@@ -1,6 +1,6 @@
 project(GENETRAIL2)
 
-cmake_minimum_required(VERSION 2.8.7 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
 
 ####################################################################################################
 # Manual entries (edit this for new release)
