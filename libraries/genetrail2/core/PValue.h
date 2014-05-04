@@ -45,7 +45,7 @@ namespace GeneTrail
 		stepDown(const std::vector<pValue<float_type>>& pvalues)
 		{
 			std::vector<pValue<float_type>> adjustedPValues(pvalues);
-			for(int i = 1; i < adjustedPValues.size(); ++i) {
+			for(size_t i = 1; i < adjustedPValues.size(); ++i) {
 				adjustedPValues[i].second =
 				    std::min(std::max(adjustedPValues[i - 1].second,
 				                      adjustedPValues[i].second),
@@ -225,10 +225,10 @@ namespace GeneTrail
 			std::vector<pValue<float_type>> adj =
 			    adjustByOrder(pvalues, fdr_func);
 			float_type q = 0.0;
-			for(int i = 0; i < adj.size(); ++i) {
+			for(size_t i = 0; i < adj.size(); ++i) {
 				q += 1 / ((float_type)i + 1.0);
 			}
-			for(int i = 0; i < adj.size(); ++i) {
+			for(size_t i = 0; i < adj.size(); ++i) {
 				adj[i].second *= q;
 			}
 			return stepDown(adj);
