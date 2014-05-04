@@ -222,7 +222,7 @@ int main(int argc, char* argv[])
 			}
 		}
 
-		for(int i = 0; i < num_cluster; ++i) {
+		for(unsigned int i = 0; i < num_cluster; ++i) {
 			std::cout << "Cluster " << i << "\tIntra: " << intra_scores[i] << "\tInter: " << inter_scores[i] << "\tSize: " << num_nodes[i] << std::endl;
 		}
 	}
