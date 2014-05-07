@@ -5,6 +5,7 @@
 #include <iostream>
 #include <utility>
 #include <string>
+#include <functional>
 
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string.hpp>
@@ -13,62 +14,65 @@
 
 #include "Exception.h"
 #include "Category.h"
-#include "ScoringFile.h"
+#include "GeneSet.h"
 
 #include "macros.h"
 
 namespace GeneTrail
 {
+	template<typename value_type>
 	class GT2_EXPORT GeneSetReader
 	{
 		public:
+
 		GeneSetReader(){};
 
-		Category readGeneSet(const std::string& path, const std::string name);
-
-		std::vector<std::string> readGeneList(const std::string& path);
-
-		template<typename value_type>
-		ScoringFile<value_type> readScoringFile(const std::string& path){
-			ScoringFile<value_type> scores;
+		template<typename Processor>
+		GeneSet<value_type> read(const std::string& path, Processor p, int numberOfElementPerLine, std::string delimiter = " \t")
+		{
+			GeneSet<value_type> gene_set;
 			std::ifstream input(path);
 			if(!input) {
-				std::cerr << "Could not open " << path << " for reading." << std::endl;
+				throw IOError("File (" + path + ") is not open for reading");
 			}
 			for(std::string line; getline(input, line);) {
 				std::vector<std::string> sline;
-				boost::split(sline, line, boost::is_any_of(" \t"));
-				if(sline.size() == 2) {
-					boost::trim(sline[0]);
-					boost::trim(sline[1]);
-					scores.add(std::make_pair(sline[0], boost::lexical_cast<value_type>(sline[1])));
+				boost::split(sline, line, boost::is_any_of(delimiter));
+				if(sline.size() == numberOfElementPerLine) {
+				gene_set.insert(p(sline));
+				}else{
+					throw IOError("Wrong file format.");
 				}
 			}
-			return scores;
+			return gene_set;
 		}
 
-		template <typename value_type>
-		ScoringFile<value_type> readNAFile(const std::string& path)
+		static std::pair<std::string,value_type> scoringFileProcessor(std::vector<std::string> sline)
 		{
-			ScoringFile<value_type> scores;
-			std::ifstream input(path);
-			if(!input) {
-				std::cerr << "Could not open " << path << " for reading."
-				          << std::endl;
-			}
-			for(std::string line; getline(input, line);) {
-				if(line.find("class=") != std::string::npos)
-					continue;
-				std::vector<std::string> sline;
-				boost::split(sline, line, boost::is_any_of("="));
-				if(sline.size() == 2) {
-					boost::trim(sline[0]);
-					boost::trim(sline[1]);
-					scores.add(std::make_pair(
-					    sline[0], boost::lexical_cast<value_type>(sline[1])));
-				}
-			}
-			return scores;
+			boost::trim(sline[0]);
+			boost::trim(sline[1]);
+			return std::make_pair(sline[0], boost::lexical_cast<value_type>(sline[1]));
+		}
+
+		GeneSet<value_type> readScoringFile(const std::string& path)
+		{
+			return read(path, scoringFileProcessor, 2);
+		}
+
+		static std::pair<std::string,value_type> geneListProcessor(std::vector<std::string> sline)
+		{
+			boost::trim(sline[0]);
+			return std::make_pair(sline[0], (value_type) 0.0);
+		}
+
+		GeneSet<value_type> readGeneList(const std::string& path)
+		{
+			return read(path, geneListProcessor, 1);
+		}
+
+		GeneSet<value_type> readNAFile(const std::string& path)
+		{
+			return read(path, scoringFileProcessor, 2, "=");
 		}
 	};
 }
