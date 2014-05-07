@@ -3,6 +3,14 @@
 using namespace GeneTrail;
 using namespace boost::multiprecision;
 
+OverRepresentationAnalysis::OverRepresentationAnalysis(const Category& reference_set,const Category& test_set)
+:reference_set_(reference_set),test_set_(test_set)
+{
+	m_ = reference_set_.size();
+	n_ = test_set_.size();
+	useHypergeometricTest_ = categoryContainsAllGenes(reference_set_, test_set_);
+}
+
 bool OverRepresentationAnalysis::categoryContainsAllGenes(const Category& reference, const Category& testSet){
     for (auto gene = testSet.begin(); gene != testSet.end(); ++gene) {
         if (!reference.contains(*gene)) {
@@ -12,40 +20,47 @@ bool OverRepresentationAnalysis::categoryContainsAllGenes(const Category& refere
     return true;
 }
 
-std::tuple<double, double, std::string> OverRepresentationAnalysis::computePValue(const Category& category, const Category& referenceSet, const Category& testSet) {
+ORAResult OverRepresentationAnalysis::computePValue(const Category& category) {
 
-	FishersExactTest<uint64_t, cpp_dec_float_50> fisherTest_;
-	HypergeometricTest<uint64_t, cpp_dec_float_50> hyperTest_;
+	ORAResult result;
+	result.reference = category.reference();
+	result.name = category.name();
 
-	uint64_t m = referenceSet.size();
 	// GeneTrail 1
 	//uint64_t l = category.size();
-	uint64_t l = intersect("null", referenceSet, category).size();
-    uint64_t n = testSet.size();
-	Category intersection = intersect("null", testSet, category);
+
+	uint64_t l = intersect("null", reference_set_, category).size();
+	Category intersection = intersect("null", test_set_, category);
     uint64_t k = intersection.size();
-	auto expected_k = ((double)l * n) / ((double)m);
+	result.hits = k;
+	auto expected_k = ((double)l * n_) / ((double)m_);
+	result.expected_hits = expected_k;
+	bool enriched = expected_k < k;
+	result.enriched = enriched;
 
 	cpp_dec_float_50 p;
 
-    if (categoryContainsAllGenes(referenceSet, testSet)) {
-        if (expected_k < k) {
-            p = hyperTest_.upperTailedPValue(m, l, n, k);
+    if (useHypergeometricTest_) {
+        if (enriched) {
+            p = hyperTest_.upperTailedPValue(m_, l, n_, k);
         } else {
-            p = hyperTest_.lowerTailedPValue(m, l, n, k);
+            p = hyperTest_.lowerTailedPValue(m_, l, n_, k);
         }
     } else {
-        if (expected_k < k) {
-            p = fisherTest_.upperTailedPValue(m, l, n, k);
+        if (enriched) {
+            p = fisherTest_.upperTailedPValue(m_, l, n_, k);
         } else {
-            p = fisherTest_.lowerTailedPValue(m, l, n, k);
+            p = fisherTest_.lowerTailedPValue(m_, l, n_, k);
         }
     }
+
+	result.pvalue = p.convert_to<double>();
 
 	std::string genes = "";
 	for (auto gene = intersection.begin(); gene != intersection.end(); ++gene) {
 		genes += (gene == intersection.begin()) ? *gene : "," + *gene;
 	}
+	result.info = genes;
 
-    return std::make_tuple(p.convert_to<double>(), expected_k, genes);
+    return result;
 }

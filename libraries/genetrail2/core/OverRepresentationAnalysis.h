@@ -17,12 +17,13 @@
  * If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#ifndef GT2_OVER_REPRESENTATION_ANALYSIS_H
-#define GT2_OVER_REPRESENTATION_ANALYSIS_H
+#ifndef GT2_CORE_OVER_REPRESENTATION_ANALYSIS_H
+#define GT2_CORE_OVER_REPRESENTATION_ANALYSIS_H
 
 #include "macros.h"
 
 #include "Category.h"
+#include "ORAResult.h"
 #include "FishersExactTest.h"
 #include "HypergeometricTest.h"
 
@@ -40,7 +41,7 @@ namespace GeneTrail {
      */
     class GT2_EXPORT OverRepresentationAnalysis {
 
-		public:
+		private:
 
 			/**
 			 * This method checks if all genes in set are contained in category.
@@ -51,7 +52,13 @@ namespace GeneTrail {
 			 */
 			bool categoryContainsAllGenes(const Category& category, const Category& set);
 
-			/**
+		public:
+
+			OverRepresentationAnalysis() = default;
+
+			OverRepresentationAnalysis(const Category& reference_set,const Category& test_set);
+
+		    /**
 			 * This method computes a one-sided p-value.
 			 *
 			 * @param category The category for which a p-value should be computed.
@@ -59,10 +66,25 @@ namespace GeneTrail {
 			 * @param test_set Test set
 			 * @return P-value
 			 */
-			std::tuple<double, double, std::string> computePValue(const Category& category, const Category& reference_set, const Category& test_set);
+			ORAResult computePValue(const Category& category);
+
+		private:
+
+			Category reference_set_;
+			//Size of reference set
+			uint64_t m_;
+
+			Category test_set_;
+			//Size of test set
+			uint64_t n_;
+
+			bool useHypergeometricTest_;
+
+			FishersExactTest<uint64_t, boost::multiprecision::cpp_dec_float_50> fisherTest_;
+			HypergeometricTest<uint64_t, boost::multiprecision::cpp_dec_float_50> hyperTest_;
 
 	};
 }
 
-#endif // GT2_OVER_REPRESENTATION_ANALYSIS_H
+#endif // GT2_CORE_OVER_REPRESENTATION_ANALYSIS_H
 
