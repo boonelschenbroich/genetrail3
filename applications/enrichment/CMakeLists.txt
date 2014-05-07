@@ -12,7 +12,11 @@ set_target_properties(enrich PROPERTIES
 GT2_COMPILE_FLAGS(enrich)
 
 add_library(enrichment_common STATIC common.cpp common.h)
+target_link_libraries(gtcore ${BOOST_LIBRARIES})
 GT2_COMPILE_FLAGS(enrichment_common)
+set_target_properties(enrichment_common PROPERTIES
+	INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
+)
 
 add_executable(gsea gsea.cpp)
 target_link_libraries(gsea gtcore enrichment_common ${BOOST_LIBRARIES})
@@ -33,7 +37,7 @@ set_target_properties(ora PROPERTIES
 ####################################################################################################
 
 install(TARGETS enrich gsea ora
-    RUNTIME DESTINATION bin
+	RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
 )
