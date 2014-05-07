@@ -4,7 +4,7 @@ project(GENETRAIL2_CORE_LIBRARY_TESTS)
 # Unit tests for all classes
 ####################################################################################################
 
-add_gtest(ScoringFileParser_tests           LIBRARIES gtcore)
+add_gtest(GeneSetReader_tests           LIBRARIES gtcore)
 add_gtest(BoostGraphParser_tests            LIBRARIES gtcore)
 add_gtest(BoostGraphProcessor_tests         LIBRARIES gtcore)
 add_gtest(Matrix_tests                      LIBRARIES gtcore)
