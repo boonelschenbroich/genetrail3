@@ -10,7 +10,7 @@
 #include <genetrail2/core/Category.h>
 #include <genetrail2/core/GeneSetEnrichmentAnalysis.h>
 #include <genetrail2/core/GeneSetReader.h>
-#include <genetrail2/core/ScoringFile.h>
+#include <genetrail2/core/GeneSet.h>
 #include <genetrail2/core/GMTFile.h>
 
 #include <boost/lexical_cast.hpp>
@@ -55,8 +55,8 @@ TEST(GeneSetEnrichmentAnalysis, littleExample2) {
 }
 
 /*TEST(GeneSetEnrichmentAnalysis, bigExampleCompareOldAndNewImplementation) {
-	GeneSetReader reader;
-	ScoringFile<double> scores = reader.readScoringFile<double>("/home/student/tkehl/GT_TEST/bigScores.txt");
+	GeneSetReader<double> reader;
+	GeneSet<double> scores = reader.readScoringFile("/home/student/tkehl/GT_TEST/bigScores.txt");
 	std::vector<std::string> test_set = scores.getIdentifier(scores.getScores());
 
 	GMTFile input2("/home/student/tkehl/GT_TEST/bigCategories.gmt");
@@ -69,8 +69,8 @@ TEST(GeneSetEnrichmentAnalysis, littleExample2) {
 
 TEST(GeneSetEnrichmentAnalysis, bigExampleCompareWebserverAndNewImplementation)
 {
-	/*GeneSetReader reader;
-	ScoringFile<double> scores = reader.readScoringFile<double>(
+	/*GeneSetReader<double> reader;
+	GeneSet<double> scores = reader.readScoringFile<double>(
 	    "/home/student/tkehl/GT_TEST/bigScores.txt");
 	std::vector<std::string> test_set =
 	    scores.getIdentifier(scores.getDecreasinglySortedScores());*/
