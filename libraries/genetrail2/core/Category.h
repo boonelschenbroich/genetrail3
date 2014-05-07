@@ -35,6 +35,7 @@ namespace GeneTrail
 		explicit Category(std::string name,
 		                  const std::shared_ptr<Category>& parent);
 
+		Category() = default;
 		Category(const Category&) = default;
 		Category(Category&&) = default;
 
