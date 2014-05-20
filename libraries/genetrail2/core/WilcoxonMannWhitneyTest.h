@@ -17,12 +17,12 @@
  * If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#ifndef WILCOXON_MANN_WHITNEY_H
-#define WILCOXON_MANN_WHITNEY_H
+#ifndef GT2_CORE_WILCOXON_MANN_WHITNEY_H
+#define GT2_CORE_WILCOXON_MANN_WHITNEY_H
 
-#include "config.h"
 
-#include "Statistic.h"
+#include <genetrail2/core/macros.h>
+#include <genetrail2/core/Statistic.h>
 
 namespace GeneTrail {
 
@@ -123,5 +123,5 @@ namespace GeneTrail {
     };
 }
 
-#endif // WILCOXON_MANN_WHITNEY_H
+#endif // GT2_CORE_WILCOXON_MANN_WHITNEY_H
 
