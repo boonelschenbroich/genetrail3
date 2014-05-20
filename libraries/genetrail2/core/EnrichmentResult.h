@@ -25,32 +25,34 @@
 #include <string>
 
 #include <boost/lexical_cast.hpp>
+#include <boost/multiprecision/cpp_dec_float.hpp>
 
 namespace GeneTrail {
 
     /**
-     * EnrichmentResult
+     * GeneralEnrichmentResult
      */
     struct GT2_EXPORT EnrichmentResult {
 
-		EnrichmentResult() : pvalue(0.0), hits(0), enriched(false)
+		EnrichmentResult()
+		:hits(0), pvalue(0.0), enriched(false)
 		{}
 
 		std::string name;
 		std::string reference;
-		std::string info;
-		double pvalue;
 		unsigned int hits;
+		boost::multiprecision::cpp_dec_float_50 pvalue;
+		std::string info;
 		bool enriched;
 
-		std::string serialize() const{
+		virtual std::string serialize() const{
 			std::string result = "";
-			result += boost::lexical_cast<std::string>(name) + "\t";
-			result += boost::lexical_cast<std::string>(reference) + "\t";
+			result += name + "\t";
+			result += reference + "\t";
 			result += boost::lexical_cast<std::string>(hits) + "\t";
 			result += boost::lexical_cast<std::string>(pvalue) + "\t";
-			result += boost::lexical_cast<std::string>(info) + "\t";
-			result += boost::lexical_cast<std::string>(enriched) + "\t";
+			result += info + "\t";
+			result += boost::lexical_cast<std::string>(enriched);
 			return result;
 		}
 	};
