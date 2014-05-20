@@ -17,8 +17,8 @@
  * If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#ifndef F_TTEST_H
-#define F_TTEST_H
+#ifndef GT2_CORE_F_TTEST_H
+#define GT2_CORE_F_TTEST_H
 
 #include "macros.h"
 
@@ -80,5 +80,5 @@ namespace GeneTrail {
 
 }
 
-#endif // F_TEST_H
+#endif // GT2_CORE_F_TEST_H
 

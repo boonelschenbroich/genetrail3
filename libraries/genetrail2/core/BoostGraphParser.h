@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef BOOST_GRAPH_PARSER_H
-#define BOOST_GRAPH_PARSER_H
+#ifndef GT2_CORE_BOOST_GRAPH_PARSER_H
+#define GT2_CORE_BOOST_GRAPH_PARSER_H
 
 #include <string>
 #include <tuple>
@@ -31,13 +31,14 @@
 #include <sstream>
 
 #include "BoostGraph.h"
+#include "macros.h"
 
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/split.hpp>
 
 namespace GeneTrail {
 
-    class BoostGraphParser {
+    class GT2_EXPORT BoostGraphParser {
     public:
 
         BoostGraphParser() {
@@ -170,4 +171,4 @@ namespace GeneTrail {
     };
 }
 
-#endif //BOOST_GRAPH_PARSER_H
+#endif //GT2_CORE_BOOST_GRAPH_PARSER_H

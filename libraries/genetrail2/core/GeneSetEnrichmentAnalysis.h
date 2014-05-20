@@ -18,11 +18,13 @@
  *
  */
 
-#ifndef GT2_GeneSetEnrichmentAnalysis_H
-#define GT2_GeneSetEnrichmentAnalysis_H
+#ifndef GT2_CORE_GENE_SET_ENRICHMENT_ANALYSIS_H
+#define GT2_CORE_GENE_SET_ENRICHMENT_ANALYSIS_H
 
 #include "macros.h"
+
 #include "Category.h"
+#include "EnrichmentResult.h"
 
 #include <boost/math/special_functions/binomial.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
@@ -96,6 +98,7 @@ namespace GeneTrail
 			    int rs = 0;
 
 			    std::vector<std::pair<int, int>> points;
+				points.push_back(std::make_pair(0,0));
 			    bool inc = false;
 				int rs_old = 0;
 			    for(int i = 0; i < n; ++i) {
@@ -116,6 +119,7 @@ namespace GeneTrail
 				    }
 					rs_old = rs;
 			    }
+				points.push_back(std::make_pair(testSet.size(),0));
 			    return std::make_pair(RSc, points);
 		    }
 
@@ -214,7 +218,12 @@ namespace GeneTrail
 					}
 				}
 
-				return 1.0 - M[nl] / boost::math::binomial_coefficient<float_type>(n, l);
+				float_type binom = boost::math::binomial_coefficient<float_type>(n, l);
+
+				if(M[nl] >= binom){
+					return 0.0;
+				}
+				return 1.0 - M[nl] / binom;
 			}
 
 
@@ -356,5 +365,5 @@ namespace GeneTrail
 	};
 }
 
-#endif //GT2_GeneSetEnrichmentAnalysis_H
+#endif //GT2_CORE_GENE_SET_ENRICHMENT_ANALYSIS_H
 

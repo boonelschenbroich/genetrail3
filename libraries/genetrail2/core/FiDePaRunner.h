@@ -18,12 +18,12 @@
  *
  */
 
-#ifndef FIDEPA_H
-#define FIDEPA_H
+#ifndef GT2_CORE_FIDEPA_H
+#define GT2_CORE_FIDEPA_H
 
 #include "macros.h"
 
-#include "ScoringFile.h"
+#include "GeneSet.h"
 #include "GeneSetReader.h"
 #include "BoostGraphParser.h"
 #include "BoostGraphProcessor.h"
@@ -65,5 +65,5 @@ namespace GeneTrail {
     };
 }
 
-#endif
+#endif //GT2_CORE_FIDEPA_H
 

@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef GT2_Path_H
-#define GT2_Path_H
+#ifndef GT2_CORE_PATH_H
+#define GT2_CORE_PATH_H
 
 #include "macros.h"
 
@@ -35,23 +35,23 @@ namespace GeneTrail
 	{
 		public:
 			Path(){};
-			
+
 			void writeToSIFFile(const std::string& file);
-			
+
 			void addVertex(const std::string& vertex);
-			
+
 			std::string getVertex(const int& position);
-			
+
 			void addRegulation(const std::string& v1, const std::string& v2, const std::string& regulation);
-			
+
 			std::string getRegulation(const std::string& v1, const std::string& v2);
-			
+
 			int length();
-		
+
 			void setRunningSum(int r);
 
 			int runningSum();
-			
+
 			void setPValue(double p);
 
 			double pValue();
@@ -64,5 +64,5 @@ namespace GeneTrail
 	};
 }
 
-#endif //GT2_Path_H
+#endif //GT2_CORE_PATH_H
 

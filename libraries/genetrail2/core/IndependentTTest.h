@@ -17,8 +17,8 @@
  * If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#ifndef INDEPENDENT_TTEST_H
-#define INDEPENDENT_TTEST_H
+#ifndef GT2_CORE_INDEPENDENT_TTEST_H
+#define GT2_CORE_INDEPENDENT_TTEST_H
 
 #include <cmath>
 
@@ -93,5 +93,5 @@ namespace GeneTrail {
     };
 }
 
-#endif // INDEPENDENT_TTEST_H
+#endif // GT2_CORE_INDEPENDENT_TTEST_H
 

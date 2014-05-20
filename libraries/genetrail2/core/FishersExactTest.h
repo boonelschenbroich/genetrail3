@@ -17,8 +17,8 @@
  * If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#ifndef GT2_FISHERS_EXACT_TEST_H
-#define GT2_FISHERS_EXACT_TEST_H
+#ifndef GT2_CORE_FISHERS_EXACT_TEST_H
+#define GT2_CORE_FISHERS_EXACT_TEST_H
 
 #include "macros.h"
 
@@ -90,5 +90,5 @@ namespace GeneTrail {
     };
 }
 
-#endif // GT2_FISHERS_EXACT_TEST_H
+#endif // GT2_CORE_FISHERS_EXACT_TEST_H
 

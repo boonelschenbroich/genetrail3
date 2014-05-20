@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef BOOST_GRAPH_PROCESSOR_H
-#define BOOST_GRAPH_PROCESSOR_H
+#ifndef GT2_CORE_BOOST_GRAPH_PROCESSOR_H
+#define GT2_CORE_BOOST_GRAPH_PROCESSOR_H
 
 #include "macros.h"
 
@@ -53,4 +53,4 @@ namespace GeneTrail {
     };
 }
 
-#endif //BOOST_GRAPH_PROCESSOR_H
+#endif //GT2_CORE_BOOST_GRAPH_PROCESSOR_H

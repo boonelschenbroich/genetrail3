@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef COMMANDLINE_PARSER_H
-#define COMMANDLINE_PARSER_H
+#ifndef GT2_CORE_COMMANDLINE_PARSER_H
+#define GT2_CORE_COMMANDLINE_PARSER_H
 
 #include "macros.h"
 
@@ -145,5 +145,5 @@ namespace GeneTrail
 	};
 }
 
-#endif
+#endif //GT2_CORE_COMMANDLINE_PARSER_H
 

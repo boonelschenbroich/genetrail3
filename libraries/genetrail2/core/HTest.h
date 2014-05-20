@@ -1,5 +1,5 @@
-#ifndef GT2_HTEST_H
-#define GT2_HTEST_H
+#ifndef GT2_CORE_HTEST_H
+#define GT2_CORE_HTEST_H
 
 #include <boost/math/distributions.hpp>
 
@@ -45,5 +45,5 @@ namespace GeneTrail
 	}
 }
 
-#endif //GT2_HTEST_H
+#endif //GT2_CORE_HTEST_H
 

@@ -17,8 +17,8 @@
  * If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#ifndef GRAPH_H
-#define GRAPH_H
+#ifndef GT2_CORE_GRAPH_H
+#define GT2_CORE_GRAPH_H
 
 #ifndef BOOST_GRAPH_UTILITY_HPP
 #include <boost/graph/graph_utility.hpp>
@@ -84,4 +84,4 @@ typedef boost::adjacency_list< boost::listS, boost::listS, boost::bidirectionalS
 typedef boost::graph_traits < GraphType >::vertex_descriptor vertex_descriptor;
 typedef boost::graph_traits < GraphType >::edge_descriptor edge_descriptor;
 
-#endif
+#endif //GT2_CORE_GRAPH_H

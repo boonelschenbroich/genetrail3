@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef PATHFINDER_H
-#define PATHFINDER_H
+#ifndef GT2_CORE_PATHFINDER_H
+#define GT2_CORE_PATHFINDER_H
 
 #include "macros.h"
 
@@ -144,5 +144,5 @@ namespace GeneTrail {
     };
 }
 
-#endif
+#endif //GT2_CORE_PATHFINDER_H
 
