@@ -18,6 +18,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" ST
 	LIST(APPEND CXX_FLAGS "-fvisibility=hidden")
 	LIST(APPEND CXX_FLAGS "-pedantic")
 	LIST(APPEND CXX_FLAGS "-Wall")
+	LIST(APPEND CXX_FLAGS "-std=c++11")
 
 	SET(GT2_EXPORT                 "__attribute__((visibility (\"default\")))")
 	SET(GT2_LOCAL                  "__attribute__((visibility (\"hidden\")))")
@@ -29,10 +30,7 @@ endif()
 
 ## Enable C++11 mode
 if    ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-	LIST(APPEND CXX_FLAGS "-std=c++11")
 	LIST(APPEND CXX_FLAGS "-Wno-deprecated-register")
-elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-	LIST(APPEND CXX_FLAGS "-std=c++11")
 endif()
 
 function(GT2_COMPILE_FLAGS target)
