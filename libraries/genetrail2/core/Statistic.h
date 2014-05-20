@@ -17,8 +17,8 @@
  * If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#ifndef STATISTIC_NEW_H
-#define STATISTIC_NEW_H
+#ifndef GT2_CORE_STATISTIC_H
+#define GT2_CORE_STATISTIC_H
 
 #include <cmath>
 #include <algorithm>
@@ -32,7 +32,7 @@ namespace GeneTrail {
     namespace statistic {
 
 		/**
-		 * This method calculates the absolute value for each entry of a given container.
+		 * This method calculates the absolute value for each entry of a given range.
 		 *
 		 * @param begin InputIterator
 		 * @param end InputIterator
@@ -43,7 +43,7 @@ namespace GeneTrail {
 		}
 
 		/**
-		 * This method calculates the square root for each entry of a given container.
+		 * This method calculates the square root for each entry of a given range.
 		 *
 		 * @param begin InputIterator
 		 * @param end InputIterator
@@ -54,7 +54,7 @@ namespace GeneTrail {
 		}
 
 		/**
-		 * This method calculates the natural logarithm for each entry of a given container.
+		 * This method calculates the natural logarithm for each entry of a given range.
 		 *
 		 * @param begin InputIterator
 		 * @param end InputIterator
@@ -65,7 +65,7 @@ namespace GeneTrail {
 		}
 
 		/**
-		 * This method calculates the logarithm (base 10) for each entry of a given container.
+		 * This method calculates the logarithm (base 10) for each entry of a given range.
 		 *
 		 * @param begin InputIterator
 		 * @param end InputIterator
@@ -76,7 +76,7 @@ namespace GeneTrail {
 		}
 
 		/**
-		 * This method calculates the logarithm (base 2) for each entry of a given container.
+		 * This method calculates the logarithm (base 2) for each entry of a given range.
 		 *
 		 * @param begin InputIterator
 		 * @param end InputIterator
@@ -87,7 +87,7 @@ namespace GeneTrail {
 		}
 
 		/**
-		 * This method calculates the n-th power for each entry of a given container.
+		 * This method calculates the n-th power for each entry of a given range.
 		 * @param begin InputIterator
 		 * @param end InputIterator
 		 */
@@ -97,7 +97,7 @@ namespace GeneTrail {
 		}
 
         /**
-         * This method calculates the maximal value of a given container.
+         * This method calculates the maximal value of a given range.
          *
          * @param begin InputIterator
 		 * @param end InputIterator
@@ -109,7 +109,7 @@ namespace GeneTrail {
         }
 
         /**
-         * This method calculates the minimal value of a given container.
+         * This method calculates the minimal value of a given range.
          *
          * @param begin InputIterator
 		 * @param end InputIterator
@@ -120,8 +120,20 @@ namespace GeneTrail {
             return *std::min_element(begin, end);
         }
 
+		/**
+		 * This method calculates the sum of a given range.
+		 *
+		 * @param begin InputIterator
+		 * @param end InputIterator
+		 * @return Sum of the given range
+		 */
+		template <typename value_type, typename InputIterator>
+		value_type sum(InputIterator begin, InputIterator end) {
+			return std::accumulate(begin, end,  0.0);
+		}
+
         /**
-         * This method calculates the mean of a given container.
+         * This method calculates the mean of a given range.
          *
          * @param begin InputIterator
 		 * @param end InputIterator
@@ -133,7 +145,7 @@ namespace GeneTrail {
         }
 
 		/**
-		 * This method calculates the max-mean statistic of a given container.
+		 * This method calculates the max-mean statistic of a given range.
 		 *
 		 * @param begin InputIterator
 		 * @param end InputIterator
@@ -155,7 +167,7 @@ namespace GeneTrail {
 		}
 
 		/**
-         * This method calculates the median of a given container.
+         * This method calculates the median of a given range.
          *
          * @param begin InputIterator
 		 * @param end InputIterator
@@ -170,7 +182,7 @@ namespace GeneTrail {
         }
 
         /**
-         * This method calculates the pooled variance of a given container.
+         * This method calculates the pooled variance of a given range.
          *
          * @param begin InputIterator
 		 * @param end InputIterator
@@ -196,7 +208,7 @@ namespace GeneTrail {
         }
 
         /**
-         * This method calculates the standard deviation of a given container.
+         * This method calculates the standard deviation of a given range.
          *
          * @param begin InputIterator
 		 * @param end InputIterator
@@ -206,8 +218,85 @@ namespace GeneTrail {
         value_type sd(InputIterator begin, InputIterator end) {
             return std::sqrt(var<value_type,InputIterator>(begin,end));
         }
-    }
+
+		/**
+		 * This method calculates the sample covariance between two ranges of values.
+		 *
+		 * @param first_begin InputIterator
+		 * @param first_end InputIterator
+		 * @param second_begin InputIterator
+		 * @param second_begin InputIterator
+		 * @return Covariance of the given range
+		 */
+		template <typename value_type, typename InputIterator>
+		value_type cov(InputIterator first_begin, InputIterator first_end, InputIterator second_begin, InputIterator second_end){
+			assert(std::distance(first_begin, first_end) == std::distance(second_begin, second_end));
+			value_type mean1 = mean<value_type,InputIterator>(first_begin, first_end);
+			value_type mean2 = mean<value_type,InputIterator>(second_begin, second_end);
+			value_type cov = 0.0;
+			size_t n = std::distance(first_begin, first_end);
+			for(int i=0; i<n; ++i)
+			{
+				cov += (*(first_begin + i) - mean1)*(*(second_begin + i) - mean2);
+			}
+			return cov / (n - 1);
+		}
+
+		/**
+		 * This methods implements Pearson's correlation coefficient.
+		 *
+		 * @param first_begin InputIterator
+		 * @param first_end InputIterator
+		 * @param second_begin InputIterator
+		 * @param second_begin InputIterator
+		 * @return Correlation coefficient
+		 */
+		template <typename value_type, typename InputIterator>
+		value_type pearson_correlation(InputIterator first_begin, InputIterator first_end, InputIterator second_begin, InputIterator second_end){
+			assert(std::distance(first_begin, first_end) == std::distance(second_begin, second_end));
+			value_type covar = cov<value_type,InputIterator>(first_begin, first_end, second_begin, second_end);
+			value_type sd1 = sd<value_type,InputIterator>(first_begin, first_end);
+			value_type sd2 = sd<value_type,InputIterator>(second_begin, second_end);
+			return covar / (sd1 * sd2);
+		}
+
+		/**
+		 */
+		template <typename value_type, typename InputIterator>
+		std::vector<int> ranks(InputIterator begin, InputIterator end){
+			std::vector<value_type> tmp(begin, end);
+			std::sort(tmp.begin(), tmp.end());
+			std::vector<int> ranks;
+			for(auto it = begin; it!= end; ++it)
+			{
+				for(int i = 0; i < tmp.size(); ++i)
+				{
+					if(*it == *(tmp.begin()+i))
+					{
+						ranks.push_back(i);
+					}
+				}
+			}
+			return ranks;
+		}
+
+		/**
+		 * This methods implements Spearman's correlation coefficient.
+		 *
+		 * @param first_begin InputIterator
+		 * @param first_end InputIterator
+		 * @param second_begin InputIterator
+		 * @param second_begin InputIterator
+		 * @return Correlation coefficient
+		 */
+		template <typename value_type, typename InputIterator>
+		value_type spearman_correlation(InputIterator first_begin, InputIterator first_end, InputIterator second_begin, InputIterator second_end){
+			std::vector<int> first_ranks = ranks<value_type, InputIterator>(first_begin, first_end);
+			std::vector<int> second_ranks = ranks<value_type, InputIterator>(second_begin, second_end);
+			return pearson_correlation<value_type,std::vector<int>::iterator>(first_ranks.begin(), first_ranks.end(), second_ranks.begin(), second_ranks.end());
+		}
+    };
 }
 
-#endif // STATISTIC_H
+#endif // GT2_CORE_STATISTIC_H
 
