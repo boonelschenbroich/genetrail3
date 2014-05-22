@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 
-#include <genetrail2/core/ScoringFile.h>
 #include <genetrail2/core/BoostGraphParser.h>
 #include <genetrail2/core/BoostGraphProcessor.h>
 #include <genetrail2/core/Pathfinder.h>
