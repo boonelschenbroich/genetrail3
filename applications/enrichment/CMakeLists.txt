@@ -4,12 +4,12 @@ project(Enrich)
 # Build executable
 ####################################################################################################
 
-add_executable(enrich main.cpp)
-target_link_libraries(enrich gtcore)
-set_target_properties(enrich PROPERTIES
+add_executable(hotelling_t_test main.cpp)
+target_link_libraries(hotelling_t_test gtcore)
+set_target_properties(hotelling_t_test PROPERTIES
     INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
 )
-GT2_COMPILE_FLAGS(enrich)
+GT2_COMPILE_FLAGS(hotelling_t_test)
 
 add_library(enrichment_common STATIC common.cpp common.h)
 target_link_libraries(gtcore ${BOOST_LIBRARIES})
@@ -32,11 +32,25 @@ set_target_properties(ora PROPERTIES
     INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
 )
 
+add_executable(wilcoxon wilcoxon.cpp)
+target_link_libraries(wilcoxon gtcore enrichment_common ${BOOST_LIBRARIES})
+GT2_COMPILE_FLAGS(wilcoxon)
+set_target_properties(wilcoxon PROPERTIES
+    INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
+)
+
+add_executable(enrichment enrichment.cpp)
+target_link_libraries(enrichment gtcore enrichment_common ${BOOST_LIBRARIES})
+GT2_COMPILE_FLAGS(enrichment)
+set_target_properties(enrichment PROPERTIES
+    INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
+)
+
 ####################################################################################################
 # Build executable
 ####################################################################################################
 
-install(TARGETS enrich gsea ora
+install(TARGETS hotelling_t_test gsea ora wilcoxon enrichment
 	RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
