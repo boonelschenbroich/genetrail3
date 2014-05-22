@@ -37,7 +37,6 @@ Params p;
 GeneSet<double> test_set;
 GeneSet<double> reference_set;
 CategoryList cat_list;
-AllResults name_to_cat_results;
 OverRepresentationAnalysis ora;
 
 bool parseArguments(int argc, char* argv[])
@@ -65,10 +64,11 @@ bool parseArguments(int argc, char* argv[])
 	return true;
 }
 
-EnrichmentResult computeEnrichment(const Category& c, std::pair<int, std::string> genes)
+std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, std::pair<int, std::string> genes)
 {
-	std::cout << "INFO: Processing " << c.name() << std::endl;
-	return ora.computePValue(c);
+	std::shared_ptr<ORAResult> result(new ORAResult());
+	*result = ora.computePValue(c);
+	return result;
 }
 
 int main(int argc, char* argv[])
@@ -95,7 +95,7 @@ int main(int argc, char* argv[])
 
 	ora = OverRepresentationAnalysis(reference_set.toCategory("reference"), test_set.toCategory("test"));
 
-	run(test_set, cat_list, name_to_cat_results, p);
+	run(test_set, cat_list, p);
 
 	return 0;
 }
