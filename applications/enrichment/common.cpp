@@ -9,7 +9,8 @@ void addCommonCLIArgs(bpo::options_description& desc, Params& p)
 		("minimum,n", bpo::value<int>(&p.minimum)->default_value(0),"Minimum number of genes allowed in categories.")
 		("maximum,x", bpo::value<int>(&p.maximum)->default_value(1000),"Maximum number of genes allowed in categories.")
 		("output,o", bpo::value<std::string>(&p.out), "Output prefix for text files.")
-		("adjustment,a", bpo::value<std::string>(&p.adjustment)->default_value("no"),"P-value adjustment method for multiple testing.");
+		("adjustment,a", bpo::value<std::string>(&p.adjustment)->default_value("no"),"P-value adjustment method for multiple testing.")
+		("adjust_separately,p", bpo::value(&p.runSeparately)->zero_tokens(),"Indicates if databases are adjusted separatly or combined.");
 }
 
 CategoryList getCategoryList(const std::string& catfile_list, const std::string& single_cat)
@@ -22,7 +23,6 @@ CategoryList getCategoryList(const std::string& catfile_list, const std::string&
 	for(std::string line; getline(input, line);) {
 		std::vector<std::string> sline;
 		boost::split(sline, line, boost::is_any_of(" \t"));
-		std::cout << line << std::endl;
 		if(sline.size() == 2) {
 			boost::trim(sline[0]);
 			boost::trim(sline[1]);
@@ -55,6 +55,14 @@ int readTestSet(GeneSet<double>& test_set, const Params& p)
 	return 0;
 }
 
+PValueList resultVector(const Results& results)
+{
+	PValueList result;
+	for(const auto& jt : results) {
+		result.push_back(std::make_pair(jt.first, jt.second->pvalue.convert_to<double>()));
+	}
+	return result;
+}
 
 PValueList resultVector(const AllResults& results)
 {
@@ -62,7 +70,7 @@ PValueList resultVector(const AllResults& results)
 
 	for(const auto& it : results) {
 		for(const auto& jt : it.second) {
-			result.push_back(std::make_pair(it.first + "\t" + jt.first, jt.second.pvalue));
+			result.push_back(std::make_pair(it.first + "\t" + jt.first, jt.second->pvalue.convert_to<double>()));
 		}
 	}
 
@@ -82,38 +90,26 @@ std::pair<bool, std::pair<int, std::string>> processCategory(Category& c, GeneSe
 	return std::make_pair(p.minimum <= hits && hits <= p.maximum, std::make_pair(hits, genes));
 }
 
-std::map<std::string, std::vector<EnrichmentResult>> splitDatabases(AllResults& all_results, const PValueList& pvalues)
+void writeFiles(const std::string& output_dir, const AllResults& all_results)
 {
-	std::map<std::string, std::vector<EnrichmentResult>> result;
 
-	for(const auto& it : pvalues)
+	size_t size = 0;
+	for(auto& results_it : all_results)
 	{
-		std::vector<std::string> s;
-		boost::split(s, it.first, boost::is_any_of("\t"));
-		auto find = result.find(s[0]);
-		if(find == result.end()){
-			result[s[0]] = std::vector<EnrichmentResult>();
-		}
-		auto ora = all_results[s[0]][s[1]];
-		ora.pvalue = it.second;
-		result[s[0]].emplace_back(ora);
+		size += results_it.second.size();
 	}
 
-	return result;
-}
-
-void writeFile(const std::string& output_dir, const std::map<std::string,std::vector<EnrichmentResult>>& databases){
-	for(const auto& database : databases){
+	for(const auto& database : all_results)
+	{
 		std::ofstream output;
 		output.open (output_dir + "." + database.first + ".txt");
 		for(const auto& ele : database.second)
 		{
-			output << ele.serialize() << std::endl;
+			output << ele.second->serialize() << std::endl;
 		}
 		output.close();
 	}
 }
-
 
 int init(GeneSet<double>& test_set, CategoryList& cat_list, const Params& p){
 
@@ -142,10 +138,47 @@ int init(GeneSet<double>& test_set, CategoryList& cat_list, const Params& p){
 	return 0;
 }
 
-void run(GeneSet<double>& test_set, CategoryList& cat_list, AllResults& name_to_cat_results, const Params& p)
+std::vector<std::string> getSortedIdentifier(GeneSet<double>& test_set, const Params& p, bool absolute, bool increasing){
+	std::vector<std::string> test;
+	if(p.scores != ""){
+		if(absolute){
+			test = test_set.getIdentifier(test_set.getAbsoluteSortedScores());
+		}else{
+			if(increasing){
+				test = test_set.getIdentifier(test_set.getIncreasinglySortedScores());
+			}else{
+				test = test_set.getIdentifier(test_set.getDecreasinglySortedScores());
+			}
+		}
+	}else{
+		test = test_set.getIdentifier(test_set.getScores());
+	}
+	return test;
+}
+
+void updatePValues(Results& results, const PValueList& pvalues)
 {
+	for(const auto& it : pvalues)
+	{
+		results[it.first]->pvalue = it.second;
+	}
+}
+
+void updatePValues(AllResults& results, const PValueList& pvalues)
+{
+	for(const auto& it : pvalues)
+	{
+		std::vector<std::string> s;
+		boost::split(s, it.first, boost::is_any_of("\t"));
+		results[s[0]][s[1]]->pvalue = it.second;
+	}
+}
+
+AllResults compute(GeneSet<double>& test_set, CategoryList& cat_list, const Params& p)
+{
+	AllResults name_to_cat_results;
 	for(const auto& cat : cat_list) {
-		std::cout << cat.first << "	" << cat.second << std::endl;
+		std::cout << "INFO: Processing - " << cat.first << std::endl;
 		try
 		{
 			GMTFile input(cat.second);
@@ -160,7 +193,6 @@ void run(GeneSet<double>& test_set, CategoryList& cat_list, AllResults& name_to_
 
 				name_to_result.insert(std::make_pair(c.name(), computeEnrichment(c, pair.second)));
 			}
-
 			name_to_cat_results.insert(std::make_pair(cat.first, name_to_result));
 		}
 		catch(IOError& exn)
@@ -169,8 +201,37 @@ void run(GeneSet<double>& test_set, CategoryList& cat_list, AllResults& name_to_
 		}
 	}
 
-	auto results = resultVector(name_to_cat_results);
-	results = pvalue<double>::adjustPValues(results, p.adjustment);
-
-	writeFile(p.out, splitDatabases(name_to_cat_results, results));
+	return name_to_cat_results;
 }
+
+void adjustCombined(AllResults& all_results, const Params& p)
+{
+	auto results = resultVector(all_results);
+	results = pvalue<double>::adjustPValues(results, p.adjustment);
+	updatePValues(all_results, results);
+}
+
+void adjustSeparately(AllResults& all_results, const Params& p)
+{
+	for(auto& results_it : all_results)
+	{
+		auto results = resultVector(results_it.second);
+		results = pvalue<double>::adjustPValues(results, p.adjustment);
+		updatePValues(results_it.second, results);
+	}
+}
+
+void run(GeneSet<double>& test_set, CategoryList& cat_list, const Params& p)
+{
+	AllResults name_to_cat_results(compute(test_set, cat_list, p));
+	if(p.runSeparately)
+	{
+		adjustSeparately(name_to_cat_results, p);
+	}
+	else
+	{
+		adjustCombined(name_to_cat_results, p);
+	}
+	writeFiles(p.out, name_to_cat_results);
+}
+
