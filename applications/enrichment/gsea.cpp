@@ -4,6 +4,7 @@
 #include <genetrail2/core/GeneSetEnrichmentAnalysis.h>
 #include <genetrail2/core/PValue.h>
 #include <genetrail2/core/GeneSet.h>
+#include <genetrail2/core/GSEAResult.h>
 
 #include "common.h"
 
@@ -19,7 +20,8 @@
 #include <cstdint>
 #include <utility>
 #include <map>
-#include <stdlib.h> 
+#include <stdlib.h>
+#include <memory>
 
 using namespace GeneTrail;
 namespace bpo = boost::program_options;
@@ -33,8 +35,8 @@ Params p;
 
 GeneSet<double> test_set;
 CategoryList cat_list;
-AllResults name_to_cat_results;
 GeneSetEnrichmentAnalysis<cpp_dec_float_50, int64_t> gsea;
+std::vector<std::string> identifierOfTestSet;
 
 bool parseArguments(int argc, char* argv[])
 {
@@ -45,8 +47,7 @@ bool parseArguments(int argc, char* argv[])
 	desc.add_options()
 		("identifier, d", bpo::value<std::string>(&p.identifier), "A file containing identifier line by line.")
 		("increasing,i", bpo::value(&increasing)->zero_tokens(), "Use increasingly sorted scores. (Decreasing is default)")
-		("absolute,abs", bpo::value(&absolute)->zero_tokens(), "Use decreasingly sorted absolute scores.")
-		("json,j", bpo::value<std::string>(&json), "Output filename of json file.");
+		("absolute,abs", bpo::value(&absolute)->zero_tokens(), "Use decreasingly sorted absolute scores.");
 
 	if(absolute && increasing) {
 		std::cerr << "Error: Please specify only one option to sort the file." << "\n";
@@ -67,31 +68,16 @@ bool parseArguments(int argc, char* argv[])
 	return true;
 }
 
-EnrichmentResult computeEnrichment(const Category& c, std::pair<int,std::string> genes)
+std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, std::pair<int,std::string> genes)
 {
-	std::cout << "INFO: Processing " << c.name() << std::endl;
-	EnrichmentResult result;
-	result.name = c.name();
-	result.reference = c.reference();
+	std::cout << "INFO: Processing - " << c.name() << std::endl;
+	std::shared_ptr<GSEAResult> result(new GSEAResult());
+	result->name = c.name();
+	result->reference = c.reference();
 
-	std::vector<std::string> test;
-	if(p.scores != ""){
-		if(absolute){
-			test = test_set.getIdentifier(test_set.getAbsoluteSortedScores());
-		}else{
-			if(increasing){
-				test = test_set.getIdentifier(test_set.getIncreasinglySortedScores());
-			}else{
-				test = test_set.getIdentifier(test_set.getDecreasinglySortedScores());
-			}
-		}
-	}else{
-		test = test_set.getIdentifier(test_set.getScores());
-	}
-
-	auto enr = gsea.computePValue(c, test);
-	result.pvalue = enr.first.convert_to<double>();
-
+	auto enr = gsea.computePValue(c, identifierOfTestSet);
+	result->pvalue = enr.first;
+	result->points = enr.second;
 	int abs_max = -1;
 	bool enriched;
 	for(auto p : enr.second){
@@ -100,9 +86,10 @@ EnrichmentResult computeEnrichment(const Category& c, std::pair<int,std::string>
 			enriched = p.second >= 0.0;
 		}
 	}
-	result.enriched = enriched;
-	result.hits = genes.first;
-	result.info = genes.second;
+
+	result->enriched = enriched;
+	result->hits = genes.first;
+	result->info = genes.second;
 	return result;
 }
 
@@ -117,5 +104,7 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	run(test_set, cat_list, name_to_cat_results, p);
+	identifierOfTestSet = getSortedIdentifier(test_set, p,  absolute, increasing);
+
+	run(test_set, cat_list, p);
 }
