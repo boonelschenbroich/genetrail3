@@ -38,13 +38,8 @@ namespace GeneTrail {
 
 		std::string serialize() const{
 			std::string result = "";
-			result += boost::lexical_cast<std::string>(name) + "\t";
-			result += boost::lexical_cast<std::string>(reference) + "\t";
-			result += boost::lexical_cast<std::string>(expected_hits) + "\t";
-			result += boost::lexical_cast<std::string>(hits) + "\t";
-			result += boost::lexical_cast<std::string>(pvalue) + "\t";
-			result += boost::lexical_cast<std::string>(info) + "\t";
-			result += boost::lexical_cast<std::string>(enriched) + "\t";
+			result += EnrichmentResult::serialize() + "\t";
+			result += boost::lexical_cast<std::string>(expected_hits);
 			return result;
 		}
 	};
