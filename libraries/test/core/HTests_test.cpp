@@ -5,6 +5,7 @@
 #include <genetrail2/core/IndependentTTest.h>
 #include <genetrail2/core/DependentTTest.h>
 #include <genetrail2/core/WilcoxonMannWhitneyTest.h>
+#include <genetrail2/core/IndependentShrinkageTTest.h>
 
 #include <config.h>
 
@@ -14,7 +15,7 @@
 
 using namespace GeneTrail;
 
-double TOLERANCE = 0.001;
+double TOLERANCE = 0.0001;
 
 
 std::initializer_list<double> ai = {35.5,31.7,31.2,36.6,22.8,28.0,24.6,26.1,34.5,27.7};
@@ -40,7 +41,7 @@ TEST(HTEST, IndependentTest)
     EXPECT_NEAR(HTest::test(f, a.begin(), a.end(), b.begin(), b.end()), -3.1538, TOLERANCE);
     EXPECT_NEAR(HTest::twoSidedPValue(f, -3.1538), 0.005626, TOLERANCE);
     EXPECT_NEAR(HTest::lowerTailedPValue(f, -3.1538), 0.002813, TOLERANCE);
-    EXPECT_NEAR(HTest::upperTailedPValue(f, -3.1538), 0.9972, TOLERANCE);
+    EXPECT_NEAR(HTest::upperTailedPValue(f, -3.1538), 0.997186, TOLERANCE);
     EXPECT_NEAR(HTest::confidenceInterval(f,0.95).first, -12.222103, TOLERANCE);
     EXPECT_NEAR(HTest::confidenceInterval(f,0.95).second, -2.437897, TOLERANCE);
 }
@@ -60,10 +61,52 @@ TEST(HTEST, WilcoxonMannWhitneyTest)
 {
 	WilcoxonMannWhitneyTest<double,std::list<double>::iterator,std::list<double>::iterator> f;
 	EXPECT_NEAR(HTest::test(f, a.begin(), a.end(), b.begin(), b.end()), (16 - 10)/std::sqrt((10 * 10 * (10 + 10 + 1)) / 12.0), TOLERANCE);
-	std::cout << "WARNING: Build a new example for this Test, this sucks" << std::endl;
-	//EXPECT_NEAR(HTest::twoSidedPValue(f, (16 - 10)/std::sqrt((10 * 10 * (10 + 10 + 1)) / 12.0)), 0.008931, TOLERANCE);
-	//EXPECT_NEAR(HTest::lowerTailedPValue(f, (16 - 10)/std::sqrt((10 * 10 * (10 + 10 + 1)) / 12.0)), 0.004465, TOLERANCE);
-	//EXPECT_NEAR(HTest::upperTailedPValue(f, (16 - 10)/std::sqrt((10 * 10 * (10 + 10 + 1)) / 12.0)), 0.9966, TOLERANCE);
+	std::cout << "WARNING: Build a new example for this Test, this one sucks" << std::endl;
+	//EXPECT_NEAR(HTest::twoSidedPValue(f, , , TOLERANCE);
+	//EXPECT_NEAR(HTest::lowerTailedPValue(f, , , TOLERANCE);
+	//EXPECT_NEAR(HTest::upperTailedPValue(f, , , TOLERANCE);
 	//EXPECT_NEAR(HTest::confidenceInterval(f,0.95).first, , TOLERANCE);
 	//EXPECT_NEAR(HTest::confidenceInterval(f,0.95).second, , TOLERANCE);
+}
+
+TEST(HTEST, IndependentShrinkageTTest)
+{
+	IndependentShrinkageTTest<double,std::list<std::list<double>>::iterator, std::list<std::list<double>>::iterator> t;
+	std::list<std::list<double>> aa;
+	aa.push_back(a);
+	std::list<std::list<double>> bb;
+	bb.push_back(b);
+	std::vector<double> result = t.test(aa.begin(), aa.end(), bb.begin(), bb.end());
+	//This should be equal to the normal t-test.
+	EXPECT_NEAR(result[0], -3.1538, TOLERANCE);
+}
+
+TEST(HTEST, IndependentShrinkageTTest2)
+{
+	IndependentShrinkageTTest<double,std::list<std::list<double>>::iterator, std::list<std::list<double>>::iterator> t;
+
+	std::list<std::list<double>> aa;
+	std::list<double> a1({35.5,31.7,31.2,36.6,22.8});
+	aa.push_back(a1);
+	std::list<double> a2({28.0,24.6,26.1,34.5,27.7});
+	aa.push_back(a2);
+	std::list<double> a3({31.7,26.1,44.7,35.0,45.2});
+	aa.push_back(a3);
+
+	std::list<std::list<double>> bb;
+	std::list<double> b1({45.3,36.0,38.6,44.7,31.4});
+	bb.push_back(b1);
+	std::list<double> b2({33.5,28.8,35.8,42.9,35.0});
+	bb.push_back(b2);
+	std::list<double> b3({35.8,42.9,27.7,38.6,45.3});
+	bb.push_back(b3);
+
+	std::vector<double> result = t.test(aa.begin(), aa.end(), bb.begin(), bb.end());
+
+	//These values are computed by the 'st' R package.
+	//As they round the shrinkage factor I had to use TOLERANCE=0.1,
+	//because we want our values as exact as possible.
+	EXPECT_NEAR(result[0], -2.1324815, TOLERANCE);
+	EXPECT_NEAR(result[1], -2.1551803, 0.1);
+	EXPECT_NEAR(result[2], -0.3615726, 0.1);
 }
