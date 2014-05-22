@@ -6,7 +6,7 @@ void FiDePaRunner::computeDeregulatedPaths(std::string kegg, std::string scores,
     GraphType graph;
     BoostGraphParser graph_parser;
     BoostGraphProcessor graph_processor;
-    GeneSetReader reader;
+    GeneSetReader<double> reader;
 
     Pathfinder path_finder;
 
@@ -14,7 +14,7 @@ void FiDePaRunner::computeDeregulatedPaths(std::string kegg, std::string scores,
 
     boost::graph_traits<GraphType>::vertex_iterator vid, vid_end;
 
-    ScoringFile<double> scoring_file = reader.readNAFile<double>(scores);
+    GeneSet<double> scoring_file = reader.readNAFile(scores);
 
 	std::vector<std::pair<std::string, double> > sorted_scores;
     if (absolute) {
@@ -25,7 +25,7 @@ void FiDePaRunner::computeDeregulatedPaths(std::string kegg, std::string scores,
 
     std::set<std::string> vertex_set = graph_processor.getVertexSet(graph);
 
-    std::vector<std::string> sorted_gene_list = scoring_file.intersect(sorted_scores ,vertex_set);
+    std::vector<std::string> sorted_gene_list = scoring_file.getIdentifier(scoring_file.intersect(sorted_scores ,vertex_set));
 
     std::set<std::string> vertex_set_with_scores;
 
