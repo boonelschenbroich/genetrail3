@@ -13,7 +13,7 @@
 #include <genetrail2/core/BoostGraphParser.h>
 #include <genetrail2/core/BoostGraphProcessor.h>
 #include <genetrail2/core/GeneSetReader.h>
-#include <genetrail2/core/ScoringFile.h>
+#include <genetrail2/core/GeneSet.h>
 
 #include <config.h>
 
@@ -40,7 +40,7 @@ TEST(GraphProcessor, vertexSet)
 
 TEST(GraphProcessor, graphProcessing)
 {
-	GeneSetReader reader;
+	GeneSetReader<double> reader;
 	BoostGraphParser parser;
 	BoostGraphProcessor processor;
 	GraphType g;
@@ -48,8 +48,8 @@ TEST(GraphProcessor, graphProcessing)
 	parser.readCytoscapeFile(TEST_DATA_PATH("graph_processor_test.sif"),g);
 	std::set<std::string> vertex_set =  processor.getVertexSet(g);
 
-	ScoringFile<double> scores = reader.readScoringFile<double>(TEST_DATA_PATH("graph_processor_test_scores.txt"));
-	std::vector<std::string> gene_list = scores.intersect(vertex_set);
+	GeneSet<double> scores = reader.readScoringFile(TEST_DATA_PATH("graph_processor_test_scores.txt"));
+	std::vector<std::string> gene_list = scores.getIdentifier(scores.intersect(vertex_set));
 
 	std::set<std::string> vertex_set_with_scores;
 
