@@ -54,7 +54,7 @@ ORAResult OverRepresentationAnalysis::computePValue(const Category& category) {
         }
     }
 
-	result.pvalue = p.convert_to<double>();
+	result.pvalue = p;
 
 	std::string genes = "";
 	for (auto gene = intersection.begin(); gene != intersection.end(); ++gene) {

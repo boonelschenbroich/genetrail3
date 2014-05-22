@@ -29,7 +29,7 @@ TEST(OverRepresentationAnalysis, HypergeometricTestCase1) {
 		test.insert(boost::lexical_cast<std::string>(i));
 	}
 	OverRepresentationAnalysis ora(ref,test);
-	EXPECT_NEAR(ora.computePValue(cat).pvalue, 0.003964583 + 0.0001189375, TOLERANCE);
+	EXPECT_NEAR(ora.computePValue(cat).pvalue.convert_to<double>(), 0.003964583 + 0.0001189375, TOLERANCE);
 }
 
 TEST(OverRepresentationAnalysis, HypergeometricTestCase2) {
@@ -46,7 +46,7 @@ TEST(OverRepresentationAnalysis, HypergeometricTestCase2) {
 		test.insert(boost::lexical_cast<std::string>(i));
 	}
 	OverRepresentationAnalysis ora(ref,test);
-	EXPECT_NEAR(ora.computePValue(cat).pvalue, 0.3105628 + 0.4313372, TOLERANCE);
+	EXPECT_NEAR(ora.computePValue(cat).pvalue.convert_to<double>(), 0.3105628 + 0.4313372, TOLERANCE);
 }
 
 TEST(OverRepresentationAnalysis, FisherTestCase1) {
@@ -64,7 +64,7 @@ TEST(OverRepresentationAnalysis, FisherTestCase1) {
 	}
 	OverRepresentationAnalysis ora(ref,test);
 	FishersExactTest<unsigned int, double> fet;
-	EXPECT_NEAR(ora.computePValue(cat).pvalue, fet.upperTailedPValue(14,9,10,7), TOLERANCE);
+	EXPECT_NEAR(ora.computePValue(cat).pvalue.convert_to<double>(), fet.upperTailedPValue(14,9,10,7), TOLERANCE);
 }
 
 TEST(OverRepresentationAnalysis, FisherTestCase2) {
@@ -82,5 +82,5 @@ TEST(OverRepresentationAnalysis, FisherTestCase2) {
 	}
 	OverRepresentationAnalysis ora(ref,test);
 	FishersExactTest<unsigned int, double> fet;
-	EXPECT_NEAR(ora.computePValue(cat).pvalue, fet.lowerTailedPValue(14,9,10,1), TOLERANCE);
+	EXPECT_NEAR(ora.computePValue(cat).pvalue.convert_to<double>(), fet.lowerTailedPValue(14,9,10,1), TOLERANCE);
 }
