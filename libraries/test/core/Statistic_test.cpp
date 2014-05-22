@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../src/Statistic.h"
+#include <genetrail2/core/Statistic.h>
 
 #include <iostream>
 #include <initializer_list>
@@ -70,7 +70,7 @@ TEST(Statistic, Var)
 	double var1 = statistic::var<double, std::vector<double>::iterator>(a.begin(),a.end());
 	EXPECT_NEAR(var1, 957.185, TOLERANCE);
 	double var2 = statistic::var<double, std::vector<double>::iterator>(b.begin(),b.end());
-	EXPECT_NEAR(var2, 1568.938, TOLERANCE);
+	EXPECT_NEAR(var2, 1568.93778, TOLERANCE);
 }
 
 TEST(Statistic, Sd)
@@ -164,4 +164,28 @@ TEST(Statistic, Pow)
 	for(int i = 0; i < b.size(); ++i) {
 		EXPECT_EQ(tmp[i], b[i] * b[i]);
 	}
+}
+
+TEST(Statistic, Cov)
+{
+	auto tmp = a;
+	auto tmp2 = b;
+	auto covar = statistic::cov<double, std::vector<double>::iterator>(tmp.begin(), tmp.end(), tmp2.begin(), tmp2.end());
+	EXPECT_NEAR(covar, -382.553333, TOLERANCE);
+}
+
+TEST(Statistic, Pearson)
+{
+	auto tmp = a;
+	auto tmp2 = b;
+	auto covar = statistic::pearson_correlation<double, std::vector<double>::iterator>(tmp.begin(), tmp.end(), tmp2.begin(), tmp2.end());
+	EXPECT_NEAR(covar, -0.31217, TOLERANCE);
+}
+
+TEST(Statistic, Spearman)
+{
+	auto tmp = a;
+	auto tmp2 = b;
+	auto covar = statistic::spearman_correlation<double, std::vector<double>::iterator>(tmp.begin(), tmp.end(), tmp2.begin(), tmp2.end());
+	EXPECT_NEAR(covar, -0.06666667, TOLERANCE);
 }
