@@ -27,49 +27,93 @@ namespace GeneTrail
 
 		GeneSetReader(){};
 
-		template<typename Processor>
-		GeneSet<value_type> read(const std::string& path, Processor p, int numberOfElementPerLine, std::string delimiter = " \t")
+		/**
+		 * Generic function to parse all kinds of files.
+		 *
+		 * @param path Path to file
+		 * @param p Function to process each line of the file
+		 * @param numberOfElementPerLine Allowed number of elements per line
+		 * @param delimiter The delimiter to split each line (default is " \t")
+		 */
+		template <typename Processor>
+		GeneSet<value_type> read(const std::string& path, Processor p,
+		                         int numberOfElementPerLine,
+		                         const std::string& delimiter)
 		{
 			GeneSet<value_type> gene_set;
 			std::ifstream input(path);
 			if(!input) {
 				throw IOError("File (" + path + ") is not open for reading");
 			}
+			int l = 1;
 			for(std::string line; getline(input, line);) {
 				std::vector<std::string> sline;
 				boost::split(sline, line, boost::is_any_of(delimiter));
 				if(sline.size() == numberOfElementPerLine) {
-				gene_set.insert(p(sline));
-				}else{
-					throw IOError("Wrong file format.");
+					gene_set.insert(p(sline));
+				} else {
+					std::string err = (sline.size() > numberOfElementPerLine)
+					                      ? "many"
+					                      : "less";
+					throw IOError("Wrong file format: Line " + boost::lexical_cast<std::string>(l) +
+					              " contains too " + err + " elements");
 				}
+				++l;
 			}
 			return gene_set;
 		}
 
-		static std::pair<std::string,value_type> scoringFileProcessor(std::vector<std::string> sline)
+		/**
+		 * Processor function for a line in a scoring file.
+		 *
+		 * @param sline Splitted line to parse
+		 */
+		static std::pair<std::string, value_type>
+		scoringFileProcessor(std::vector<std::string>& sline)
 		{
 			boost::trim(sline[0]);
 			boost::trim(sline[1]);
-			return std::make_pair(sline[0], boost::lexical_cast<value_type>(sline[1]));
+			return std::make_pair(sline[0],
+			                      boost::lexical_cast<value_type>(sline[1]));
 		}
 
+		/**
+		 * Specialization of the generic read function for scoring files
+		 *
+		 * @param path Path to the file
+		 */
 		GeneSet<value_type> readScoringFile(const std::string& path)
 		{
-			return read(path, scoringFileProcessor, 2);
+			return read(path, scoringFileProcessor, 2, " \t");
 		}
 
-		static std::pair<std::string,value_type> geneListProcessor(std::vector<std::string> sline)
+		/**
+		 * Processor function for a line in a gene list.
+		 *
+		 * @param sline Splitted line to parse
+		 */
+		static std::pair<std::string, value_type>
+		geneListProcessor(std::vector<std::string>& sline)
 		{
 			boost::trim(sline[0]);
-			return std::make_pair(sline[0], (value_type) 0.0);
+			return std::make_pair(sline[0], boost::lexical_cast<value_type>(0.0));
 		}
 
+		/**
+		 * Specialization of the generic read function for gene lists
+		 *
+		 * @param path Path to the file
+		 */
 		GeneSet<value_type> readGeneList(const std::string& path)
 		{
-			return read(path, geneListProcessor, 1);
+			return read(path, geneListProcessor, 1, " \t");
 		}
 
+		/**
+		 * Specialization of the generic read function for na files
+		 *
+		 * @param path Path to the file
+		 */
 		GeneSet<value_type> readNAFile(const std::string& path)
 		{
 			return read(path, scoringFileProcessor, 2, "=");
