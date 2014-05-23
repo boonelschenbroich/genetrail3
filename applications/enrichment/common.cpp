@@ -16,12 +16,14 @@ void addCommonCLIArgs(bpo::options_description& desc, Params& p)
 CategoryList getCategoryList(const std::string& catfile_list, const std::string& single_cat)
 {
 	CategoryList categories;
+
 	std::ifstream input(catfile_list);
 	if(!input) {
 		throw GeneTrail::IOError("File (" + catfile_list + ") is not open for reading");
 	}
+
 	for(std::string line; getline(input, line);) {
-		std::vector<std::string> sline;
+		std::vector<std::string> sline(2);
 		boost::split(sline, line, boost::is_any_of(" \t"));
 		if(sline.size() == 2) {
 			boost::trim(sline[0]);
@@ -31,6 +33,7 @@ CategoryList getCategoryList(const std::string& catfile_list, const std::string&
 			throw GeneTrail::IOError("Wrong file format.");
 		}
 	}
+
 	return categories;
 }
 
@@ -52,6 +55,7 @@ int readTestSet(GeneSet<double>& test_set, const Params& p)
 		std::cerr << "ERROR: Failed to read test set. Reason: " << exn.what() << std::endl;
 		return -1;
 	}
+
 	return 0;
 }
 
@@ -224,6 +228,7 @@ void adjustSeparately(AllResults& all_results, const Params& p)
 void run(GeneSet<double>& test_set, CategoryList& cat_list, const Params& p)
 {
 	AllResults name_to_cat_results(compute(test_set, cat_list, p));
+	// Checks how they should be adjusted
 	if(p.runSeparately)
 	{
 		adjustSeparately(name_to_cat_results, p);
