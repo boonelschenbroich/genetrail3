@@ -54,12 +54,10 @@ SET(Boost_LIBRARIES
 	${Boost_PROGRAM_OPTIONS_LIBRARY}
 )
 
-find_package(CLN)
 find_package(Eigen3 REQUIRED)
 
 include_directories(${EIGEN3_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIRS})
-include_directories(${CLN_INCLUDE_DIR})
 
 ####################################################################################################
 # Check if a build type is given
