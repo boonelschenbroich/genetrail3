@@ -42,6 +42,7 @@ install(FILES ${CLUSTER_HEADERS}
 )
 
 install(TARGETS gtcluster
+	EXPORT GeneTrail2Targets
 	RUNTIME DESTINATION bin COMPONENT libraries
 	LIBRARY DESTINATION lib COMPONENT libraries
 	ARCHIVE DESTINATION lib COMPONENT libraries

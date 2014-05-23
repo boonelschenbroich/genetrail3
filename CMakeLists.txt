@@ -90,5 +90,5 @@ add_subdirectory(bindings)
 ####################################################################################################
 
 include(cmake/documentation.cmake)
-
+include(cmake/GT2Config.cmake)
 

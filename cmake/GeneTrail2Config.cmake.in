@@ -1,0 +1,14 @@
+# Config file for the GeneTrail2 package
+#
+# It defines the following variables:
+#  GeneTrail2_INCLUDE_DIRS - include directories for GeneTrail2
+#  GeneTrail2_LIBRARIES    - libraries to link against
+
+get_filename_component(GENETRAIL2_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(GeneTrail2_INCLUDE_DIRS "@GENETRAIL2_LIBRARY_INCLUDE_DIRS@")
+
+if(NOT TARGET gtcore AND NOT GeneTrail2_BINARY_DIR)
+	include("${GENETRAIL2_CMAKE_DIR}/GeneTrail2Targets.cmake")
+endif()
+
+set(GeneTrail2_LIBRARIES "@GENETRAIL2_AVAILABLE_LIBRARIES@")
