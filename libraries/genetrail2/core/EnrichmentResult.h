@@ -38,6 +38,10 @@ namespace GeneTrail {
 		:hits(0), pvalue(0.0), enriched(false)
 		{}
 
+		EnrichmentResult(std::string name, std::string reference)
+		:name(name), reference(reference)
+		{}
+
 		std::string name;
 		std::string reference;
 		unsigned int hits;
