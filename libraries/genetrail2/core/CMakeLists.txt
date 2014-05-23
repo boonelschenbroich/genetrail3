@@ -6,7 +6,7 @@ project(GENETRAIL2_CORE_LIBRARY)
 
 if(NOT Boost_FOUND)
 	message(STATUS "Boost not found, cannot build GeneTrail2 core library")
-    return()
+	return()
 endif()
 
 ####################################################################################################
@@ -15,8 +15,8 @@ endif()
 
 include(files.cmake)
 
-add_library(gtcore SHARED 
-	${CORE_SOURCES} 
+add_library(gtcore SHARED
+	${CORE_SOURCES}
 	${CORE_HEADERS}
 )
 
@@ -31,12 +31,12 @@ target_link_libraries(gtcore
 ####################################################################################################
 
 INSTALL(FILES ${CORE_HEADERS}
-    DESTINATION include/genetrail2/core/
+	DESTINATION include/genetrail2/core/
 )
 
 INSTALL(TARGETS gtcore
-    RUNTIME DESTINATION bin COMPONENT libraries
-    LIBRARY DESTINATION lib COMPONENT libraries
-    ARCHIVE DESTINATION lib COMPONENT libraries
+	RUNTIME DESTINATION bin COMPONENT libraries
+	LIBRARY DESTINATION lib COMPONENT libraries
+	ARCHIVE DESTINATION lib COMPONENT libraries
 )
 
