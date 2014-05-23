@@ -9,6 +9,7 @@ cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
 set(GENETRAIL2_PACKAGE_VERSION_MAJOR "2")
 set(GENETRAIL2_PACKAGE_VERSION_MINOR "0")
 set(GENETRAIL2_PACKAGE_VERSION_PATCH "0")
+set(GENETRAIL2_PACKAGE_VERSION "${GENETRAIL2_PACKAGE_VERSION_MAJOR}.${GENETRAIL2_PACKAGE_VERSION_MINOR}.${GENETRAIL2_PACKAGE_VERSION_PATCH}")
 
 ####################################################################################################
 # Set the path to the additional cmake files.

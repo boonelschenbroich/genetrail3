@@ -23,3 +23,4 @@ export(TARGETS ${GENETRAIL2_AVAILABLE_LIBRARIES}
 export(PACKAGE GeneTrail2)
 
 configure_file(cmake/GeneTrail2Config.cmake.in "${PROJECT_BINARY_DIR}/GeneTrail2Config.cmake" @ONLY)
+configure_file(cmake/GeneTrail2ConfigVersion.cmake.in "${PROJECT_BINARY_DIR}/GeneTrail2ConfigVersion.cmake" @ONLY)
