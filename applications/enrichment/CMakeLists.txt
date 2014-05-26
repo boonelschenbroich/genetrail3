@@ -52,6 +52,6 @@ set_target_properties(enrichment PROPERTIES
 
 install(TARGETS hotelling_t_test gsea ora wilcoxon enrichment
 	RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
+	LIBRARY DESTINATION lib
+	ARCHIVE DESTINATION lib
 )
