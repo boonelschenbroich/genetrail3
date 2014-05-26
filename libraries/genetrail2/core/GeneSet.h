@@ -290,6 +290,31 @@ namespace GeneTrail
 			return s;
 		}
 
+		std::vector<std::string> getIdentifier()
+		{
+			return getIdentifier(container_);
+		}
+
+		std::vector<std::string> getSortedIdentifier(bool decreasing)
+		{
+			return getIdentifier(getSortedScores(decreasing));
+		}
+
+		std::vector<std::string> getDecreasinglySortedIdentifier()
+		{
+			return getIdentifier(getSortedScores(true));
+		}
+
+		std::vector<std::string> getIncreasinglySortedIdentifier()
+		{
+			return getIdentifier(getSortedScores(false));
+		}
+
+		std::vector<std::string> getAbsoluteSortedIdentifier()
+		{
+			return getIdentifier(getAbsoluteSortedScores());
+		}
+
 		const Element& operator[](size_t i) const
 		{
 			return container_[i];
