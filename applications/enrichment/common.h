@@ -22,7 +22,7 @@
 #include <string>
 #include <iostream>
 #include <memory>
-#include <assert.h>
+#include <cassert>
 
 using namespace GeneTrail;
 namespace bpo = boost::program_options;
@@ -58,9 +58,8 @@ void addCommonCLIArgs(bpo::options_description& desc, Params& p);
  *
  * @param test_set GeneSet object to be filled by this function
  * @param p Parameter object
- * @return -1 if an error occurred and 0 if not
  */
-int readTestSet(GeneSet<double>& test_set, const Params& p);
+void readTestSet(GeneSet<double>& test_set, const Params& p);
 
 typedef std::list<std::pair<std::string, std::string>> CategoryList;
 
@@ -134,7 +133,7 @@ std::vector<std::string> getSortedIdentifier(GeneSet<double>& test_set, const Pa
  * @param genes
  * @return Shared pointer to an Enrichment result object.
  */
-std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, std::pair<int, std::string> genes);
+std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std::pair<int, std::string>& genes);
 
 /**
  * This function updates all pvalues in a Results object.

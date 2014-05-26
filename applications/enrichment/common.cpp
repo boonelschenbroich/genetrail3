@@ -38,30 +38,24 @@ CategoryList getCategoryList(const std::string& catfile_list, const std::string&
 }
 
 
-int readTestSet(GeneSet<double>& test_set, const Params& p)
+void readTestSet(GeneSet<double>& test_set, const Params& p)
 {
 	GeneSetReader<double> reader;
-	try{
-		if( p.scores != "" ){
-			test_set = reader.readScoringFile(p.scores);
-		}else if(p.identifier != ""){
-			test_set = reader.readGeneList(p.identifier);
-		}else{
-			return -1;
-		}
+	if(p.scores != "" && p.identifier != ""){
+		throw GeneTrail::IOError("Too many input files specified.");
+	}else if( p.scores != "" ){
+		test_set = reader.readScoringFile(p.scores);
+	}else if(p.identifier != ""){
+		test_set = reader.readGeneList(p.identifier);
+	}else{
+		throw GeneTrail::IOError("No input file specified.");
 	}
-	catch(IOError& exn)
-	{
-		std::cerr << "ERROR: Failed to read test set. Reason: " << exn.what() << std::endl;
-		return -1;
-	}
-
-	return 0;
 }
 
 PValueList resultVector(const Results& results)
 {
 	PValueList result;
+	result.reserve(results.size());
 	for(const auto& jt : results) {
 		result.push_back(std::make_pair(jt.first, jt.second->pvalue.convert_to<double>()));
 	}
@@ -71,13 +65,12 @@ PValueList resultVector(const Results& results)
 PValueList resultVector(const AllResults& results)
 {
 	PValueList result;
-
+	result.reserve(results.size());
 	for(const auto& it : results) {
 		for(const auto& jt : it.second) {
 			result.push_back(std::make_pair(it.first + "\t" + jt.first, jt.second->pvalue.convert_to<double>()));
 		}
 	}
-
 	return result;
 }
 
@@ -105,8 +98,11 @@ void writeFiles(const std::string& output_dir, const AllResults& all_results)
 
 	for(const auto& database : all_results)
 	{
-		std::ofstream output;
-		output.open (output_dir + "." + database.first + ".txt");
+		std::ofstream output(output_dir + "." + database.first + ".txt");
+		if(!output)
+		{
+			throw GeneTrail::IOError("No input file specified.");
+		}
 		for(const auto& ele : database.second)
 		{
 			output << ele.second->serialize() << std::endl;
@@ -117,15 +113,12 @@ void writeFiles(const std::string& output_dir, const AllResults& all_results)
 
 int init(GeneSet<double>& test_set, CategoryList& cat_list, const Params& p){
 
-	if(readTestSet(test_set, p) != 0){
-		return -1;
+	try{
+		readTestSet(test_set, p);
 	}
-
-	if(p.scores != "" && p.identifier != "") {
-		std::cerr << "ERROR: Please specify only one input file." << std::endl;
-		return -1;
-	} else if(p.scores == "" && p.identifier == "") {
-		std::cerr << "ERROR: Please specify a input file." << std::endl;
+	catch(IOError& exn)
+	{
+		std::cerr << "ERROR: Failed to read test set. Reason: " << exn.what() << std::endl;
 		return -1;
 	}
 
@@ -143,21 +136,19 @@ int init(GeneSet<double>& test_set, CategoryList& cat_list, const Params& p){
 }
 
 std::vector<std::string> getSortedIdentifier(GeneSet<double>& test_set, const Params& p, bool absolute, bool increasing){
-	std::vector<std::string> test;
 	if(p.scores != ""){
 		if(absolute){
-			test = test_set.getIdentifier(test_set.getAbsoluteSortedScores());
+			return test_set.getAbsoluteSortedIdentifier();
 		}else{
 			if(increasing){
-				test = test_set.getIdentifier(test_set.getIncreasinglySortedScores());
+				return test_set.getIncreasinglySortedIdentifier();
 			}else{
-				test = test_set.getIdentifier(test_set.getDecreasinglySortedScores());
+				return test_set.getDecreasinglySortedIdentifier();
 			}
 		}
 	}else{
-		test = test_set.getIdentifier(test_set.getScores());
+		return test_set.getIdentifier();
 	}
-	return test;
 }
 
 void updatePValues(Results& results, const PValueList& pvalues)

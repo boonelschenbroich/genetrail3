@@ -64,9 +64,9 @@ bool parseArguments(int argc, char* argv[])
 	return true;
 }
 
-std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, std::pair<int, std::string> genes)
+std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std::pair<int, std::string>& genes)
 {
-	std::shared_ptr<ORAResult> result(new ORAResult());
+	auto result = std::make_shared<ORAResult>();
 	*result = ora.computePValue(c);
 	return result;
 }

@@ -50,7 +50,7 @@ bool parseArguments(int argc, char* argv[])
 		("absolute,abs", bpo::value(&absolute)->zero_tokens(), "Use decreasingly sorted absolute scores.");
 
 	if(absolute && increasing) {
-		std::cerr << "Error: Please specify only one option to sort the file." << "\n";
+		std::cerr << "ERROR: Please specify only one option to sort the file." << "\n";
 	}
 
 	try
@@ -60,7 +60,7 @@ bool parseArguments(int argc, char* argv[])
 	}
 	catch(bpo::error& e)
 	{
-		std::cerr << "Error: " << e.what() << "\n";
+		std::cerr << "ERROR: " << e.what() << "\n";
 		desc.print(std::cerr);
 		return false;
 	}
@@ -68,10 +68,9 @@ bool parseArguments(int argc, char* argv[])
 	return true;
 }
 
-std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, std::pair<int,std::string> genes)
+std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std::pair<int,std::string>& genes)
 {
-	std::cout << "INFO: Processing - " << c.name() << std::endl;
-	std::shared_ptr<GSEAResult> result(new GSEAResult());
+	auto result = std::make_shared<GSEAResult>();
 	result->name = c.name();
 	result->reference = c.reference();
 
@@ -79,7 +78,10 @@ std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, std::pair
 	result->pvalue = enr.first;
 	result->points = enr.second;
 	int abs_max = -1;
-	bool enriched;
+	bool enriched = false;
+
+	//This looks for the maximum deviation from zero,
+	//and saves the value and if it is enriched or depleted.
 	for(auto p : enr.second){
 		if(std::abs(p.second) > abs_max){
 			abs_max = std::abs(p.second);
@@ -107,4 +109,5 @@ int main(int argc, char* argv[])
 	identifierOfTestSet = getSortedIdentifier(test_set, p,  absolute, increasing);
 
 	run(test_set, cat_list, p);
+	return 0;
 }

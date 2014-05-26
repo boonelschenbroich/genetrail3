@@ -19,7 +19,7 @@
 #include <cstdint>
 #include <utility>
 #include <map>
-#include <stdlib.h> 
+#include <cstdlib>
 
 using namespace GeneTrail;
 namespace bpo = boost::program_options;
@@ -67,9 +67,9 @@ bool parseArguments(int argc, char* argv[])
 	return true;
 }
 
-std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, std::pair<int,std::string> genes)
+std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std::pair<int,std::string>& genes)
 {
-	std::shared_ptr<EnrichmentResult> result(new EnrichmentResult());
+	auto result = std::make_shared<EnrichmentResult>();
 	result->name = c.name();
 	result->reference = c.reference();
 

@@ -38,14 +38,15 @@ GeneSet<double> test_set;
 CategoryList cat_list;
 GeneLabelPermutationTest<double, std::vector<double>::iterator> pTest;
 
-std::map<std::string, std::function<double(std::vector<double>::iterator, std::vector<double>::iterator)>>
-methods({{"mean", 		statistic::mean<double, std::vector<double>::iterator>},
-         {"median", 	statistic::median<double, std::vector<double>::iterator>},
-         {"sum", 		statistic::sum<double, std::vector<double>::iterator>},
-         {"max-mean", 	statistic::max_mean<double, std::vector<double>::iterator>}});
+typedef std::vector<double>::iterator _viter;
+std::map<std::string, std::function<double(std::vector<double>::iterator, _viter)>>
+methods({{"mean",		statistic::mean<double, _viter>},
+         {"median",		statistic::median<double, _viter>},
+         {"sum",		statistic::sum<double, _viter>},
+         {"max-mean",	statistic::max_mean<double, _viter>}});
 
 double apply(std::vector<double>& v, std::string method){
-		return methods[method](v.begin(),v.end());
+	return methods[method](v.begin(),v.end());
 }
 
 bool parseArguments(int argc, char* argv[])
@@ -58,6 +59,11 @@ bool parseArguments(int argc, char* argv[])
 		("method,met", bpo::value<std::string>(&method)->default_value("no"),"Method for gene set tesing.")
 		("permutations,per", bpo::value<int>(&numberOfPermutations)->default_value(1000),"Number of permutations for p-value computation.");
 
+	if (methods.find(method) != methods.end())
+	{
+		std::cerr << "ERROR: Given method not defined!" << std::endl;
+	}
+
 	try
 	{
 		bpo::store(bpo::command_line_parser(argc, argv).options(desc).run(),vm);
@@ -65,7 +71,7 @@ bool parseArguments(int argc, char* argv[])
 	}
 	catch(bpo::error& e)
 	{
-		std::cerr << "Error: " << e.what() << "\n";
+		std::cerr << "ERROR: " << e.what() << std::endl;
 		desc.print(std::cerr);
 		return false;
 	}
@@ -73,10 +79,11 @@ bool parseArguments(int argc, char* argv[])
 	return true;
 }
 
-std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, std::pair<int,std::string> genes)
+std::shared_ptr<EnrichmentResult>
+computeEnrichment(const Category& c, const std::pair<int, std::string>& genes)
 {
 	std::cout << "INFO: Processing - " << c.name() << std::endl;
-	std::shared_ptr<EnrichmentResult> result(new EnrichmentResult());
+	auto result = std::make_shared<EnrichmentResult>();
 	result->name = c.name();
 	result->reference = c.reference();
 
@@ -93,7 +100,10 @@ std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, std::pair
 
 	double z = apply(contained_genes, method);
 	bool enriched = z > apply(not_contained_genes, method);
-	double p = enriched ? pTest.computeUpperTailedPValue(genes.first, z, methods[method]) : pTest.computeLowerTailedPValue(genes.first, z, methods[method]);
+	double p =
+	    enriched
+	        ? pTest.computeUpperTailedPValue(genes.first, z, methods[method])
+	        : pTest.computeLowerTailedPValue(genes.first, z, methods[method]);
 
 	result->pvalue = p;
 
@@ -109,8 +119,7 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	if(init(test_set,cat_list,p) != 0)
-	{
+	if(init(test_set, cat_list, p) != 0) {
 		return -1;
 	}
 
@@ -119,7 +128,8 @@ int main(int argc, char* argv[])
 		for_permutation.push_back(i.second);
 	}
 
-	pTest = GeneLabelPermutationTest<double, std::vector<double>::iterator>(for_permutation.begin(), for_permutation.end(), numberOfPermutations);
+	pTest = GeneLabelPermutationTest<double, std::vector<double>::iterator>(
+	    for_permutation.begin(), for_permutation.end(), numberOfPermutations);
 
 	run(test_set, cat_list, p);
 }
