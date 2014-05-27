@@ -10,13 +10,18 @@
 
 namespace GeneTrail
 {
-	// Note: This generates an warning in gcc. This is
-	//       a compiler bug and can be ignored.
+// This is here to fix the annoying and buggy "type attribute ignored" warning
+// present in GCC. Refer to https://gcc.gnu.org/bugzilla/show_bug.cgi?id=43407
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wattributes"
+
 	enum class GT2_EXPORT FileOpenMode {
 		READ,
 		WRITE,
 		APPEND
 	};
+
+#pragma GCC diagnostic pop
 
 	class GT2_EXPORT GenericFile
 	{
