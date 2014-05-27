@@ -295,7 +295,7 @@ namespace GeneTrail {
 			std::vector<int> second_ranks = ranks<value_type, InputIterator>(second_begin, second_end);
 			return pearson_correlation<value_type,std::vector<int>::iterator>(first_ranks.begin(), first_ranks.end(), second_ranks.begin(), second_ranks.end());
 		}
-    };
+    }
 }
 
 #endif // GT2_CORE_STATISTIC_H
