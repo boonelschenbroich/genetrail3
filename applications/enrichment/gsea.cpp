@@ -20,7 +20,7 @@
 #include <cstdint>
 #include <utility>
 #include <map>
-#include <stdlib.h>
+#include <cstdlib>
 #include <memory>
 
 using namespace GeneTrail;
