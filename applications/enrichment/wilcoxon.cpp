@@ -77,7 +77,7 @@ std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std
 	result->pvalue = enr.first.convert_to<double>();
 
 	int abs_max = -1;
-	bool enriched;
+	bool enriched = false;
 	for(auto p : enr.second){
 		if(std::abs(p.second) > abs_max){
 			abs_max = std::abs(p.second);
