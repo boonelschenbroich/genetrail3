@@ -35,7 +35,7 @@ namespace GeneTrail {
     struct GT2_EXPORT EnrichmentResult {
 
 		EnrichmentResult()
-		:hits(0), pvalue(0.0), enriched(false)
+		:hits(0), pvalue(0.0), enriched(false), score(0.0)
 		{}
 
 		EnrichmentResult(std::string name, std::string reference)
@@ -48,12 +48,14 @@ namespace GeneTrail {
 		boost::multiprecision::cpp_dec_float_50 pvalue;
 		std::string info;
 		bool enriched;
+		double score;
 
 		virtual std::string serialize() const{
 			std::string result = "";
 			result += name + "\t";
 			result += reference + "\t";
 			result += boost::lexical_cast<std::string>(hits) + "\t";
+			result += boost::lexical_cast<std::string>(score) + "\t";
 			result += boost::lexical_cast<std::string>(pvalue) + "\t";
 			result += info + "\t";
 			result += boost::lexical_cast<std::string>(enriched);
