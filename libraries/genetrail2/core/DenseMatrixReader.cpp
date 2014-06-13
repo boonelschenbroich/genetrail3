@@ -81,12 +81,12 @@ namespace GeneTrail
 		input.read((char*)&chunk_type, 1);
 		input.read((char*)&size, 8);
 	}
-	
+
 	DenseMatrix DenseMatrixReader::readHeader_(std::istream& input, uint8_t& storage_order) const
 	{
 		uint32_t row_count;
 		uint32_t col_count;
-		
+
 		input.read((char*)&row_count, 4);
 		input.read((char*)&col_count, 4);
 		input.read((char*)&storage_order, 1);
@@ -170,7 +170,7 @@ namespace GeneTrail
 	{
 		uint8_t chunk_type = 0;
 		uint64_t chunk_size = 0;
-		
+
 		// Read the header
 		readChunkHeader_(input, chunk_type, chunk_size);
 
@@ -185,7 +185,7 @@ namespace GeneTrail
 
 		uint8_t  storage_order;
 		DenseMatrix result = readHeader_(input, storage_order);
-		
+
 		while(input.good()) {
 			readChunkHeader_(input, chunk_type, chunk_size);
 
@@ -253,21 +253,24 @@ namespace GeneTrail
 
 		const int start = (opts & READ_ROW_NAMES) ? 1 : 0;
 
-		try
+		if(start && fields.size() > 0)
 		{
-			if(start && fields.size() > 0)
-			{
-				row_names.push_back(fields[0]);
-			}
-
-			for(size_t i = start; i < fields.size(); ++i)
+			row_names.push_back(fields[0]);
+		}
+		for(size_t i = start; i < fields.size(); ++i)
+		{
+			try
 			{
 				data.push_back(boost::lexical_cast<double>(fields[i]));
 			}
-		}
-		catch(boost::bad_lexical_cast& e)
-		{
-			throw IOError(e.what());
+			catch(boost::bad_lexical_cast& e)
+			{
+				if(nan_like_symbols.find(fields[i]) == nan_like_symbols.end()) {
+					throw IOError(e.what());
+				} else {
+					data.push_back(std::numeric_limits<double>::quiet_NaN());
+				}
+			}
 		}
 
 		unsigned int cur_line = 1;
@@ -297,17 +300,20 @@ namespace GeneTrail
 				row_names.push_back(fields[0]);
 			}
 
-			try
+			for(size_t i = start; i < fields.size(); ++i)
 			{
-				for(size_t i = start; i < fields.size(); ++i)
+				try
 				{
 					data.push_back(boost::lexical_cast<double>(fields[i]));
 				}
-
-			}
-			catch(boost::bad_lexical_cast& e)
-			{
-				throw IOError(e.what());
+				catch(boost::bad_lexical_cast& e)
+				{
+					if(nan_like_symbols.find(fields[i]) == nan_like_symbols.end()) {
+						throw IOError(e.what());
+					} else {
+						data.push_back(std::numeric_limits<double>::quiet_NaN());
+					}
+				}
 			}
 
 			++cur_line;
@@ -345,7 +351,6 @@ namespace GeneTrail
 
 			return result;
 		}
-
 	}
 }
 

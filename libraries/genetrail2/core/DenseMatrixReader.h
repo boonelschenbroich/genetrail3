@@ -25,6 +25,8 @@
 
 #include <istream>
 #include <vector>
+#include <set>
+#include <initializer_list>
 
 namespace GeneTrail
 {
@@ -69,8 +71,14 @@ namespace GeneTrail
 			virtual DenseMatrix read(std::istream& input, unsigned int opts = defaultOptions()) const;
 
 		private:
+
+			/**
+			 * This set contains symbols, that might occurr in text files, indication a NaN value.
+			 */
+			std::set<std::string> nan_like_symbols{"NA","NaN","NAN","nan","null","NULL"};
+
 			DenseMatrix textRead_ (std::istream& input, unsigned int opts) const;
-			
+
 			enum ChunkType {
 				HEADER   = 0x00,
 				ROWNAMES = 0x01,
@@ -81,18 +89,18 @@ namespace GeneTrail
 			/**
 			 * If isBinary_ returns true, binaryRead_ will attempt to read a binary
 			 * matrix from the specified file.
-			 * 
+			 *
 			 * The file format is based on chunks, that, with the exception of the
 			 * header can be stored in an arbitrary order.
-			 * 
+			 *
 			 * The basic chunk format is as follows:
-			 * 
+			 *
 			 * CHUNK-ID  : uint8_t   --- The identifier of the chunk
 			 * CHUNK-SIZE: uint64_t  --- The size of the CHUNK-DATA field in bytes
 			 *                           forwarding the file cursor CHUNK-SIZE bytes
 			 *                           will either reach the next CHUNK or EOF
 			 * CHUNK-DATA: This field depends on the current chunk
-			 * 
+			 *
 			 * Chunk Types (ID):
 			 *  * HEADER (0x00):
 			 *   - ROW-COUNT:     uint32_t --- The number of rows of the matrix
@@ -104,7 +112,7 @@ namespace GeneTrail
 			 *
 			 *  * COLNAMES (0x02):
 			 *   Contains COL-COUNT zero terminated names.
-			 * 
+			 *
 			 *  * DATA (0x03):
 			 *   Contains ROW-COUNT * COL-COUNT double values of entries
 			 *   in the storage order specified in the header.
@@ -116,10 +124,10 @@ namespace GeneTrail
 			/**
 			 * This method checks the magic number of a stream in order to decide
 			 * whether the matrix is stored in binary or text format.
-			 * 
+			 *
 			 * The magic number searched for is the signed 12 byte sequence
 			 * "BINARYMATRIX"
-			 * 
+			 *
 			 */
 			bool isBinary_(std::istream& input) const;
 
@@ -129,7 +137,6 @@ namespace GeneTrail
 			void readData_    (std::istream& input, DenseMatrix& result, uint8_t storage_order) const;
 			void readChunkHeader_(std::istream& input, uint8_t& chunk_type, uint64_t& chunk_size) const;
 			DenseMatrix readHeader_(std::istream& input, uint8_t& storage_order) const;
-			
 	};
 }
 
