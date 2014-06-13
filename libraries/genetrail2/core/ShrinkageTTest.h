@@ -25,7 +25,7 @@
 #include <tuple>
 #include <utility>
 
-#include "config.h"
+#include "macros.h"
 
 #include "Statistic.h"
 
