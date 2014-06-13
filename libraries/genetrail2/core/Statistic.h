@@ -295,7 +295,59 @@ namespace GeneTrail {
 			std::vector<int> second_ranks = ranks<value_type, InputIterator>(second_begin, second_end);
 			return pearson_correlation<value_type,std::vector<int>::iterator>(first_ranks.begin(), first_ranks.end(), second_ranks.begin(), second_ranks.end());
 		}
-    }
+
+		/**
+		 * This function calculates log(mean(a)) -  log(mean(b)).
+		 * Log-Mean-Fold-Quotient
+		 *
+		 * @param begin1
+		 * @param end1
+		 * @param begin2
+		 * @param end2
+		 * @return log(mean(a)) -  log(mean(b))
+		 */
+		template <typename value_type, typename InputIterator1,
+		          typename InputIterator2>
+		value_type
+		log_mean_fold_quotient(InputIterator1 begin1, InputIterator1 end1,
+		                       InputIterator2 begin2, InputIterator2 end2)
+		{
+			return std::log(mean<value_type, InputIterator1>(begin1,end1)) - std::log(mean<value_type, InputIterator2>(begin2, end2));
+		}
+
+		/**
+		 * This function calculates mean(a) /  mean(b).
+		 * Mean-Fold-Quotient
+		 *
+		 * @param begin1
+		 * @param end1
+		 * @param begin2
+		 * @param end2
+		 * @return mean(a) /  mean(b)
+		 */
+		template <typename value_type, typename InputIterator1,
+		          typename InputIterator2>
+		value_type
+		mean_fold_quotient(InputIterator1 begin1, InputIterator1 end1,
+		                       InputIterator2 begin2, InputIterator2 end2)
+		{
+			return mean<value_type, InputIterator1>(begin1, end1) /  mean<value_type, InputIterator2>(begin2, end2);
+		}
+
+		/**
+		 * This function calculates the z-score.
+		 *
+		 * @param x
+		 * @param begin
+		 * @param end
+		 * @return Z-score
+		 */
+		template <typename value_type, typename InputIterator1>
+		value_type z_score(value_type x, InputIterator1 begin, InputIterator1 end)
+		{
+			return (x - mean<value_type, InputIterator1>(begin, end))/sd<value_type, InputIterator1>(begin, end);
+		}
+	}
 }
 
 #endif // GT2_CORE_STATISTIC_H
