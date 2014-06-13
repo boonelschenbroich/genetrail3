@@ -81,6 +81,7 @@ void GEO::writeGEOMap(const std::string& filename, const GEOMap& map)
 		if(first){
 			out << id;
 			first = false;
+			continue;
 		}
 		out << "\t" << id;
 	}
