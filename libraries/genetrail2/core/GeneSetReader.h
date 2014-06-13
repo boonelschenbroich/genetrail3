@@ -47,6 +47,10 @@ namespace GeneTrail
 			}
 			int l = 1;
 			for(std::string line; getline(input, line);) {
+				if(line.find("(class=") != std::string::npos)
+				{
+					continue;
+				}
 				std::vector<std::string> sline;
 				boost::split(sline, line, boost::is_any_of(delimiter));
 				if(sline.size() == numberOfElementPerLine) {
