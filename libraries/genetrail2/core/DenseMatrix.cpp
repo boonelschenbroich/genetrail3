@@ -22,6 +22,7 @@
 
 #include <limits>
 #include <cassert>
+#include <iostream>
 
 namespace GeneTrail
 {
@@ -92,6 +93,36 @@ namespace GeneTrail
 	DenseMatrix::DMatrix::ConstRowXpr DenseMatrix::row(index_type i) const
 	{
 		return m_.row(i);
+	}
+
+	void DenseMatrix::rbind(const DenseMatrix& m){
+		assert(cols() == m.cols());
+		m_.resize(rows() + m.rows(),cols());
+		m_ << m_,m.matrix();
+
+		auto r1 = rowNames();
+		auto r2 = m.rowNames();
+		std::vector<std::string> new_row_names;
+		new_row_names.reserve(r1.size() + r2.size());
+		new_row_names.insert(new_row_names.end(), r1.begin(), r1.end());
+		new_row_names.insert(new_row_names.end(), r2.begin(), r2.end());
+		index_to_rowname_ = new_row_names;
+		this->updateRowAndColNames_();
+	}
+
+	void DenseMatrix::cbind(const DenseMatrix& m){
+		assert(rows() == m.rows());
+		m_.resize(rows(),cols() + m.cols());
+		m_ << m_,m.matrix();
+		auto c1 = colNames();
+		auto c2 = m.colNames();
+		std::vector<std::string> new_col_names;
+		new_col_names.reserve(c1.size() + c2.size());
+		new_col_names.insert(new_col_names.end(), c1.begin(), c1.end());
+		new_col_names.insert(new_col_names.end(), c2.begin(), c2.end());
+		std::cout << new_col_names.size() << std::endl;
+		index_to_colname_ = new_col_names;
+		this->updateRowAndColNames_();
 	}
 
 	void DenseMatrix::setCol(const std::string& name, const DenseMatrix::Vector& v)

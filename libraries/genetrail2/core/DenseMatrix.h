@@ -72,6 +72,7 @@ namespace GeneTrail
 			 * Default copy constructor
 			 */
 			DenseMatrix(const DenseMatrix&) = default;
+
 			/**
 			 * Move Constructor
 			 */
@@ -98,6 +99,16 @@ namespace GeneTrail
 			 * Set the i-th row to v
 			 */
 			void setRow(index_type i, const Vector& v);
+
+			/**
+			 *
+			 */
+			void rbind(const DenseMatrix& m);
+
+			/**
+			 *
+			 */
+			void cbind(const DenseMatrix& m);
 
 			/**
 			 * Return the j-th column
