@@ -34,6 +34,7 @@ add_header_to_library(PValue.h)
 add_header_to_library(macros.h)
 add_header_to_library(GeneLabelPermutationTest.h)
 add_header_to_library(PermutationTest.h)
+add_header_to_library(MatrixHTest.h)
 add_header_to_library(OneSampleWilcoxonSignedRankTest.h)
 add_header_to_library(WilcoxonMatchedPairsSignedRankTest.h)
 
