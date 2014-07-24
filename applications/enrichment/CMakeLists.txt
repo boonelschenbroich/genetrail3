@@ -32,10 +32,10 @@ set_target_properties(ora PROPERTIES
     INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
 )
 
-add_executable(wilcoxon wilcoxon.cpp)
-target_link_libraries(wilcoxon gtcore enrichment_common ${BOOST_LIBRARIES})
-GT2_COMPILE_FLAGS(wilcoxon)
-set_target_properties(wilcoxon PROPERTIES
+add_executable(oneSampleHTests oneSampleHTests.cpp)
+target_link_libraries(oneSampleHTests gtcore enrichment_common ${BOOST_LIBRARIES})
+GT2_COMPILE_FLAGS(oneSampleHTests)
+set_target_properties(oneSampleHTests PROPERTIES
     INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
 )
 
@@ -50,7 +50,7 @@ set_target_properties(enrichment PROPERTIES
 # Build executable
 ####################################################################################################
 
-install(TARGETS hotelling_t_test gsea ora wilcoxon enrichment
+install(TARGETS hotelling_t_test gsea ora oneSampleHTests enrichment
 	RUNTIME DESTINATION bin
 	LIBRARY DESTINATION lib
 	ARCHIVE DESTINATION lib
