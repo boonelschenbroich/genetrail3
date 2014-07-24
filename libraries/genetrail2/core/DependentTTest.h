@@ -36,7 +36,7 @@ namespace GeneTrail {
     class GT2_EXPORT DependentTTest {
     public:
 
-        DependentTTest(value_type tol = 1e-5) : tolerance_(tol) {
+        DependentTTest(value_type tol = 1e-5, value_type mu = 0.0) : tolerance_(tol), mu_(mu) {
         }
 
         /**
@@ -64,9 +64,9 @@ namespace GeneTrail {
 			stdErr_ = std::sqrt(var / size);
 
             if (std::fabs(var / size) < tolerance_) {
-                score_ = 0;
+                score_ = mu_;
             } else {
-				score_ = statistic::mean<value_type,std::_List_iterator<value_type>>(diff.begin(),diff.end()) / stdErr_;
+				score_ = (statistic::mean<value_type,std::_List_iterator<value_type>>(diff.begin(),diff.end()) - mu_) / stdErr_;
             }
 
 			df_ = size - 1;
@@ -90,6 +90,7 @@ namespace GeneTrail {
 		value_type df_;
 		value_type stdErr_;
 		value_type score_;
+		value_type mu_;
     };
 }
 
