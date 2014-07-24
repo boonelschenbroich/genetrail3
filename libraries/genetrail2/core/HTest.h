@@ -42,6 +42,33 @@ namespace GeneTrail
 		std::pair<value_type, value_type> confidenceInterval(HTest<value_type, InputIterator1, InputIterator2>& t, const value_type& alpha){
 			return t.confidenceInterval(alpha);
 		}
+
+		//
+
+		template<template<typename...>class HTest, typename value_type, typename InputIterator>
+		value_type test(HTest<value_type, InputIterator>& t, const InputIterator& begin, const InputIterator& end){
+			return t.test(begin, end);
+		}
+
+		template<template<typename...>class HTest, typename value_type, typename InputIterator>
+		value_type lowerTailedPValue(HTest<value_type,InputIterator>& t, const value_type& score) {
+			return boost::math::cdf(t.distribution(), score);
+		}
+
+		template<template<typename...>class HTest, typename value_type, typename InputIterator>
+		value_type upperTailedPValue(HTest<value_type, InputIterator>& t, const value_type& score) {
+			return boost::math::cdf(boost::math::complement(t.distribution(), score));
+		}
+
+		template<template<typename...>class HTest, typename value_type, typename InputIterator>
+		value_type twoSidedPValue(HTest<value_type, InputIterator>& t, const value_type& score) {
+			return 2.0 * boost::math::cdf(boost::math::complement(t.distribution(), fabs(score)));
+		}
+
+		template<template<typename...>class HTest, typename value_type, typename InputIterator>
+		std::pair<value_type, value_type> confidenceInterval(HTest<value_type, InputIterator>& t, const value_type& alpha){
+			return t.confidenceInterval(alpha);
+		}
 	}
 }
 
