@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 #include <set>
+#include <cmath>
 
 namespace GeneTrail
 {
@@ -50,12 +51,18 @@ namespace GeneTrail
 	template<typename value_type>
 	class GT2_EXPORT GeneSet
 	{
+		public:
+		typedef std::pair<std::string, value_type> Element;
+
 		private:
 		/**
 	 	 * Typedefs
 	 	 */
-		typedef std::pair<std::string, value_type> Element;
 		typedef std::vector<Element> Container;
+
+		typedef std::vector<double> _v;
+		typedef std::vector<double>::iterator _viter;
+		typedef std::function<void(_v, _v)> return_type;
 
 		public:
 		typedef typename Container::iterator iterator;
@@ -342,6 +349,96 @@ namespace GeneTrail
 		private:
 		Container container_;
 	};
+	/**
+	 * This function applies a given function to all values of the GeneSet.
+	 *
+	 * @param gene_set
+	 * @param f
+	 */
+	template <typename value_type>
+	void transform(GeneSet<value_type>& gene_set, std::function<value_type(value_type)> f)
+	{
+		for(auto& it : gene_set)
+		{
+			it.second = f(it.second);
+		}
+	}
+
+	/**
+	 * This function applies the std::abs to all values of the GeneSet.
+	 *
+	 * @param gene_set
+	 */
+	template <typename value_type> void abs(GeneSet<value_type>& gene_set)
+	{
+		transform(gene_set, {std::abs<value_type>});
+	}
+
+	/**
+	 * This function applies the std::sqrt to all values of the GeneSet.
+	 *
+	 * @param gene_set
+	 */
+	template <typename value_type> void sqrt(GeneSet<value_type>& gene_set)
+	{
+		transform(gene_set, {static_cast<value_type(*)(value_type)>(std::sqrt)});
+	}
+
+	/**
+	 * This function applies the std::log to all values of the GeneSet.
+	 *
+	 * @param gene_set
+	 */
+	template <typename value_type> void log(GeneSet<value_type>& gene_set)
+	{
+		transform(gene_set, {static_cast<value_type(*)(value_type)>(std::log)});
+	}
+
+	/**
+	 * This function applies the std::log2 to all values of the GeneSet.
+	 *
+	 * @param gene_set
+	 */
+	template <typename value_type> void log2(GeneSet<value_type>& gene_set)
+	{
+		transform(gene_set, {static_cast<value_type(*)(value_type)>(std::log2)});
+	}
+
+	/**
+	 * This function applies the std::log10 to all values of the GeneSet.
+	 *
+	 * @param gene_set
+	 */
+	template <typename value_type> void log10(GeneSet<value_type>& gene_set)
+	{
+		transform(gene_set, {static_cast<value_type(*)(value_type)>(std::log10)});
+	}
+
+	/**
+	 * This function applies the std::pow to all values of the GeneSet.
+	 *
+	 * @param gene_set
+	 */
+	template <typename value_type>
+	void pow(GeneSet<value_type>& gene_set, int n)
+	{
+		std::transform(gene_set.begin(), gene_set.end(), gene_set.begin(),
+		               [n](std::pair<std::string, double>& e) {
+			e.second = std::pow(e.second, n);
+			return e;
+		});
+	}
+
+	/**
+	 * This function applies the std::pow (power = 2) to all values of the
+	 *GeneSet.
+	 *
+	 * @param gene_set
+	 */
+	template <typename value_type> void pow2(GeneSet<value_type>& gene_set)
+	{
+		pow(gene_set, 2);
+	}
 }
 
 #endif // GT2_CORE_GENE_SET_H
