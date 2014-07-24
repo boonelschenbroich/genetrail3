@@ -163,7 +163,15 @@ namespace GeneTrail {
 				}
 			}
 			value_type n = std::distance(begin,end);
-			return std::max(negative_sum / n, positive_sum / n);
+			// In the original paper, they return absolute values.
+			// But as we want to distinguish between positive and negative,
+			// we return signed values.
+			if(negative_sum > positive_sum){
+				return -negative_sum / n;
+			}else{
+				return positive_sum / n;
+			}
+			//return std::max(negative_sum / n, positive_sum / n);
 		}
 
 		/**
