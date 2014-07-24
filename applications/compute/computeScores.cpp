@@ -14,7 +14,7 @@
 using namespace GeneTrail;
 namespace bpo = boost::program_options;
 
-std::string expr = "", output = "", method = "", groups = "";
+std::string expr1 = "", expr2 = "", output = "", method = "", groups = "";
 bool binary = false;
 
 bool parseArguments(int argc, char* argv[])
@@ -23,7 +23,8 @@ bool parseArguments(int argc, char* argv[])
 	bpo::options_description desc;
 
 	desc.add_options()("help,h", "Display this message")
-		("expression-matrix,e", bpo::value<std::string>(&expr)->required(), "Name of a text file containing expression values as a matrix.")
+		("expression-matrix-1,1", bpo::value<std::string>(&expr1)->required(), "Name of a text file containing expression values as a matrix.")
+		("expression-matrix-2,2", bpo::value<std::string>(&expr2), "Name of a text file containing expression values as a matrix.(optional)")
 		("binary,b", bpo::value(&binary)->zero_tokens(), "Flag indicating if the matrix is in binary format.")
 		("output,o", bpo::value<std::string>(&output)->required(), "Name of the output file.")
 		("groups,g", bpo::value<std::string>(&groups)->required(), "File containing two lines specifying which rownames belog to which group.")
@@ -44,15 +45,15 @@ bool parseArguments(int argc, char* argv[])
 	return true;
 }
 
-DenseMatrix readDenseMatrix()
+DenseMatrix readDenseMatrix(std::string matrix)
 {
 	DenseMatrixReader reader;
 	if(binary)
 	{
-		std::ifstream strm(expr, std::ios::binary);
+		std::ifstream strm(matrix, std::ios::binary);
 		return reader.read(strm);
 	}else{
-		std::ifstream strm(expr);
+		std::ifstream strm(matrix);
 		return reader.read(strm);
 	}
 }
@@ -84,6 +85,16 @@ std::tuple<DenseMatrixSubset, DenseMatrixSubset> splitMatrix(DenseMatrix& matrix
 	return std::make_tuple(m1, m2);
 }
 
+DenseMatrix buildDenseMatrix()
+{
+	auto m1 = readDenseMatrix(expr1);
+	if(expr2 != ""){
+		auto m2 = readDenseMatrix(expr2);
+		m1.cbind(m2);
+	}
+	return m1;
+}
+
 int main(int argc, char* argv[])
 {
 	if(!parseArguments(argc, argv))
@@ -92,7 +103,7 @@ int main(int argc, char* argv[])
 	}
 
 	TextFile t(groups, ",", std::set<std::string>());
-	auto matrix = readDenseMatrix();
+	DenseMatrix matrix(buildDenseMatrix());
 	std::vector<std::string> reference = t.read();
 	std::vector<std::string> sample = t.read();
 	auto subset = splitMatrix(matrix, reference, sample);
