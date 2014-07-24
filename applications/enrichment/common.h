@@ -169,6 +169,11 @@ void adjustCombined(AllResults& results, const Params& p);
 void adjustSeparately(AllResults& results, const Params& p);
 
 /**
+ *
+ */
+void computePValues(AllResults& results);
+
+/**
  * This function runs the entire pipeline.
  *
  * @param test_set Test set for which the computation should be started
@@ -176,6 +181,16 @@ void adjustSeparately(AllResults& results, const Params& p);
  * @param p
  */
 void run(GeneSet<double>& test_set, CategoryList& cat_list, const Params& p);
+
+/**
+ * This function runs the entire pipeline.
+ *
+ * @param test_set Test set for which the computation should be started
+ * @param cat_list List of categories for the computation
+ * @param p
+ * @param Flag indicating if the p-value should be computed separately.
+ */
+void run(GeneSet<double>& test_set, CategoryList& cat_list, const Params& p, bool computePValue);
 
 #endif // GT2_APPLICATIONS_ENRICHMENT_COMMON_H
 

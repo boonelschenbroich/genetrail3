@@ -37,7 +37,6 @@ CategoryList getCategoryList(const std::string& catfile_list, const std::string&
 	return categories;
 }
 
-
 void readTestSet(GeneSet<double>& test_set, const Params& p)
 {
 	GeneSetReader<double> reader;
@@ -161,11 +160,11 @@ void updatePValues(Results& results, const PValueList& pvalues)
 
 void updatePValues(AllResults& results, const PValueList& pvalues)
 {
-	for(const auto& it : pvalues)
+	for(unsigned int i=0; i<pvalues.size(); ++i)
 	{
 		std::vector<std::string> s;
-		boost::split(s, it.first, boost::is_any_of("\t"));
-		results[s[0]][s[1]]->pvalue = it.second;
+		boost::split(s, pvalues[i].first, boost::is_any_of("\t"));
+		results[s[0]][s[1]]->pvalue = pvalues[i].second;
 	}
 }
 
@@ -192,7 +191,7 @@ AllResults compute(GeneSet<double>& test_set, CategoryList& cat_list, const Para
 		}
 		catch(IOError& exn)
 		{
-			std::cerr << "WARNING: Could not process category file " << cat.first << " skipping! " << std::endl;
+			std::cerr << "WARNING: Could not process category file " << cat.first << "! " << std::endl;
 		}
 	}
 
@@ -216,9 +215,14 @@ void adjustSeparately(AllResults& all_results, const Params& p)
 	}
 }
 
-void run(GeneSet<double>& test_set, CategoryList& cat_list, const Params& p)
+void run(GeneSet<double>& test_set, CategoryList& cat_list, const Params& p, bool computePValue)
 {
 	AllResults name_to_cat_results(compute(test_set, cat_list, p));
+	if(computePValue)
+	{
+		computePValues(name_to_cat_results);
+	}
+
 	// Checks how they should be adjusted
 	if(p.runSeparately)
 	{
@@ -228,6 +232,11 @@ void run(GeneSet<double>& test_set, CategoryList& cat_list, const Params& p)
 	{
 		adjustCombined(name_to_cat_results, p);
 	}
+
 	writeFiles(p.out, name_to_cat_results);
 }
 
+void run(GeneSet<double>& test_set, CategoryList& cat_list, const Params& p)
+{
+	run(test_set, cat_list, p, false);
+}

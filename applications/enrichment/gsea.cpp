@@ -95,6 +95,10 @@ std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std
 	return result;
 }
 
+void computePValues(AllResults& results)
+{
+}
+
 int main(int argc, char* argv[])
 {
 	if(!parseArguments(argc, argv)) {
