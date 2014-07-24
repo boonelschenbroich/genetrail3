@@ -4,7 +4,7 @@
 #include <genetrail2/core/PValue.h>
 #include <genetrail2/core/GeneSet.h>
 #include <genetrail2/core/GSEAResult.h>
-#include <genetrail2/core/GeneLabelPermutationTest.h>
+#include <genetrail2/core/PermutationTest.h>
 #include <genetrail2/core/Statistic.h>
 
 #include "common.h"
@@ -21,7 +21,7 @@
 #include <cstdint>
 #include <utility>
 #include <map>
-#include <stdlib.h>
+#include <cstdlib>
 #include <memory>
 #include <vector>
 
@@ -36,10 +36,9 @@ Params p;
 
 GeneSet<double> test_set;
 CategoryList cat_list;
-GeneLabelPermutationTest<double, std::vector<double>::iterator> pTest;
 
 typedef std::vector<double>::iterator _viter;
-std::map<std::string, std::function<double(std::vector<double>::iterator, _viter)>>
+std::map<std::string, std::function<double(_viter, _viter)>>
 methods({{"mean",		statistic::mean<double, _viter>},
          {"median",		statistic::median<double, _viter>},
          {"sum",		statistic::sum<double, _viter>},
@@ -82,7 +81,6 @@ bool parseArguments(int argc, char* argv[])
 std::shared_ptr<EnrichmentResult>
 computeEnrichment(const Category& c, const std::pair<int, std::string>& genes)
 {
-	std::cout << "INFO: Processing - " << c.name() << std::endl;
 	auto result = std::make_shared<EnrichmentResult>();
 	result->name = c.name();
 	result->reference = c.reference();
@@ -93,24 +91,35 @@ computeEnrichment(const Category& c, const std::pair<int, std::string>& genes)
 	for(int i = 0; i < test_set.size(); ++i) {
 		if(c.contains(test_set[i].first)) {
 			contained_genes.push_back(test_set[i].second);
-		} else {
-			not_contained_genes.push_back(test_set[i].second);
 		}
 	}
 
-	double z = apply(contained_genes, method);
-	bool enriched = z > apply(not_contained_genes, method);
-	double p =
-	    enriched
-	        ? pTest.computeUpperTailedPValue(genes.first, z, methods[method])
-	        : pTest.computeLowerTailedPValue(genes.first, z, methods[method]);
-
-	result->pvalue = p;
-
-	result->enriched = enriched;
+	result->score = apply(contained_genes, method);
+	result->enriched = result->score >= 0.0;
 	result->hits = genes.first;
 	result->info = genes.second;
 	return result;
+}
+
+void computePValues(AllResults& all_results)
+{
+	std::vector<TestResult<double>> results;
+	std::vector<double> scores;
+	scores.reserve(test_set.size());
+	for(int i = 0; i < test_set.size(); ++i) {
+		scores.push_back(test_set[i].second);
+	}
+
+	for(const auto& it : all_results) {
+		for(const auto& jt : it.second) {
+			TestResult<double> t(it.first + "\t" + jt.first, jt.second->score, jt.second->hits);
+			t.enriched = jt.second->enriched;
+			results.emplace_back(t);
+		}
+	}
+	PermutationTest<double> pTest(results, scores, numberOfPermutations);
+	std::vector<std::pair<std::string, double>> pvalues = pTest.computePValue(methods[method]);
+	updatePValues(all_results, pvalues);
 }
 
 int main(int argc, char* argv[])
@@ -123,13 +132,5 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	std::vector<double> for_permutation;
-	for(auto& i : test_set.getScores()) {
-		for_permutation.push_back(i.second);
-	}
-
-	pTest = GeneLabelPermutationTest<double, std::vector<double>::iterator>(
-	    for_permutation.begin(), for_permutation.end(), numberOfPermutations);
-
-	run(test_set, cat_list, p);
+	run(test_set, cat_list, p, true);
 }
