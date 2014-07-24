@@ -33,6 +33,7 @@ add_header_to_library(WilcoxonMannWhitneyTest.h)
 add_header_to_library(PValue.h)
 add_header_to_library(macros.h)
 add_header_to_library(GeneLabelPermutationTest.h)
+add_header_to_library(OneSampleWilcoxonSignedRankTest.h)
 
 # Sources
 add_to_library(AbstractMatrix)
