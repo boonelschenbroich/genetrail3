@@ -35,7 +35,7 @@ namespace GeneTrail {
     class GT2_EXPORT IndependentTTest {
     public:
 
-        IndependentTTest(value_type tol = 1e-5) : tolerance_(tol) {
+        IndependentTTest(value_type tol = 1e-5, value_type mu = 0.0) : tolerance_(tol), mu_(mu) {
         }
 
         /**
@@ -45,11 +45,11 @@ namespace GeneTrail {
          *
          * NUMERICAL RECIPES page 729
          *
-         * @param Iterator
-         * @param Iterator
-		 * @param Iterator
-		 * @param Iterator
-         * @return A PValue object containing a t-score for the differences between the two groups
+         * @param first_begin Iterator
+         * @param first_end Iterator
+		 * @param second_begin Iterator
+		 * @param second_end Iterator
+         * @return t-score for the differences between the two groups
          */
         value_type test(const InputIterator1& first_begin, const InputIterator1& first_end, const InputIterator2& second_begin, const InputIterator2& second_end) {
             value_type mean1 = statistic::mean<value_type, InputIterator1>(first_begin,first_end);
@@ -68,7 +68,7 @@ namespace GeneTrail {
             if (stdErr_ < tolerance_) {
                 score_ = 0;
             } else {
-                score_ = (mean1 - mean2) / stdErr_;
+                score_ = (mean1 - mean2 - mu_) / stdErr_;
             }
 			return score_;
         }
@@ -88,6 +88,7 @@ namespace GeneTrail {
 
         value_type tolerance_;
 		value_type df_;
+		value_type mu_;
 		value_type stdErr_;
 		value_type score_;
     };
