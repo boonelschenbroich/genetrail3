@@ -84,7 +84,7 @@ std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std
 		auto median = statistic::median<double, std::vector<double>::iterator>(all_genes.begin(), all_genes.end());
 		OneSampleWilcoxonSignedRankTest<double, std::vector<double>::iterator> wilcox(1e-4, median);
 		result->score = HTest::test(wilcox, contained_genes.begin(), contained_genes.end());
-		if(!wilcox.enriched()){
+		if(wilcox.enriched()){
 			result->pvalue = HTest::lowerTailedPValue(wilcox, result->score);
 		}else{
 			result->pvalue = HTest::upperTailedPValue(wilcox, result->score);

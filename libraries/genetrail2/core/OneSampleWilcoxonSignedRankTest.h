@@ -91,9 +91,9 @@ namespace GeneTrail {
 
 			value_type rank_sum = 0.0;
 			if(p_rank_sum < n_rank_sum){
-				enriched_ = true;
 				rank_sum = p_rank_sum;
 			}else{
+				enriched_ = true;
 				rank_sum = n_rank_sum;
 			}
 
