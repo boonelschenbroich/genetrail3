@@ -172,7 +172,6 @@ AllResults compute(GeneSet<double>& test_set, CategoryList& cat_list, const Para
 {
 	AllResults name_to_cat_results;
 	for(const auto& cat : cat_list) {
-		std::cout << "INFO: Processing - " << cat.first << std::endl;
 		try
 		{
 			GMTFile input(cat.second);
@@ -180,6 +179,7 @@ AllResults compute(GeneSet<double>& test_set, CategoryList& cat_list, const Para
 			Results name_to_result;
 			while(input) {
 				Category c = input.read();
+				std::cout << "INFO: Processing - " << cat.first << " - " << c.name() << std::endl;
 				auto pair = processCategory(c, test_set, p);
 				if(!pair.first) {
 					continue;
