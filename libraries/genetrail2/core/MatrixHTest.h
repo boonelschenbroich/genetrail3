@@ -5,7 +5,7 @@
 #include "FTest.h"
 #include "IndependentTTest.h"
 #include "DependentTTest.h"
-#include "WilcoxonMannWhitneyTest.h"
+#include "WilcoxonRankSumTest.h"
 #include "WilcoxonMatchedPairsSignedRankTest.h"
 #include "IndependentShrinkageTTest.h"
 #include "SignalToNoiseRatio.h"
@@ -58,7 +58,7 @@ namespace GeneTrail
 		};
 
 		return_type wilcoxon = [](_v a, _v b) {
-			WilcoxonMannWhitneyTest<double, _viter, _viter> t;
+			WilcoxonRankSumTest<double, _viter, _viter> t;
 			return HTest::test(t, a.begin(), a.end(), b.begin(), b.end());
 		};
 
@@ -68,7 +68,7 @@ namespace GeneTrail
 		};
 
 		return_type signal_to_noise_ratio = [](_v a, _v b) {
-			WilcoxonMannWhitneyTest<double, _viter, _viter> t;
+			SignalToNoiseRatio<double, _viter, _viter> t;
 			return HTest::test(t, a.begin(), a.end(), b.begin(), b.end());
 		};
 
