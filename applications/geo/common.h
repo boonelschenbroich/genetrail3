@@ -12,10 +12,10 @@ namespace bpo = boost::program_options;
 
 struct Params
 {
-	std::string geo = "";
-	std::string geo_dir = "";
-	std::string methodToHandleDuplicates = "";
-	std::string output_file = "";
+	std::string geo;
+	std::string geo_dir;
+	std::string methodToHandleDuplicates;
+	std::string output_file;
 	bool gds = false;
 };
 
