@@ -60,7 +60,7 @@ double GEO::apply(std::string method, std::vector<double> values)
 	if( method == "mean" ){
 		return statistic::mean<double, _viter>(values.begin(), values.end());
 	}
-	else if( method == "mean" ){
+	else if( method == "median" ){
 		return statistic::median<double, _viter>(values.begin(), values.end());
 	}
 	else if( method == "max" ){
