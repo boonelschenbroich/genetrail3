@@ -12,24 +12,25 @@ using namespace GeneTrail;
 
 Params p;
 
-GEOGDSParser gds_;
-GEOGSEParser gse_;
-
 int main(int argc, char* argv[])
 {
+	GEOGDSParser gds;
+	GEOGSEParser gse;
+
 	if(!parseArguments(argc, argv, p))
 	{
 		return -1;
 	}
 
+	std::string path = p.geo_dir +  "/" + p.geo;
 	GEOMap geo;
 	if(p.gds)
 	{
-		geo = gds_.readGDSFile(p.geo_dir +  "/" + p.geo);
+		geo = gds.readGDSFile(path);
 	}
 	else
 	{
-		geo = gse_.readGSEFile(p.geo_dir +  "/" + p.geo);
+		geo = gse.readGSEFile(path);
 	}
 
 	annotateAndWriteGEO(geo,p);
