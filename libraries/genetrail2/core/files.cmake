@@ -40,6 +40,7 @@ add_header_to_library(IndexIterator.h)
 add_header_to_library(MatrixHTest.h)
 add_header_to_library(OneSampleWilcoxonSignedRankTest.h)
 add_header_to_library(WilcoxonMatchedPairsSignedRankTest.h)
+add_header_to_library(WilcoxonRankSumTest.h)
 
 # Sources
 add_to_library(AbstractMatrix)
