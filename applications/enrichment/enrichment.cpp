@@ -86,16 +86,24 @@ computeEnrichment(const Category& c, const std::pair<int, std::string>& genes)
 	result->reference = c.reference();
 
 	std::vector<double> contained_genes;
-	std::vector<double> not_contained_genes;
+	std::vector<double> all_genes;
+	all_genes.resize(test_set.size());
 
 	for(int i = 0; i < test_set.size(); ++i) {
+		all_genes[i] = test_set[i].second;
 		if(c.contains(test_set[i].first)) {
 			contained_genes.push_back(test_set[i].second);
 		}
 	}
 
 	result->score = apply(contained_genes, method);
-	result->enriched = result->score >= 0.0;
+	if(method == "mean"){
+		result->enriched = result->score >= apply(all_genes, method);
+	}else if(method == "median"){
+		result->enriched = result->score >= apply(all_genes, method);
+	}else {
+		result->enriched = result->score >= 0.0;
+	}
 	result->hits = genes.first;
 	result->info = genes.second;
 	return result;
