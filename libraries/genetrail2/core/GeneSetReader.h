@@ -37,7 +37,7 @@ namespace GeneTrail
 		 */
 		template <typename Processor>
 		GeneSet<value_type> read(const std::string& path, Processor p,
-		                         int numberOfElementPerLine,
+		                         size_t numberOfElementPerLine,
 		                         const std::string& delimiter)
 		{
 			GeneSet<value_type> gene_set;

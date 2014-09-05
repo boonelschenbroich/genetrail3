@@ -22,8 +22,8 @@ void computeCovariance(const DenseMatrix::DMatrix& sdata,
                        DenseMatrix::DMatrix& cov)
 {
 	const double factor = 1.0 / (sdata.rows() + cdata.rows() - 2);
-	for(int i = 0; i < indices.size(); ++i) {
-		for(int j = i; j < indices.size(); ++j) {
+	for(size_t i = 0; i < indices.size(); ++i) {
+		for(size_t j = i; j < indices.size(); ++j) {
 			cov(j, i) = cov(i, j) =
 			    (cdata.col(indices[i]).dot(cdata.col(indices[j])) +
 			     sdata.col(indices[i]).dot(sdata.col(indices[j]))) *
@@ -89,9 +89,9 @@ double computeEnrichment(const DenseMatrix& cdata, const DenseMatrix& sdata,
 
 	double result = 0.0;
 
-	for(int i = 0; i < p; ++i) {
+	for(size_t i = 0; i < p; ++i) {
 		result += cov(i, i) * diff_m[indices[i]] * diff_m[indices[i]];
-		for(int j = i + 1; j < p; ++j) {
+		for(size_t j = i + 1; j < p; ++j) {
 			result += 2.0 * cov(i,j) * diff_m[indices[i]] * diff_m[indices[j]];
 		}
 	}
@@ -182,7 +182,7 @@ int main(int argc, char* argv[])
 		return a.second < b.second;
 	});
 
-	for(int i = 0; i < results.size(); ++i) {
+	for(size_t i = 0; i < results.size(); ++i) {
 		double adjusted = results[i].second * static_cast<double>(results.size()) / (i + 1);
 		if(adjusted > significance) {
 			break;

@@ -58,7 +58,7 @@ namespace GeneTrail {
 			this->computePooledVariances(genes_first, var_median_first);
 			this->computePooledVariances(genes_second, var_median_second);
 
-			for(int i=0; i<genes_first.size(); ++i){
+			for(unsigned int i=0; i<genes_first.size(); ++i){
 				auto* a = &genes_first[i];
 				auto* b = &genes_second[i];
 				t_scores.emplace_back((a->mean - b->mean) / std::sqrt( a->shrink_var/a->size + b->shrink_var/b->size ));

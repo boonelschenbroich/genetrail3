@@ -290,7 +290,7 @@ namespace GeneTrail
 		{
 			std::vector<std::string> s(scores.size());
 
-			for(int i = 0; i < scores.size(); ++i) {
+			for(size_t i = 0; i < scores.size(); ++i) {
 				s[i] = scores[i].first;
 			}
 

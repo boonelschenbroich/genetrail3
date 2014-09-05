@@ -97,7 +97,7 @@ namespace GeneTrail {
 				}
 
 				// Add to rank sums
-				for(int l=i; l <= i+k; ++l){
+				for(unsigned int l=i; l <= i+k; ++l){
 					if (r[l].second == 0) {
                    		rank_sum1 += rank;
                 	} else {

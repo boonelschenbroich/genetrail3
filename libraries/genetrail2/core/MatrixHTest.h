@@ -111,7 +111,7 @@ namespace GeneTrail
 		{
 			std::vector<double> result;
 			result.reserve(m.cols());
-			for(int c = 0; c < m.cols(); ++c) {
+			for(unsigned int c = 0; c < m.cols(); ++c) {
 				// This checks if m(r,c) is NAN, NA or Inf...
 				if(m(r, c) != m(r, c)) {
 					continue;
@@ -153,7 +153,7 @@ namespace GeneTrail
 			result1.reserve(ref.cols());
 			std::vector<double> result2;
 			result2.reserve(s.cols());
-			for(int c = 0; c < ref.cols(); ++c) {
+			for(unsigned int c = 0; c < ref.cols(); ++c) {
 				// This checks if m(r,c) is NAN, NA or Inf...
 				if(ref(r, c) != ref(r, c) || s(r, c) != s(r, c)) {
 					continue;
@@ -237,7 +237,7 @@ namespace GeneTrail
 		{
 			GeneSet<double> result;
 			auto genes = reference.rowNames();
-			for(int r = 0; r < reference.rows(); ++r) {
+			for(unsigned int r = 0; r < reference.rows(); ++r) {
 				std::vector<double> v1;
 				std::vector<double> v2;
 				std::tie(v1, v2) = removePairwiseNANs(reference, sample, r);
@@ -257,7 +257,7 @@ namespace GeneTrail
 			auto ref = removeAllNANs(reference);
 			auto sam = removeAllNANs(sample);
 			auto v = t.test(ref.begin(), ref.end(), sam.begin(), sam.end());
-			for(int r = 0; r < reference.rows(); ++r) {
+			for(unsigned int r = 0; r < reference.rows(); ++r) {
 				result.insert(reference.rowName(r), v[r]);
 			}
 			return result;

@@ -67,7 +67,7 @@ namespace GeneTrail {
             }
 
 			std::vector< std::pair< value_type, int> > ranks;
-			for(int i=0; i<diff.size(); ++i){
+			for(unsigned int i=0; i<diff.size(); ++i){
 				if(diff[i] >= 0){
 					ranks.push_back(std::make_pair(diff[i], 1));
 				}else{
