@@ -27,7 +27,7 @@ bool parseArguments(int argc, char* argv[])
 		("expression-matrix-2,2", bpo::value<std::string>(&expr2), "Name of a text file containing expression values as a matrix.(optional)")
 		("binary,b", bpo::value(&binary)->zero_tokens(), "Flag indicating if the matrix is in binary format.")
 		("output,o", bpo::value<std::string>(&output)->required(), "Name of the output file.")
-		("groups,g", bpo::value<std::string>(&groups)->required(), "File containing two lines specifying which rownames belog to which group.")
+		("groups,g", bpo::value<std::string>(&groups)->required(), "File containing two lines specifying which rownames belong to which group.")
 		("method,m", bpo::value<std::string>(&method)->required(), "Method used for scoring.");
 
 	try
