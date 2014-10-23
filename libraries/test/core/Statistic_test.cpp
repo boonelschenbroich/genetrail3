@@ -39,12 +39,12 @@ TEST(Statistic, Abs)
 {
 	auto tmp = a;
 	statistic::abs<double, std::vector<double>::iterator>(tmp.begin(),tmp.end());
-	for(int i=0; i<a.size(); ++i){
+	for(size_t i = 0; i < a.size(); ++i) {
 		EXPECT_EQ(tmp[i],std::abs(a[i]));
 	}
 	tmp = b;
 	statistic::abs<double, std::vector<double>::iterator>(tmp.begin(),tmp.end());
-	for(int i=0; i<b.size(); ++i){
+	for(size_t i = 0; i < b.size(); ++i) {
 		EXPECT_EQ(tmp[i],std::abs(b[i]));
 	}
 }
@@ -85,13 +85,13 @@ TEST(Statistic, Log){
 	auto tmp = a;
 	statistic::abs<double, std::vector<double>::iterator>(tmp.begin(),tmp.end());
 	statistic::log<double, std::vector<double>::iterator>(tmp.begin(),tmp.end());
-	for(int i=0; i<a.size(); ++i){
+	for(size_t i = 0; i < a.size(); ++i) {
 		EXPECT_EQ(tmp[i], std::log(std::abs(a[i])));
 	}
 	tmp = b;
 	statistic::abs<double, std::vector<double>::iterator>(tmp.begin(),tmp.end());
 	statistic::log<double, std::vector<double>::iterator>(tmp.begin(),tmp.end());
-	for(int i = 0; i < b.size(); ++i) {
+	for(size_t i = 0; i < b.size(); ++i) {
 		EXPECT_EQ(tmp[i], std::log(std::abs(b[i])));
 	}
 }
@@ -101,13 +101,13 @@ TEST(Statistic, Log2)
 	auto tmp = a;
 	statistic::abs<double, std::vector<double>::iterator>(tmp.begin(),tmp.end());
 	statistic::log2<double, std::vector<double>::iterator>(tmp.begin(),tmp.end());
-	for(int i = 0; i < a.size(); ++i) {
+	for(size_t i = 0; i < a.size(); ++i) {
 		EXPECT_EQ(tmp[i], std::log2(std::abs(a[i])));
 	}
 	tmp = b;
 	statistic::abs<double, std::vector<double>::iterator>(tmp.begin(),tmp.end());
 	statistic::log2<double, std::vector<double>::iterator>(tmp.begin(),tmp.end());
-	for(int i = 0; i < b.size(); ++i) {
+	for(size_t i = 0; i < b.size(); ++i) {
 		EXPECT_EQ(tmp[i], std::log2(std::abs(b[i])));
 	}
 }
@@ -119,7 +119,7 @@ TEST(Statistic, Log10)
 	                                                      tmp.end());
 	statistic::log10<double, std::vector<double>::iterator>(tmp.begin(),
 	                                                       tmp.end());
-	for(int i = 0; i < a.size(); ++i) {
+	for(size_t i = 0; i < a.size(); ++i) {
 		EXPECT_EQ(tmp[i], std::log10(std::abs(a[i])));
 	}
 	tmp = b;
@@ -127,7 +127,7 @@ TEST(Statistic, Log10)
 	                                                      tmp.end());
 	statistic::log10<double, std::vector<double>::iterator>(tmp.begin(),
 	                                                       tmp.end());
-	for(int i = 0; i < b.size(); ++i) {
+	for(size_t i = 0; i < b.size(); ++i) {
 		EXPECT_EQ(tmp[i], std::log10(std::abs(b[i])));
 	}
 }
@@ -139,7 +139,7 @@ TEST(Statistic, Sqrt)
 	                                                      tmp.end());
 	statistic::sqrt<double, std::vector<double>::iterator>(tmp.begin(),
 	                                                       tmp.end());
-	for(int i = 0; i < a.size(); ++i) {
+	for(size_t i = 0; i < a.size(); ++i) {
 		EXPECT_EQ(tmp[i], std::sqrt(std::abs(a[i])));
 	}
 	tmp = b;
@@ -147,7 +147,7 @@ TEST(Statistic, Sqrt)
 	                                                      tmp.end());
 	statistic::sqrt<double, std::vector<double>::iterator>(tmp.begin(),
 	                                                       tmp.end());
-	for(int i = 0; i < b.size(); ++i) {
+	for(size_t i = 0; i < b.size(); ++i) {
 		EXPECT_EQ(tmp[i], std::sqrt(std::abs(b[i])));
 	}
 }
@@ -156,12 +156,12 @@ TEST(Statistic, Pow)
 {
 	auto tmp = a;
 	statistic::pow<double, std::vector<double>::iterator>(tmp.begin(), tmp.end(),2);
-	for(int i = 0; i < a.size(); ++i) {
+	for(size_t i = 0; i < a.size(); ++i) {
 		EXPECT_EQ(tmp[i], a[i] * a[i]);
 	}
 	tmp = b;
 	statistic::pow<double, std::vector<double>::iterator>(tmp.begin(), tmp.end(),2);
-	for(int i = 0; i < b.size(); ++i) {
+	for(size_t i = 0; i < b.size(); ++i) {
 		EXPECT_EQ(tmp[i], b[i] * b[i]);
 	}
 }
