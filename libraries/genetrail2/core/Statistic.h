@@ -243,8 +243,7 @@ namespace GeneTrail {
 			value_type mean2 = mean<value_type,InputIterator>(second_begin, second_end);
 			value_type cov = 0.0;
 			size_t n = std::distance(first_begin, first_end);
-			for(int i=0; i<n; ++i)
-			{
+			for(size_t i = 0; i < n; ++i) {
 				cov += (*(first_begin + i) - mean1)*(*(second_begin + i) - mean2);
 			}
 			return cov / (n - 1);
@@ -277,8 +276,7 @@ namespace GeneTrail {
 			std::vector<int> ranks;
 			for(auto it = begin; it!= end; ++it)
 			{
-				for(int i = 0; i < tmp.size(); ++i)
-				{
+				for(size_t i = 0; i < tmp.size(); ++i) {
 					if(*it == *(tmp.begin()+i))
 					{
 						ranks.push_back(i);
