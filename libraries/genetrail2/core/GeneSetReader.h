@@ -52,7 +52,7 @@ namespace GeneTrail
 					continue;
 				}
 				std::vector<std::string> sline;
-				boost::split(sline, line, boost::is_any_of(delimiter));
+				boost::split(sline, line, boost::is_any_of(delimiter), boost::token_compress_on);
 				if(sline.size() == numberOfElementPerLine) {
 					gene_set.insert(p(sline));
 				} else {
