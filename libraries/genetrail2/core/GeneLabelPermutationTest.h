@@ -21,7 +21,7 @@ namespace GeneTrail
 		template<typename Comparator, typename Function>
 		value_type computePValue(unsigned int sampleSize, value_type score, Comparator comp, Function f){
 			unsigned int n = 0;
-			for(int i=0; i< permutations_; ++i){
+			for(unsigned int i = 0; i < permutations_; ++i) {
 				std::random_shuffle(begin_, end_);
 				if(comp(score, f(begin_, begin_ + sampleSize))){
 					++n;
