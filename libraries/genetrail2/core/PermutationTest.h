@@ -65,7 +65,7 @@ namespace GeneTrail
 				shuffle();
 				size_t currentSampleSize = -1;
 				value_type currentScore = 0.0;
-				for(int i=0; i<tests_.size(); ++i){
+				for(size_t i=0; i<tests_.size(); ++i){
 					// Check if we need to compute new values
 					if(tests_[i].sampleSize != currentSampleSize)
 					{
@@ -87,7 +87,7 @@ namespace GeneTrail
 					}
 				}
 			}
-			for(int i=0; i<tests_.size(); ++i){
+			for(size_t i=0; i<tests_.size(); ++i){
 				//std::cout << tests_[i].name << "\t" << tests_[i].computePValue(permutations_)  << std::endl;
 				pvalues_.push_back(std::make_pair(tests_[i].name, tests_[i].computePValue(permutations_)));
 			}
