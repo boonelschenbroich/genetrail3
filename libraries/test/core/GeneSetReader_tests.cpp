@@ -13,6 +13,88 @@
 
 using namespace GeneTrail;
 
+TEST(Parsing, readScoreFileSimple) {
+	GeneSetReader<double> parser;
+	GeneSet<double> file = parser.readScoringFile(TEST_DATA_PATH("test_scores.txt"));
+
+	auto it = file.begin();
+	ASSERT_NE(file.end(), it);
+	EXPECT_EQ("90123", it->first); EXPECT_FLOAT_EQ(4.7813, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("01234", it->first); EXPECT_FLOAT_EQ(3.6381, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("12345", it->first); EXPECT_FLOAT_EQ(-6.42397, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("23456", it->first); EXPECT_FLOAT_EQ(8.81721, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("34567", it->first); EXPECT_FLOAT_EQ(-5.91418, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("45678", it->first); EXPECT_FLOAT_EQ(-2.71999, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("56789", it->first); EXPECT_FLOAT_EQ(3.01346, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("67890", it->first); EXPECT_FLOAT_EQ(-1.74416, it->second);
+	ASSERT_EQ(file.end(), ++it);
+}
+
+TEST(Parsing, readGeneListSimple) {
+	GeneSetReader<double> parser;
+	auto file = parser.readGeneList(TEST_DATA_PATH("test_genes.txt"));
+
+	auto it = file.begin();
+	ASSERT_NE(file.end(), it);
+	EXPECT_EQ("dflgjknfjg", it->first); EXPECT_EQ(0.0, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("dfg213", it->first); EXPECT_EQ(0.0, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("132fvwr", it->first); EXPECT_EQ(0.0, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("324fdsvgf", it->first); EXPECT_EQ(0.0, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("DTGG", it->first); EXPECT_EQ(0.0, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("gret", it->first); EXPECT_EQ(0.0, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("gtluh32", it->first); EXPECT_EQ(0.0, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("§\"$542", it->first); EXPECT_EQ(0.0, it->second);
+	EXPECT_EQ(file.end(), ++it);
+}
+
+TEST(Parsing, readGeneListWhitespace) {
+	GeneSetReader<double> parser;
+	auto file = parser.readGeneList(TEST_DATA_PATH("test_genes2.txt"));
+
+	auto it = file.begin();
+	ASSERT_NE(file.end(), it);
+	EXPECT_EQ("sdfdfdsf", it->first); EXPECT_EQ(0.0, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("asdad", it->first); EXPECT_EQ(0.0, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("dsfd", it->first); EXPECT_EQ(0.0, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("234", it->first); EXPECT_EQ(0.0, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("123", it->first); EXPECT_EQ(0.0, it->second);
+	EXPECT_EQ(file.end(), ++it);
+}
+
+TEST(Parsing, readScoreFileWhitespace) {
+	GeneSetReader<double> parser;
+	auto file = parser.readScoringFile(TEST_DATA_PATH("test_scores2.txt"));
+
+	auto it = file.begin();
+	ASSERT_NE(file.end(), it);
+	EXPECT_EQ("asadas", it->first);  EXPECT_EQ(2, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("sdfdsf", it->first);  EXPECT_EQ(3.4, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("dfsdfdf", it->first); EXPECT_EQ(-15, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("dsfsd", it->first);   EXPECT_EQ(-7, it->second);
+	EXPECT_EQ(file.end(), ++it);
+}
+
 TEST(Parsing, sortIncreasingly) {
     GeneSetReader<double> parser;
     GeneSet<double> file = parser.readScoringFile(TEST_DATA_PATH("test_scores.txt"));
