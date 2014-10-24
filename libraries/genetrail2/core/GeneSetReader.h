@@ -45,24 +45,30 @@ namespace GeneTrail
 			if(!input) {
 				throw IOError("File (" + path + ") is not open for reading");
 			}
+
+			std::vector<std::string> sline;
 			int l = 1;
-			for(std::string line; getline(input, line);) {
-				if(line.find("(class=") != std::string::npos)
-				{
+			for(std::string line; getline(input, line); ++l) {
+				boost::trim(line);
+
+				if(line == "") {
 					continue;
 				}
-				std::vector<std::string> sline;
+
+				if(line.find("(class=") != std::string::npos) {
+					continue;
+				}
+
 				boost::split(sline, line, boost::is_any_of(delimiter), boost::token_compress_on);
 				if(sline.size() == numberOfElementPerLine) {
 					gene_set.insert(p(sline));
 				} else {
 					std::string err = (sline.size() > numberOfElementPerLine)
 					                      ? "many"
-					                      : "less";
+					                      : "few";
 					throw IOError("Wrong file format: Line " + boost::lexical_cast<std::string>(l) +
 					              " contains too " + err + " elements");
 				}
-				++l;
 			}
 			return gene_set;
 		}
@@ -75,8 +81,6 @@ namespace GeneTrail
 		static std::pair<std::string, value_type>
 		scoringFileProcessor(std::vector<std::string>& sline)
 		{
-			boost::trim(sline[0]);
-			boost::trim(sline[1]);
 			return std::make_pair(sline[0],
 			                      boost::lexical_cast<value_type>(sline[1]));
 		}
@@ -99,7 +103,6 @@ namespace GeneTrail
 		static std::pair<std::string, value_type>
 		geneListProcessor(std::vector<std::string>& sline)
 		{
-			boost::trim(sline[0]);
 			return std::make_pair(sline[0], boost::lexical_cast<value_type>(0.0));
 		}
 
