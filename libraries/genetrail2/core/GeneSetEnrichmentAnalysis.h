@@ -28,7 +28,6 @@
 
 #include <boost/math/special_functions/binomial.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
-#include <boost/multiprecision/gmp.hpp>
 
 #include <map>
 #include <vector>
