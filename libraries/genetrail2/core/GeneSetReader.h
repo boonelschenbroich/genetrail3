@@ -2,7 +2,6 @@
 #define GT2_CORE_GENE_SET_READER_H
 
 #include <fstream>
-#include <iostream>
 #include <utility>
 #include <string>
 #include <functional>
@@ -81,6 +80,8 @@ namespace GeneTrail
 		static std::pair<std::string, value_type>
 		scoringFileProcessor(std::vector<std::string>& sline)
 		{
+			boost::trim(sline[0]);
+			boost::trim(sline[1]);
 			return std::make_pair(sline[0],
 			                      boost::lexical_cast<value_type>(sline[1]));
 		}
