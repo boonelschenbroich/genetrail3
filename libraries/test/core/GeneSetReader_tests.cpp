@@ -95,6 +95,46 @@ TEST(Parsing, readScoreFileWhitespace) {
 	EXPECT_EQ(file.end(), ++it);
 }
 
+TEST(Parsing, readNAFileSimple) {
+	GeneSetReader<double> parser;
+	auto file = parser.readNAFile(TEST_DATA_PATH("test_scores.na"));
+
+	auto it = file.begin();
+	ASSERT_NE(file.end(), it);
+	EXPECT_EQ("a", it->first);  EXPECT_FLOAT_EQ(1.0, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("desf", it->first);  EXPECT_FLOAT_EQ(2.9, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("sgr", it->first);  EXPECT_FLOAT_EQ(-1.5, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("weffe", it->first);  EXPECT_FLOAT_EQ(3212312.1, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("frewf", it->first);  EXPECT_FLOAT_EQ(213, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("dsfr", it->first);  EXPECT_FLOAT_EQ(123, it->second);
+	EXPECT_EQ(file.end(), ++it);
+}
+
+TEST(Parsing, readNAFileNasty) {
+	GeneSetReader<double> parser;
+	auto file = parser.readNAFile(TEST_DATA_PATH("test_scores2.na"));
+
+	auto it = file.begin();
+	ASSERT_NE(file.end(), it);
+	EXPECT_EQ("sdf",       it->first);  EXPECT_FLOAT_EQ(3.2, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("dsdf",      it->first);  EXPECT_FLOAT_EQ(-1.24, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("1",         it->first);  EXPECT_FLOAT_EQ(1.0, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("dfsf",      it->first);  EXPECT_FLOAT_EQ(132213.2, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("fvju.dsf",  it->first);  EXPECT_FLOAT_EQ(21321.0, it->second);
+	ASSERT_NE(file.end(), ++it);
+	EXPECT_EQ("()§%$%\"§", it->first);  EXPECT_FLOAT_EQ(234234.0, it->second);
+	EXPECT_EQ(file.end(), ++it);
+}
+
 TEST(Parsing, sortIncreasingly) {
     GeneSetReader<double> parser;
     GeneSet<double> file = parser.readScoringFile(TEST_DATA_PATH("test_scores.txt"));
