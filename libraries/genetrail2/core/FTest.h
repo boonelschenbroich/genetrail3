@@ -79,6 +79,13 @@ namespace GeneTrail {
 		value_type score_;
     };
 
+	namespace HTest
+	{
+		template<typename value_type>
+		value_type twoSidedPValue(FTest<value_type>& t, const value_type& score) {
+			return 2.0 * boost::math::cdf(t.distribution(), fabs(score));
+		}
+	}
 }
 
 #endif // GT2_CORE_F_TEST_H

@@ -3,8 +3,6 @@
 
 #include <boost/math/distributions.hpp>
 
-#include "FTest.h"
-
 namespace GeneTrail
 {
 	namespace HTest
@@ -17,11 +15,6 @@ namespace GeneTrail
 		template<template<typename T> class HTest, typename value_type>
 		value_type twoSidedPValue(HTest<value_type>& t, const value_type& score) {
 			return 2.0 * boost::math::cdf(boost::math::complement(t.distribution(), fabs(score)));
-		}
-
-		template<typename value_type>
-		value_type twoSidedPValue(FTest<value_type>& t, const value_type& score) {
-			return 2.0 * boost::math::cdf(t.distribution(), fabs(score));
 		}
 
 		template<template<typename T> class HTest, typename value_type>
