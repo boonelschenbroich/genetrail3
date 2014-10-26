@@ -58,16 +58,16 @@ std::map<std::string, std::vector<double>> GEO::mapAndRemoveDuplicates(
 double GEO::apply(std::string method, std::vector<double> values)
 {
 	if( method == "mean" ){
-		return statistic::mean<double, _viter>(values.begin(), values.end());
+		return statistic::mean<double>(values.begin(), values.end());
 	}
 	else if( method == "median" ){
-		return statistic::median<double, _viter>(values.begin(), values.end());
+		return statistic::median<double>(values.begin(), values.end());
 	}
 	else if( method == "max" ){
-		return statistic::max<double, _viter>(values.begin(), values.end());
+		return statistic::max<double>(values.begin(), values.end());
 	}
 	else if( method == "min" ){
-		return statistic::min<double, _viter>(values.begin(), values.end());
+		return statistic::min<double>(values.begin(), values.end());
 	}
 	return 0.0;
 }

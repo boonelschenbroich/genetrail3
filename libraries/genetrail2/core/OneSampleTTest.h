@@ -48,8 +48,8 @@ namespace GeneTrail {
          */
         template<typename InputIterator>
         value_type test(const InputIterator& begin, const InputIterator& end) {
-            value_type mean = statistic::mean<value_type, InputIterator>(begin, end);
-            value_type var = statistic::var<value_type, InputIterator>(begin, end);
+            auto mean = statistic::mean<value_type>(begin, end);
+            auto var = statistic::var<value_type>(begin, end);
 			auto size = std::distance(begin, end);
 
             this->stdErr_ = std::sqrt(var / size);

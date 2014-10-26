@@ -51,8 +51,8 @@ namespace GeneTrail {
         value_type test(const InputIterator1& first_begin, const InputIterator1& first_end, const InputIterator2& second_begin, const InputIterator2& second_end) {
 			this->size1_ = std::distance(first_begin,first_end);
 			this->size2_ = std::distance(second_begin,second_end);
-			value_type var1 = statistic::var<value_type, InputIterator1>(first_begin,first_end);
-            value_type var2 = statistic::var<value_type, InputIterator2>(second_begin,second_end);
+			auto var1 = statistic::var<value_type>(first_begin, first_end);
+            auto var2 = statistic::var<value_type>(second_begin, second_end);
             score_ = var1 / var2;
             return score_;
         }

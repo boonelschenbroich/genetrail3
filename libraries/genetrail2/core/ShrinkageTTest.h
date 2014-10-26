@@ -60,7 +60,7 @@ namespace GeneTrail {
       	Gene<value_type> computeVariances(InputIterator begin, InputIterator end) {
 			Gene<value_type> g;
 
-			value_type mean = statistic::mean<value_type, InputIterator>(begin, end);
+			value_type mean = statistic::mean<value_type>(begin, end);
         	g.mean = mean;
 			size_t size = std::distance(begin, end);
 			g.size = size;
@@ -100,7 +100,7 @@ namespace GeneTrail {
 				variances.emplace_back(computeVariances(iter->begin(), iter->end()));
 				vars.emplace_back(variances.back().var);
 			}
-			return std::make_pair(variances, statistic::median<value_type, decltype(vars.begin())>(vars.begin(), vars.end()));
+			return std::make_pair(variances, statistic::median<value_type>(vars.begin(), vars.end()));
 		}
 
 		/**

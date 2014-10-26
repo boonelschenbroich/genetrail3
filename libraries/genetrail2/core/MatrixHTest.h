@@ -72,17 +72,17 @@ namespace GeneTrail
 		};
 
 		return_type log_mean_fold_quotient = [](_v a, _v b) {
-			return statistic::log_mean_fold_quotient<double, _viter, _viter>(a.begin(), a.end(), b.begin(), b.end());
+			return statistic::log_mean_fold_quotient<double>(a.begin(), a.end(), b.begin(), b.end());
 		};
 
 		return_type mean_fold_quotient = [](_v a, _v b) {
-			return statistic::mean_fold_quotient<double, _viter, _viter>(a.begin(), a.end(), b.begin(), b.end());
+			return statistic::mean_fold_quotient<double>(a.begin(), a.end(), b.begin(), b.end());
 		};
 
 		return_type z_score = [](_v a, _v b) {
 			assert(a.size() == 1);
 			double x = a[0];
-			return statistic::z_score<double,_viter>(x, b.begin(), b.end());
+			return statistic::z_score<double>(x, b.begin(), b.end());
 		};
 
 		std::map<std::string, return_type> rowWiseMethods{

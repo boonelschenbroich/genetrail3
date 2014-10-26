@@ -60,14 +60,14 @@ namespace GeneTrail {
                 ++it2;
             }
 
-            value_type var = statistic::var<value_type,std::_List_iterator<value_type>>(diff.begin(), diff.end());
+            auto var = statistic::var<value_type>(diff.begin(), diff.end());
             size_t size = diff.size();
 			stdErr_ = std::sqrt(var / size);
 
             if (std::fabs(var / size) < tolerance_) {
                 score_ = mu_;
             } else {
-				score_ = (statistic::mean<value_type,std::_List_iterator<value_type>>(diff.begin(),diff.end()) - mu_) / stdErr_;
+				score_ = (statistic::mean<value_type>(diff.begin(),diff.end()) - mu_) / stdErr_;
             }
 
 			df_ = size - 1;
