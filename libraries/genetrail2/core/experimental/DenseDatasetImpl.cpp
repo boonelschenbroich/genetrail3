@@ -27,8 +27,8 @@
 #include <set>
 
 #include "DenseDatasetImpl.h"
-#include "DenseMatrixReader.h"
-#include "DenseMatrixWriter.h"
+#include "../DenseMatrixReader.h"
+#include "../DenseMatrixWriter.h"
 
 // #include <Eigen/Core>
 namespace fs = boost::filesystem;

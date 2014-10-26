@@ -24,7 +24,7 @@
 #define DENSE_DATASET_H
 
 #include "Dataset.h"
-#include "DenseMatrix.h"
+#include "../DenseMatrix.h"
 
 namespace GeneTrail
 {
