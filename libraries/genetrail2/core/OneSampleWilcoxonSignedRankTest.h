@@ -32,7 +32,7 @@ namespace GeneTrail {
     /**
      * Wilcoxon-Mann-WhitneyTest
      */
-    template <typename value_type, typename InputIterator>
+    template <typename value_type>
     class GT2_EXPORT OneSampleWilcoxonSignedRankTest {
     public:
 
@@ -58,6 +58,7 @@ namespace GeneTrail {
 		 * @param Iterator
          * @return Z-score for the differences between the two groups
          */
+        template<typename InputIterator>
         value_type test(const InputIterator& begin, const InputIterator& end) {
 
 			std::vector<value_type> diff(begin, end);

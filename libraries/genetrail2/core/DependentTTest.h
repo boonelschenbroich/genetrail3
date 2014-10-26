@@ -32,7 +32,7 @@ namespace GeneTrail {
     /**
      * Dependent Student's T-Test
      */
-    template <typename value_type, typename InputIterator1,typename InputIterator2>
+    template <typename value_type>
     class GT2_EXPORT DependentTTest {
     public:
 
@@ -49,6 +49,7 @@ namespace GeneTrail {
 		 * @param Iterator
          * @return T-score for the differences between the two groups
          */
+		template<typename InputIterator1, typename InputIterator2>
         value_type test(const InputIterator1& first_begin, const InputIterator1& first_end, const InputIterator2& second_begin, const InputIterator2& second_end) {
 
 			std::list<value_type> diff(first_begin,first_end);

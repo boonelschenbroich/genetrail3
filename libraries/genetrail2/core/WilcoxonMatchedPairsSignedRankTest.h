@@ -35,7 +35,7 @@ namespace GeneTrail {
     /**
      * Wilcoxon-Mann-WhitneyTest
      */
-    template <typename value_type, typename InputIterator1, typename InputIterator2>
+    template <typename value_type>
     class GT2_EXPORT WilcoxonMatchedPairsSignedRankTest {
 
 		public:
@@ -52,6 +52,7 @@ namespace GeneTrail {
 		 * @param Iterator
          * @return Z-score for the differences between the two groups
          */
+        template<typename InputIterator1, typename InputIterator2>
         value_type test(const InputIterator1& first_begin, const InputIterator1& first_end, const InputIterator2& second_begin, const InputIterator2& second_end) {
 			assert(std::distance(first_begin,first_end) == std::distance(second_begin,second_end));
 			std::vector<value_type> diff(first_begin,first_end);
@@ -80,7 +81,7 @@ namespace GeneTrail {
         value_type tolerance_;
 		value_type score_;
 		value_type mu_;
-		OneSampleWilcoxonSignedRankTest<value_type, InputIterator1> t_;
+		OneSampleWilcoxonSignedRankTest<value_type> t_;
     };
 }
 

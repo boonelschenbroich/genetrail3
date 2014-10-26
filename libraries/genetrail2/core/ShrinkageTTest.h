@@ -44,7 +44,7 @@ namespace GeneTrail {
 	/**
      * Shrinkage T-Test
      */
-    template <typename value_type, typename InputIterator1,typename InputIterator2>
+    template <typename value_type>
 	class GT2_EXPORT ShrinkageTTest {
 
 		public:

@@ -32,7 +32,7 @@ namespace GeneTrail {
     /**
      * One Sample Student's T-Test
      */
-    template <typename value_type, typename InputIterator>
+    template <typename value_type>
     class GT2_EXPORT OneSampleTTest {
     public:
 
@@ -46,6 +46,7 @@ namespace GeneTrail {
          * @param end Iterator indicating where to end
          * @return t-score
          */
+        template<typename InputIterator>
         value_type test(const InputIterator& begin, const InputIterator& end) {
             value_type mean = statistic::mean<value_type, InputIterator>(begin, end);
             value_type var = statistic::var<value_type, InputIterator>(begin, end);

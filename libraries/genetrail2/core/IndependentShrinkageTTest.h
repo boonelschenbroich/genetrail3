@@ -35,8 +35,8 @@ namespace GeneTrail {
     /**
      * Shrinkage T-Test
      */
-    template <typename value_type, typename InputIterator1,typename InputIterator2>
-	class GT2_EXPORT IndependentShrinkageTTest : public ShrinkageTTest<value_type, InputIterator1, InputIterator2> {
+    template <typename value_type>
+	class GT2_EXPORT IndependentShrinkageTTest : public ShrinkageTTest<value_type> {
 
 		public:
 
@@ -49,6 +49,7 @@ namespace GeneTrail {
 		 * @param end_second InputIterator
 		 * @return Vector of t-scores
 		 */
+		template<typename InputIterator1, typename InputIterator2>
 		std::vector<value_type> test(InputIterator1 begin_first, InputIterator1 end_first, InputIterator2 begin_second, InputIterator2 end_second){
 			std::vector<value_type> t_scores;
 			std::vector<Gene<value_type>> genes_first, genes_second;

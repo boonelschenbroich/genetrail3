@@ -26,7 +26,7 @@ std::list<double> b(bi);
 
 TEST(HTEST, FTest)
 {
-	FTest<double,std::list<double>::iterator,std::list<double>::iterator> f;
+	FTest<double> f;
 	EXPECT_NEAR(HTest::test(f, a.begin(), a.end(), b.begin(), b.end()), 0.7212895, TOLERANCE);
 	EXPECT_NEAR(HTest::twoSidedPValue(f, 0.7212895), 0.6343, TOLERANCE);
 	EXPECT_NEAR(HTest::lowerTailedPValue(f, 0.7212895), 0.3172, TOLERANCE);
@@ -37,7 +37,7 @@ TEST(HTEST, FTest)
 
 TEST(HTEST, IndependentTest)
 {
-    IndependentTTest<double,std::list<double>::iterator,std::list<double>::iterator> f;
+    IndependentTTest<double> f;
     EXPECT_NEAR(HTest::test(f, a.begin(), a.end(), b.begin(), b.end()), -3.1538, TOLERANCE);
     EXPECT_NEAR(HTest::twoSidedPValue(f, -3.1538), 0.005626, TOLERANCE);
     EXPECT_NEAR(HTest::lowerTailedPValue(f, -3.1538), 0.002813, TOLERANCE);
@@ -48,7 +48,7 @@ TEST(HTEST, IndependentTest)
 
 TEST(HTEST, DependentTest)
 {
-    DependentTTest<double,std::list<double>::iterator,std::list<double>::iterator> f;
+    DependentTTest<double> f;
     EXPECT_NEAR(HTest::test(f, a.begin(), a.end(), b.begin(), b.end()), -11.3706, TOLERANCE);
     EXPECT_NEAR(HTest::twoSidedPValue(f, -11.3706), 1.217e-06, TOLERANCE);
     EXPECT_NEAR(HTest::lowerTailedPValue(f, -11.3706), 6.084e-07, TOLERANCE);
@@ -59,7 +59,7 @@ TEST(HTEST, DependentTest)
 
 TEST(HTEST, WilcoxonMannWhitneyTest)
 {
-	WilcoxonMannWhitneyTest<double,std::list<double>::iterator,std::list<double>::iterator> f;
+	WilcoxonMannWhitneyTest<double> f;
 	EXPECT_NEAR(HTest::test(f, a.begin(), a.end(), b.begin(), b.end()), (16 - 10)/std::sqrt((10 * 10 * (10 + 10 + 1)) / 12.0), TOLERANCE);
 	std::cout << "WARNING: Build a new example for this Test, this one sucks" << std::endl;
 	//EXPECT_NEAR(HTest::twoSidedPValue(f, , , TOLERANCE);
@@ -71,7 +71,7 @@ TEST(HTEST, WilcoxonMannWhitneyTest)
 
 TEST(HTEST, IndependentShrinkageTTest)
 {
-	IndependentShrinkageTTest<double,std::list<std::list<double>>::iterator, std::list<std::list<double>>::iterator> t;
+	IndependentShrinkageTTest<double> t;
 	std::list<std::list<double>> aa;
 	aa.push_back(a);
 	std::list<std::list<double>> bb;
@@ -83,7 +83,7 @@ TEST(HTEST, IndependentShrinkageTTest)
 
 TEST(HTEST, IndependentShrinkageTTest2)
 {
-	IndependentShrinkageTTest<double,std::list<std::list<double>>::iterator, std::list<std::list<double>>::iterator> t;
+	IndependentShrinkageTTest<double> t;
 
 	std::list<std::list<double>> aa;
 	std::list<double> a1({35.5,31.7,31.2,36.6,22.8});

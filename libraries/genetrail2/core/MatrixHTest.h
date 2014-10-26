@@ -36,39 +36,38 @@ namespace GeneTrail
 		typedef std::vector<double> _v;
 		typedef std::vector<std::vector<double>> _vv;
 		typedef std::vector<double>::iterator _viter;
-		typedef std::vector<std::vector<double>>::iterator _vviter;
 		typedef std::function<double(_v, _v)> return_type;
 		typedef std::function<GeneSet<double>(Matrix&, Matrix&)> matrix_func;
 
 		return_type independent_t_test = [](_v a, _v b) {
-			IndependentTTest<double, _viter, _viter> independent_t;
+			IndependentTTest<double> independent_t;
 			return HTest::test(independent_t, a.begin(), a.end(), b.begin(),
 			                   b.end());
 		};
 
 		return_type dependent_t_test = [](_v a, _v b) {
-			DependentTTest<double, _viter, _viter> dependent_t;
+			DependentTTest<double> dependent_t;
 			return HTest::test(dependent_t, a.begin(), a.end(), b.begin(),
 			                   b.end());
 		};
 
 		return_type f_test = [](_v a, _v b) {
-			FTest<double, _viter, _viter> f;
+			FTest<double> f;
 			return HTest::test(f, a.begin(), a.end(), b.begin(), b.end());
 		};
 
 		return_type wilcoxon = [](_v a, _v b) {
-			WilcoxonRankSumTest<double, _viter, _viter> t;
+			WilcoxonRankSumTest<double> t;
 			return HTest::test(t, a.begin(), a.end(), b.begin(), b.end());
 		};
 
 		return_type dependent_wilcoxon = [](_v a, _v b) {
-			WilcoxonMatchedPairsSignedRankTest<double, _viter, _viter> t;
+			WilcoxonMatchedPairsSignedRankTest<double> t;
 			return HTest::test(t, a.begin(), a.end(), b.begin(), b.end());
 		};
 
 		return_type signal_to_noise_ratio = [](_v a, _v b) {
-			SignalToNoiseRatio<double, _viter, _viter> t;
+			SignalToNoiseRatio<double> t;
 			return HTest::test(t, a.begin(), a.end(), b.begin(), b.end());
 		};
 
@@ -253,7 +252,7 @@ namespace GeneTrail
 		                                          Matrix& sample)
 		{
 			GeneSet<double> result;
-			IndependentShrinkageTTest<double, _vviter, _vviter> t;
+			IndependentShrinkageTTest<double> t;
 			auto ref = removeAllNANs(reference);
 			auto sam = removeAllNANs(sample);
 			auto v = t.test(ref.begin(), ref.end(), sam.begin(), sam.end());

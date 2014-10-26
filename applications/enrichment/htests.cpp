@@ -87,7 +87,7 @@ std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std
 
 	if(method == "one-sample-wilcoxon"){
 		auto median = statistic::median<double, std::vector<double>::iterator>(all_genes.begin(), all_genes.end());
-		OneSampleWilcoxonSignedRankTest<double, std::vector<double>::iterator> wilcox(1e-4, median);
+		OneSampleWilcoxonSignedRankTest<double> wilcox(1e-4, median);
 		result->score = HTest::test(wilcox, contained_genes.begin(), contained_genes.end());
 		if(wilcox.enriched()){
 			result->pvalue = HTest::upperTailedPValue(wilcox, result->score);
@@ -96,7 +96,7 @@ std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std
 		}
 		result->enriched = wilcox.enriched();
 	}else if(method == "two-sample-wilcoxon"){
-		WilcoxonRankSumTest<cpp_dec_float_50, std::vector<double>::iterator, std::vector<double>::iterator> wilcox(1e-4);
+		WilcoxonRankSumTest<cpp_dec_float_50> wilcox(1e-4);
 		cpp_dec_float_50 score = HTest::test(wilcox, contained_genes.begin(), contained_genes.end(), not_contained_genes.begin(), not_contained_genes.end());
 		result->score = score.convert_to<double>();;
 		if(wilcox.enriched()){
@@ -107,7 +107,7 @@ std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std
 		result->enriched = wilcox.enriched();
 	}else if(method == "one-sample-t-test"){
 		auto mean = statistic::mean<double, std::vector<double>::iterator>(all_genes.begin(), all_genes.end());
-		OneSampleTTest<double, std::vector<double>::iterator> ttest(1e-4, mean);
+		OneSampleTTest<double> ttest(1e-4, mean);
 		result->score = HTest::test(ttest, contained_genes.begin(), contained_genes.end());
 		if(result->score < 0){
 			result->pvalue = HTest::lowerTailedPValue(ttest, result->score);
@@ -116,7 +116,7 @@ std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std
 		}
 		result->enriched = result->score > 0;
 	}else if(method == "two-sample-t-test"){
-		IndependentTTest<double, std::vector<double>::iterator, std::vector<double>::iterator> ttest(1e-4);
+		IndependentTTest<double> ttest(1e-4);
 		result->score = HTest::test(ttest, contained_genes.begin(), contained_genes.end(), not_contained_genes.begin(), not_contained_genes.end());
 		if(result->score < 0){
 			result->pvalue = HTest::lowerTailedPValue(ttest, result->score);

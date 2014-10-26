@@ -31,7 +31,7 @@ namespace GeneTrail {
     /**
      * F-Test
      */
-    template <typename value_type, typename InputIterator1,typename InputIterator2>
+    template <typename value_type>
     class GT2_EXPORT FTest {
     public:
 
@@ -47,6 +47,7 @@ namespace GeneTrail {
 		 * @param Iterator
          * @return F-score for the differences between the two groups
          */
+		template<typename InputIterator1, typename InputIterator2>
         value_type test(const InputIterator1& first_begin, const InputIterator1& first_end, const InputIterator2& second_begin, const InputIterator2& second_end) {
 			this->size1_ = std::distance(first_begin,first_end);
 			this->size2_ = std::distance(second_begin,second_end);
