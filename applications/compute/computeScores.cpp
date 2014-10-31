@@ -14,8 +14,24 @@
 using namespace GeneTrail;
 namespace bpo = boost::program_options;
 
+class EmptyGroup : public std::exception
+{
+	public:
+	EmptyGroup(const std::string& name) noexcept : groupname_(name) {}
+
+	virtual const char* what() const noexcept {
+		return (std::string("Group \"") + groupname_ + "\" does not contain any datapoint.").c_str();
+	}
+
+	private:
+	std::string groupname_;
+};
+
 std::string expr1 = "", expr2 = "", output = "", method = "", groups = "";
 bool binary = false;
+bool additional_colname = false;
+bool no_rownames = false;
+bool no_colnames = false;
 
 bool parseArguments(int argc, char* argv[])
 {
@@ -25,9 +41,11 @@ bool parseArguments(int argc, char* argv[])
 	desc.add_options()("help,h", "Display this message")
 		("expression-matrix-1,1", bpo::value<std::string>(&expr1)->required(), "Name of a text file containing expression values as a matrix.")
 		("expression-matrix-2,2", bpo::value<std::string>(&expr2), "Name of a text file containing expression values as a matrix.(optional)")
-		("binary,b", bpo::value(&binary)->zero_tokens(), "Flag indicating if the matrix is in binary format.")
 		("output,o", bpo::value<std::string>(&output)->required(), "Name of the output file.")
 		("groups,g", bpo::value<std::string>(&groups)->required(), "File containing two lines specifying which rownames belong to which group.")
+		("no-row-names,r", bpo::value<bool>(&no_rownames)->default_value(false)->zero_tokens(), "Does the file contain row names.")
+		("no-col-names,c", bpo::value<bool>(&no_colnames)->default_value(false)->zero_tokens(), "Does the file contain column names.")
+		("add-col-name,a", bpo::value<bool>(&additional_colname)->default_value(false)->zero_tokens(), "File containing two lines specifying which rownames belong to which group.")
 		("method,m", bpo::value<std::string>(&method)->required(), "Method used for scoring.");
 
 	try
@@ -47,42 +65,53 @@ bool parseArguments(int argc, char* argv[])
 
 DenseMatrix readDenseMatrix(std::string matrix)
 {
-	DenseMatrixReader reader;
-	if(binary)
-	{
-		std::ifstream strm(matrix, std::ios::binary);
-		return reader.read(strm);
-	}else{
-		std::ifstream strm(matrix);
-		return reader.read(strm);
+	unsigned int opts = DenseMatrixReader::NO_OPTIONS;
+
+	if(!no_rownames) {
+		opts |= DenseMatrixReader::READ_ROW_NAMES;
 	}
+
+	if(!no_colnames) {
+		opts |= DenseMatrixReader::READ_COL_NAMES;
+	}
+
+	if(additional_colname) {
+		opts |= DenseMatrixReader::ADDITIONAL_COL_NAME;
+	}
+
+	DenseMatrixReader reader;
+
+	std::ifstream strm(matrix, std::ios::binary);
+	return reader.read(strm, opts);
+}
+
+std::vector<unsigned int> getIndices(const DenseMatrix& matrix, const std::vector<std::string>& colnames, const std::string& groupname)
+{
+	std::vector<unsigned int> indices;
+	indices.reserve(colnames.size());
+	for(const auto& s : colnames)
+	{
+		if(matrix.hasCol(s))
+		{
+			indices.emplace_back(matrix.colIndex(s));
+		} else {
+			std::cerr << "WARNING: Could not find column \"" + s + "\".\n";
+		}
+	}
+
+	if(indices.empty()) {
+		throw EmptyGroup(groupname);
+	}
+
+	return indices;
 }
 
 std::tuple<DenseMatrixSubset, DenseMatrixSubset> splitMatrix(DenseMatrix& matrix, const std::vector<std::string>& reference, const std::vector<std::string>& test)
 {
-	std::vector<unsigned int> indices1;
-	indices1.reserve(reference.size());
-	for(const auto& s : reference)
-	{
-		if(matrix.hasCol(s))
-		{
-			indices1.emplace_back(matrix.colIndex(s));
-		}
-	}
-
-	auto m1 = DenseMatrixSubset::createColSubset(&matrix, indices1);
-
-	std::vector<unsigned int> indices2;
-	indices2.reserve(test.size());
-	for(const auto& s : test)
-	{
-		if(matrix.hasCol(s))
-		{
-			indices2.emplace_back(matrix.colIndex(s));
-		}
-	}
-	auto m2 = DenseMatrixSubset::createColSubset(&matrix, indices2);
-	return std::make_tuple(m1, m2);
+	return std::make_tuple(
+		DenseMatrixSubset::createColSubset(&matrix, getIndices(matrix, reference, "reference")),
+		DenseMatrixSubset::createColSubset(&matrix, getIndices(matrix, test, "test"))
+	);
 }
 
 DenseMatrix buildDenseMatrix()
@@ -102,17 +131,29 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
+	if(additional_colname && no_rownames) {
+		std::cerr << "Conflicting arguments. Additional colnames can only be "
+		             "specified if row names are present!" << std::endl;
+		return -2;
+	}
+
 	TextFile t(groups, ",", std::set<std::string>());
 	DenseMatrix matrix(buildDenseMatrix());
 	std::vector<std::string> reference = t.read();
 	std::vector<std::string> sample = t.read();
-	auto subset = splitMatrix(matrix, reference, sample);
 
-	MatrixHTest<DenseMatrixSubset> htest;
-	GeneSet<double> gene_set = htest.test(std::get<0>(subset), std::get<1>(subset), method);
+	try {
+		auto subset = splitMatrix(matrix, reference, sample);
 
-	GeneSetWriter<double> writer;
-	writer.writeScoringFile(gene_set, output);
+		MatrixHTest<DenseMatrixSubset> htest;
+		GeneSet<double> gene_set = htest.test(std::get<0>(subset), std::get<1>(subset), method);
+
+		GeneSetWriter<double> writer;
+		writer.writeScoringFile(gene_set, output);
+	} catch(EmptyGroup& e) {
+		std::cerr << "ERROR: " << e.what() << "\n";
+		return -3;
+	}
 
 	return 0;
 }
