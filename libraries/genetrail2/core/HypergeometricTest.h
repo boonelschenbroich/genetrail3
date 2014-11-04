@@ -25,68 +25,81 @@
 #include <boost/math/special_functions/binomial.hpp>
 #include <iostream>
 
-namespace GeneTrail {
+namespace GeneTrail
+{
 
-    /**
-     * Hypergeometric test
-     */
-    template <typename unsigned_integer_type, typename return_type>
-    class GT2_EXPORT HypergeometricTest {
-    public:
+	/**
+	 * Hypergeometric test
+	 */
+	template <typename uintt, typename return_type>
+	class GT2_EXPORT HypergeometricTest
+	{
+		public:
+		/**
+		 * This method implements the Hypergeometric test.
+		 *
+		 * @param m Number of genes in the reference set (population size)
+		 * @param l Number of genes in category (success states in the population)
+		 * @param n Number of genes in test set (Number of draws)
+		 * @param k Number of genes in the test set that belong to the category (Number of successes)
+		 *
+		 * @return The hypergeometric probability of the parameters
+		 */
+		return_type compute(const uintt& m, const uintt& l, const uintt& n,
+		                    const uintt& k)
+		{
+			return (boost::math::binomial_coefficient<return_type>(l, k) *
+			        boost::math::binomial_coefficient<return_type>(m - l, n - k)) /
+			       boost::math::binomial_coefficient<return_type>(m, n);
+		}
 
-        /**
-         * This method implements the Hypergeometric test.
-         *
-         * @param m Number of genes in the reference set (population size)
-         * @param l Number of genes in category (success states in the population)
-         * @param n Number of genes in test set (Number of draws)
-         * @param k Number of genes in the test set that belong to the category (Number of successes)
-         *
-         * @return
-         */
-        return_type compute(const unsigned_integer_type& m, const unsigned_integer_type& l, const unsigned_integer_type& n, const unsigned_integer_type& k) {
-			return (boost::math::binomial_coefficient<return_type>(l, k) * boost::math::binomial_coefficient<return_type>(m - l, n - k)) / boost::math::binomial_coefficient<return_type>(m, n);
-        }
-
-        /**
-         * This method computes the lower-tailed p-value for the given event of the Hypergeometric test.
-         *
-         * @param m Number of genes in the reference set (population size)
-         * @param l Number of genes in category (success states in the population)
-         * @param n Number of genes in test set (Number of draws)
-         * @param k Number of genes in the test set that belong to the category (Number of successes)
-         *
-         * @return p-value
-         */
-        return_type lowerTailedPValue(const unsigned_integer_type& m, const unsigned_integer_type& l, const unsigned_integer_type& n, const unsigned_integer_type& k) {
+		/**
+		 * This method computes the lower-tailed p-value for the given event of
+		 * the Hypergeometric test.
+		 *
+		 * @param m Number of genes in the reference set (population size)
+		 * @param l Number of genes in category (success states in the population)
+		 * @param n Number of genes in test set (Number of draws)
+		 * @param k Number of genes in the test set that belong to the category (Number of successes)
+		 *
+		 * @return p-value
+		 */
+		return_type lowerTailedPValue(const uintt& m, const uintt& l,
+		                              const uintt& n, const uintt& k)
+		{
 			return_type p = 0.0;
 			// Make sure we do not compute undefined binomial coefficients
-			unsigned_integer_type i = (n > m - l) ? (n + l) - m : 0; // Brackets are here to avoid underrun
-			for (; i <= k; ++i) {
-				p += boost::math::binomial_coefficient<return_type>(l, i) * boost::math::binomial_coefficient<return_type>(m - l, n - i);
+			uintt i = (n > m - l) ? (n + l) - m : 0; // Brackets are here to avoid underrun
+			for(; i <= k; ++i) {
+				p += boost::math::binomial_coefficient<return_type>(l, i) *
+				     boost::math::binomial_coefficient<return_type>(m - l, n - i);
 			}
 			return p / boost::math::binomial_coefficient<return_type>(m, n);
 		}
 
-        /**
-         * This method computes the upper-tailed p-value for the given event of the Hypergeometric test.
-         *
-         * @param m Number of genes in the reference set (population size)
-         * @param l Number of genes in category (success states in the population)
-         * @param n Number of genes in test set (Number of draws)
-         * @param k Number of genes in the test set that belong to the category (Number of successes)
-         *
-         * @return p-value
-         */
-        return_type upperTailedPValue(const unsigned_integer_type& m, const unsigned_integer_type& l, const unsigned_integer_type& n, const unsigned_integer_type& k) {
+		/**
+		 * This method computes the upper-tailed p-value for the given event of
+		 * the Hypergeometric test.
+		 *
+		 * @param m Number of genes in the reference set (population size)
+		 * @param l Number of genes in category (success states in the population)
+		 * @param n Number of genes in test set (Number of draws)
+		 * @param k Number of genes in the test set that belong to the category (Number of successes)
+		 *
+		 * @return p-value
+		 */
+		return_type upperTailedPValue(const uintt& m, const uintt& l,
+		                              const uintt& n, const uintt& k)
+		{
 			return_type p = 0.0;
-			unsigned_integer_type d = std::min(n,l);
-            for (unsigned_integer_type i = k; i <= d; ++i) {
-                p += boost::math::binomial_coefficient<return_type>(l, i) * boost::math::binomial_coefficient<return_type>(m - l, n - i);
+			uintt d = std::min(n, l);
+			for(uintt i = k; i <= d; ++i) {
+				p += boost::math::binomial_coefficient<return_type>(l, i) *
+				     boost::math::binomial_coefficient<return_type>(m - l, n - i);
 			}
 			return p / boost::math::binomial_coefficient<return_type>(m, n);
-        }
-    };
+		}
+	};
 }
 
 #endif // GT2_CORE_HYPERGEOMETRIC_TEST_H
