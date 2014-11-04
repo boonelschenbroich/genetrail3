@@ -60,6 +60,11 @@ TEST(HypergeometricTest, lowerTailedPValue2) {
 	EXPECT_NEAR(h.lowerTailedPValue(50,5,10,4).convert_to<double>(), 0.3105628 + 0.4313372 + 0.2098397 + 0.04417678 + 0.003964583, TOLERANCE);
 }
 
+TEST(HypergeometricTest, lowerTailedPValueBounds) {
+	HypergeometricTest<unsigned int, boost::multiprecision::cpp_dec_float_50> h;
+	EXPECT_NEAR(h.lowerTailedPValue(12,4,10,2).convert_to<double>(), 0.09090909, TOLERANCE);
+}
+
 TEST(HypergeometricTest, upperTailedPValue) {
 	HypergeometricTest<unsigned int, boost::multiprecision::cpp_dec_float_50> h;
 	EXPECT_NEAR(h.upperTailedPValue(50,5,10,5).convert_to<double>(), 0.0001189375, TOLERANCE);
@@ -79,3 +84,9 @@ TEST(HypergeometricTest, upperTailedPValueZero){
 	HypergeometricTest<unsigned int, boost::multiprecision::cpp_dec_float_50> h;
 	EXPECT_NEAR(h.upperTailedPValue(50,5,10,6).convert_to<double>(), 0.0, TOLERANCE);
 }
+
+TEST(HypergeometricTest, upperTailedPValueBounds) {
+	HypergeometricTest<unsigned int, boost::multiprecision::cpp_dec_float_50> h;
+	EXPECT_NEAR(h.upperTailedPValue(28, 8, 10, 6).convert_to<double>(), 1.447828e-05 + 0.0006949572 + 0.01033749, TOLERANCE);
+}
+

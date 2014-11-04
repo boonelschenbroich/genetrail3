@@ -60,11 +60,13 @@ namespace GeneTrail {
          */
         return_type lowerTailedPValue(const unsigned_integer_type& m, const unsigned_integer_type& l, const unsigned_integer_type& n, const unsigned_integer_type& k) {
 			return_type p = 0.0;
-            for (unsigned_integer_type i = 0; i <= k; ++i) {
+			// Make sure we do not compute undefined binomial coefficients
+			unsigned_integer_type i = (n > m - l) ? (n + l) - m : 0; // Brackets are here to avoid underrun
+			for (; i <= k; ++i) {
 				p += boost::math::binomial_coefficient<return_type>(l, i) * boost::math::binomial_coefficient<return_type>(m - l, n - i);
-            }
-            return p / boost::math::binomial_coefficient<return_type>(m, n);
-        }
+			}
+			return p / boost::math::binomial_coefficient<return_type>(m, n);
+		}
 
         /**
          * This method computes the upper-tailed p-value for the given event of the Hypergeometric test.
