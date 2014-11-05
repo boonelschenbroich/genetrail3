@@ -44,10 +44,9 @@ namespace GeneTrail
 	template<typename float_type, typename big_int_type>
 	class GT2_EXPORT GeneSetEnrichmentAnalysis
 	{
+		constexpr static bool debug = false;
+
 		public:
-
-			bool debug = false;
-
 			int intersectionSize(const Category& category, const std::vector<std::string>& testSet){
 				int n = 0;
 				for(auto gene : testSet ){
