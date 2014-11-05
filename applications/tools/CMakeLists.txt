@@ -14,6 +14,11 @@ target_link_libraries(mconvert gtcore)
 GT2_COMPILE_FLAGS(mconvert)
 list(APPEND EXECUTABLES mconvert)
 
+add_executable(filter-scores filter_scores.cpp)
+target_link_libraries(filter-scores gtcore)
+GT2_COMPILE_FLAGS(filter-scores)
+list(APPEND EXECUTABLES filter-scores)
+
 if(TARGET gtcluster)
 	add_executable(cluster_genes cluster_genes.cpp)
 	target_link_libraries(cluster_genes gtcore gtcluster)
