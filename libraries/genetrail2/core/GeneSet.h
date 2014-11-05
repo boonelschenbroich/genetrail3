@@ -158,12 +158,21 @@ namespace GeneTrail
 		}
 
 		/**
-		 * Gaetter for the size of the container
+		 * Getter for the size of the GeneSet
 		 *
-		 * @retuen Size of the container_
+		 * @return number of elements in the GeneSet
 		 */
-		int size(){
+		int size() const {
 			return container_.size();
+		}
+
+		/**
+		 * Is the GeneSet empty?
+		 *
+		 * @returns true iff the gene set is empty
+		 */
+		bool empty() const {
+			return container_.empty();
 		}
 
 		/**
@@ -172,7 +181,7 @@ namespace GeneTrail
 		 * @param Boolean flag indication how to sort the scores (true = decreasing).
 		 * @return Sorted vector of identifier/score pairs.
 		 */
-		Container getSortedScores(bool decreasing)
+		Container getSortedScores(bool decreasing) const
 		{
 			Container sorted_scores(container_);
 			if(decreasing) {
@@ -190,7 +199,7 @@ namespace GeneTrail
 		 *
 		 * @return Increasingly sorted vector of identifier/score pairs.
 		 */
-		Container getIncreasinglySortedScores()
+		Container getIncreasinglySortedScores() const
 		{
 			Container sorted_scores(container_);
 			std::sort(sorted_scores.begin(), sorted_scores.end(),
@@ -203,7 +212,7 @@ namespace GeneTrail
 		 *
 		 * @return Decreasingly sorted vector of identifier/score pairs.
 		 */
-		Container getDecreasinglySortedScores()
+		Container getDecreasinglySortedScores() const
 		{
 			Container sorted_scores(container_);
 			std::sort(sorted_scores.begin(), sorted_scores.end(),
@@ -216,7 +225,7 @@ namespace GeneTrail
 		 *
 		 * @return Decreasingly sorted vector of identifier/score pairs.
 		 */
-		Container getAbsoluteSortedScores()
+		Container getAbsoluteSortedScores() const
 		{
 			Container sorted_scores(container_);
 			std::sort(sorted_scores.begin(), sorted_scores.end(),
