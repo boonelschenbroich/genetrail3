@@ -3,6 +3,7 @@
 
 #include "macros.h"
 #include "Category.h"
+#include "GeneSetFilters.h"
 
 #include <algorithm>
 #include <utility>
@@ -12,6 +13,11 @@
 
 namespace GeneTrail
 {
+	// Forward declaration of GeneSetFilter.
+	namespace GeneSetFilter {
+		class GeneSetFilter;
+	}
+
 	/**
 	 * This struct is used as comparator for sorting
 	 */
@@ -344,6 +350,45 @@ namespace GeneTrail
 				res.insert(it.first);
 			}
 			return res;
+		}
+
+		/**
+		 * Apply a filter to the gene set in order to remove unwanted
+		 * values.
+		 *
+		 * @param gf A pointer to a GeneSetFilter subclass. If nullptr is passed
+		 *           nothing happens.
+		 *
+		 * @return A reference to the gene set. This can be used for chaining.
+		 */
+		GeneSet& filter(GeneSetFilter::GeneSetFilter* gf) {
+			if(gf == nullptr) {
+				return *this;
+			}
+
+			// Call the filters setup routine. This is needed for
+			// filters that for example need to look at the score distribution.
+			gf->setup(*this);
+
+			auto new_end = std::remove_if(container_.begin(), container_.end(), [gf](const Element& e) {
+				return gf->filter(e);
+			});
+
+			container_.erase(new_end, container_.end());
+
+			return *this;
+		}
+
+		/**
+		 * Apply a filter to the gene set in order to remove unwanted
+		 * values.
+		 *
+		 * @param gf A GeneSetFilter object.
+		 *
+		 * @return A reference to the gene set. This can be used for chaining.
+		 */
+		GeneSet& filter(GeneSetFilter::GeneSetFilter& gf) {
+			return filter(&gf);
 		}
 
 		private:
