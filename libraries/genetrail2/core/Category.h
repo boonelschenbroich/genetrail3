@@ -72,6 +72,10 @@ namespace GeneTrail
 		iterator end() { return container_.end(); }
 		const_iterator end() const { return container_.end(); }
 
+		bool operator<(const Category& o) const;
+
+		bool operator==(const Category& o) const;
+
 		//
 		// Operations
 		//

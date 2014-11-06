@@ -59,6 +59,31 @@ namespace GeneTrail
 		return container_.empty();
 	}
 
+	bool Category::operator<(const Category& o) const
+	{
+		return std::lexicographical_compare(
+		    container_.begin(), container_.end(), o.container_.begin(),
+		    o.container_.end());
+	}
+
+	bool Category::operator==(const Category& o) const
+	{
+		if(size() != o.size()) {
+			return false;
+		}
+
+		auto it = begin();
+		auto jt = o.begin();
+
+		for(; it != end(); ++it, ++jt) {
+			if(*it != *jt) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	Category Category::intersect(std::string name, const Category& a, const Category& b)
 	{
 		Category result(std::move(name));
