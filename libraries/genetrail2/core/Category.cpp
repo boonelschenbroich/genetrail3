@@ -59,7 +59,7 @@ namespace GeneTrail
 		return container_.empty();
 	}
 
-	Category intersect(std::string name, const Category& a, const Category& b)
+	Category Category::intersect(std::string name, const Category& a, const Category& b)
 	{
 		Category result(std::move(name));
 
@@ -71,9 +71,10 @@ namespace GeneTrail
 		return result;
 	}
 
-	Category combine(std::string name, const Category& a, const Category& b)
+	Category Category::combine(std::string name, const Category& a, const Category& b)
 	{
 		Category result(std::move(name));
+		result.container_.reserve(std::max(a.size(),b.size()));
 
 		std::set_union(
 		    a.container_.begin(), a.container_.end(), b.container_.begin(),

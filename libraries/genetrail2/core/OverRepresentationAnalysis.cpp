@@ -29,8 +29,8 @@ ORAResult OverRepresentationAnalysis::computePValue(const Category& category) {
 	// GeneTrail 1
 	//uint64_t l = category.size();
 
-	uint64_t l = intersect("null", reference_set_, category).size();
-	Category intersection = intersect("null", test_set_, category);
+	uint64_t l = Category::intersect("null", reference_set_, category).size();
+	Category intersection = Category::intersect("null", test_set_, category);
     uint64_t k = intersection.size();
 	result.hits = k;
 	auto expected_k = ((double)l * n_) / ((double)m_);
