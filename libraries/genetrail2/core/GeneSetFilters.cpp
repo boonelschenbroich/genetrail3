@@ -16,7 +16,7 @@ namespace GeneTrail
 			}
 		}
 
-		void UpperQuantileFilter::setup(const GeneSet<double>& gene_set)
+		void UpperQuantileFilter::setup(const GeneSet& gene_set)
 		{
 			if(gene_set.empty()) {
 				return;
@@ -36,7 +36,7 @@ namespace GeneTrail
 			}
 		}
 
-		void LowerQuantileFilter::setup(const GeneSet<double>& gene_set)
+		void LowerQuantileFilter::setup(const GeneSet& gene_set)
 		{
 			if(gene_set.empty()) {
 				return;
@@ -56,7 +56,7 @@ namespace GeneTrail
 			}
 		}
 
-		void QuantileFilter::setup(const GeneSet<double>& gene_set)
+		void QuantileFilter::setup(const GeneSet& gene_set)
 		{
 			if(gene_set.empty()) {
 				return;

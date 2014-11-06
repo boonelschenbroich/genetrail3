@@ -9,7 +9,7 @@
 
 namespace GeneTrail
 {
-	template<typename T> class GeneSet;
+	class GeneSet;
 
 	namespace GeneSetFilter
 	{
@@ -42,7 +42,7 @@ namespace GeneTrail
 			 *
 			 * @param gene_set The gene set to which the filter will be applied.
 			 */
-			virtual void setup(const GeneSet<double>& gene_set) = 0;
+			virtual void setup(const GeneSet& gene_set) = 0;
 		};
 
 		/**
@@ -67,7 +67,7 @@ namespace GeneTrail
 			}
 
 			/// @copydoc GeneSetFilter::setup
-			void setup(const GeneSet<double>&) {}
+			void setup(const GeneSet&) {}
 
 			private:
 			double threshold_;
@@ -95,7 +95,7 @@ namespace GeneTrail
 			}
 
 			/// @copydoc GeneSetFilter::setup
-			void setup(const GeneSet<double>&) {}
+			void setup(const GeneSet&) {}
 
 			private:
 			double threshold_;
@@ -123,7 +123,7 @@ namespace GeneTrail
 			}
 
 			/// @copydoc GeneSetFilter::setup
-			void setup(const GeneSet<double>&) {}
+			void setup(const GeneSet&) {}
 
 			private:
 			double threshold_;
@@ -151,7 +151,7 @@ namespace GeneTrail
 			}
 
 			/// @copydoc GeneSetFilter::setup
-			void setup(const GeneSet<double>&) {}
+			void setup(const GeneSet&) {}
 
 			private:
 			double threshold_;
@@ -181,7 +181,7 @@ namespace GeneTrail
 			}
 
 			/// @copydoc GeneSetFilter::setup
-			void setup(const GeneSet<double>& gene_set);
+			void setup(const GeneSet& gene_set);
 
 			private:
 			double quantile_;
@@ -212,7 +212,7 @@ namespace GeneTrail
 			}
 
 			/// @copydoc GeneSetFilter::setup
-			void setup(const GeneSet<double>& gene_set);
+			void setup(const GeneSet& gene_set);
 
 			private:
 			double quantile_;
@@ -244,7 +244,7 @@ namespace GeneTrail
 			}
 
 			/// @copydoc GeneSetFilter::setup
-			void setup(const GeneSet<double>& gene_set);
+			void setup(const GeneSet& gene_set);
 
 			private:
 			double quantile_;

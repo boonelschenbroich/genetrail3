@@ -37,7 +37,7 @@ namespace GeneTrail
 		typedef std::vector<std::vector<double>> _vv;
 		typedef std::vector<double>::iterator _viter;
 		typedef std::function<double(_v, _v)> return_type;
-		typedef std::function<GeneSet<double>(Matrix&, Matrix&)> matrix_func;
+		typedef std::function<GeneSet(Matrix&, Matrix&)> matrix_func;
 
 		return_type independent_t_test = [](_v a, _v b) {
 			IndependentTTest<double> independent_t;
@@ -209,10 +209,10 @@ namespace GeneTrail
 		 * @param test The test to apply
 		 * @returns the score for each row
 		 */
-		GeneSet<double> independentRApply(Matrix& reference, Matrix& sample,
-		                                  std::string test)
+		GeneSet independentRApply(Matrix& reference, Matrix& sample,
+		                          std::string test)
 		{
-			GeneSet<double> result;
+			GeneSet result;
 			auto genes = reference.rowNames();
 			for(unsigned int r = 0; r < reference.rows(); ++r) {
 				std::vector<double> v1 = removeNANs(reference, r);
@@ -231,10 +231,10 @@ namespace GeneTrail
 		 * @param test The test to apply
 		 * @returns the score for each row
 		 */
-		GeneSet<double> dependentRApply(Matrix& reference, Matrix& sample,
-		                                std::string test)
+		GeneSet dependentRApply(Matrix& reference, Matrix& sample,
+		                        std::string test)
 		{
-			GeneSet<double> result;
+			GeneSet result;
 			auto genes = reference.rowNames();
 			for(unsigned int r = 0; r < reference.rows(); ++r) {
 				std::vector<double> v1;
@@ -248,10 +248,9 @@ namespace GeneTrail
 		/**
 		 *
 		 */
-		GeneSet<double> independentShrinkageTTest(Matrix& reference,
-		                                          Matrix& sample)
+		GeneSet independentShrinkageTTest(Matrix& reference, Matrix& sample)
 		{
-			GeneSet<double> result;
+			GeneSet result;
 			IndependentShrinkageTTest<double> t;
 			auto ref = removeAllNANs(reference);
 			auto sam = removeAllNANs(sample);
@@ -273,8 +272,7 @@ namespace GeneTrail
 		 * @param test The test to apply
 		 * @returns A GeneSet object containing a score for each row
 		 */
-		GeneSet<double> test(Matrix& reference, Matrix& sample,
-		                     std::string test)
+		GeneSet test(Matrix& reference, Matrix& sample, const std::string& test)
 		{
 			if(test == "independent-shrinkage-t-test") {
 				return independentShrinkageTTest(reference, sample);

@@ -146,9 +146,9 @@ int main(int argc, char* argv[])
 		auto subset = splitMatrix(matrix, reference, sample);
 
 		MatrixHTest<DenseMatrixSubset> htest;
-		GeneSet<double> gene_set = htest.test(std::get<0>(subset), std::get<1>(subset), method);
+		auto gene_set = htest.test(std::get<0>(subset), std::get<1>(subset), method);
 
-		GeneSetWriter<double> writer;
+		GeneSetWriter writer;
 		writer.writeScoringFile(gene_set, output);
 	} catch(EmptyGroup& e) {
 		std::cerr << "ERROR: " << e.what() << "\n";

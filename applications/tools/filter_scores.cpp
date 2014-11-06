@@ -121,14 +121,14 @@ int main(int argc, char* argv[])
 	try {
 		auto geneSetFilters = parseFilters(filters);
 
-		GeneSetReader<double> reader;
-		GeneSet<double> gene_set = reader.readScoringFile(infile);
+		GeneSetReader reader;
+		auto gene_set = reader.readScoringFile(infile);
 
 		for(const auto& filter : geneSetFilters) {
 			gene_set.filter(filter.get());
 		}
 
-		GeneSetWriter<double> writer;
+		GeneSetWriter writer;
 		writer.writeScoringFile(gene_set, outfile);
 	} catch(InvalidFilterSyntax& e) {
 		std::cerr << e.what() << std::endl;

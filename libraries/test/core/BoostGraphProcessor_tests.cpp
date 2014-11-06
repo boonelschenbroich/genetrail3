@@ -40,7 +40,7 @@ TEST(GraphProcessor, vertexSet)
 
 TEST(GraphProcessor, graphProcessing)
 {
-	GeneSetReader<double> reader;
+	GeneSetReader reader;
 	BoostGraphParser parser;
 	BoostGraphProcessor processor;
 	GraphType g;
@@ -48,7 +48,7 @@ TEST(GraphProcessor, graphProcessing)
 	parser.readCytoscapeFile(TEST_DATA_PATH("graph_processor_test.sif"),g);
 	std::set<std::string> vertex_set =  processor.getVertexSet(g);
 
-	GeneSet<double> scores = reader.readScoringFile(TEST_DATA_PATH("graph_processor_test_scores.txt"));
+	GeneSet scores = reader.readScoringFile(TEST_DATA_PATH("graph_processor_test_scores.txt"));
 	std::vector<std::string> gene_list = scores.getIdentifier(scores.intersect(vertex_set));
 
 	std::set<std::string> vertex_set_with_scores;

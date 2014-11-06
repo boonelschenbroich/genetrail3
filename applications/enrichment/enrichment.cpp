@@ -34,7 +34,7 @@ std::string method;
 int numberOfPermutations;
 Params p;
 
-GeneSet<double> test_set;
+GeneSet test_set;
 CategoryList cat_list;
 
 typedef std::vector<double>::iterator _viter;

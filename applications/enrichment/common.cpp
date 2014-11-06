@@ -1,5 +1,7 @@
 #include "common.h"
 
+#include <genetrail2/core/GeneSet.h>
+
 void addCommonCLIArgs(bpo::options_description& desc, Params& p)
 {
 	desc.add_options()("help,h", "Display this message")
@@ -37,9 +39,9 @@ CategoryList getCategoryList(const std::string& catfile_list, const std::string&
 	return categories;
 }
 
-void readTestSet(GeneSet<double>& test_set, const Params& p)
+void readTestSet(GeneSet& test_set, const Params& p)
 {
-	GeneSetReader<double> reader;
+	GeneSetReader reader;
 	if(p.scores != "" && p.identifier != ""){
 		throw GeneTrail::IOError("Too many input files specified.");
 	}else if( p.scores != "" ){
@@ -73,7 +75,7 @@ PValueList resultVector(const AllResults& results)
 	return result;
 }
 
-std::pair<bool, std::pair<int, std::string>> processCategory(Category& c, GeneSet<double>& test_set, const Params& p)
+std::pair<bool, std::pair<int, std::string>> processCategory(Category& c, GeneSet& test_set, const Params& p)
 {
 	int hits = 0;
 	std::string genes = "";
@@ -110,7 +112,7 @@ void writeFiles(const std::string& output_dir, const AllResults& all_results)
 	}
 }
 
-int init(GeneSet<double>& test_set, CategoryList& cat_list, const Params& p){
+int init(GeneSet& test_set, CategoryList& cat_list, const Params& p){
 
 	try{
 		readTestSet(test_set, p);
@@ -134,7 +136,7 @@ int init(GeneSet<double>& test_set, CategoryList& cat_list, const Params& p){
 	return 0;
 }
 
-std::vector<std::string> getSortedIdentifier(GeneSet<double>& test_set, const Params& p, bool absolute, bool increasing){
+std::vector<std::string> getSortedIdentifier(GeneSet& test_set, const Params& p, bool absolute, bool increasing){
 	if(p.scores != ""){
 		if(absolute){
 			return test_set.getAbsoluteSortedIdentifier();
@@ -168,7 +170,7 @@ void updatePValues(AllResults& results, const PValueList& pvalues)
 	}
 }
 
-AllResults compute(GeneSet<double>& test_set, CategoryList& cat_list, const Params& p)
+AllResults compute(GeneSet& test_set, CategoryList& cat_list, const Params& p)
 {
 	AllResults name_to_cat_results;
 	for(const auto& cat : cat_list) {
@@ -215,7 +217,7 @@ void adjustSeparately(AllResults& all_results, const Params& p)
 	}
 }
 
-void run(GeneSet<double>& test_set, CategoryList& cat_list, const Params& p, bool computePValue)
+void run(GeneSet& test_set, CategoryList& cat_list, const Params& p, bool computePValue)
 {
 	AllResults name_to_cat_results(compute(test_set, cat_list, p));
 	if(computePValue)
@@ -236,7 +238,7 @@ void run(GeneSet<double>& test_set, CategoryList& cat_list, const Params& p, boo
 	writeFiles(p.out, name_to_cat_results);
 }
 
-void run(GeneSet<double>& test_set, CategoryList& cat_list, const Params& p)
+void run(GeneSet& test_set, CategoryList& cat_list, const Params& p)
 {
 	run(test_set, cat_list, p, false);
 }

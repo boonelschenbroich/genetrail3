@@ -14,8 +14,8 @@
 using namespace GeneTrail;
 
 TEST(Parsing, readScoreFileSimple) {
-	GeneSetReader<double> parser;
-	GeneSet<double> file = parser.readScoringFile(TEST_DATA_PATH("test_scores.txt"));
+	GeneSetReader parser;
+	GeneSet file = parser.readScoringFile(TEST_DATA_PATH("test_scores.txt"));
 
 	auto it = file.begin();
 	ASSERT_NE(file.end(), it);
@@ -38,7 +38,7 @@ TEST(Parsing, readScoreFileSimple) {
 }
 
 TEST(Parsing, readGeneListSimple) {
-	GeneSetReader<double> parser;
+	GeneSetReader parser;
 	auto file = parser.readGeneList(TEST_DATA_PATH("test_genes.txt"));
 
 	auto it = file.begin();
@@ -62,7 +62,7 @@ TEST(Parsing, readGeneListSimple) {
 }
 
 TEST(Parsing, readGeneListWhitespace) {
-	GeneSetReader<double> parser;
+	GeneSetReader parser;
 	auto file = parser.readGeneList(TEST_DATA_PATH("test_genes2.txt"));
 
 	auto it = file.begin();
@@ -80,7 +80,7 @@ TEST(Parsing, readGeneListWhitespace) {
 }
 
 TEST(Parsing, readScoreFileWhitespace) {
-	GeneSetReader<double> parser;
+	GeneSetReader parser;
 	auto file = parser.readScoringFile(TEST_DATA_PATH("test_scores2.txt"));
 
 	auto it = file.begin();
@@ -96,7 +96,7 @@ TEST(Parsing, readScoreFileWhitespace) {
 }
 
 TEST(Parsing, readNAFileSimple) {
-	GeneSetReader<double> parser;
+	GeneSetReader parser;
 	auto file = parser.readNAFile(TEST_DATA_PATH("test_scores.na"));
 
 	auto it = file.begin();
@@ -116,7 +116,7 @@ TEST(Parsing, readNAFileSimple) {
 }
 
 TEST(Parsing, readNAFileNasty) {
-	GeneSetReader<double> parser;
+	GeneSetReader parser;
 	auto file = parser.readNAFile(TEST_DATA_PATH("test_scores2.na"));
 
 	auto it = file.begin();
@@ -136,9 +136,9 @@ TEST(Parsing, readNAFileNasty) {
 }
 
 TEST(Parsing, sortIncreasingly) {
-    GeneSetReader<double> parser;
-    GeneSet<double> file = parser.readScoringFile(TEST_DATA_PATH("test_scores.txt"));
-    std::vector<std::pair<std::string, double> > scores = file.getIncreasinglySortedScores();
+    GeneSetReader parser;
+    auto file = parser.readScoringFile(TEST_DATA_PATH("test_scores.txt"));
+    auto scores = file.getIncreasinglySortedScores();
     bool sorted = true;
     for (unsigned int i = 1; i < scores.size(); ++i) {
         if (scores[i-1].second > scores[i].second) {
@@ -151,9 +151,9 @@ TEST(Parsing, sortIncreasingly) {
 }
 
 TEST(Parsing, sortDecreasingly) {
-    GeneSetReader<double> parser;
-    GeneSet<double> file = parser.readScoringFile(TEST_DATA_PATH("test_scores.txt"));
-    std::vector<std::pair<std::string, double> > scores = file.getDecreasinglySortedScores();
+    GeneSetReader parser;
+    auto file = parser.readScoringFile(TEST_DATA_PATH("test_scores.txt"));
+    auto scores = file.getDecreasinglySortedScores();
     bool sorted = true;
     for (unsigned int i = 1; i < scores.size(); ++i) {
         if (scores[i-1].second < scores[i].second) {
@@ -166,9 +166,9 @@ TEST(Parsing, sortDecreasingly) {
 }
 
 TEST(Parsing, sortAbsolute) {
-    GeneSetReader<double> parser;
-    GeneSet<double> file = parser.readScoringFile(TEST_DATA_PATH("test_scores.txt"));
-    std::vector<std::pair<std::string, double> > scores = file.getAbsoluteSortedScores();
+    GeneSetReader parser;
+    auto file = parser.readScoringFile(TEST_DATA_PATH("test_scores.txt"));
+    auto scores = file.getAbsoluteSortedScores();
     bool sorted = true;
     for (unsigned int i = 1; i < scores.size(); ++i) {
         if (std::abs(scores[i-1].second) < std::abs(scores[i].second)) {

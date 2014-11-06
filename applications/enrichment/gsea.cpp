@@ -33,7 +33,7 @@ bool increasing = false, absolute = false;
 
 Params p;
 
-GeneSet<double> test_set;
+GeneSet test_set;
 CategoryList cat_list;
 GeneSetEnrichmentAnalysis<cpp_dec_float_50, int64_t> gsea;
 std::vector<std::string> identifierOfTestSet;

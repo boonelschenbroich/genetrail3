@@ -11,7 +11,6 @@
 #include <genetrail2/core/Exception.h>
 #include <genetrail2/core/EnrichmentResult.h>
 #include <genetrail2/core/Category.h>
-#include <genetrail2/core/GeneSet.h>
 #include <genetrail2/core/GeneSetReader.h>
 #include <genetrail2/core/GMTFile.h>
 #include <genetrail2/core/PValue.h>
@@ -27,6 +26,11 @@
 using namespace GeneTrail;
 namespace bpo = boost::program_options;
 using namespace boost::multiprecision;
+
+namespace GeneTrail
+{
+	class GeneSet;
+}
 
 typedef std::map<std::string, std::shared_ptr<EnrichmentResult>> Results;
 typedef std::map<std::string, Results> AllResults;
@@ -59,7 +63,7 @@ void addCommonCLIArgs(bpo::options_description& desc, Params& p);
  * @param test_set GeneSet object to be filled by this function
  * @param p Parameter object
  */
-void readTestSet(GeneSet<double>& test_set, const Params& p);
+void readTestSet(GeneSet& test_set, const Params& p);
 
 typedef std::list<std::pair<std::string, std::string>> CategoryList;
 
@@ -96,7 +100,7 @@ PValueList resultVector(const Results& results);
  * @param p Parameter object
  * @return
  */
-std::pair<bool, std::pair<int, std::string>> processCategory(Category& c, GeneSet<double>& test_set, const Params& p);
+std::pair<bool, std::pair<int, std::string>> processCategory(Category& c, GeneSet& test_set, const Params& p);
 
 /**
  * Writes the results for each database in a separate file.
@@ -114,7 +118,7 @@ void writeFiles(const std::string& output_dir, const AllResults& all_results);
  * @param p Parameter object
  * @return -1 if an error occurred and 0 if not
  */
-int init(GeneSet<double>& test_set, CategoryList& cat_list, const Params& p);
+int init(GeneSet& test_set, CategoryList& cat_list, const Params& p);
 
 /**
  * This function returns the sorted identifier of a GeneSet.
@@ -124,7 +128,7 @@ int init(GeneSet<double>& test_set, CategoryList& cat_list, const Params& p);
  * @param increasing
  * @return Sorted list of identifier.
  */
-std::vector<std::string> getSortedIdentifier(GeneSet<double>& test_set, const Params& p, bool absolute, bool increasing);
+std::vector<std::string> getSortedIdentifier(GeneSet& test_set, const Params& p, bool absolute, bool increasing);
 
 /**
  * This function computes all results for a given Category.
@@ -180,7 +184,7 @@ void computePValues(AllResults& results);
  * @param cat_list List of categories for the computation
  * @param p
  */
-void run(GeneSet<double>& test_set, CategoryList& cat_list, const Params& p);
+void run(GeneSet& test_set, CategoryList& cat_list, const Params& p);
 
 /**
  * This function runs the entire pipeline.
@@ -190,7 +194,7 @@ void run(GeneSet<double>& test_set, CategoryList& cat_list, const Params& p);
  * @param p
  * @param Flag indicating if the p-value should be computed separately.
  */
-void run(GeneSet<double>& test_set, CategoryList& cat_list, const Params& p, bool computePValue);
+void run(GeneSet& test_set, CategoryList& cat_list, const Params& p, bool computePValue);
 
 #endif // GT2_APPLICATIONS_ENRICHMENT_COMMON_H
 

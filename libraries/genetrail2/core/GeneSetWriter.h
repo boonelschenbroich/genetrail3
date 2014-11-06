@@ -5,52 +5,27 @@
 #include <iostream>
 #include <string>
 
-#include "Exception.h"
-#include "GeneSet.h"
-
 #include "macros.h"
 
 namespace GeneTrail
 {
-	template<typename value_type>
+	class GeneSet;
+
 	class GT2_EXPORT GeneSetWriter
 	{
 		public:
 
 		GeneSetWriter(){};
 
-		void write(GeneSet<value_type> gene_set, const std::string& path, const std::string& delimiter, const std::string& header = "")
-		{
-			std::ofstream output;
-			output.open(path);
+		void write(const GeneSet& gene_set, const std::string& path,
+		           const std::string& delimiter,
+		           const std::string& header = "") const;
 
-			if(!output)
-			{
-				throw IOError("File (" + path + ") is not open for reading");
-			}
+		void writeNAFile(const GeneSet& gene_set,
+		                 const std::string& path) const;
 
-			if(header != "")
-			{
-				output << header << std::endl;
-			}
-
-			for(const auto& p : gene_set.getScores())
-			{
-				output << p.first << delimiter << p.second << std::endl;
-			}
-
-			output.close();
-		}
-
-		void writeNAFile(GeneSet<value_type> gene_set, const std::string& path)
-		{
-			write(gene_set, path, " = ", "Scores (class=Double)");
-		}
-
-		void writeScoringFile(GeneSet<value_type> gene_set, const std::string& path)
-		{
-			write(gene_set, path, "\t");
-		}
+		void writeScoringFile(const GeneSet& gene_set,
+		                      const std::string& path) const;
 	};
 }
 

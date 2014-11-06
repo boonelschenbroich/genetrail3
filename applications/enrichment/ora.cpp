@@ -34,8 +34,8 @@ using namespace boost::multiprecision;
 std::string reference;
 Params p;
 
-GeneSet<double> test_set;
-GeneSet<double> reference_set;
+GeneSet test_set;
+GeneSet reference_set;
 CategoryList cat_list;
 OverRepresentationAnalysis ora;
 
@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	GeneSetReader<double> reader;
+	GeneSetReader reader;
 	try
 	{
 		reference_set = reader.readGeneList(reference);

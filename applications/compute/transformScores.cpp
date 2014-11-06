@@ -17,13 +17,13 @@ namespace bpo = boost::program_options;
 
 std::string scores = "", output = "", method = "";
 
-std::map<std::string, std::function<void(GeneSet<double>&)>> apply{
-	{"abs",abs<double>},
-	{"sqrt", sqrt<double>},
-    {"log", log<double>},
-    {"log2", log2<double>},
-    {"log10", log10<double>},
-    {"pow2", pow2<double>}};
+std::map<std::string, std::function<void(GeneSet&)>> apply{
+    {"abs", GeneTrail::abs},
+    {"sqrt", GeneTrail::sqrt},
+    {"log", GeneTrail::log},
+    {"log2", GeneTrail::log2},
+    {"log10", GeneTrail::log10},
+    {"pow2", GeneTrail::pow2}};
 
 bool parseArguments(int argc, char* argv[])
 {
@@ -52,16 +52,15 @@ bool parseArguments(int argc, char* argv[])
 
 int main(int argc, char* argv[])
 {
-	apply["abs"] = abs<double>;
 	if(!parseArguments(argc, argv))
 	{
 		return -1;
 	}
 
-	GeneSetReader<double> reader;
-	GeneSet<double> gene_set = reader.readScoringFile(scores);
+	GeneSetReader reader;
+	auto gene_set = reader.readScoringFile(scores);
 	apply[method](gene_set);
-	GeneSetWriter<double> writer;
+	GeneSetWriter writer;
 	writer.writeScoringFile(gene_set, output);
 
 	return 0;

@@ -2,73 +2,31 @@
 #define GT2_CORE_GENE_SET_H
 
 #include "macros.h"
-#include "Category.h"
-#include "GeneSetFilters.h"
 
-#include <algorithm>
+#include <set>
+#include <string>
 #include <utility>
 #include <vector>
-#include <set>
-#include <cmath>
 
 namespace GeneTrail
 {
+	class Category;
+
 	// Forward declaration of GeneSetFilter.
 	namespace GeneSetFilter {
 		class GeneSetFilter;
 	}
 
-	/**
-	 * This struct is used as comparator for sorting
-	 */
-	template <typename value_type> struct increasing_compare
-	{
-		bool operator()(std::pair<std::string, value_type> a,
-		                std::pair<std::string, value_type> b)
-		{
-			return (a.second < b.second);
-		}
-	};
-
-	/**
-	 * This struct is used as comparator for sorting
-	 */
-	template <typename value_type> struct decreasing_compare
-	{
-		bool operator()(std::pair<std::string, value_type> a,
-		                std::pair<std::string, value_type> b)
-		{
-			return (a.second > b.second);
-		}
-	};
-
-	/**
-	 * This struct is used as comparator for sorting
-	 */
-	template <typename value_type> struct absolute_compare
-	{
-		bool operator()(std::pair<std::string, value_type> a,
-		                std::pair<std::string, value_type> b)
-		{
-			return (std::abs(a.second) > std::abs(b.second));
-		}
-	};
-
-	template<typename value_type>
 	class GT2_EXPORT GeneSet
 	{
-		public:
-		typedef std::pair<std::string, value_type> Element;
-
-		private:
 		/**
 	 	 * Typedefs
 	 	 */
-		typedef std::vector<Element> Container;
+		public:
+		typedef std::pair<std::string, double> Element;
 
-		typedef std::vector<double> _v;
-		typedef std::vector<double>::iterator _viter;
-		typedef std::function<void(_v, _v)> return_type;
+		private:
+		typedef std::vector<Element> Container;
 
 		public:
 		typedef typename Container::iterator iterator;
@@ -92,56 +50,42 @@ namespace GeneTrail
 		 *
 		 * @return iterator
 		 */
-		iterator begin()
-		{
-			return container_.begin();
-		}
+		iterator begin() { return container_.begin(); }
 
 		/**
 		 * End function
 		 *
 		 * @return iterator
 		 */
-		iterator end()
-		{
-			return container_.end();
-		}
+		iterator end() { return container_.end(); }
 
 		/**
 		 * Begin function
 		 *
 		 * @return iterator
 		 */
-		const_iterator begin() const
-		{
-			return container_.begin();
-		}
+		const_iterator begin() const { return container_.begin(); }
 
 		/**
 		 * End function
 		 *
 		 * @return iterator
 		 */
-		const_iterator end() const
-		{
-			return container_.end();
-		}
+		const_iterator end() const { return container_.end(); }
 
 		/**
 		 * Getter for the container.
 		 *
 		 * @return Container container_
 		 */
-		Container getScores(){
-			return container_;
-		}
+		Container getScores() const { return container_; }
 
 		/**
 		 * Insert function
 		 *
 		 * @param The element to insert
 		 */
-		void insert(std::pair<std::string, value_type> element)
+		void insert(const std::pair<std::string, double>& element)
 		{
 			container_.push_back(element);
 		}
@@ -152,7 +96,7 @@ namespace GeneTrail
 		 * @param element_name Name of the new score
 		 * @param element The new score
 		 */
-		void insert(std::string element_name, value_type element)
+		void insert(const std::string& element_name, double element)
 		{
 			container_.push_back(std::make_pair(element_name,element));
 		}
@@ -162,18 +106,14 @@ namespace GeneTrail
 		 *
 		 * @return number of elements in the GeneSet
 		 */
-		int size() const {
-			return container_.size();
-		}
+		int size() const { return container_.size(); }
 
 		/**
 		 * Is the GeneSet empty?
 		 *
 		 * @returns true iff the gene set is empty
 		 */
-		bool empty() const {
-			return container_.empty();
-		}
+		bool empty() const { return container_.empty(); }
 
 		/**
 		 * Getter for the scores object.
@@ -181,57 +121,28 @@ namespace GeneTrail
 		 * @param Boolean flag indication how to sort the scores (true = decreasing).
 		 * @return Sorted vector of identifier/score pairs.
 		 */
-		Container getSortedScores(bool decreasing) const
-		{
-			Container sorted_scores(container_);
-			if(decreasing) {
-				std::sort(sorted_scores.begin(), sorted_scores.end(),
-				          decreasing_compare<value_type>());
-			} else {
-				std::sort(sorted_scores.begin(), sorted_scores.end(),
-				          increasing_compare<value_type>());
-			}
-			return sorted_scores;
-		}
+		Container getSortedScores(bool decreasing) const;
 
 		/**
 		 * Getter for the scores object.
 		 *
 		 * @return Increasingly sorted vector of identifier/score pairs.
 		 */
-		Container getIncreasinglySortedScores() const
-		{
-			Container sorted_scores(container_);
-			std::sort(sorted_scores.begin(), sorted_scores.end(),
-			          increasing_compare<value_type>());
-			return sorted_scores;
-		}
+		Container getIncreasinglySortedScores() const;
 
 		/**
 		 * Getter for the scores object.
 		 *
 		 * @return Decreasingly sorted vector of identifier/score pairs.
 		 */
-		Container getDecreasinglySortedScores() const
-		{
-			Container sorted_scores(container_);
-			std::sort(sorted_scores.begin(), sorted_scores.end(),
-			          decreasing_compare<value_type>());
-			return sorted_scores;
-		}
+		Container getDecreasinglySortedScores() const;
 
 		/**
 		 * Getter for the scores object.
 		 *
 		 * @return Decreasingly sorted vector of identifier/score pairs.
 		 */
-		Container getAbsoluteSortedScores() const
-		{
-			Container sorted_scores(container_);
-			std::sort(sorted_scores.begin(), sorted_scores.end(),
-			          absolute_compare<value_type>());
-			return sorted_scores;
-		}
+		Container getAbsoluteSortedScores() const;
 
 		/**
 		 * Computes and returns the intersecting identifier.
@@ -240,23 +151,8 @@ namespace GeneTrail
 		 * @param set
 		 * @return Vector of identifier/score pairs.
 	     */
-		Container
-		intersect(std::vector<std::pair<std::string, value_type>> scores,
-		          std::set<std::string> myset)
-		{
-			Container inter;
-
-			for(auto& elem : scores) {
-				std::set<std::string>::iterator setIt;
-				setIt = myset.find(elem.first);
-
-				if(setIt != myset.end()) {
-					inter.push_back(elem);
-				}
-			}
-
-			return inter;
-		}
+		Container intersect(const std::vector<Element>& scores,
+		                    const std::set<std::string>& myset) const;
 
 		/**
 		 * Computes and returns the intersecting identifier.
@@ -264,19 +160,14 @@ namespace GeneTrail
 		 * @param set
 		 * @return Vector of identifier/score pairs.
 		 */
-		Container intersect(std::set<std::string> set){
-			return intersect(container_, set);
-		}
+		Container intersect(const std::set<std::string>& set) const;
 
 		/**
 		 * Computes and returns the intersection with the given set of identifier.
 		 *
 		 * @return Sorted vector of identifier/score pairs.
 		 */
-		Container sortAndIntersect(std::set<std::string> set, bool decreasing)
-		{
-			return intersect(getSortedScores(decreasing), set);
-		}
+		Container sortAndIntersect(const std::set<std::string>& set, bool decreasing) const;
 
 		/**
 		 * Returns the first k identifier of the given vector.
@@ -284,16 +175,7 @@ namespace GeneTrail
 		 * @return Vector of identifier.
 		 */
 		Container
-		getFirstK(std::vector<std::pair<std::string, value_type>> scores, int k)
-		{
-			std::vector<std::pair<std::string, value_type>> firstK(k);
-
-			for(int i = 0; i < k; ++i) {
-				firstK[i] = scores[i];
-			}
-
-			return firstK;
-		}
+		getFirstK(const std::vector<Element>& scores, int k) const;
 
 		/**
 		 * Returns identifier of the given vector.
@@ -301,65 +183,28 @@ namespace GeneTrail
 		 * @return Vector of identifier
 		 */
 		std::vector<std::string>
-		getIdentifier(std::vector<std::pair<std::string, value_type>> scores)
-		{
-			std::vector<std::string> s(scores.size());
+		getIdentifier(const std::vector<Element>& scores) const;
 
-			for(size_t i = 0; i < scores.size(); ++i) {
-				s[i] = scores[i].first;
-			}
+		std::vector<std::string> getIdentifier() const;
 
-			return s;
-		}
+		std::vector<std::string> getSortedIdentifier(bool decreasing) const;
 
-		std::vector<std::string> getIdentifier()
-		{
-			return getIdentifier(container_);
-		}
+		std::vector<std::string> getDecreasinglySortedIdentifier() const;
 
-		std::vector<std::string> getSortedIdentifier(bool decreasing)
-		{
-			return getIdentifier(getSortedScores(decreasing));
-		}
+		std::vector<std::string> getIncreasinglySortedIdentifier() const;
 
-		std::vector<std::string> getDecreasinglySortedIdentifier()
-		{
-			return getIdentifier(getSortedScores(true));
-		}
+		std::vector<std::string> getAbsoluteSortedIdentifier() const;
 
-		std::vector<std::string> getIncreasinglySortedIdentifier()
-		{
-			return getIdentifier(getSortedScores(false));
-		}
+		const Element& operator[](size_t i) const { return container_[i]; }
 
-		std::vector<std::string> getAbsoluteSortedIdentifier()
-		{
-			return getIdentifier(getAbsoluteSortedScores());
-		}
-
-		const Element& operator[](size_t i) const
-		{
-			return container_[i];
-		}
-
-		Element& operator[](size_t i)
-		{
-			return container_[i];
-		}
+		Element& operator[](size_t i) { return container_[i]; }
 
 		/**
 		 * This function converts the container into a Category
 		 *
 		 * @param name Name of the created category
 		 */
-		Category toCategory(const std::string& name = "") const
-		{
-			Category res(name);
-			for(const auto& it : container_) {
-				res.insert(it.first);
-			}
-			return res;
-		}
+		Category toCategory(const std::string& name = "") const;
 
 		/**
 		 * Apply a filter to the gene set in order to remove unwanted
@@ -370,23 +215,7 @@ namespace GeneTrail
 		 *
 		 * @return A reference to the gene set. This can be used for chaining.
 		 */
-		GeneSet& filter(GeneSetFilter::GeneSetFilter* gf) {
-			if(gf == nullptr) {
-				return *this;
-			}
-
-			// Call the filters setup routine. This is needed for
-			// filters that for example need to look at the score distribution.
-			gf->setup(*this);
-
-			auto new_end = std::remove_if(container_.begin(), container_.end(), [gf](const Element& e) {
-				return gf->filter(e);
-			});
-
-			container_.erase(new_end, container_.end());
-
-			return *this;
-		}
+		GeneSet& filter(GeneSetFilter::GeneSetFilter* gf);
 
 		/**
 		 * Apply a filter to the gene set in order to remove unwanted
@@ -396,21 +225,23 @@ namespace GeneTrail
 		 *
 		 * @return A reference to the gene set. This can be used for chaining.
 		 */
-		GeneSet& filter(GeneSetFilter::GeneSetFilter& gf) {
+		GeneSet& filter(GeneSetFilter::GeneSetFilter& gf)
+		{
 			return filter(&gf);
 		}
 
 		private:
 		Container container_;
 	};
+
 	/**
 	 * This function applies a given function to all values of the GeneSet.
 	 *
 	 * @param gene_set
 	 * @param f
 	 */
-	template <typename value_type>
-	void transform(GeneSet<value_type>& gene_set, std::function<value_type(value_type)> f)
+	template <typename Func>
+	void transform(GeneSet& gene_set, Func f)
 	{
 		for(auto& it : gene_set)
 		{
@@ -423,65 +254,42 @@ namespace GeneTrail
 	 *
 	 * @param gene_set
 	 */
-	template <typename value_type> void abs(GeneSet<value_type>& gene_set)
-	{
-		transform(gene_set, {std::abs<value_type>});
-	}
+	void GT2_EXPORT abs(GeneSet& gene_set);
 
 	/**
 	 * This function applies the std::sqrt to all values of the GeneSet.
 	 *
 	 * @param gene_set
 	 */
-	template <typename value_type> void sqrt(GeneSet<value_type>& gene_set)
-	{
-		transform(gene_set, {static_cast<value_type(*)(value_type)>(std::sqrt)});
-	}
+	void GT2_EXPORT sqrt(GeneSet& gene_set);
 
 	/**
 	 * This function applies the std::log to all values of the GeneSet.
 	 *
 	 * @param gene_set
 	 */
-	template <typename value_type> void log(GeneSet<value_type>& gene_set)
-	{
-		transform(gene_set, {static_cast<value_type(*)(value_type)>(std::log)});
-	}
+	void GT2_EXPORT log(GeneSet& gene_set);
 
 	/**
 	 * This function applies the std::log2 to all values of the GeneSet.
 	 *
 	 * @param gene_set
 	 */
-	template <typename value_type> void log2(GeneSet<value_type>& gene_set)
-	{
-		transform(gene_set, {static_cast<value_type(*)(value_type)>(std::log2)});
-	}
+	void GT2_EXPORT log2(GeneSet& gene_set);
 
 	/**
 	 * This function applies the std::log10 to all values of the GeneSet.
 	 *
 	 * @param gene_set
 	 */
-	template <typename value_type> void log10(GeneSet<value_type>& gene_set)
-	{
-		transform(gene_set, {static_cast<value_type(*)(value_type)>(std::log10)});
-	}
+	void GT2_EXPORT log10(GeneSet& gene_set);
 
 	/**
 	 * This function applies the std::pow to all values of the GeneSet.
 	 *
 	 * @param gene_set
 	 */
-	template <typename value_type>
-	void pow(GeneSet<value_type>& gene_set, int n)
-	{
-		std::transform(gene_set.begin(), gene_set.end(), gene_set.begin(),
-		               [n](std::pair<std::string, double>& e) {
-			e.second = std::pow(e.second, n);
-			return e;
-		});
-	}
+	void GT2_EXPORT pow(GeneSet& gene_set, int n);
 
 	/**
 	 * This function applies the std::pow (power = 2) to all values of the
@@ -489,10 +297,7 @@ namespace GeneTrail
 	 *
 	 * @param gene_set
 	 */
-	template <typename value_type> void pow2(GeneSet<value_type>& gene_set)
-	{
-		pow(gene_set, 2);
-	}
+	void GT2_EXPORT pow2(GeneSet& gene_set);
 }
 
 #endif // GT2_CORE_GENE_SET_H

@@ -36,7 +36,7 @@ std::string method;
 
 Params p;
 
-GeneSet<double> test_set;
+GeneSet test_set;
 CategoryList cat_list;
 AllResults name_to_cat_results;
 
