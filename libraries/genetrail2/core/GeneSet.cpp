@@ -176,7 +176,10 @@ namespace GeneTrail
 		return *this;
 	}
 
-	void abs(GeneSet& gene_set) { transform(gene_set, std::abs<double>); }
+	void abs(GeneSet& gene_set)
+	{
+		transform(gene_set, [](double d) { return std::abs(d); });
+	}
 
 	void sqrt(GeneSet& gene_set)
 	{
