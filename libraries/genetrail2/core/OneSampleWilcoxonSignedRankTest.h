@@ -76,7 +76,10 @@ namespace GeneTrail {
 				}
 			}
 
-			sort(diff.begin(), diff.end());
+			sort(ranks.begin(), ranks.end(),
+				[](const std::pair< value_type, int>& a, const std::pair< value_type, int>& b) {
+					return b.first < a.first;
+				});
 
 			value_type p_rank_sum = 0.0;
 			value_type n_rank_sum = 0.0;
