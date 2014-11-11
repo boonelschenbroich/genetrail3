@@ -185,7 +185,7 @@ namespace GeneTrail {
         value_type median(InputIterator begin, InputIterator end) {
 			std::vector<value_type> tmp(begin,end);
 			unsigned int median_position = (((std::distance(tmp.begin(),tmp.end()) + 1) / 2) - 1);
-            std::nth_element(tmp.begin(), tmp.begin() + median_position, tmp.end());
+			std::nth_element(tmp.begin(), tmp.begin() + median_position, tmp.end());
             return *(tmp.begin() + median_position);
         }
 
