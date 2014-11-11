@@ -20,6 +20,16 @@ const double TOLERANCE = 0.00001;
  * choose(l,k)*choose(m - l, n - k)/choose(m, n)
  */
 
+TEST(HypergeometricTest, bla) {
+    HypergeometricTest<unsigned int, boost::multiprecision::cpp_dec_float_50> h;
+	EXPECT_NEAR(h.lowerTailedPValue(7442,34,699,1).convert_to<double>(), 0.15753959, TOLERANCE);
+}
+
+TEST(HypergeometricTest, blubb) {
+    HypergeometricTest<unsigned int, boost::multiprecision::cpp_dec_float_50> h;
+	EXPECT_NEAR(h.lowerTailedPValue(7442,53,699,2).convert_to<double>(), 0.113443211, TOLERANCE);
+}
+
 TEST(HypergeometricTest, compareToR) {
     HypergeometricTest<unsigned int, boost::multiprecision::cpp_dec_float_50> h;
 	EXPECT_NEAR(h.compute(50,5,10,0).convert_to<double>(), 0.3105628, TOLERANCE);
