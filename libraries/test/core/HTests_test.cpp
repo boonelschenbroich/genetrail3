@@ -4,7 +4,7 @@
 #include <genetrail2/core/FTest.h>
 #include <genetrail2/core/IndependentTTest.h>
 #include <genetrail2/core/DependentTTest.h>
-#include <genetrail2/core/WilcoxonMannWhitneyTest.h>
+#include <genetrail2/core/OneSampleWilcoxonSignedRankTest.h>
 #include <genetrail2/core/IndependentShrinkageTTest.h>
 
 #include <config.h>
@@ -55,18 +55,6 @@ TEST(HTEST, DependentTest)
     EXPECT_NEAR(HTest::upperTailedPValue(f, -11.3706), 1, TOLERANCE);
     EXPECT_NEAR(HTest::confidenceInterval(f,0.95).first, -8.788287, TOLERANCE);
     EXPECT_NEAR(HTest::confidenceInterval(f,0.95).second, -5.871713, TOLERANCE);
-}
-
-TEST(HTEST, WilcoxonMannWhitneyTest)
-{
-	WilcoxonMannWhitneyTest<double> f;
-	EXPECT_NEAR(HTest::test(f, a.begin(), a.end(), b.begin(), b.end()), (16 - 10)/std::sqrt((10 * 10 * (10 + 10 + 1)) / 12.0), TOLERANCE);
-	std::cout << "WARNING: Build a new example for this Test, this one sucks" << std::endl;
-	//EXPECT_NEAR(HTest::twoSidedPValue(f, , , TOLERANCE);
-	//EXPECT_NEAR(HTest::lowerTailedPValue(f, , , TOLERANCE);
-	//EXPECT_NEAR(HTest::upperTailedPValue(f, , , TOLERANCE);
-	//EXPECT_NEAR(HTest::confidenceInterval(f,0.95).first, , TOLERANCE);
-	//EXPECT_NEAR(HTest::confidenceInterval(f,0.95).second, , TOLERANCE);
 }
 
 TEST(HTEST, IndependentShrinkageTTest)
