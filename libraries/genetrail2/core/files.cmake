@@ -23,7 +23,6 @@ add_header_to_library(DependentTTest.h)
 add_header_to_library(FTest.h)
 add_header_to_library(IndependentTTest.h)
 add_header_to_library(OneSampleTTest.h)
-add_header_to_library(WilcoxonMannWhitneyTest.h)
 add_header_to_library(SignalToNoiseRatio.h)
 add_header_to_library(PValue.h)
 add_header_to_library(macros.h)
@@ -34,6 +33,9 @@ add_header_to_library(MatrixHTest.h)
 add_header_to_library(OneSampleWilcoxonSignedRankTest.h)
 add_header_to_library(WilcoxonMatchedPairsSignedRankTest.h)
 add_header_to_library(WilcoxonRankSumTest.h)
+add_header_to_library(AndersonDarlingTest.h)
+add_header_to_library(NormalityTest.h)
+
 
 # Sources
 add_to_library(AbstractMatrix)
