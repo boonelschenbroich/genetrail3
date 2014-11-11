@@ -3,7 +3,6 @@
 #include <genetrail2/core/GeneSetReader.h>
 #include <genetrail2/core/PValue.h>
 #include <genetrail2/core/GeneSet.h>
-#include <genetrail2/core/GSEAResult.h>
 #include <genetrail2/core/PermutationTest.h>
 #include <genetrail2/core/Statistic.h>
 

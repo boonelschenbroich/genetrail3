@@ -4,7 +4,6 @@
 #include <genetrail2/core/GeneSetEnrichmentAnalysis.h>
 #include <genetrail2/core/PValue.h>
 #include <genetrail2/core/GeneSet.h>
-#include <genetrail2/core/GSEAResult.h>
 
 #include "common.h"
 
@@ -68,28 +67,30 @@ bool parseArguments(int argc, char* argv[])
 	return true;
 }
 
+int intersectionSize(const Category& category, const std::vector<std::string>& testSet){
+	int n = 0;
+	for(auto gene : testSet ){
+		if(category.contains(gene)){
+			++n;
+		}
+	}
+	return n;
+}
+
 std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std::pair<int,std::string>& genes)
 {
-	auto result = std::make_shared<GSEAResult>();
+	auto result = std::make_shared<EnrichmentResult>();
 	result->name = c.name();
 	result->reference = c.reference();
 
-	auto enr = gsea.computePValue(c, identifierOfTestSet);
-	result->pvalue = enr.first;
-	result->points = enr.second;
-	int abs_max = -1;
-	bool enriched = false;
-
-	//This looks for the maximum deviation from zero,
-	//and saves the value and if it is enriched or depleted.
-	for(auto p : enr.second){
-		if(std::abs(p.second) > abs_max){
-			abs_max = std::abs(p.second);
-			enriched = p.second >= 0.0;
-		}
+	int RSc = gsea.computeRunningSum(c, identifierOfTestSet);
+	result->enriched = RSc > 0;
+	if(result->enriched){
+		result->pvalue = gsea.computeRightPValue(identifierOfTestSet.size(), intersectionSize(c, identifierOfTestSet), RSc);
+	}else{
+		result->pvalue = gsea.computeLeftPValue(identifierOfTestSet.size(), intersectionSize(c, identifierOfTestSet), RSc);
 	}
 
-	result->enriched = enriched;
 	result->hits = genes.first;
 	result->info = genes.second;
 	return result;

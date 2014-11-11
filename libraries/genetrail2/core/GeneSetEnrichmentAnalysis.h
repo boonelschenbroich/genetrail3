@@ -36,6 +36,7 @@
 #include <cstdint>
 #include <algorithm>
 #include <utility>
+#include <tuple>
 
 using namespace boost::multiprecision;
 
@@ -86,40 +87,6 @@ namespace GeneTrail
 				}
 				return RSc;
 			}
-
-		    std::pair<int, std::vector<std::pair<int, int>>> computeRunningSumP(const Category& category, const std::vector<std::string>& testSet)
-		    {
-			    int n = testSet.size();
-			    int l = intersectionSize(category, testSet);
-			    int nl = n - l;
-			    int RSc = 0;
-			    int rs = 0;
-
-			    std::vector<std::pair<int, int>> points;
-				points.push_back(std::make_pair(0,0));
-			    bool inc = false;
-				int rs_old = 0;
-			    for(int i = 0; i < n; ++i) {
-				    if(category.contains(testSet[i])) {
-						rs += nl;
-					    RSc = absMax(RSc, rs);
-					    if(rs > rs_old && !inc) {
-						    points.push_back(std::make_pair(i-1, rs_old));
-						    inc = true;
-					    }
-				    } else {
-					    rs -= l;
-					    RSc = absMax(RSc, rs);
-					    if(rs < rs_old && inc) {
-						    points.push_back(std::make_pair(i-1, rs_old));
-						    inc = false;
-					    }
-				    }
-					rs_old = rs;
-			    }
-				points.push_back(std::make_pair(testSet.size(),0));
-			    return std::make_pair(RSc, points);
-		    }
 
 		    /**
 			 * This method computes the running sum statistic and the corresponding p-value, based on the given categories.
@@ -240,18 +207,6 @@ namespace GeneTrail
 					return computeRightPValue(testSet.size(), intersectionSize(category,testSet), RSc);
 				}
 			}
-
-			std::pair<float_type, std::vector<std::pair<int,int> > > computePValue(const Category& category, const std::vector<std::string>& testSet){
-				std::pair<int, std::vector<std::pair<int,int> > > result = computeRunningSumP(category, testSet);
-				int RSc = result.first;
-			    float_type p = 1.0;
-				if(RSc < 0) {
-				 	p = computeLeftPValue(testSet.size(), intersectionSize(category, testSet),RSc);
-			    } else {
-				    p =  computeRightPValue(testSet.size(), intersectionSize(category, testSet),RSc);
-			    }
-				return std::make_pair(p, result.second);
-		    }
 
 			/**
 			 * DEPRECATED - Please use the new implementation
