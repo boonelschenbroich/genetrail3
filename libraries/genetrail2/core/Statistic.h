@@ -175,24 +175,39 @@ namespace GeneTrail {
 		}
 
 		/**
-         * This method calculates the median of a given range.
-         *
-         * @param begin InputIterator
+		 * This method calculates the median of a given range.
+		 *
+		 * @param begin InputIterator
 		 * @param end InputIterator
-         * @return Median of the given range
-         */
-        template <typename value_type, typename InputIterator>
-        value_type median(InputIterator begin, InputIterator end) {
-			std::vector<value_type> tmp(begin,end);
-			unsigned int median_position = (((std::distance(tmp.begin(),tmp.end()) + 1) / 2) - 1);
-			std::nth_element(tmp.begin(), tmp.begin() + median_position, tmp.end());
-            return *(tmp.begin() + median_position);
-        }
+		 * @return Median of the given range
+		 */
+		template <typename value_type, typename InputIterator>
+		value_type median(InputIterator begin, InputIterator end)
+		{
+			std::vector<value_type> tmp(begin, end);
 
-        /**
-         * This method calculates the pooled variance of a given range.
-         *
-         * @param begin InputIterator
+			const auto dist = std::distance(tmp.begin(), tmp.end());
+
+			if(dist == 0) {
+				return value_type();
+			}
+
+			const auto dist2 = dist / 2;
+			auto median_position = tmp.begin() + dist2;
+			std::nth_element(tmp.begin(), median_position, tmp.end());
+
+			if(2 * dist2 == dist) {
+				auto second = std::max_element(tmp.begin(), median_position);
+				return (*median_position + *second) * value_type(0.5);
+			} else {
+				return *median_position;
+			}
+		}
+
+		/**
+		 * This method calculates the pooled variance of a given range.
+		 *
+		 * @param begin InputIterator
 		 * @param end InputIterator
          * @return Variance of the given range
          */

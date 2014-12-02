@@ -13,11 +13,13 @@ using namespace GeneTrail;
 double TOLERANCE = 0.00001;
 
 
-std::initializer_list<double> ai = {35.5,-31.7,31.2,36.6,-22.8,28.0,-24.6,26.1,-34.5,27.7};
-std::initializer_list<double> bi = {45.3,-36.0,38.6,-44.7,31.4,-33.5,28.8,-35.8,42.9,-35.0};
+constexpr std::initializer_list<double> ai = {35.5,-31.7,31.2,36.6,-22.8,28.0,-24.6,26.1,-34.5,27.7};
+constexpr std::initializer_list<double> bi = {45.3,-36.0,38.6,-44.7,31.4,-33.5,28.8,-35.8,42.9,-35.0};
+constexpr std::initializer_list<double> ci = {24.5,-23.5,12.5,-2.0,10.0,5.5,4.5,-3.5,-21.5,9.0,-11.5,1.5,-1.5,4.0,12.0};
 
 std::vector<double> a(ai);
 std::vector<double> b(bi);
+std::vector<double> c(ci);
 
 TEST(Statistic, Max)
 {
@@ -57,12 +59,39 @@ TEST(Statistic, Mean)
 	EXPECT_NEAR(mean2, 0.2, TOLERANCE);
 }
 
+TEST(Statistic, Median_Length_0)
+{
+	std::vector<double> values;
+	double median = statistic::median<double>(values.begin(), values.end());
+	EXPECT_FLOAT_EQ(0.0, median);
+}
+
+
+TEST(Statistic, Median_Length_1)
+{
+	std::vector<double> values { 1.0 };
+	double median = statistic::median<double>(values.begin(), values.end());
+	EXPECT_FLOAT_EQ(1.0, median);
+}
+
+TEST(Statistic, Median_Length_2)
+{
+	std::vector<double> values { -1.0, 1.0 };
+	double median = statistic::median<double>(values.begin(), values.end());
+	EXPECT_FLOAT_EQ(0.0, median);
+	std::vector<double> values2 { 1.0, 3.0 };
+	double median2 = statistic::median<double>(values2.begin(), values2.end());
+	EXPECT_FLOAT_EQ(2.0, median2);
+}
+
 TEST(Statistic, Median)
 {
-	double median1 = statistic::median<double, std::vector<double>::iterator>(a.begin(),a.end());
-	EXPECT_NEAR(median1, 26.1, TOLERANCE);
-	double median2 = statistic::median<double, std::vector<double>::iterator>(b.begin(),b.end());
-	EXPECT_NEAR(median2, -33.5, TOLERANCE);
+	double median1 = statistic::median<double>(a.begin(),a.end());
+	EXPECT_NEAR(median1, 26.9, TOLERANCE);
+	double median2 = statistic::median<double>(b.begin(),b.end());
+	EXPECT_NEAR(median2, -2.35, TOLERANCE);
+	double median3 = statistic::median<double>(c.begin(),c.end());
+	EXPECT_EQ(4, median3); // Odd length vectors should be exact
 }
 
 TEST(Statistic, Var)
