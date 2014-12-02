@@ -25,6 +25,13 @@ set_target_properties(gsea PROPERTIES
     INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
 )
 
+add_executable(weighted-gsea weighted-gsea.cpp)
+target_link_libraries(weighted-gsea gtcore enrichment_common ${BOOST_LIBRARIES})
+GT2_COMPILE_FLAGS(weighted-gsea)
+set_target_properties(weighted-gsea PROPERTIES
+    INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
+)
+
 add_executable(ora ora.cpp)
 target_link_libraries(ora gtcore enrichment_common ${BOOST_LIBRARIES})
 GT2_COMPILE_FLAGS(ora)
@@ -50,7 +57,7 @@ set_target_properties(enrichment PROPERTIES
 # Build executable
 ####################################################################################################
 
-install(TARGETS hotelling_t_test gsea ora htests enrichment
+install(TARGETS hotelling_t_test gsea ora htests enrichment weighted-gsea
 	RUNTIME DESTINATION bin
 	LIBRARY DESTINATION lib
 	ARCHIVE DESTINATION lib
