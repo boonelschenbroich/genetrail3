@@ -21,7 +21,7 @@ namespace GeneTrail
 
 		private:
 		TestResults tests_;
-		WeightedGeneSetEnrichmentAnalysis<value_type>& wgsea_;
+		const WeightedGeneSetEnrichmentAnalysis<value_type>& wgsea_;
 		const size_t sizeOfList_;
 		const size_t permutations_;
 		PValues pvalues_;
@@ -30,8 +30,8 @@ namespace GeneTrail
 
 		public:
 		WGSEAPermutationTest(
-		    TestResults& tests,
-		    WeightedGeneSetEnrichmentAnalysis<value_type>& wgsea,
+		    const TestResults& tests,
+		    const WeightedGeneSetEnrichmentAnalysis<value_type>& wgsea,
 		    const size_t sizeOfList, const size_t permutations)
 		    : tests_(tests),
 		      wgsea_(wgsea),

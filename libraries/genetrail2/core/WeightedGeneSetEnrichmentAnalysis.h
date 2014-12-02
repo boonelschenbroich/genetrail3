@@ -75,7 +75,7 @@ namespace GeneTrail
 		 * @param category Category
 		 * @param testSet Container
 		 */
-		Indices intersection(const Category& category, const Names& names)
+		Indices intersection(const Category& category, const Names& names) const
 		{
 			Indices result;
 			result.reserve(std::min(category.size(), names.size()));
@@ -94,7 +94,7 @@ namespace GeneTrail
 		 *
 		 * @param S Container
 		 */
-		float_type sum(Indices::const_iterator it, Indices::const_iterator end)
+		float_type sum(Indices::const_iterator it, Indices::const_iterator end) const
 		{
 			using namespace std;
 			float_type result = 0.0;
@@ -110,7 +110,7 @@ namespace GeneTrail
 		 * @param a Floating point number
 		 * @param b Floating point number
 		 */
-		float_type absMax(const float_type a, const float_type b)
+		float_type absMax(const float_type a, const float_type b) const
 		{
 			using namespace std;
 			return abs(a) < abs(b) ? b : a;
@@ -123,7 +123,7 @@ namespace GeneTrail
 		 * @param category Category for which the RSc should be computed.
 		 * @return The RSc for the given categories.
 		 */
-		float_type computeRunningSum(const Category& category)
+		float_type computeRunningSum(const Category& category) const
 		{
 			Indices S = intersection(category, names_);
 			return computeRunningSum(S.begin(), S.end());
@@ -137,7 +137,7 @@ namespace GeneTrail
 		 * @return The RSc for the given categories.
 		 */
 		float_type computeRunningSum(Indices::const_iterator begin,
-		                             Indices::const_iterator end)
+		                             Indices::const_iterator end) const
 		{
 			assert(names_.size() == values_.size());
 
