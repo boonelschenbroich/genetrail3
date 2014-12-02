@@ -18,6 +18,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" ST
 	LIST(APPEND CXX_FLAGS "-fvisibility=hidden")
 	LIST(APPEND CXX_FLAGS "-pedantic")
 	LIST(APPEND CXX_FLAGS "-Wall")
+	LIST(APPEND CXX_FLAGS "-Wextra")
 	LIST(APPEND CXX_FLAGS "-std=c++11")
 
 	SET(GT2_EXPORT                 "__attribute__((visibility (\"default\")))")
