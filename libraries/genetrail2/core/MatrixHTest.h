@@ -26,11 +26,10 @@
 
 namespace GeneTrail
 {
-	template<class Matrix>
-	class GT2_EXPORT MatrixHTest
+	template <class Matrix> class GT2_EXPORT MatrixHTest
 	{
 		public:
-		MatrixHTest(){};
+		MatrixHTest() {};
 
 		private:
 		typedef std::vector<double> _v;
@@ -72,11 +71,38 @@ namespace GeneTrail
 		};
 
 		return_type log_mean_fold_quotient = [](_v a, _v b) {
-			return statistic::log_mean_fold_quotient<double>(a.begin(), a.end(), b.begin(), b.end());
+			return statistic::log_mean_fold_quotient<double>(
+			    a.begin(), a.end(), b.begin(), b.end());
 		};
 
 		return_type mean_fold_quotient = [](_v a, _v b) {
-			return statistic::mean_fold_quotient<double>(a.begin(), a.end(), b.begin(), b.end());
+			return statistic::mean_fold_quotient<double>(a.begin(), a.end(),
+			                                             b.begin(), b.end());
+		};
+
+		return_type mean_fold_difference = [](_v a, _v b) {
+			return statistic::mean_fold_difference<double>(a.begin(), a.end(),
+			                                               b.begin(), b.end());
+		};
+
+		return_type pearson_correlation = [](_v x, _v y) {
+			std::vector<double> a(x.begin(), x.end());
+			a.insert(a.end(), y.begin(), y.end());
+			std::vector<double> b(a.size(), 0.0);
+			std::fill(b.begin() + x.size(), a.end(), 1.0);
+
+			return statistic::pearson_correlation<double>(a.begin(), a.end(),
+			                                              b.begin(), b.end());
+		};
+
+		return_type spearman_correlation = [](_v x, _v y) {
+			std::vector<double> a(x.begin(), x.end());
+			a.insert(a.end(), y.begin(), y.end());
+			std::vector<double> b(a.size(), 0.0);
+			std::fill(b.begin() + x.size(), a.end(), 1.0);
+
+			return statistic::spearman_correlation<double>(a.begin(), a.end(),
+			                                               b.begin(), b.end());
 		};
 
 		return_type z_score = [](_v a, _v b) {
@@ -90,13 +116,17 @@ namespace GeneTrail
 		    {"dependent-t-test", dependent_t_test},
 		    {"f-test", f_test},
 		    {"wilcoxon", wilcoxon},
-			{"dependent-wilcoxon", dependent_wilcoxon},
-			{"signal-to-noise-ratio", signal_to_noise_ratio},
-			{"log-mean-fold-quotient", log_mean_fold_quotient},
-			{"mean-fold-quotient", mean_fold_quotient},
-			{"z-score", z_score}};
+		    {"dependent-wilcoxon", dependent_wilcoxon},
+		    {"signal-to-noise-ratio", signal_to_noise_ratio},
+		    {"log-mean-fold-quotient", log_mean_fold_quotient},
+		    {"mean-fold-quotient", mean_fold_quotient},
+		    {"mean-fold-difference", mean_fold_difference},
+		    {"pearson_correlation", pearson_correlation},
+		    {"spearman_correlation", spearman_correlation},
+		    {"z-score", z_score}};
 
-		std::set<std::string> dependentTests{"dependent-t-test", "dependent-wilcoxon"};
+		std::set<std::string> dependentTests{"dependent-t-test",
+		                                     "dependent-wilcoxon"};
 
 		/**
 		 * This functions removes all NANs from the given row and returns a
@@ -262,7 +292,6 @@ namespace GeneTrail
 		}
 
 		public:
-
 		/**
 		 * This functions applies the given test row-wise to the given matrices.
 		 * The matrices represent the different groups.
