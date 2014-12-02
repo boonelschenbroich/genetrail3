@@ -25,8 +25,8 @@ using namespace boost::multiprecision;
 const double TOLERANCE = 0.00001;
 
 TEST(GeneSetEnrichmentAnalysis, twoSidedPValue) {
-	GeneSetEnrichmentAnalysis<cpp_dec_float_50, int128_t> gsea;
-	EXPECT_NEAR(gsea.computeTwoSidedPValue(8,4,12).convert_to<double>(), 0.228571, TOLERANCE);
+	GeneSetEnrichmentAnalysis<double, int> gsea;
+	EXPECT_NEAR(gsea.computeTwoSidedPValue(8,4,12), 0.228571, TOLERANCE);
 }
 
 TEST(GeneSetEnrichmentAnalysis, twoSidedPValue2) {
@@ -39,21 +39,21 @@ TEST(GeneSetEnrichmentAnalysis, twoSidedPValue2) {
 	cat.insert(boost::lexical_cast<std::string>(1));
 	cat.insert(boost::lexical_cast<std::string>(2));
 	cat.insert(boost::lexical_cast<std::string>(6));
-	GeneSetEnrichmentAnalysis<cpp_dec_float_50, int128_t> gsea;
+	GeneSetEnrichmentAnalysis<double, int> gsea;
 	EXPECT_NEAR(gsea.computeRunningSum(cat,test), 12, TOLERANCE);
-	EXPECT_NEAR(gsea.computeTwoSidedPValue(cat,test).convert_to<double>(), 0.228571, TOLERANCE);
+	EXPECT_NEAR(gsea.computeTwoSidedPValue(cat,test), 0.228571, TOLERANCE);
 }
 
 TEST(GeneSetEnrichmentAnalysis, littleExample1) {
-	GeneSetEnrichmentAnalysis<cpp_dec_float_50, int128_t> gsea;
-	EXPECT_NEAR(gsea.computeRightPValue(8,4,12).convert_to<double>(), 0.11428571, TOLERANCE);
-	EXPECT_NEAR(gsea.computeOneSidedPValueD(8,4,12).convert_to<double>(),gsea.computeRightPValue(8,4,12).convert_to<double>(), TOLERANCE);
+	GeneSetEnrichmentAnalysis<double, int> gsea;
+	EXPECT_NEAR(gsea.computeRightPValue(8,4,12), 0.11428571, TOLERANCE);
+	EXPECT_NEAR(gsea.computeOneSidedPValueD(8,4,12),gsea.computeRightPValue(8,4,12), TOLERANCE);
 }
 
 TEST(GeneSetEnrichmentAnalysis, littleExample2) {
-	GeneSetEnrichmentAnalysis<cpp_dec_float_50, int128_t> gsea;
-	EXPECT_NEAR(gsea.computeRightPValue(8,4,-16).convert_to<double>(), 0.01428, TOLERANCE);
-	EXPECT_NEAR(gsea.computeOneSidedPValueD(8,4,-16).convert_to<double>(),gsea.computeRightPValue(8,4,-16).convert_to<double>(), TOLERANCE);
+	GeneSetEnrichmentAnalysis<double, int> gsea;
+	EXPECT_NEAR(gsea.computeRightPValue(8,4,-16), 0.01428, TOLERANCE);
+	EXPECT_NEAR(gsea.computeOneSidedPValueD(8,4,-16), gsea.computeRightPValue(8,4,-16), TOLERANCE);
 }
 
 /*TEST(GeneSetEnrichmentAnalysis, bigExampleCompareOldAndNewImplementation) {
