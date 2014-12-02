@@ -28,23 +28,24 @@ using namespace GeneTrail;
 class DenseMatrixTest : public ::testing::Test
 {
 	public:
-		DenseMatrixTest()
-			: matrix_name_file(TEST_DATA_PATH("matrix_names.txt")),
-			  matrix_name_additional_column_file(TEST_DATA_PATH("matrix_names_additional_column.txt")),
-			  matrix_noname_file(TEST_DATA_PATH("matrix_nonames.txt"))
-		{
-		}
+	DenseMatrixTest()
+	    : matrix_name_file(TEST_DATA_PATH("matrix_names.txt")),
+	      matrix_name_additional_column_file(
+	          TEST_DATA_PATH("matrix_names_additional_column.txt")),
+	      matrix_noname_file(TEST_DATA_PATH("matrix_nonames.txt"))
+	{
+	}
 
 	protected:
-		void constructorCheck(const DenseMatrix& mat);
-		std::vector<std::string> constructorRNames();
-		std::vector<std::string> constructorCNames();
+	void constructorCheck(const DenseMatrix& mat);
+	std::vector<std::string> constructorRNames();
+	std::vector<std::string> constructorCNames();
 
-		DenseMatrix buildTestMatrix();
+	DenseMatrix buildTestMatrix();
 
-		const std::string matrix_name_file;
-		const std::string matrix_name_additional_column_file;
-		const std::string matrix_noname_file;
+	const std::string matrix_name_file;
+	const std::string matrix_name_additional_column_file;
+	const std::string matrix_noname_file;
 };
 
 DenseMatrix DenseMatrixTest::buildTestMatrix()
@@ -55,21 +56,21 @@ DenseMatrix DenseMatrixTest::buildTestMatrix()
 	DenseMatrix mat(num_rows, num_cols);
 
 	// Fill the matrix
-	mat(0,0) =  1.0;
-	mat(0,1) =  2.0;
-	mat(0,2) =  3.0;
-	mat(1,0) =  4.0;
-	mat(1,1) =  5.0;
-	mat(1,2) =  6.0;
-	mat(2,0) =  7.0;
-	mat(2,1) =  8.0;
-	mat(2,2) =  9.0;
-	mat(3,0) = 10.0;
-	mat(3,1) = 11.0;
-	mat(3,2) = 12.0;
-	mat(4,0) = 13.0;
-	mat(4,1) = 14.0;
-	mat(4,2) = 15.0;
+	mat(0, 0) = 1.0;
+	mat(0, 1) = 2.0;
+	mat(0, 2) = 3.0;
+	mat(1, 0) = 4.0;
+	mat(1, 1) = 5.0;
+	mat(1, 2) = 6.0;
+	mat(2, 0) = 7.0;
+	mat(2, 1) = 8.0;
+	mat(2, 2) = 9.0;
+	mat(3, 0) = 10.0;
+	mat(3, 1) = 11.0;
+	mat(3, 2) = 12.0;
+	mat(4, 0) = 13.0;
+	mat(4, 1) = 14.0;
+	mat(4, 2) = 15.0;
 
 	mat.setRowName(0, "row0");
 	mat.setRowName(1, "row1");
@@ -171,16 +172,12 @@ TEST_F(DenseMatrixTest, NameConstructor_rr)
 
 std::vector<std::string> DenseMatrixTest::constructorRNames()
 {
-	return std::vector<std::string> {
-		"row1", "row2", "row3", "row4"
-	};
+	return std::vector<std::string>{"row1", "row2", "row3", "row4"};
 }
 
 std::vector<std::string> DenseMatrixTest::constructorCNames()
 {
-	return std::vector<std::string> {
-		"col1", "col2", "col3", "col4", "col5"
-	};
+	return std::vector<std::string>{"col1", "col2", "col3", "col4", "col5"};
 }
 
 void DenseMatrixTest::constructorCheck(const DenseMatrix& result)
@@ -205,12 +202,12 @@ TEST_F(DenseMatrixTest, Move_Constructor)
 	DenseMatrix mat(num_rows, num_cols);
 
 	// Fill the matrix
-	mat(0,0) = 1.0;
-	mat(0,1) = 2.0;
-	mat(0,2) = 3.0;
-	mat(1,0) = 4.0;
-	mat(1,1) = 5.0;
-	mat(1,2) = 6.0;
+	mat(0, 0) = 1.0;
+	mat(0, 1) = 2.0;
+	mat(0, 2) = 3.0;
+	mat(1, 0) = 4.0;
+	mat(1, 1) = 5.0;
+	mat(1, 2) = 6.0;
 
 	mat.setRowName(0, "row0");
 	mat.setRowName(1, "row1");
@@ -226,7 +223,7 @@ TEST_F(DenseMatrixTest, Move_Constructor)
 	std::vector<double*> memptr(num_rows * num_cols);
 	for(unsigned int i = 0; i < num_rows; ++i) {
 		for(unsigned int j = 0; j < num_cols; ++j) {
-			memptr[i*num_cols + j] = &mat(i,j);
+			memptr[i * num_cols + j] = &mat(i, j);
 		}
 	}
 
@@ -256,8 +253,8 @@ TEST_F(DenseMatrixTest, Move_Constructor)
 
 	for(unsigned int i = 0; i < num_rows; ++i) {
 		for(unsigned int j = 0; j < num_cols; ++j) {
-			ASSERT_EQ(*memptr[i*num_cols + j], mat2(i,j));
-			EXPECT_EQ(memptr[i*num_cols + j], &mat2(i,j));
+			ASSERT_EQ(*memptr[i * num_cols + j], mat2(i, j));
+			EXPECT_EQ(memptr[i * num_cols + j], &mat2(i, j));
 		}
 	}
 }
@@ -265,15 +262,15 @@ TEST_F(DenseMatrixTest, Move_Constructor)
 TEST_F(DenseMatrixTest, Move_Assignment)
 {
 	DenseMatrix mat = buildTestMatrix();
-	
+
 	const unsigned int num_rows = mat.rows();
 	const unsigned int num_cols = mat.cols();
-	
+
 	// Store the pointers to the internal representations
 	std::vector<double*> memptr(num_rows * num_cols);
 	for(unsigned int i = 0; i < num_rows; ++i) {
 		for(unsigned int j = 0; j < num_cols; ++j) {
-			memptr[i*num_cols + j] = &mat(i,j);
+			memptr[i * num_cols + j] = &mat(i, j);
 		}
 	}
 
@@ -288,7 +285,7 @@ TEST_F(DenseMatrixTest, Move_Assignment)
 	}
 
 	// Move the matrix
-	DenseMatrix mat2(10,10);
+	DenseMatrix mat2(10, 10);
 
 	ASSERT_EQ(10, mat2.rows());
 	ASSERT_EQ(10, mat2.cols());
@@ -311,10 +308,98 @@ TEST_F(DenseMatrixTest, Move_Assignment)
 
 	for(unsigned int i = 0; i < num_rows; ++i) {
 		for(unsigned int j = 0; j < num_cols; ++j) {
-			ASSERT_EQ(*memptr[i*num_cols + j], mat2(i,j));
-			EXPECT_EQ(memptr[i*num_cols + j], &mat2(i,j));
+			ASSERT_EQ(*memptr[i * num_cols + j], mat2(i, j));
+			EXPECT_EQ(memptr[i * num_cols + j], &mat2(i, j));
 		}
 	}
+}
+
+TEST_F(DenseMatrixTest, rbind)
+{
+	const unsigned int num_rows = 2;
+	const unsigned int num_cols = 3;
+	DenseMatrix m(num_rows, num_cols);
+
+	// Fill the matrix
+	m(0, 0) = 1.0;
+	m(0, 1) = 2.0;
+	m(0, 2) = 3.0;
+	m(1, 0) = 4.0;
+	m(1, 1) = 5.0;
+	m(1, 2) = 6.0;
+
+	DenseMatrix n(num_rows, num_cols);
+
+	// Fill the matrix
+	n(0, 0) = 1.0;
+	n(0, 1) = 2.0;
+	n(0, 2) = 3.0;
+	n(1, 0) = 4.0;
+	n(1, 1) = 5.0;
+	n(1, 2) = 6.0;
+
+	m.rbind(n);
+
+	EXPECT_EQ(m.cols(), 3);
+	EXPECT_EQ(m.rows(), 4);
+
+	EXPECT_EQ(m(0, 0), 1.0);
+	EXPECT_EQ(m(0, 1), 2.0);
+	EXPECT_EQ(m(0, 2), 3.0);
+	EXPECT_EQ(m(1, 0), 4.0);
+	EXPECT_EQ(m(1, 1), 5.0);
+	EXPECT_EQ(m(1, 2), 6.0);
+
+	EXPECT_EQ(m(2, 0), 1.0);
+	EXPECT_EQ(m(2, 1), 2.0);
+	EXPECT_EQ(m(2, 2), 3.0);
+	EXPECT_EQ(m(3, 0), 4.0);
+	EXPECT_EQ(m(3, 1), 5.0);
+	EXPECT_EQ(m(3, 2), 6.0);
+}
+
+TEST_F(DenseMatrixTest, cbind)
+{
+	const unsigned int num_rows = 2;
+	const unsigned int num_cols = 3;
+	DenseMatrix m(num_rows, num_cols);
+
+	// Fill the matrix
+	m(0, 0) = 1.0;
+	m(0, 1) = 2.0;
+	m(0, 2) = 3.0;
+	m(1, 0) = 4.0;
+	m(1, 1) = 5.0;
+	m(1, 2) = 6.0;
+
+	DenseMatrix n(num_rows, num_cols);
+
+	// Fill the matrix
+	n(0, 0) = 1.0;
+	n(0, 1) = 2.0;
+	n(0, 2) = 3.0;
+	n(1, 0) = 4.0;
+	n(1, 1) = 5.0;
+	n(1, 2) = 6.0;
+
+	m.cbind(n);
+
+	EXPECT_EQ(m.cols(), 6);
+	EXPECT_EQ(m.rows(), 2);
+
+	EXPECT_EQ(m(0, 0), 1.0);
+	EXPECT_EQ(m(0, 1), 2.0);
+	EXPECT_EQ(m(0, 2), 3.0);
+	EXPECT_EQ(m(1, 0), 4.0);
+	EXPECT_EQ(m(1, 1), 5.0);
+	EXPECT_EQ(m(1, 2), 6.0);
+
+	EXPECT_EQ(m(0, 3), 1.0);
+	EXPECT_EQ(m(0, 4), 2.0);
+	EXPECT_EQ(m(0, 5), 3.0);
+	EXPECT_EQ(m(1, 3), 4.0);
+	EXPECT_EQ(m(1, 4), 5.0);
+	EXPECT_EQ(m(1, 5), 6.0);
 }
 
 TEST_F(DenseMatrixTest, row)
@@ -326,7 +411,7 @@ TEST_F(DenseMatrixTest, row)
 	}
 
 	DenseMatrix::Vector tmp(mat.cols());
-	
+
 	for(unsigned int i = 0; i < mat.cols(); ++i) {
 		tmp[i] = i * 0.1;
 	}
@@ -355,7 +440,7 @@ TEST_F(DenseMatrixTest, col)
 	}
 
 	DenseMatrix::Vector tmp(mat.rows());
-	
+
 	for(unsigned int i = 0; i < mat.rows(); ++i) {
 		tmp[i] = i * 0.1;
 	}
@@ -378,7 +463,7 @@ TEST_F(DenseMatrixTest, col_const)
 TEST_F(DenseMatrixTest, setRow_string)
 {
 	DenseMatrix mat(10, 5);
-	
+
 	mat.setRowName(3, "row3");
 
 	DenseMatrix::Vector tmp(mat.cols());
@@ -386,7 +471,7 @@ TEST_F(DenseMatrixTest, setRow_string)
 		tmp[i] = i;
 	}
 
-	mat.setRow("row3",tmp);
+	mat.setRow("row3", tmp);
 
 	EXPECT_TRUE(mat.row(3) == tmp.transpose());
 }
@@ -394,7 +479,7 @@ TEST_F(DenseMatrixTest, setRow_string)
 TEST_F(DenseMatrixTest, setRow_index)
 {
 	DenseMatrix mat(10, 5);
-	
+
 	DenseMatrix::Vector tmp(mat.cols());
 	for(unsigned int i = 0; i < mat.cols(); ++i) {
 		tmp[i] = i;
@@ -408,7 +493,7 @@ TEST_F(DenseMatrixTest, setRow_index)
 TEST_F(DenseMatrixTest, setCol_string)
 {
 	DenseMatrix mat(10, 5);
-	
+
 	mat.setColName(3, "col3");
 
 	DenseMatrix::Vector tmp(mat.rows());
@@ -416,7 +501,7 @@ TEST_F(DenseMatrixTest, setCol_string)
 		tmp[i] = i;
 	}
 
-	mat.setCol("col3",tmp);
+	mat.setCol("col3", tmp);
 
 	EXPECT_TRUE(mat.col(3) == tmp);
 }
@@ -424,7 +509,7 @@ TEST_F(DenseMatrixTest, setCol_string)
 TEST_F(DenseMatrixTest, setCol_index)
 {
 	DenseMatrix mat(10, 5);
-	
+
 	DenseMatrix::Vector tmp(mat.rows());
 	for(unsigned int i = 0; i < mat.rows(); ++i) {
 		tmp[i] = i;
@@ -437,26 +522,25 @@ TEST_F(DenseMatrixTest, setCol_index)
 
 TEST_F(DenseMatrixTest, matrix)
 {
-	DenseMatrix mat(7,2);
+	DenseMatrix mat(7, 2);
 
 	EXPECT_EQ(mat.cols(), mat.matrix().cols());
 	EXPECT_EQ(mat.rows(), mat.matrix().rows());
 
-	mat(0,0) = 2323.2;
+	mat(0, 0) = 2323.2;
 
-	EXPECT_EQ(mat(0,0), mat.matrix()(0,0));
+	EXPECT_EQ(mat(0, 0), mat.matrix()(0, 0));
 }
 
 TEST_F(DenseMatrixTest, matrix_const)
 {
-	DenseMatrix mat(7,2);
-	mat(0,0) = 2323.2;
-	
+	DenseMatrix mat(7, 2);
+	mat(0, 0) = 2323.2;
+
 	const DenseMatrix& mat2 = mat;
 
 	EXPECT_EQ(mat2.cols(), mat2.matrix().cols());
 	EXPECT_EQ(mat2.rows(), mat2.matrix().rows());
 
-
-	EXPECT_EQ(mat2(0,0), mat2.matrix()(0,0));
+	EXPECT_EQ(mat2(0, 0), mat2.matrix()(0, 0));
 }
