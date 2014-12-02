@@ -28,6 +28,83 @@ namespace GeneTrail
 		std::mt19937 twister_;
 		std::vector<size_t> indices_;
 
+		// Workspace for sorting the indices, its content
+		// is irrelevant and it is only a member as we want to avoid
+		// frequent reallocations.
+		std::vector<size_t> tmp_indices_;
+
+		/**
+		 * Randomly select n indices from our index list
+		 */
+		void shuffleIndices_(const size_t n)
+		{
+			for(size_t i = 0; i < n; ++i) {
+				std::swap(indices_[i],
+				          indices_[i + twister_() % (indices_.size() - i)]);
+			}
+		}
+
+		/**
+		 * This sorts the indices vector until position b.
+		 * It is assumed, that the vector is sorted up to position a.
+		 */
+		void sortIndices_(size_t a, size_t b)
+		{
+			// Sort [a, b)
+			std::sort(indices_.begin() + a, indices_.begin() + b);
+
+			// Merge [0, a) and [a, b) into a temporary vector.
+			// Note that inplace_merge would reallocate a new vector
+			// every time it is called.
+			std::merge(indices_.begin(), indices_.begin() + a,
+			           indices_.begin() + a, indices_.begin() + b,
+			           tmp_indices_.begin());
+
+			// Copy the sorted range [0, b) from the temporary vector
+			// to the indices_ vector
+			std::copy(tmp_indices_.begin(), tmp_indices_.begin() + b,
+			          indices_.begin());
+		}
+
+		/**
+		 * Perform a single permutation for all catagories
+		 */
+		void performSinglePermutation_()
+		{
+			size_t currentSampleSize = 0;
+			value_type currentScore = 0.0;
+
+			// Shuffle the first few indices
+			shuffleIndices_(tests_.back().sampleSize);
+
+			for(auto& t : tests_) {
+				// Check if the sampleSize has changed. As the tests_ vector is
+				// sorted we can use one running sum value for all categories of
+				// the same size.
+				if(t.sampleSize != currentSampleSize) {
+					// Our sampleSize changed, we reorder the indices
+					sortIndices_(currentSampleSize, t.sampleSize);
+
+					// Update currentSampleSize and currentScore
+					currentSampleSize = t.sampleSize;
+					currentScore = wgsea_.computeRunningSum(
+					    indices_.begin(), indices_.begin() + currentSampleSize);
+				}
+
+				// Check whether the category is enriched and then
+				// increase the counter if the score is non-significant
+				if(t.enriched) {
+					if(t.score <= currentScore) {
+						++t.counter;
+					}
+				} else {
+					if(t.score >= currentScore) {
+						++t.counter;
+					}
+				}
+			}
+		}
+
 		public:
 		WGSEAPermutationTest(
 		    const TestResults& tests,
@@ -38,7 +115,8 @@ namespace GeneTrail
 		      sizeOfList_(sizeOfList),
 		      permutations_(permutations),
 		      twister_{std::random_device{}()},
-		      indices_(sizeOfList)
+		      indices_(sizeOfList),
+		      tmp_indices_(sizeOfList)
 		{
 			pvalues_.reserve(tests.size());
 			// Sort vector of TestResults
@@ -51,49 +129,19 @@ namespace GeneTrail
 			std::iota(indices_.begin(), indices_.end(), 0);
 		}
 
-		void getRandomIndices(const size_t n)
+		const PValues& computePValue()
 		{
-			for(size_t i = 0; i < n; ++i) {
-				std::swap(indices_[i],
-				          indices_[i + twister_() % (indices_.size() - i)]);
+			for(size_t k = 1; k <= permutations_; ++k) {
+				std::cout << "INFO: Running - Permutation test " << k << "/"
+				          << permutations_ << "\n";
+
+				performSinglePermutation_();
 			}
 
-			sort(indices_.begin(), indices_.begin() + n);
-		}
+			for(auto& t : tests_) {
+				pvalues_.emplace_back(t.name, t.computePValue(permutations_));
+			}
 
-		PValues computePValue()
-		{
-			for(size_t i = 0; i < permutations_; ++i) {
-				std::cout << "INFO: Running - Permutation test " << i << "/"
-				          << permutations_ << std::endl;
-				// As we don't want to recompute any values,
-				// we save them here.
-				size_t currentSampleSize = 0;
-				value_type currentScore = 0.0;
-				for(size_t i = 0; i < tests_.size(); ++i) {
-					// Check if we need to compute new values
-					if(tests_[i].sampleSize != currentSampleSize) {
-						currentSampleSize = tests_[i].sampleSize;
-						getRandomIndices(currentSampleSize);
-						currentScore = wgsea_.computeRunningSum(
-						    indices_.begin(),
-						    indices_.begin() + currentSampleSize);
-					}
-					if(tests_[i].enriched) {
-						if(tests_[i].score <= currentScore) {
-							++tests_[i].counter;
-						}
-					} else {
-						if(tests_[i].score >= currentScore) {
-							++tests_[i].counter;
-						}
-					}
-				}
-			}
-			for(size_t i = 0; i < tests_.size(); ++i) {
-				pvalues_.push_back(std::make_pair(
-				    tests_[i].name, tests_[i].computePValue(permutations_)));
-			}
 			return pvalues_;
 		}
 	};
