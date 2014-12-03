@@ -12,7 +12,6 @@ set_target_properties(hotelling_t_test PROPERTIES
 GT2_COMPILE_FLAGS(hotelling_t_test)
 
 add_library(enrichment_common STATIC common.cpp common.h)
-target_link_libraries(gtcore ${BOOST_LIBRARIES})
 GT2_COMPILE_FLAGS(enrichment_common)
 set_target_properties(enrichment_common PROPERTIES
 	INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
