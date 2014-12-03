@@ -4,6 +4,7 @@
 #include <genetrail2/core/GeneSetEnrichmentAnalysis.h>
 #include <genetrail2/core/PValue.h>
 #include <genetrail2/core/GeneSet.h>
+#include <genetrail2/core/multiprecision.h>
 
 #include "common.h"
 
@@ -11,8 +12,6 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string/trim.hpp>
-#include <boost/multiprecision/cpp_int.hpp>
-#include <boost/multiprecision/cpp_dec_float.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -25,7 +24,6 @@
 using namespace GeneTrail;
 namespace bpo = boost::program_options;
 namespace bm = boost::math;
-using namespace boost::multiprecision;
 
 std::string json;
 bool increasing = false, absolute = false;
@@ -34,7 +32,7 @@ Params p;
 
 GeneSet test_set;
 CategoryList cat_list;
-GeneSetEnrichmentAnalysis<cpp_dec_float_50, int64_t> gsea;
+GeneSetEnrichmentAnalysis<big_float, int64_t> gsea;
 std::vector<std::string> identifierOfTestSet;
 
 bool parseArguments(int argc, char* argv[])

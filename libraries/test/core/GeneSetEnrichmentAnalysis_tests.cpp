@@ -12,15 +12,13 @@
 #include <genetrail2/core/GeneSetReader.h>
 #include <genetrail2/core/GeneSet.h>
 #include <genetrail2/core/GMTFile.h>
+#include <genetrail2/core/multiprecision.h>
 
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/multiprecision/cpp_int.hpp>
-#include <boost/multiprecision/cpp_dec_float.hpp>
 
 using namespace GeneTrail;
-using namespace boost::multiprecision;
 
 const double TOLERANCE = 0.00001;
 
@@ -64,7 +62,7 @@ TEST(GeneSetEnrichmentAnalysis, littleExample2) {
 	GMTFile input2("/home/student/tkehl/GT_TEST/bigCategories.gmt");
 	while(input2) {
 		Category c = input2.read();
-		GeneSetEnrichmentAnalysis<cpp_dec_float_50, int64_t> gsea;
+		GeneSetEnrichmentAnalysis<big_float, int64_t> gsea;
 		EXPECT_NEAR(gsea.computeOneSidedPValue(c, test_set).convert_to<double>(), gsea.computeOneSidedPValueD(c, test_set).convert_to<double>(), TOLERANCE);
 	}
 }*/
@@ -102,7 +100,7 @@ TEST(GeneSetEnrichmentAnalysis, bigExampleCompareWebserverAndNewImplementation)
 	GMTFile input2("/home/student/tkehl/GT_TEST/bigCategories.gmt");
 	while(input2) {
 		Category c = input2.read();
-		GeneSetEnrichmentAnalysis<cpp_dec_float_50, int64_t> gsea;
+		GeneSetEnrichmentAnalysis<big_float, int64_t> gsea;
 		EXPECT_NEAR(
 		    gsea.computeOneSidedPValue(c, test_set).convert_to<double>(),
 		    results[c.name()],
@@ -111,7 +109,7 @@ TEST(GeneSetEnrichmentAnalysis, bigExampleCompareWebserverAndNewImplementation)
 }
 
 /*TEST(GeneSetEnrichmentAnalysis, big1) {
-	 GeneSetEnrichmentAnalysis<cpp_dec_float_50, int64_t> gsea;
+	 GeneSetEnrichmentAnalysis<big_float, int64_t> gsea;
 	 int n = 20000;
 	 int c = 0;
 	 for(int l=10; l<=100; ++l){

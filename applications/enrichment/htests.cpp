@@ -9,6 +9,7 @@
 #include <genetrail2/core/WilcoxonRankSumTest.h>
 #include <genetrail2/core/OneSampleTTest.h>
 #include <genetrail2/core/IndependentTTest.h>
+#include <genetrail2/core/multiprecision.h>
 
 #include "common.h"
 
@@ -16,8 +17,6 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string/trim.hpp>
-#include <boost/multiprecision/cpp_int.hpp>
-#include <boost/multiprecision/cpp_dec_float.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -30,7 +29,6 @@
 using namespace GeneTrail;
 namespace bpo = boost::program_options;
 namespace bm = boost::math;
-using namespace boost::multiprecision;
 
 std::string method;
 
@@ -96,8 +94,8 @@ std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std
 		}
 		result->enriched = wilcox.enriched();
 	}else if(method == "two-sample-wilcoxon"){
-		WilcoxonRankSumTest<cpp_dec_float_50> wilcox(1e-4);
-		cpp_dec_float_50 score = HTest::test(wilcox, contained_genes.begin(), contained_genes.end(), not_contained_genes.begin(), not_contained_genes.end());
+		WilcoxonRankSumTest<big_float> wilcox(1e-4);
+		auto score = HTest::test(wilcox, contained_genes.begin(), contained_genes.end(), not_contained_genes.begin(), not_contained_genes.end());
 		result->score = score.convert_to<double>();;
 		if(wilcox.enriched()){
 			result->pvalue = HTest::upperTailedPValue(wilcox, score);

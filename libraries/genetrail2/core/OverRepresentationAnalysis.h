@@ -26,12 +26,11 @@
 #include "ORAResult.h"
 #include "FishersExactTest.h"
 #include "HypergeometricTest.h"
+#include "multiprecision.h"
 
 #include <utility>
 #include <tuple>
 
-#include <boost/multiprecision/cpp_int.hpp>
-#include <boost/multiprecision/cpp_dec_float.hpp>
 #include <boost/math/special_functions/binomial.hpp>
 
 namespace GeneTrail {
@@ -80,8 +79,8 @@ namespace GeneTrail {
 
 			bool useHypergeometricTest_;
 
-			FishersExactTest<uint64_t, boost::multiprecision::cpp_dec_float_50> fisherTest_;
-			HypergeometricTest<uint64_t, boost::multiprecision::cpp_dec_float_50> hyperTest_;
+			FishersExactTest<uint64_t, big_float> fisherTest_;
+			HypergeometricTest<uint64_t, big_float> hyperTest_;
 
 	};
 }

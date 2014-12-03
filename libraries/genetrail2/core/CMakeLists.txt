@@ -9,6 +9,18 @@ if(NOT Boost_FOUND)
 	return()
 endif()
 
+SET(GT2_CORE_DEP_LIBRARIES
+	${Boost_LIBRARIES}
+)
+
+if(GENETRAIL2_HAS_GMP)
+	list(APPEND GT2_CORE_DEP_LIBRARIES ${GMP_LIBRARIES})
+endif()
+
+if(GENETRAIL2_HAS_MPFR)
+	list(APPEND GT2_CORE_DEP_LIBRARIES ${MPFR_LIBRARIES})
+endif()
+
 ####################################################################################################
 # Build a shared library
 ####################################################################################################
@@ -23,9 +35,8 @@ add_library(gtcore SHARED
 GT2_COMPILE_FLAGS(gtcore)
 
 target_include_directories(gtcore PRIVATE "${CMAKE_BINARY_DIR}/libraries/")
-target_link_libraries(gtcore
-	${Boost_LIBRARIES}
-)
+
+target_link_libraries(gtcore ${GT2_CORE_DEP_LIBRARIES})
 
 ####################################################################################################
 # Install the library

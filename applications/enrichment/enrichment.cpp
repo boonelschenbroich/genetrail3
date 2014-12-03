@@ -5,6 +5,7 @@
 #include <genetrail2/core/GeneSet.h>
 #include <genetrail2/core/PermutationTest.h>
 #include <genetrail2/core/Statistic.h>
+#include <genetrail2/core/multiprecision.h>
 
 #include "common.h"
 
@@ -12,8 +13,6 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string/trim.hpp>
-#include <boost/multiprecision/cpp_int.hpp>
-#include <boost/multiprecision/cpp_dec_float.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -27,7 +26,6 @@
 using namespace GeneTrail;
 namespace bpo = boost::program_options;
 namespace bm = boost::math;
-using namespace boost::multiprecision;
 
 std::string method;
 int numberOfPermutations;

@@ -27,7 +27,6 @@
 #include "EnrichmentResult.h"
 
 #include <boost/math/special_functions/binomial.hpp>
-#include <boost/multiprecision/cpp_int.hpp>
 
 #include <map>
 #include <vector>
@@ -37,8 +36,6 @@
 #include <algorithm>
 #include <utility>
 #include <tuple>
-
-using namespace boost::multiprecision;
 
 namespace GeneTrail
 {
@@ -149,7 +146,7 @@ namespace GeneTrail
 
 		/**
 		 *  This method computes a upper-tailed p-value for the given running
-		 *sum statistic via dynamic programming.
+		 *  sum statistic via dynamic programming.
 		 *
 		 *  @param n The number of genes in the test set
 		 *  @param j The number of genes in the category
@@ -164,11 +161,26 @@ namespace GeneTrail
 			    [](big_int_type v, big_int_type RSc) { return v < RSc; });
 		}
 
+		/**
+		 * Internal routine for the pvalue computation.
+		 * It implements the dynamic programming recursion.
+		 *
+		 * M[k,i] = M[k-1,i] + M[k,i-1] if comp(i*(n-l) + k*l) == true
+		 * M[k,i] = 0 otherwise
+		 *
+		 * We exploit the fact that we can reuse the column i-1 in the
+		 * computation of column i. This way we need less storage and can
+		 * perform an in-place update.
+		 *
+		 * @todo A possible improvement would be to compute the complement
+		 *       of this value for small running sums, as small input RScs
+		 *       lead to a high number of additions.
+		 */
 		template <typename Comparator>
-		float_type computePValue_(const size_t& n, const size_t& l,
+		float_type computePValue_(const size_t n, const size_t l,
 		                          const big_int_type& RSc, Comparator comp)
 		{
-			size_t nl = n - l;
+			const size_t nl = n - l;
 
 			std::vector<float_type> M(nl + 1, 0);
 			M[0] = 1;
@@ -199,7 +211,7 @@ namespace GeneTrail
 				}
 				for(size_t k = 1; k <= nl; ++k) {
 					if(comp(inl - k * l, RSc)) {
-						M[k] += M[k - 1];
+						M[k] += M[k - 1]; // This is the bottleneck
 					} else {
 						M[k] = 0;
 					}

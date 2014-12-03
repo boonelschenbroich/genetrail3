@@ -1,7 +1,6 @@
 #include "OverRepresentationAnalysis.h"
 
 using namespace GeneTrail;
-using namespace boost::multiprecision;
 
 OverRepresentationAnalysis::OverRepresentationAnalysis(const Category& reference_set,const Category& test_set)
 :reference_set_(reference_set),test_set_(test_set)
@@ -38,7 +37,7 @@ ORAResult OverRepresentationAnalysis::computePValue(const Category& category) {
 	bool enriched = expected_k < k;
 	result.enriched = enriched;
 
-	cpp_dec_float_50 p;
+	big_float p;
 
     if (useHypergeometricTest_) {
         if (enriched) {

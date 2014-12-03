@@ -6,13 +6,13 @@
 #include <genetrail2/core/PermutationTest.h>
 #include <genetrail2/core/PValue.h>
 #include <genetrail2/core/GeneSet.h>
+#include <genetrail2/core/multiprecision.h>
 
 #include "common.h"
 
 using namespace GeneTrail;
 namespace bpo = boost::program_options;
 namespace bm = boost::math;
-using namespace boost::multiprecision;
 
 std::string json;
 bool increasing = false, absolute = false;
@@ -60,7 +60,7 @@ bool parseArguments(int argc, char* argv[])
 std::shared_ptr<EnrichmentResult>
 computeEnrichment(const Category& c, const std::pair<int, std::string>& genes)
 {
-	WeightedGeneSetEnrichmentAnalysis<cpp_dec_float_50> gsea(names, values);
+	WeightedGeneSetEnrichmentAnalysis<big_float> gsea(names, values);
 
 	auto result = std::make_shared<EnrichmentResult>();
 	result->name = c.name();

@@ -21,11 +21,11 @@
 #define GT2_CORE_ENRICHMENT_RESULT_H
 
 #include "macros.h"
+#include "multiprecision.h"
 
 #include <string>
 
 #include <boost/lexical_cast.hpp>
-#include <boost/multiprecision/cpp_dec_float.hpp>
 
 namespace GeneTrail {
 
@@ -33,19 +33,22 @@ namespace GeneTrail {
      * GeneralEnrichmentResult
      */
     struct GT2_EXPORT EnrichmentResult {
-
-		EnrichmentResult()
-		:hits(0), pvalue(0.0), enriched(false), score(0.0)
+		EnrichmentResult() : hits(0), pvalue(0.0), enriched(false), score(0.0)
 		{}
 
-		EnrichmentResult(std::string name, std::string reference)
-		:name(name), reference(reference)
+		EnrichmentResult(const std::string& name, const std::string& reference)
+		    : name(name),
+		      reference(reference),
+		      hits(0),
+		      pvalue(0.0),
+		      enriched(false),
+		      score(0.0)
 		{}
 
 		std::string name;
 		std::string reference;
 		unsigned int hits;
-		boost::multiprecision::cpp_dec_float_50 pvalue;
+		big_float pvalue;
 		std::string info;
 		bool enriched;
 		double score;

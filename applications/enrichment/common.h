@@ -6,7 +6,6 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/multiprecision/cpp_dec_float.hpp>
 
 #include <genetrail2/core/Exception.h>
 #include <genetrail2/core/EnrichmentResult.h>
@@ -25,7 +24,6 @@
 
 using namespace GeneTrail;
 namespace bpo = boost::program_options;
-using namespace boost::multiprecision;
 
 namespace GeneTrail
 {

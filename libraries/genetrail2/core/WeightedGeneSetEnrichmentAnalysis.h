@@ -26,8 +26,6 @@
 #include "Category.h"
 #include "EnrichmentResult.h"
 
-#include <boost/multiprecision/cpp_int.hpp>
-
 #include <vector>
 #include <iostream>
 #include <cmath>
