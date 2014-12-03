@@ -24,6 +24,8 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" ST
 	SET(GT2_EXPORT                 "__attribute__((visibility (\"default\")))")
 	SET(GT2_LOCAL                  "__attribute__((visibility (\"hidden\")))")
 	SET(GT2_EXTERN_VARIABLE "extern __attribute__((visibility (\"default\")))")
+
+	set(LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--as-needed")
 else()
 	message(STATUS "At the moment, GeneTrail2 supports only Clang and the GNU Compiler Collection.")
 	return()
@@ -33,6 +35,10 @@ endif()
 if    ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	LIST(APPEND CXX_FLAGS "-Wno-deprecated-register")
 endif()
+
+set(CMAKE_MODULE_LINKER_FLAGS ${LINKER_FLAGS})
+set(CMAKE_EXE_LINKER_FLAGS    ${LINKER_FLAGS})
+set(CMAKE_SHARED_LINKER_FLAGS ${LINKER_FLAGS})
 
 function(GT2_COMPILE_FLAGS target)
 	target_compile_options(${target} PUBLIC ${CXX_FLAGS})
