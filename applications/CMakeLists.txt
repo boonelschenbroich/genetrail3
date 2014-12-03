@@ -5,6 +5,7 @@ if(NOT TARGET gtcore)
 endif()
 
 include_directories("${CMAKE_SOURCE_DIR}/libraries/")
+include_directories("${CMAKE_BINARY_DIR}/libraries/")
 
 add_subdirectory(enrichment)
 add_subdirectory(fidepa)

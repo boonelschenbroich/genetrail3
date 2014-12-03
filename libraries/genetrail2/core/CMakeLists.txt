@@ -22,6 +22,7 @@ add_library(gtcore SHARED
 
 GT2_COMPILE_FLAGS(gtcore)
 
+target_include_directories(gtcore PRIVATE "${CMAKE_BINARY_DIR}/libraries/")
 target_link_libraries(gtcore
 	${Boost_LIBRARIES}
 )
