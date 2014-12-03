@@ -41,6 +41,7 @@ endif()
 # Find third party libraries
 ####################################################################################################
 
+# Find Boost
 find_package(Boost 1.55.0 COMPONENTS iostreams regex filesystem system program_options REQUIRED)
 
 if(NOT Boost_FOUND)
@@ -55,10 +56,44 @@ SET(Boost_LIBRARIES
 	${Boost_PROGRAM_OPTIONS_LIBRARY}
 )
 
-find_package(Eigen3 REQUIRED)
-
-include_directories(${EIGEN3_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIRS})
+
+# Find Eigen 3
+find_package(Eigen3 REQUIRED)
+include_directories(${EIGEN3_INCLUDE_DIR})
+
+# Find additional multiprecision libraries
+SET(GENETRAIL2_HAS_GMP FALSE)
+SET(GENETRAIL2_HAS_MPFR FALSE)
+
+OPTION(USE_GMP "Should the GMP library be used if available" ON)
+OPTION(USE_MPFR "Should the MPFR library be used if available" OFF)
+
+if(NOT USE_GMP)
+	if(USE_MPFR)
+		message(FATAL_ERROR "In order to use MPFR you also need to use GMP")
+	endif()
+endif()
+
+if(USE_GMP)
+	find_package(GMP)
+	if(GMP_FOUND)
+		include_directories(${GMP_INCLUDE_DIRS})
+		set(GENETRAIL2_HAS_GMP TRUE)
+
+		# We use GMP as default. It seems to be faster and we do not
+		# need the additional features provided by MPFR.
+		if(USE_MPFR)
+			find_package(MPFR REQUIRED)
+			if(MPFR_FOUND)
+				include_directories(${MPFR_INCLUDE_DIRS})
+				set(GENETRAIL2_HAS_MPFR TRUE)
+			else()
+				message(FATAL_ERROR "Could not find the MPFR library")
+			endif()
+		endif()
+	endif()
+endif()
 
 ####################################################################################################
 # Check if a build type is given
@@ -91,5 +126,5 @@ add_subdirectory(bindings)
 ####################################################################################################
 
 include(cmake/documentation.cmake)
+include(cmake/GT2ConfigHeader.cmake)
 include(cmake/GT2Config.cmake)
-
