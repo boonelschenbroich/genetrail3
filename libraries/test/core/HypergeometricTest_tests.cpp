@@ -19,14 +19,32 @@ const double TOLERANCE = 0.00001;
  * choose(l,k)*choose(m - l, n - k)/choose(m, n)
  */
 
-TEST(HypergeometricTest, bla) {
+/*m,l,n,k
+ */
+
+TEST(HypergeometricTest, real1) {
     HypergeometricTest<unsigned int, big_float> h;
 	EXPECT_NEAR(h.lowerTailedPValue(7442,34,699,1).convert_to<double>(), 0.15753959, TOLERANCE);
 }
 
-TEST(HypergeometricTest, blubb) {
+TEST(HypergeometricTest, real2) {
     HypergeometricTest<unsigned int, big_float> h;
 	EXPECT_NEAR(h.lowerTailedPValue(7442,53,699,2).convert_to<double>(), 0.113443211, TOLERANCE);
+}
+
+TEST(HypergeometricTest, real3) {
+    HypergeometricTest<unsigned int, big_float> h;
+	EXPECT_NEAR(h.lowerTailedPValue(22799,391,1139,2).convert_to<double>(), 0.00000039900, TOLERANCE);
+}
+
+TEST(HypergeometricTest, real4) {
+    HypergeometricTest<unsigned int, big_float> h;
+	EXPECT_NEAR(h.lowerTailedPValue(22799,72,1139,1).convert_to<double>(), 0.11912965, TOLERANCE);
+}
+
+TEST(HypergeometricTest, real5) {
+    HypergeometricTest<unsigned int, big_float> h;
+	EXPECT_NEAR(h.lowerTailedPValue(22799,63,1139,3).convert_to<double>(), 0.613415, TOLERANCE);
 }
 
 TEST(HypergeometricTest, compareToR) {
