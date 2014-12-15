@@ -8,8 +8,8 @@ void addCommonCLIArgs(bpo::options_description& desc, Params& p)
 		("significance,t", bpo::value<double>(&p.significance)->default_value(0.01),"The critical value for rejecting the H0 hypothesis.")
 		("categories,c", bpo::value<std::string>(&p.categories)->required(), "A .gmt file containing the categories to be tested.")
 		("scores,s", bpo::value<std::string>(&p.scores), "A whitespace seperated file containing identifier and scores.")
-		("minimum,n", bpo::value<int>(&p.minimum)->default_value(0),"Minimum number of genes allowed in categories.")
-		("maximum,x", bpo::value<int>(&p.maximum)->default_value(1000),"Maximum number of genes allowed in categories.")
+		("minimum,n", bpo::value<size_t>(&p.minimum)->default_value(0),"Minimum number of genes allowed in categories.")
+		("maximum,x", bpo::value<size_t>(&p.maximum)->default_value(1000),"Maximum number of genes allowed in categories.")
 		("output,o", bpo::value<std::string>(&p.out), "Output prefix for text files.")
 		("adjustment,a", bpo::value<std::string>(&p.adjustment)->default_value("no"),"P-value adjustment method for multiple testing.")
 		("adjust_separately,p", bpo::value(&p.runSeparately)->zero_tokens(),"Indicates if databases are adjusted separatly or combined.");
@@ -85,7 +85,7 @@ std::pair<bool, std::pair<int, std::string>> processCategory(Category& c, GeneSe
 			++hits;
 		}
 	}
-	return std::make_pair(p.minimum <= hits && hits <= p.maximum, std::make_pair(hits, genes));
+	return std::make_pair(p.minimum <= c.size()&& c.size() <= p.maximum, std::make_pair(hits, genes));
 }
 
 void writeFiles(const std::string& output_dir, const AllResults& all_results)

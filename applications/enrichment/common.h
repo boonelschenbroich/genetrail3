@@ -40,8 +40,8 @@ struct Params
 	std::string categories;
 	std::string scores;
 	std::string identifier;
-	int minimum;
-	int maximum;
+	size_t minimum;
+	size_t maximum;
 	std::string out;
 	std::string adjustment;
 	bool runSeparately;
