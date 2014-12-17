@@ -26,7 +26,8 @@ namespace GeneTrail
 
 		double computePValue(size_t permutations)
 		{
-			return ((double)counter) / ((double)permutations);
+			//Here we add a pseudo count to avoid p-values of 0.
+			return ((double)counter + 1) / ((double)permutations);
 		}
 	};
 
