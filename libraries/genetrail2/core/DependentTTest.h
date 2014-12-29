@@ -43,10 +43,11 @@ namespace GeneTrail {
          *
          * Dependent Student's T-Test
          *
-         * @param Iterator
-         * @param Iterator
-		 * @param Iterator
-		 * @param Iterator
+         * @param first_begin Iterator to the begin of the first range of sample values.
+         * @param first_end Iterator to the end of the first range of sample values.
+		 * @param second_begin Iterator to the begin of the second range of sample values.
+		 * @param second_end Iterator to the end of the second range of sample values.
+		 *
          * @return T-score for the differences between the two groups
          */
 		template<typename InputIterator1, typename InputIterator2>
@@ -74,11 +75,25 @@ namespace GeneTrail {
             return score_;
         }
 
-		boost::math::students_t distribution() {
+		/**
+		 * Get the used students_t distribution.
+		 *
+		 * @warning The behavior ofthis function is undefined until test has been called.
+		 * @returns An instance of boost::math::students_t.
+		 */
+		boost::math::students_t distribution() const {
 			boost::math::students_t dist(this->df_);
 			return dist;
 		}
 
+		/**
+		 * Compute a confidence interval of level alpha.
+		 *
+		 * @param alpha The confidence level to be used for computing the
+		 *              interval.
+		 *
+		 * @returns A pair containing the left and right bounds of the confidence interval.
+		 */
 		std::pair<value_type, value_type> confidenceInterval(const value_type& alpha) {
 			boost::math::students_t dist(df_);
 			value_type conf = boost::math::quantile(boost::math::complement(dist, (1 - alpha) / 2.0));
@@ -86,7 +101,6 @@ namespace GeneTrail {
 		}
 
     protected:
-
         value_type tolerance_;
 		value_type df_;
 		value_type stdErr_;
