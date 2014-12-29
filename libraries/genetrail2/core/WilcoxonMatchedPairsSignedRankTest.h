@@ -43,25 +43,43 @@ namespace GeneTrail {
         WilcoxonMatchedPairsSignedRankTest(value_type tol = 1e-4, value_type mu = 0.0) : tolerance_(tol), mu_(mu), t_(tol, mu) {
 		}
 
-        /**
-         * This method implements a variant of the Wilcoxon Signed Rank Test
-         *
-         * @param Iterator
-         * @param Iterator
-		 * @param Iterator
-		 * @param Iterator
-         * @return Z-score for the differences between the two groups
-         */
-        template<typename InputIterator1, typename InputIterator2>
-        value_type test(const InputIterator1& first_begin, const InputIterator1& first_end, const InputIterator2& second_begin, const InputIterator2& second_end) {
-			assert(std::distance(first_begin,first_end) == std::distance(second_begin,second_end));
-			std::vector<value_type> diff(first_begin,first_end);
+		/**
+		 * This method implements a variant of the Wilcoxon Signed Rank Test
+		 *
+		 * @param first_begin Iterator pointing to the begin of the first input
+		 *        range.
+		 * @param first_end Iterator pointing to the end of the first input
+		 *        range.
+		 * @param second_begin Iterator pointing to the begin of the second
+		 *        input range.
+		 * @param second_end Iterator pointing to the end of the second input
+		 *        range.
+		 * @return Z-score for the differences between the two groups.
+		 *
+		 * @throws std::out_of_range if the number of elements in the input
+		 *         ranges do not match.
+		 */
+		template <typename InputIterator1, typename InputIterator2>
+		value_type test(const InputIterator1& first_begin,
+		                const InputIterator1& first_end,
+		                const InputIterator2& second_begin,
+		                const InputIterator2& second_end)
+		{
+			const size_t num_entries1 = std::distance(first_begin, first_end);
+			const size_t num_entries2 = std::distance(second_begin, second_end);
 
-			int i = 0;
-            for (auto it=diff.begin(); it != diff.end(); ++it) {
-                *it -= *(second_begin + i);
-				++i;
-            }
+			if(num_entries1 != num_entries2) {
+				throw std::out_of_range(
+				    "The number of entries in the input ranges do not match. "
+				    "Range 1: " +
+				    boost::lexical_cast<std::string>(num_entries1) +
+				    ", Range 2: " +
+				    boost::lexical_cast<std::string>(num_entries2));
+			}
+
+			std::vector<value_type> diff(num_entries1);
+			std::transform(first_begin, first_end, second_begin, diff.begin(),
+			               [](value_type a, value_type b) { return a - b; });
 
 			score_ = t_.test(diff.begin(),diff.end());
 
