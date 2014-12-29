@@ -88,7 +88,7 @@ namespace GeneTrail
 
 	const std::string& AbstractMatrix::colName(index_type j) const
 	{
-		assert(j >= 0 && j < index_to_colname_.size());
+		assert(j < index_to_colname_.size());
 		return index_to_colname_[j];
 	}
 
@@ -122,7 +122,7 @@ namespace GeneTrail
 
 	const std::string& AbstractMatrix::rowName(index_type i) const
 	{
-		assert(i >= 0 && i < index_to_rowname_.size());
+		assert(i < index_to_rowname_.size());
 		return index_to_rowname_[i];
 	}
 
@@ -160,7 +160,7 @@ namespace GeneTrail
 	                           std::map<std::string, index_type>& name_to_index,
 	                           std::vector<std::string>& index_to_name)
 	{
-		assert(j >= 0 && j < index_to_name.size());
+		assert(j < index_to_name.size());
 
 		auto it = name_to_index.find(index_to_name[j]);
 		if(it != name_to_index.end()) {
