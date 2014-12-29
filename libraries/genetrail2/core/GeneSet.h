@@ -83,7 +83,7 @@ namespace GeneTrail
 		/**
 		 * Insert function
 		 *
-		 * @param The element to insert
+		 * @param element The element to insert
 		 */
 		void insert(const std::pair<std::string, double>& element)
 		{
@@ -118,7 +118,7 @@ namespace GeneTrail
 		/**
 		 * Getter for the scores object.
 		 *
-		 * @param Boolean flag indication how to sort the scores (true = decreasing).
+		 * @param decreasing Boolean flag indication how to sort the scores (true = decreasing).
 		 * @return Sorted vector of identifier/score pairs.
 		 */
 		Container getSortedScores(bool decreasing) const;
@@ -145,10 +145,12 @@ namespace GeneTrail
 		Container getAbsoluteSortedScores() const;
 
 		/**
-		 * Computes and returns the intersecting identifier.
+		 * Computes and returns the intersecting identifier between a list
+		 * of gene scores and a list of identifiers.
 		 *
-		 * @param scores
-		 * @param set
+		 * @param scores A list of identifiers with associated scores.
+		 * @param myset A list of identifiers.
+		 *
 		 * @return Vector of identifier/score pairs.
 	     */
 		Container intersect(const std::vector<Element>& scores,
@@ -178,25 +180,81 @@ namespace GeneTrail
 		getFirstK(const std::vector<Element>& scores, int k) const;
 
 		/**
-		 * Returns identifier of the given vector.
+		 * Returns the identifier of the given vector of Elements.
 		 *
-		 * @return Vector of identifier
+		 * @return A vector of identifier associated with the elements.
+		 * @warning This function needs to copy the identifers to a new
+		 *          vector. Thus this function is very expensive to call!
 		 */
 		std::vector<std::string>
 		getIdentifier(const std::vector<Element>& scores) const;
 
+		/**
+		 * Returns the identifier of GeneSet's elements.
+		 *
+		 * @return A vector of identifiers contained in the GeneSet.
+		 * @warning This function needs to copy the identifers to a new
+		 *          vector. Thus this function is very expensive to call!
+		 */
 		std::vector<std::string> getIdentifier() const;
 
+		/**
+		 * Returns a vector of identifiers of the GeneSet's elements.
+		 * The identifiers are sorted according to their scores.
+		 *
+		 * @param decreasing Indicates wheter the identifiers should be sorted
+		 *                   increasingly (false) or decreasingly (true).
+		 * @return A vector of identifiers contained in the GeneSet.
+		 * @warning This function needs to copy the identifers to a new
+		 *          vector. Thus this function is very expensive to call!
+		 */
 		std::vector<std::string> getSortedIdentifier(bool decreasing) const;
 
+		/**
+		 * Returns a vector of identifiers of the GeneSet's elements.
+		 * The identifiers are sorted decreasingly according to their scores.
+		 *
+		 * @return A vector of identifiers contained in the GeneSet.
+		 * @warning This function needs to copy the identifers to a new
+		 *          vector. Thus this function is very expensive to call!
+		 */
 		std::vector<std::string> getDecreasinglySortedIdentifier() const;
 
+		/**
+		 * Returns a vector of identifiers of the GeneSet's elements.
+		 * The identifiers are sorted increasingly according to their scores.
+		 *
+		 * @return A vector of identifiers contained in the GeneSet.
+		 * @warning This function needs to copy the identifers to a new
+		 *          vector. Thus this function is very expensive to call!
+		 */
 		std::vector<std::string> getIncreasinglySortedIdentifier() const;
 
+		/**
+		 * Returns a vector of identifiers of the GeneSet's elements.
+		 * The identifiers are sorted decreasingly according to their
+		 * scores' absolute value.
+		 *
+		 * @return A vector of identifiers contained in the GeneSet.
+		 * @warning This function needs to copy the identifers to a new
+		 *          vector. Thus this function is very expensive to call!
+		 */
 		std::vector<std::string> getAbsoluteSortedIdentifier() const;
 
+		/**
+		 * Access the i-th element.
+		 *
+		 * @returns A const reference to the i-th element of the
+		 *          GeneSet.
+		 */
 		const Element& operator[](size_t i) const { return container_[i]; }
 
+		/**
+		 * Access the i-th element. Non-const version.
+		 *
+		 * @returns A const reference to the i-th element of the
+		 *          GeneSet.
+		 */
 		Element& operator[](size_t i) { return container_[i]; }
 
 		/**
@@ -237,8 +295,9 @@ namespace GeneTrail
 	/**
 	 * This function applies a given function to all values of the GeneSet.
 	 *
-	 * @param gene_set
-	 * @param f
+	 * @param gene_set The GeneSet to which the function should be applied.
+	 * @param f A unary function object transforming a real value into another
+	 *          real value.
 	 */
 	template <typename Func>
 	void transform(GeneSet& gene_set, Func f)
@@ -252,50 +311,51 @@ namespace GeneTrail
 	/**
 	 * This function applies the std::abs to all values of the GeneSet.
 	 *
-	 * @param gene_set
+	 * @param gene_set The GeneSet to which the function should be applied.
 	 */
 	void GT2_EXPORT abs(GeneSet& gene_set);
 
 	/**
 	 * This function applies the std::sqrt to all values of the GeneSet.
 	 *
-	 * @param gene_set
+	 * @param gene_set The GeneSet to which the function should be applied.
 	 */
 	void GT2_EXPORT sqrt(GeneSet& gene_set);
 
 	/**
 	 * This function applies the std::log to all values of the GeneSet.
 	 *
-	 * @param gene_set
+	 * @param gene_set The GeneSet to which the function should be applied.
 	 */
 	void GT2_EXPORT log(GeneSet& gene_set);
 
 	/**
 	 * This function applies the std::log2 to all values of the GeneSet.
 	 *
-	 * @param gene_set
+	 * @param gene_set The GeneSet to which the function should be applied.
 	 */
 	void GT2_EXPORT log2(GeneSet& gene_set);
 
 	/**
 	 * This function applies the std::log10 to all values of the GeneSet.
 	 *
-	 * @param gene_set
+	 * @param gene_set The GeneSet to which the function should be applied.
 	 */
 	void GT2_EXPORT log10(GeneSet& gene_set);
 
 	/**
 	 * This function applies the std::pow to all values of the GeneSet.
 	 *
-	 * @param gene_set
+	 * @param gene_set The GeneSet to which the function should be applied.
+	 * @param n The exponent that should be used in the power function.
 	 */
 	void GT2_EXPORT pow(GeneSet& gene_set, int n);
 
 	/**
 	 * This function applies the std::pow (power = 2) to all values of the
-	 *GeneSet.
+	 * GeneSet.
 	 *
-	 * @param gene_set
+	 * @param gene_set The GeneSet to which the function should be applied.
 	 */
 	void GT2_EXPORT pow2(GeneSet& gene_set);
 }
