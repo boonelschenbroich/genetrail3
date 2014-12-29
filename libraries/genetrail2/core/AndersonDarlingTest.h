@@ -37,20 +37,26 @@ namespace GeneTrail
 	class GT2_EXPORT AndersonDarlingTest
 	{
 		public:
-		AndersonDarlingTest(Distribution d, value_type tol = 1e-4)
-		    : tolerance_(tol), dist_(d)
+		/**
+		 * Default constructor.
+		 *
+		 * @param d
+		 * @todo Clarify what the distribution is for...
+		 */
+		AndersonDarlingTest(Distribution d)
+		    : dist_(d)
 		{
 		}
 
 		/**
 		 * This method implements a variant of the Anderson-Darling Test.
 		 * This variant assumes that mean and variance of the data are both
-		 *unknown.
+		 * unknown.
 		 * The test checks if the given values follow a standard normal
-		 *dist_ribution.
+		 * distribution.
 		 *
-		 * @param Iterator
-		 * @param Iterator
+		 * @param begin The begining of the range to which the test should be applied.
+		 * @param end The end of the range to which the test should be applied.
 		 * @return A2* - score
 		 */
 		template <typename InputIterator>
@@ -77,11 +83,11 @@ namespace GeneTrail
 		}
 
 		/**
-		 *  The p-value is computed according to Table 4.9 in Stephens (1986).
-		 *  See R package "nortest"
+		 * The p-value is computed according to Table 4.9 in Stephens (1986).
+		 * See R package "nortest"
 		 *
-		 * @return p-value
-		 * */
+		 * @return The computed p-value.
+		 */
 		value_type pValue()
 		{
 			value_type p;
@@ -103,7 +109,6 @@ namespace GeneTrail
 		}
 
 		protected:
-		value_type tolerance_;
 		value_type score_;
 		Distribution dist_;
 	};
