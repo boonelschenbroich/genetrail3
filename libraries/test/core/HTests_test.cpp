@@ -57,6 +57,15 @@ TEST(HTEST, DependentTest)
     EXPECT_NEAR(HTest::confidenceInterval(f,0.95).second, -5.871713, TOLERANCE);
 }
 
+TEST(HTEST, DependentTTest_throws)
+{
+	std::vector<double> a { 1.0, 2.0 };
+	std::vector<double> b { 1.0, 2.0, 3.0};
+
+	DependentTTest<double> f;
+	EXPECT_THROW(HTest::test(f, a.begin(), a.end(), b.begin(), b.end()), std::out_of_range);
+}
+
 TEST(HTEST, IndependentShrinkageTTest)
 {
 	IndependentShrinkageTTest<double> t;

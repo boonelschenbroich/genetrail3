@@ -39,39 +39,52 @@ namespace GeneTrail {
         DependentTTest(value_type tol = 1e-5, value_type mu = 0.0) : tolerance_(tol), mu_(mu) {
         }
 
-        /**
-         *
-         * Dependent Student's T-Test
-         *
-         * @param first_begin Iterator to the begin of the first range of sample values.
-         * @param first_end Iterator to the end of the first range of sample values.
-		 * @param second_begin Iterator to the begin of the second range of sample values.
-		 * @param second_end Iterator to the end of the second range of sample values.
+		/**
+		 * Dependent Student's T-Test
 		 *
-         * @return T-score for the differences between the two groups
-         */
+		 * @param first_begin Iterator to the begin of the first range of sample
+		 *        values.
+		 * @param first_end Iterator to the end of the first range of sample
+		 *        values.
+		 * @param second_begin Iterator to the begin of the second range of
+		 *        sample values.
+		 * @param second_end Iterator to the end of the second range of sample
+		 *        values.
+		 *
+		 * @return T-score for the differences between the two groups
+		 *
+		 * @throws std::out_of_range If the number of elements in the input
+		 *         ranges do not match
+		 */
 		template<typename InputIterator1, typename InputIterator2>
         value_type test(const InputIterator1& first_begin, const InputIterator1& first_end, const InputIterator2& second_begin, const InputIterator2& second_end) {
+			const size_t num_entries1 = std::distance(first_begin, first_end);
+			const size_t num_entries2 = std::distance(second_begin, second_end);
 
-			std::list<value_type> diff(first_begin,first_end);
-            auto it2 = second_begin;
+			if(num_entries1 != num_entries2) {
+				throw std::out_of_range(
+				    "The number of entries in the input ranges do not match. "
+				    "Range 1: " +
+				    boost::lexical_cast<std::string>(num_entries1) +
+				    ", Range 2: " +
+				    boost::lexical_cast<std::string>(num_entries2));
+			}
 
-            for (auto it=diff.begin(); it != diff.end(); ++it) {
-                *it -= *it2;
-                ++it2;
-            }
+
+			std::vector<value_type> diff(num_entries1);
+			std::transform(first_begin, first_end, second_begin, diff.begin(),
+			               [](value_type a, value_type b) { return a - b; });
 
             auto var = statistic::var<value_type>(diff.begin(), diff.end());
-            size_t size = diff.size();
-			stdErr_ = std::sqrt(var / size);
+			stdErr_ = std::sqrt(var / num_entries1);
 
-            if (std::fabs(var / size) < tolerance_) {
+            if (std::fabs(var / num_entries1) < tolerance_) {
                 score_ = mu_;
             } else {
 				score_ = (statistic::mean<value_type>(diff.begin(),diff.end()) - mu_) / stdErr_;
             }
 
-			df_ = size - 1;
+			df_ = num_entries1 - 1;
             return score_;
         }
 
