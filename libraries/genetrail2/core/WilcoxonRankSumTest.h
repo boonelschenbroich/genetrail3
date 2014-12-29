@@ -36,11 +36,11 @@ namespace GeneTrail {
         WilcoxonRankSumTest(value_type tol = 1e-4) : tolerance_(tol) {
         }
 
-		value_type computeZScore(value_type rank_sum1, value_type size1, value_type rank_sum2, value_type size2){
+		value_type computeZScore(value_type rank_sum, value_type size1, value_type size2){
 			value_type mu = (size1 * (size1 + size2 + 1) / ((value_type)2.0));
 			value_type sd = sqrt((size1 * size2 * (size1 + size2 + 1)) / ((value_type)12.0));
-			enriched_ = rank_sum1 > mu;
-			return (rank_sum1 - mu) / sd;
+			enriched_ = rank_sum > mu;
+			return (rank_sum - mu) / sd;
 		}
 
         /**
@@ -110,7 +110,7 @@ namespace GeneTrail {
 			//std::cout << "R1: " << rank_sum1 << " n1: " << size1 << " R2: " << rank_sum2 << " n2: " << size2 << std::endl;
 			//std::cout << "mu1: " << size1 * (size1 + size2 + 1) / 2.0 << std::endl;
 			//std::cout << "mu2: " << size2 * (size1 + size2 + 1) / 2.0 << std::endl;
-			score_ = computeZScore(rank_sum1, size1, rank_sum2, size2);
+			score_ = computeZScore(rank_sum1, size1, size2);
 			//std::cout << "ZScore: " << score_ << std::endl;
             return score_;
         }
