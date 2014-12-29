@@ -51,14 +51,18 @@ namespace GeneTrail {
          * This method checks if there is a vertex with given identifier contained in the graph.
          * If this vertex is not contained a new vertex is added.
          *
-         * @param Identifier string to specify the searched vertex
-         * @param Map to find a vertex based on a given identifier
-         * @param Boost graph structure
+         * @param identifier String to specify the searched vertex.
+         * @param vertex_map Map to find a vertex based on a given identifier
+         * @param graph Boost graph structure
          *
          * @return Pointer to the searched vertex
          */
-        template <typename Graph> vertex_descriptor checkForVertexInGraph(std::string identifier, std::map<std::string, vertex_descriptor>& vertex_map, Graph& graph) {
-            typename boost::property_map<Graph, vertex_identifier_t>::type vertex_ids = boost::get(vertex_identifier, graph);
+		template <typename Graph>
+		vertex_descriptor checkForVertexInGraph(
+		    const std::string& identifier,
+		    std::map<std::string, vertex_descriptor>& vertex_map, Graph& graph)
+		{
+			typename boost::property_map<Graph, vertex_identifier_t>::type vertex_ids = boost::get(vertex_identifier, graph);
             vertex_descriptor vertex_desc;
 
             if (vertex_map.find(identifier) != vertex_map.end()) {
@@ -74,10 +78,10 @@ namespace GeneTrail {
 
         /**
          * This method constructs a graph from a cytoscape .sif file.
-         * FORMAT: ID <tab> REGULATION_TYPE <tab> ID <newline>
+         * FORMAT: ID &lt;tab&gt; REGULATION_TYPE &lt;tab&gt; ID &lt;newline&gt;
          *
-         * @param [.sif] file specifying a network structure
-         * @param Empty Boost graph structure
+         * @param filename [.sif] file specifying a network structure
+         * @param graph Empty Boost graph structure
          */
         template <typename Graph> void readCytoscapeFile(const std::string& filename, Graph& graph) {
             std::ifstream input_sif;
@@ -128,10 +132,10 @@ namespace GeneTrail {
 
         /**
          * This method saves a given graph as a cytoscape .sif file.
-         * FORMAT: ID <tab> REGULATION_TYPE <tab> ID <newline>
+         * FORMAT: ID &lt;tab&gt; REGULATION_TYPE &lt;tab&gt; ID &lt;newline&gt;
          *
-         * @param Name of the resulting .sif file (without ending)
-         * @param Boost graph structure
+         * @param filename Name of the resulting .sif file (without ending)
+         * @param graph Boost graph structure
          */
         template <typename Graph> void writeCytoscapeFile(const std::string& filename, Graph& graph) {
             std::fstream output_sif; //cytoscape sif format

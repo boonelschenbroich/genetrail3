@@ -2,7 +2,7 @@
 
 using namespace GeneTrail;
 
-void BoostGraphProcessor::adeptGraph(GraphType& graph, std::set<std::string> gene_set) {
+void BoostGraphProcessor::adeptGraph(GraphType& graph, const std::set<std::string>& gene_set) {
 
     std::set<std::string>::iterator gene_iter;
 
