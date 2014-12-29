@@ -58,14 +58,11 @@ namespace GeneTrail {
 		 */
     	template <typename InputIterator>
       	Gene<value_type> computeVariances(InputIterator begin, InputIterator end) {
-			Gene<value_type> g;
-
 			value_type mean = statistic::mean<value_type>(begin, end);
-        	g.mean = mean;
 			size_t size = std::distance(begin, end);
-			g.size = size;
 
 			std::vector<value_type> wik;
+			wik.reserve(size);
         	for (auto iter = begin; iter != end; ++iter) {
           		wik.emplace_back(std::pow(*iter - mean, 2));
         	}
@@ -73,17 +70,15 @@ namespace GeneTrail {
 			auto sum_wik = std::accumulate(wik.begin(), wik.end(),  0.0);
 			auto wk = sum_wik / ((value_type)size);
 			value_type vk = sum_wik / ((value_type)(size - 1));
-			g.var = vk;
 
 			value_type Var = (value_type) 0;
 			for (auto iter = wik.begin(); iter != wik.end(); ++iter) {
 				Var += std::pow(*iter - wk, 2);
 			}
 			Var *= ((value_type)size) / std::pow((value_type)(size -1),3);
-			g.Var = Var;
 
-			return g;
-      	}
+			return Gene<value_type>{mean, vk, Var, 0.0, size};
+		}
 
 		/**
 		 * Computes variances for all genes.
