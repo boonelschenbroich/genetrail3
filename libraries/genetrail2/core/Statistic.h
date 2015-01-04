@@ -189,6 +189,7 @@ namespace GeneTrail
 				}
 			}
 			value_type n = std::distance(begin, end);
+
 			// In the original paper, they return absolute values.
 			// But as we want to distinguish between positive and negative,
 			// we return signed values.
@@ -197,7 +198,6 @@ namespace GeneTrail
 			} else {
 				return positive_sum / n;
 			}
-			// return std::max(negative_sum / n, positive_sum / n);
 		}
 
 		/**
@@ -244,14 +244,14 @@ namespace GeneTrail
 			if(n == 1) {
 				return ((value_type)0);
 			} else {
-				value_type s = std::accumulate(begin, end, ((value_type)0));
-				value_type mean = s / n;
-				value_type v = (value_type)0;
-				value_type ep = (value_type)0;
+				const value_type s = std::accumulate(begin, end, value_type());
+				const value_type mean = s / n;
+				value_type v = value_type();
+				value_type ep = value_type();
 				for(auto it = begin; it != end; ++it) {
-					s = *it - mean;
-					ep += s;
-					v += s * s;
+					value_type diff = *it - mean;
+					ep += diff;
+					v += diff * diff;
 				}
 				return (v - ep * ep / n) / (n - 1);
 			}
