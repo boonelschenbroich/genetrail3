@@ -42,22 +42,34 @@ namespace GeneTrail {
 	};
 
 	/**
-     * Shrinkage T-Test
-     */
-    template <typename value_type>
+	 * Shrinkage T-Test
+	 *
+	 * Implements the regularized t-test as Opgen-Rhein and Strimmer (2007)
+	 * "Accurate ranking of differentially expressed genes by a
+	 * distribution-free shrinkage approach"
+	 *
+	 * Given samples from a multivariate distribution, the variance used in the
+	 * t-test is shrunk towards the median variance accross all variables.
+	 *
+	 * The shrinkage factor is estimated from the data.
+	 */
+	template <typename value_type>
 	class GT2_EXPORT ShrinkageTTest {
 
 		public:
-
 		/**
 		 * Computes the different variances for a single gene.
+		 *
+		 * @todo Use a compensated algorithm for computing the variance.
 		 *
 		 * @param begin InputIterator
 		 * @param end InputIterator
 		 * @return Gene struct holding all needed fields
 		 */
-    	template <typename InputIterator>
-      	Gene<value_type> computeVariances(InputIterator begin, InputIterator end) {
+		template <typename InputIterator>
+		Gene<value_type> computeVariances(InputIterator begin,
+		                                  InputIterator end)
+		{
 			value_type mean = statistic::mean<value_type>(begin, end);
 			size_t size = std::distance(begin, end);
 
@@ -110,7 +122,7 @@ namespace GeneTrail {
 			value_type sum = (value_type) 0;
 			for(Gene<value_type> g : genes){
 				sum_Var += g.Var;
-				sum += std::pow( g.var - var_median ,2);
+				sum += std::pow(g.var - var_median, 2);
 			}
 			return std::min((value_type)1, sum_Var / sum);
 		}
