@@ -1,1 +1,32 @@
 GeneTrail2
+==========
+
+This is the GeneTrail2 library, a collection of algorithms and statistics
+for processing gene expression data.
+
+Installation
+------------
+
+For compiling GeneTrail2 you need the following software:
+
+- GCC >= 4.8 or clang >= 3.4
+- Boost >= 1.55
+- Eigen >= 3.2.3
+- GMP >= 5.0.0 (optional)
+- Google Test Framework >= 1.7.0 (optional)
+- cmake >= 3.0.0
+
+Create a directory named "build" in the source directory.
+Inside the build directory type:
+
+ cmake -DEIGEN3_INCLUDE_DIR=/path/to/eigen3/ -DGTEST_SRC_DIR=/path/to/gtest/ -DCMAKE_BUILD_TYPE=Release ..
+
+If all goes well you can now compile a version of GeneTrail2
+by typing:
+
+	make
+
+For installing GeneTrail2 specifiy the installation path using -DCMAKE_INSTALL_PATH=
+and type:
+
+	make install
