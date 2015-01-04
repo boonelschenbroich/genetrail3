@@ -2,13 +2,9 @@
 
 using namespace GeneTrail;
 
-GEO::GEO()
-{
-}
+GEO::GEO() {}
 
-GEO::~GEO()
-{
-}
+GEO::~GEO() {}
 
 std::vector<double>
 GEO::mergeDuplicatedVectors(std::vector<std::vector<double>> matrix,
@@ -57,16 +53,13 @@ std::map<std::string, std::vector<double>> GEO::mapAndRemoveDuplicates(
 
 double GEO::apply(std::string method, std::vector<double> values)
 {
-	if( method == "mean" ){
+	if(method == "mean") {
 		return statistic::mean<double>(values.begin(), values.end());
-	}
-	else if( method == "median" ){
+	} else if(method == "median") {
 		return statistic::median<double>(values.begin(), values.end());
-	}
-	else if( method == "max" ){
+	} else if(method == "max") {
 		return statistic::max<double>(values.begin(), values.end());
-	}
-	else if( method == "min" ){
+	} else if(method == "min") {
 		return statistic::min<double>(values.begin(), values.end());
 	}
 	return 0.0;
@@ -76,9 +69,8 @@ void GEO::writeGEOMap(const std::string& filename, const GEOMap& map)
 {
 	std::ofstream out(filename.c_str());
 	bool first = true;
-	for(auto id : map.sampleNames)
-	{
-		if(first){
+	for(auto id : map.sampleNames) {
+		if(first) {
 			out << id;
 			first = false;
 			continue;
