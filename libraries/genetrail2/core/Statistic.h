@@ -165,8 +165,12 @@ namespace GeneTrail
 		template <typename value_type, typename InputIterator>
 		double mean(InputIterator begin, InputIterator end)
 		{
-			return (std::accumulate(begin, end, 0.0) /
-			        ((value_type)std::distance(begin, end)));
+			auto dist = std::distance(begin, end);
+			if(dist == 0){
+				return value_type();
+			}
+
+			return (std::accumulate(begin, end, 0.0) / ((value_type)dist));
 		}
 
 		/**
@@ -179,6 +183,12 @@ namespace GeneTrail
 		template <typename value_type, typename InputIterator>
 		value_type max_mean(InputIterator begin, InputIterator end)
 		{
+			value_type n = std::distance(begin, end);
+
+			if(n == 0){
+				return value_type();
+			}
+
 			value_type positive_sum = 0;
 			value_type negative_sum = 0;
 			for(auto iter = begin; iter != end; ++iter) {
@@ -188,7 +198,6 @@ namespace GeneTrail
 					positive_sum += *iter;
 				}
 			}
-			value_type n = std::distance(begin, end);
 
 			// In the original paper, they return absolute values.
 			// But as we want to distinguish between positive and negative,
