@@ -26,7 +26,14 @@ namespace GeneTrail
 
 		double computePValue(size_t permutations)
 		{
-			//Here we add a pseudo count to avoid p-values of 0.
+			// Here we add a pseudo count to avoid p-values of 0.
+			// Reference: Fewer permutations, more accurate P-values.
+			// http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2687965/
+
+			if(permutations == 0){
+				return 1;
+			}
+
 			return ((double)counter + 1) / ((double)permutations);
 		}
 	};
