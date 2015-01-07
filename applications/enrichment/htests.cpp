@@ -83,27 +83,17 @@ std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std
 		}
 	}
 
-	if(method == "one-sample-wilcoxon"){
-		auto median = statistic::median<double, std::vector<double>::iterator>(all_genes.begin(), all_genes.end());
-		OneSampleWilcoxonSignedRankTest<double> wilcox(1e-4, median);
-		result->score = HTest::test(wilcox, contained_genes.begin(), contained_genes.end());
-		if(wilcox.enriched()){
-			result->pvalue = HTest::upperTailedPValue(wilcox, result->score);
-		}else{
-			result->pvalue = HTest::lowerTailedPValue(wilcox, result->score);
-		}
-		result->enriched = wilcox.enriched();
-	}else if(method == "two-sample-wilcoxon"){
-		WilcoxonRankSumTest<big_float> wilcox(1e-4);
-		auto score = HTest::test(wilcox, contained_genes.begin(), contained_genes.end(), not_contained_genes.begin(), not_contained_genes.end());
-		result->score = score.convert_to<double>();;
-		if(wilcox.enriched()){
-			result->pvalue = HTest::upperTailedPValue(wilcox, score);
-		}else{
-			result->pvalue = HTest::lowerTailedPValue(wilcox, score);
-		}
-		result->enriched = wilcox.enriched();
-	}else if(method == "one-sample-t-test"){
+	result->hits = genes.first;
+	result->info = genes.second;
+	result->score = 0;
+	result->pvalue = 1;
+
+	if(contained_genes.size() <= 1) {
+		std::cerr << "WARNING: Could not compute a p-value for category " + c.name() + ". The number of found genes is too small." << std::endl;
+		return result;
+	}
+
+	if(method == "one-sample-t-test") {
 		auto mean = statistic::mean<double, std::vector<double>::iterator>(all_genes.begin(), all_genes.end());
 		OneSampleTTest<double> ttest(1e-4, mean);
 		result->score = HTest::test(ttest, contained_genes.begin(), contained_genes.end());
@@ -113,6 +103,25 @@ std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std
 			result->pvalue = HTest::upperTailedPValue(ttest, result->score);
 		}
 		result->enriched = result->score > 0;
+
+		return result;
+	}
+
+	if(not_contained_genes.size() <= 1){
+		std::cerr << "WARNING: Could not compute a p-value for category " + c.name() + ". The number of found genes is too small." << std::endl;
+		return result;
+	}
+
+	if(method == "two-sample-wilcoxon"){
+		WilcoxonRankSumTest<big_float> wilcox(1e-4);
+		auto score = HTest::test(wilcox, contained_genes.begin(), contained_genes.end(), not_contained_genes.begin(), not_contained_genes.end());
+		result->score = score.convert_to<double>();;
+		if(wilcox.enriched()){
+			result->pvalue = HTest::upperTailedPValue(wilcox, score);
+		}else{
+			result->pvalue = HTest::lowerTailedPValue(wilcox, score);
+		}
+		result->enriched = wilcox.enriched();
 	}else if(method == "two-sample-t-test"){
 		IndependentTTest<double> ttest(1e-4);
 		result->score = HTest::test(ttest, contained_genes.begin(), contained_genes.end(), not_contained_genes.begin(), not_contained_genes.end());
@@ -124,8 +133,6 @@ std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std
 		result->enriched = result->score > 0;
 	}
 
-	result->hits = genes.first;
-	result->info = genes.second;
 	return result;
 }
 
