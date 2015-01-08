@@ -99,7 +99,7 @@ void writeFiles(const std::string& output_dir, const AllResults& all_results)
 
 	for(const auto& database : all_results)
 	{
-		std::ofstream output(output_dir + "." + database.first + ".txt");
+		std::ofstream output(output_dir + "/" + database.first + ".txt");
 		if(!output)
 		{
 			throw GeneTrail::IOError("No input file specified.");
