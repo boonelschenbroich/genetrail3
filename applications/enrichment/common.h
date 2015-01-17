@@ -135,7 +135,7 @@ std::vector<std::string> getSortedIdentifier(GeneSet& test_set, const Params& p,
  * @param genes
  * @return Shared pointer to an Enrichment result object.
  */
-std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std::pair<int, std::string>& genes);
+std::unique_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std::pair<int, std::string>& genes);
 
 /**
  * This function updates all pvalues in a Results object.

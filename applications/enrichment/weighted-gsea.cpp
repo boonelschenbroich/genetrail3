@@ -7,6 +7,7 @@
 #include <genetrail2/core/PValue.h>
 #include <genetrail2/core/GeneSet.h>
 #include <genetrail2/core/multiprecision.h>
+#include <genetrail2/core/compat.h>
 
 #include "common.h"
 
@@ -57,12 +58,12 @@ bool parseArguments(int argc, char* argv[])
 	return true;
 }
 
-std::shared_ptr<EnrichmentResult>
+std::unique_ptr<EnrichmentResult>
 computeEnrichment(const Category& c, const std::pair<int, std::string>& genes)
 {
 	WeightedGeneSetEnrichmentAnalysis<big_float> gsea(names, values);
 
-	auto result = std::make_shared<EnrichmentResult>();
+	auto result = std::make_unique<EnrichmentResult>();
 	result->name = c.name();
 	result->reference = c.reference();
 

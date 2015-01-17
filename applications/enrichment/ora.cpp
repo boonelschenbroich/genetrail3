@@ -6,6 +6,7 @@
 #include <genetrail2/core/GeneSet.h>
 #include <genetrail2/core/ORAResult.h>
 #include <genetrail2/core/multiprecision.h>
+#include <genetrail2/core/compat.h>
 
 #include "common.h"
 
@@ -62,11 +63,9 @@ bool parseArguments(int argc, char* argv[])
 	return true;
 }
 
-std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std::pair<int, std::string>& genes)
+std::unique_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std::pair<int, std::string>& genes)
 {
-	auto result = std::make_shared<ORAResult>();
-	*result = ora.computePValue(c);
-	return result;
+	return std::make_unique<ORAResult>(ora.computePValue(c));
 }
 
 void computePValues(AllResults& results)

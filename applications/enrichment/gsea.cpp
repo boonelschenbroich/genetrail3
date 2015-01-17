@@ -5,6 +5,7 @@
 #include <genetrail2/core/PValue.h>
 #include <genetrail2/core/GeneSet.h>
 #include <genetrail2/core/multiprecision.h>
+#include <genetrail2/core/compat.h>
 
 #include "common.h"
 
@@ -75,9 +76,9 @@ int intersectionSize(const Category& category, const std::vector<std::string>& t
 	return n;
 }
 
-std::shared_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std::pair<int,std::string>& genes)
+std::unique_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std::pair<int,std::string>& genes)
 {
-	auto result = std::make_shared<EnrichmentResult>();
+	auto result = std::make_unique<EnrichmentResult>();
 	result->name = c.name();
 	result->reference = c.reference();
 
