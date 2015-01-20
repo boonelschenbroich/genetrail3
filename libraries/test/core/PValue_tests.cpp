@@ -11,6 +11,9 @@ const double TOLERANCE = 0.00001;
 std::initializer_list<std::pair<std::string,double> > il = { std::make_pair ("A",0.05),  std::make_pair ("B",0.01),  std::make_pair ("C",0.07),  std::make_pair ("D",0.03),  std::make_pair ("E",0.1) };
 std::vector<std::pair<std::string,double> > pvalues(il);
 
+std::initializer_list<std::pair<std::string,double> > il2 = { std::make_pair ("A",0.01),  std::make_pair ("B",0.01),  std::make_pair ("C",0.01),  std::make_pair ("D",0.05),  std::make_pair ("E",0.05) };
+std::vector<std::pair<std::string,double> > pvalues2(il2);
+
 /*
  * p.adjust(c(0.05,0.01,0.07,0.03,0.1),method="bonferroni")
  */
@@ -33,6 +36,18 @@ TEST(PValue, FDR){
 	EXPECT_NEAR(adj[2].second, 0.08333333, TOLERANCE);
 	EXPECT_NEAR(adj[3].second, 0.08750000, TOLERANCE);
 	EXPECT_NEAR(adj[4].second, 0.10000000, TOLERANCE);
+}
+
+/*
+ * p.adjust(c(0.01,0.01,0.01,0.05,0.05),method="fdrBH")
+ */
+TEST(PValue, FDR2){
+	std::vector<std::pair<std::string,double> > adj(pvalue<double>::benjamini_hochberg(pvalues2));
+	EXPECT_NEAR(adj[0].second, 0.01666667, TOLERANCE);
+	EXPECT_NEAR(adj[1].second, 0.01666667, TOLERANCE);
+	EXPECT_NEAR(adj[2].second, 0.01666667, TOLERANCE);
+	EXPECT_NEAR(adj[3].second, 0.05000000, TOLERANCE);
+	EXPECT_NEAR(adj[4].second, 0.05000000, TOLERANCE);
 }
 
 /*
@@ -69,6 +84,18 @@ TEST(PValue, BenjaminiYekutieli){
 	EXPECT_NEAR(adj[2].second, 0.1902778, TOLERANCE);
 	EXPECT_NEAR(adj[3].second, 0.1997917, TOLERANCE);
 	EXPECT_NEAR(adj[4].second, 0.2283333, TOLERANCE);
+}
+
+/*
+ * p.adjust(c(0.01,0.01,0.01,0.05,0.05),method="fdrBY")
+ */
+TEST(PValue, BenjaminiYekutieli2){
+	std::vector<std::pair<std::string,double> > adj(pvalue<double>::benjamini_yekutieli(pvalues2));
+	EXPECT_NEAR(adj[0].second, 0.03805556, TOLERANCE);
+	EXPECT_NEAR(adj[1].second, 0.03805556, TOLERANCE);
+	EXPECT_NEAR(adj[2].second, 0.03805556, TOLERANCE);
+	EXPECT_NEAR(adj[3].second, 0.11416667, TOLERANCE);
+	EXPECT_NEAR(adj[4].second, 0.11416667, TOLERANCE);
 }
 
 /*

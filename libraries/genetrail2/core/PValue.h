@@ -194,6 +194,11 @@ namespace GeneTrail
 			return p.second * ((float_type)n) / ((float_type)i);
 		}
 
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Step-up adjustments
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 		/**
 		 * Benjamini-Hochberg p-value adjustment.
 		 *
@@ -207,7 +212,7 @@ namespace GeneTrail
 		static std::vector<pValue<float_type>>
 		benjamini_hochberg(const std::vector<pValue<float_type>>& pvalues)
 		{
-			return stepDown(adjustByOrder(pvalues, fdr_func));
+			return stepUp(adjustByOrder(pvalues, fdr_func));
 		}
 
 		/**
@@ -231,12 +236,8 @@ namespace GeneTrail
 			for(size_t i = 0; i < adj.size(); ++i) {
 				adj[i].second *= q;
 			}
-			return stepDown(adj);
+			return stepUp(adj);
 		}
-
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-		// Step-up adjustments
-		////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		/**
 		 * Hochberg p-value adjustment.
