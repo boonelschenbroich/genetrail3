@@ -14,6 +14,66 @@ std::vector<std::pair<std::string,double> > pvalues(il);
 std::initializer_list<std::pair<std::string,double> > il2 = { std::make_pair ("A",0.01),  std::make_pair ("B",0.01),  std::make_pair ("C",0.01),  std::make_pair ("D",0.05),  std::make_pair ("E",0.05) };
 std::vector<std::pair<std::string,double> > pvalues2(il2);
 
+std::initializer_list<std::pair<std::string,double> > il3 = { std::make_pair ("A",2.01),  std::make_pair ("B",3.01),  std::make_pair ("C",5.01),  std::make_pair ("D",6.05),  std::make_pair ("E",3.05) };
+std::vector<std::pair<std::string,double> > pvalues3(il3);
+
+std::initializer_list<std::pair<std::string,double> > il4 = { std::make_pair ("A",0.0),  std::make_pair ("B",0.0),  std::make_pair ("C",0.0),  std::make_pair ("D",0.0),  std::make_pair ("E",0.0) };
+std::vector<std::pair<std::string,double> > pvalues4(il4);
+
+TEST(PValue, StepUp){
+	std::vector<std::pair<std::string,double> > adj(pvalue<double>::stepUp(pvalues3));
+	EXPECT_NEAR(adj[0].second, 1.0, TOLERANCE);
+	EXPECT_NEAR(adj[1].second, 1.0, TOLERANCE);
+	EXPECT_NEAR(adj[2].second, 1.0, TOLERANCE);
+	EXPECT_NEAR(adj[3].second, 1.0, TOLERANCE);
+	EXPECT_NEAR(adj[4].second, 1.0, TOLERANCE);
+}
+
+TEST(PValue, StepDown){
+	std::vector<std::pair<std::string,double> > adj(pvalue<double>::stepDown(pvalues3));
+	EXPECT_NEAR(adj[0].second, 1.0, TOLERANCE);
+	EXPECT_NEAR(adj[1].second, 1.0, TOLERANCE);
+	EXPECT_NEAR(adj[2].second, 1.0, TOLERANCE);
+	EXPECT_NEAR(adj[3].second, 1.0, TOLERANCE);
+	EXPECT_NEAR(adj[4].second, 1.0, TOLERANCE);
+}
+
+TEST(PValue, StepUp2){
+	std::vector<std::pair<std::string,double> > adj(pvalue<double>::stepUp(pvalues4));
+	EXPECT_NEAR(adj[0].second, 0.0, TOLERANCE);
+	EXPECT_NEAR(adj[1].second, 0.0, TOLERANCE);
+	EXPECT_NEAR(adj[2].second, 0.0, TOLERANCE);
+	EXPECT_NEAR(adj[3].second, 0.0, TOLERANCE);
+	EXPECT_NEAR(adj[4].second, 0.0, TOLERANCE);
+}
+
+TEST(PValue, StepDown2){
+	std::vector<std::pair<std::string,double> > adj(pvalue<double>::stepDown(pvalues4));
+	EXPECT_NEAR(adj[0].second, 0.0, TOLERANCE);
+	EXPECT_NEAR(adj[1].second, 0.0, TOLERANCE);
+	EXPECT_NEAR(adj[2].second, 0.0, TOLERANCE);
+	EXPECT_NEAR(adj[3].second, 0.0, TOLERANCE);
+	EXPECT_NEAR(adj[4].second, 0.0, TOLERANCE);
+}
+
+TEST(PValue, StepUp3){
+	std::vector<std::pair<std::string,double> > adj(pvalue<double>::stepUp(pvalues));
+	EXPECT_NEAR(adj[0].second, 0.01, TOLERANCE);
+	EXPECT_NEAR(adj[1].second, 0.01, TOLERANCE);
+	EXPECT_NEAR(adj[2].second, 0.03, TOLERANCE);
+	EXPECT_NEAR(adj[3].second, 0.03, TOLERANCE);
+	EXPECT_NEAR(adj[4].second, 0.1, TOLERANCE);
+}
+
+TEST(PValue, StepDown3){
+	std::vector<std::pair<std::string,double> > adj(pvalue<double>::stepDown(pvalues));
+	EXPECT_NEAR(adj[0].second, 0.05, TOLERANCE);
+	EXPECT_NEAR(adj[1].second, 0.05, TOLERANCE);
+	EXPECT_NEAR(adj[2].second, 0.07, TOLERANCE);
+	EXPECT_NEAR(adj[3].second, 0.07, TOLERANCE);
+	EXPECT_NEAR(adj[4].second, 0.1, TOLERANCE);
+}
+
 /*
  * p.adjust(c(0.05,0.01,0.07,0.03,0.1),method="bonferroni")
  */
