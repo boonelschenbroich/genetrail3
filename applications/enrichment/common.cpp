@@ -178,6 +178,11 @@ AllResults compute(GeneSet& test_set, CategoryList& cat_list, const Params& p)
 		{
 			GMTFile input(cat.second);
 
+			if(!input) {
+				std::cerr << "WARNING: Could not open database " + cat.first + " for reading! Skipping database." << std::endl;
+				continue;
+			}
+
 			Results name_to_result;
 			while(input) {
 				Category c = input.read();
