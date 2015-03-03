@@ -20,6 +20,12 @@ std::vector<std::pair<std::string,double> > pvalues3(il3);
 std::initializer_list<std::pair<std::string,double> > il4 = { std::make_pair ("A",0.0),  std::make_pair ("B",0.0),  std::make_pair ("C",0.0),  std::make_pair ("D",0.0),  std::make_pair ("E",0.0) };
 std::vector<std::pair<std::string,double> > pvalues4(il4);
 
+// This test just should not crash
+TEST(PValue, StepUp_empty){
+	std::vector<std::pair<std::string,double>> empty;
+	EXPECT_TRUE(pvalue<double>::stepUp(empty).empty());
+}
+
 TEST(PValue, StepUp){
 	std::vector<std::pair<std::string,double> > adj(pvalue<double>::stepUp(pvalues3));
 	EXPECT_NEAR(adj[0].second, 1.0, TOLERANCE);

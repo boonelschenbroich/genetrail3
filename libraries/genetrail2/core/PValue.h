@@ -26,7 +26,12 @@ namespace GeneTrail
 		stepUp(const std::vector<pValue<float_type>>& pvalues)
 		{
 			std::vector<pValue<float_type>> adjustedPValues(pvalues);
-			adjustedPValues[adjustedPValues.size()-1].second = std::min(adjustedPValues[adjustedPValues.size()-1].second, 1.0);
+
+			if(adjustedPValues.empty()) {
+				return adjustedPValues;
+			}
+
+			adjustedPValues.back().second = std::min(adjustedPValues.back().second, 1.0);
 			for(int i = adjustedPValues.size() - 2; i >= 0; --i) {
 				adjustedPValues[i].second =
 				    std::min(std::min(adjustedPValues[i + 1].second,
