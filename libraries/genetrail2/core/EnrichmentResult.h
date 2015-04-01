@@ -53,6 +53,18 @@ namespace GeneTrail {
 		bool enriched;
 		double score;
 
+		virtual std::string header() const{
+			std::string header = "#";
+			header += "Name\t";
+			header += "Reference\t";
+			header += "Hits\t";
+			header += "Score\t";
+			header += "P-value\t";
+			header += "Info\t";
+			header += "Regulation_direction";
+			return header;	
+		}
+
 		virtual std::string serialize() const{
 			std::string result = "";
 			result += name + "\t";

@@ -104,6 +104,7 @@ void writeFiles(const std::string& output_dir, const AllResults& all_results)
 		{
 			throw GeneTrail::IOError("No input file specified.");
 		}
+		output << database.second.begin()->second->header() << std::endl;
 		for(const auto& ele : database.second)
 		{
 			output << ele.second->serialize() << std::endl;

@@ -35,6 +35,13 @@ namespace GeneTrail {
 		{}
 
 		double expected_hits;
+		
+		std::string header() const{
+			std::string header = "";
+			header += EnrichmentResult::header() + "\t";
+			header += "Expected_hits";
+			return header;
+		}
 
 		std::string serialize() const{
 			std::string result = "";
