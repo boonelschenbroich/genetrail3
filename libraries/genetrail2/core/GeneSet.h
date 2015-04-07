@@ -106,7 +106,7 @@ namespace GeneTrail
 		 *
 		 * @return number of elements in the GeneSet
 		 */
-		int size() const { return container_.size(); }
+		size_t size() const { return container_.size(); }
 
 		/**
 		 * Is the GeneSet empty?
