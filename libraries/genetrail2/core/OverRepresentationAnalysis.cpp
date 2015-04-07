@@ -30,7 +30,7 @@ ORAResult OverRepresentationAnalysis::computePValue(const Category& category) {
 
 	uint64_t l = Category::intersect("null", reference_set_, category).size();
 	Category intersection = Category::intersect("null", test_set_, category);
-    uint64_t k = intersection.size();
+	uint64_t k = intersection.size();
 	result.hits = k;
 	auto expected_k = ((double)l * n_) / ((double)m_);
 	result.expected_hits = expected_k;
@@ -39,19 +39,19 @@ ORAResult OverRepresentationAnalysis::computePValue(const Category& category) {
 
 	big_float p;
 
-    if (useHypergeometricTest_) {
-        if (enriched) {
-            p = hyperTest_.upperTailedPValue(m_, l, n_, k);
-        } else {
-            p = hyperTest_.lowerTailedPValue(m_, l, n_, k);
-        }
-    } else {
-        if (enriched) {
-            p = fisherTest_.upperTailedPValue(m_, l, n_, k);
-        } else {
-            p = fisherTest_.lowerTailedPValue(m_, l, n_, k);
-        }
-    }
+	if (useHypergeometricTest_) {
+		if (enriched) {
+			p = hyperTest_.upperTailedPValue(m_, l, n_, k);
+		} else {
+			p = hyperTest_.lowerTailedPValue(m_, l, n_, k);
+		}
+	} else {
+		if (enriched) {
+			p = fisherTest_.upperTailedPValue(m_, l, n_, k);
+		} else {
+			p = fisherTest_.lowerTailedPValue(m_, l, n_, k);
+		}
+	}
 
 	result.pvalue = p;
 
@@ -61,5 +61,5 @@ ORAResult OverRepresentationAnalysis::computePValue(const Category& category) {
 	}
 	result.info = genes;
 
-    return result;
+    	return result;
 }
