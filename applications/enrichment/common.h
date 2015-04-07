@@ -45,6 +45,7 @@ struct Params
 	std::string out;
 	std::string adjustment;
 	bool runSeparately;
+	bool adaptGeneSets;
 };
 
 /**
@@ -129,8 +130,29 @@ int init(GeneSet& test_set, CategoryList& cat_list, const Params& p);
 std::vector<std::string> getSortedIdentifier(GeneSet& test_set, const Params& p, bool absolute, bool increasing);
 
 /**
+ * This function adapts gene sets needed to compute the current enrichment.
+ * It computes the intersection of all genes that are in the current database and
+ * the given gene set.
+ * 
+ * @param test_set Test set of the used enrichment service
+ * @param all_genes_of_database Union of all genes that belong to the database used in the current enrichment
+ */
+GeneSet adapt_gene_set(GeneSet& gene_set, const Category& all_genes_of_database);
+
+/**
+ * This function adapts all gene sets needed to compute an enrichment.
+ * It computes the intersection of all genes that are in the current database and
+ * all gene sets of the current enrichment service. 
+ *
+ * @param all_genes_of_database Union of all genes that belong to the database used in the current enrichment
+ * @return Adapted test set of the current enrichment
+ */
+GeneSet adapt_all_gene_sets(const Category& all_genes_of_database);
+
+/**
  * This function computes all results for a given Category.
  *
+ * @param adapted_test_set Test set that should be used for computation.
  * @param c Category
  * @param genes
  * @return Shared pointer to an Enrichment result object.

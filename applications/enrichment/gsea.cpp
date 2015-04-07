@@ -32,6 +32,7 @@ bool increasing = false, absolute = false;
 Params p;
 
 GeneSet test_set;
+GeneSet adapted_test_set;
 CategoryList cat_list;
 GeneSetEnrichmentAnalysis<big_float, int64_t> gsea;
 std::vector<std::string> identifierOfTestSet;
@@ -66,6 +67,13 @@ bool parseArguments(int argc, char* argv[])
 	return true;
 }
 
+GeneSet adapt_all_gene_sets(const Category& all_genes_of_database)
+{
+	adapted_test_set = adapt_gene_set(test_set, all_genes_of_database);
+	identifierOfTestSet = getSortedIdentifier(adapted_test_set, p,  absolute, increasing);
+	return adapted_test_set;
+}
+
 int intersectionSize(const Category& category, const std::vector<std::string>& testSet){
 	int n = 0;
 	for(auto gene : testSet ){
@@ -81,7 +89,7 @@ std::unique_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std
 	auto result = std::make_unique<EnrichmentResult>();
 	result->name = c.name();
 	result->reference = c.reference();
-
+	
 	int RSc = gsea.computeRunningSum(c, identifierOfTestSet);
 	result->enriched = RSc > 0;
 	if(result->enriched){
@@ -110,6 +118,7 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
+	adapted_test_set = test_set;
 	identifierOfTestSet = getSortedIdentifier(test_set, p,  absolute, increasing);
 
 	run(test_set, cat_list, p);

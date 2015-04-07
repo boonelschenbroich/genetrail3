@@ -36,6 +36,7 @@ std::string method;
 Params p;
 
 GeneSet test_set;
+GeneSet adapted_test_set;
 CategoryList cat_list;
 AllResults name_to_cat_results;
 
@@ -63,6 +64,12 @@ bool parseArguments(int argc, char* argv[])
 	return true;
 }
 
+GeneSet adapt_all_gene_sets(const Category& all_genes_of_database)
+{
+	adapted_test_set = adapt_gene_set(test_set, all_genes_of_database);
+	return adapted_test_set;
+}
+
 std::unique_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std::pair<int,std::string>& genes)
 {
 	auto result = std::make_unique<EnrichmentResult>();
@@ -70,17 +77,17 @@ std::unique_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std
 	result->reference = c.reference();
 
 	std::vector<double> all_genes;
-	all_genes.resize(test_set.size());
+	all_genes.resize(adapted_test_set.size());
 
 	std::vector<double> contained_genes;
 	std::vector<double> not_contained_genes;
 
-	for(int i = 0; i < test_set.size(); ++i) {
-		all_genes[i] = test_set[i].second;
-		if(c.contains(test_set[i].first)) {
-			contained_genes.push_back(test_set[i].second);
+	for(int i = 0; i < adapted_test_set.size(); ++i) {
+		all_genes[i] = adapted_test_set[i].second;
+		if(c.contains(adapted_test_set[i].first)) {
+			contained_genes.push_back(adapted_test_set[i].second);
 		}else{
-			not_contained_genes.push_back(test_set[i].second);
+			not_contained_genes.push_back(adapted_test_set[i].second);
 		}
 	}
 
@@ -150,6 +157,8 @@ int main(int argc, char* argv[])
 	{
 		return -1;
 	}
+
+	adapted_test_set = test_set;
 
 	run(test_set, cat_list, p);
 }

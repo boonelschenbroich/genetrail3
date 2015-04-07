@@ -34,7 +34,9 @@ std::string reference;
 Params p;
 
 GeneSet test_set;
+GeneSet adapted_test_set;
 GeneSet reference_set;
+GeneSet adapted_reference_set;
 CategoryList cat_list;
 OverRepresentationAnalysis ora;
 
@@ -63,6 +65,14 @@ bool parseArguments(int argc, char* argv[])
 	return true;
 }
 
+GeneSet adapt_all_gene_sets(const Category& all_genes_of_database)
+{
+	adapted_test_set = adapt_gene_set(test_set, all_genes_of_database);
+	adapted_reference_set = adapt_gene_set(reference_set, all_genes_of_database);
+	ora = OverRepresentationAnalysis(adapted_reference_set.toCategory("reference"), adapted_test_set.toCategory("test"));
+	return adapted_test_set;
+}
+
 std::unique_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std::pair<int, std::string>& genes)
 {
 	return std::make_unique<ORAResult>(ora.computePValue(c));
@@ -83,10 +93,13 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
+	adapted_test_set = test_set;
+
 	GeneSetReader reader;
 	try
 	{
 		reference_set = reader.readGeneList(reference);
+		adapted_reference_set = reference_set;
 	}
 	catch(IOError& exn)
 	{

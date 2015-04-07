@@ -58,6 +58,32 @@ bool parseArguments(int argc, char* argv[])
 	return true;
 }
 
+void create_names_and_values(GeneSet& gene_set)
+{	
+	std::vector<std::pair<std::string, double>> sorted_test_set;
+
+	if(absolute) {
+		sorted_test_set = gene_set.getAbsoluteSortedScores();
+	} else {
+		sorted_test_set = gene_set.getSortedScores(!increasing);
+	}
+
+	names.reserve(sorted_test_set.size());
+	values.reserve(sorted_test_set.size());
+
+	for(const auto& t : sorted_test_set) {
+		names.emplace_back(t.first);
+		values.emplace_back(t.second);
+	}
+}
+
+GeneSet adapt_all_gene_sets(const Category& all_genes_of_database)
+{
+	GeneSet adapted_test_set = adapt_gene_set(test_set, all_genes_of_database);
+        create_names_and_values(adapted_test_set);
+	return adapted_test_set;
+}
+
 std::unique_ptr<EnrichmentResult>
 computeEnrichment(const Category& c, const std::pair<int, std::string>& genes)
 {
@@ -106,21 +132,7 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	std::vector<std::pair<std::string, double>> sorted_test_set;
-
-	if(absolute) {
-		sorted_test_set = test_set.getAbsoluteSortedScores();
-	} else {
-		sorted_test_set = test_set.getSortedScores(!increasing);
-	}
-
-	names.reserve(sorted_test_set.size());
-	values.reserve(sorted_test_set.size());
-
-	for(const auto& t : sorted_test_set) {
-		names.emplace_back(t.first);
-		values.emplace_back(t.second);
-	}
+	create_names_and_values(test_set);
 
 	run(test_set, cat_list, p, true);
 	return 0;

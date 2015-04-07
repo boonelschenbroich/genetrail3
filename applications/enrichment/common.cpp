@@ -12,7 +12,8 @@ void addCommonCLIArgs(bpo::options_description& desc, Params& p)
 		("maximum,x", bpo::value<size_t>(&p.maximum)->default_value(1000),"Maximum number of genes allowed in categories.")
 		("output,o", bpo::value<std::string>(&p.out), "Output prefix for text files.")
 		("adjustment,a", bpo::value<std::string>(&p.adjustment)->default_value("no"),"P-value adjustment method for multiple testing.")
-		("adjust_separately,p", bpo::value(&p.runSeparately)->zero_tokens(),"Indicates if databases are adjusted separatly or combined.");
+		("adjust_separately,p", bpo::value(&p.runSeparately)->zero_tokens(),"Indicates if databases are adjusted separatly or combined.")
+		("adapt_gene_sets,g", bpo::value(&p.adaptGeneSets)->zero_tokens(),"Build intersection between all gene sets and each used database.");
 }
 
 CategoryList getCategoryList(const std::string& catfile_list, const std::string& single_cat)
@@ -153,6 +154,19 @@ std::vector<std::string> getSortedIdentifier(GeneSet& test_set, const Params& p,
 	}
 }
 
+GeneSet adapt_gene_set(GeneSet& gene_set, const Category& all_genes_of_database)
+{
+	GeneSet adapted;
+	for(size_t i=0; i<gene_set.size(); ++i)
+	{
+		if(all_genes_of_database.contains(gene_set[i].first))
+		{
+			adapted.insert(gene_set[i]);
+		}
+	}
+	return adapted;
+}
+
 void updatePValues(Results& results, const PValueList& pvalues)
 {
 	for(const auto& it : pvalues)
@@ -184,11 +198,23 @@ AllResults compute(GeneSet& test_set, CategoryList& cat_list, const Params& p)
 				continue;
 			}
 
+			GeneSet adapted_test_set;
+			if(p.adaptGeneSets) {
+				GMTFile gmt(cat.second);
+				Category all("all");
+				while(gmt) {
+					all = Category::combine("all", all, gmt.read());
+				}
+				adapted_test_set = adapt_all_gene_sets(all);
+			} else {
+				adapted_test_set = test_set;
+			}	
+	
 			Results name_to_result;
 			while(input) {
 				Category c = input.read();
 				std::cout << "INFO: Processing - " << cat.first << " - " << c.name() << std::endl;
-				auto pair = processCategory(c, test_set, p);
+				auto pair = processCategory(c, adapted_test_set, p);
 				if(!pair.first) {
 					continue;
 				}
