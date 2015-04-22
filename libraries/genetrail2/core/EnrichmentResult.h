@@ -40,7 +40,7 @@ namespace GeneTrail {
 		    : name(name),
 		      reference(reference),
 		      hits(0),
-		      pvalue(0.0),
+		      pvalue(1.0),
 		      enriched(false),
 		      score(0.0)
 		{}
