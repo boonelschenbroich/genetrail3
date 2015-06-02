@@ -2,9 +2,12 @@
 
 #include <genetrail2/core/HTest.h>
 #include <genetrail2/core/FTest.h>
+#include <genetrail2/core/OneSampleTTest.h>
 #include <genetrail2/core/IndependentTTest.h>
 #include <genetrail2/core/DependentTTest.h>
 #include <genetrail2/core/IndependentShrinkageTTest.h>
+#include <genetrail2/core/DependentShrinkageTTest.h>
+#include <genetrail2/core/OneSampleShrinkageTTest.h>
 
 #include <config.h>
 
@@ -32,6 +35,24 @@ TEST(HTEST, FTest)
 	EXPECT_NEAR(HTest::upperTailedPValue(f, 0.7212895), 0.6828, TOLERANCE);
 	EXPECT_NEAR(HTest::confidenceInterval(f, 0.95).first, 0.1791581, TOLERANCE);
 	EXPECT_NEAR(HTest::confidenceInterval(f, 0.95).second, 2.9039072, TOLERANCE);
+}
+
+TEST(HTEST, OneSampleTTest)
+{
+	OneSampleTTest<double> f;
+	EXPECT_NEAR(HTest::test(f, a.begin(), a.end()), 19.853568, TOLERANCE);
+	EXPECT_NEAR(HTest::twoSidedPValue(f, 19.853568), 9.68739e-09, TOLERANCE);
+	EXPECT_NEAR(HTest::lowerTailedPValue(f, 19.853568), 1.0, TOLERANCE);
+	EXPECT_NEAR(HTest::upperTailedPValue(f, 19.853568), 4.843695e-09, TOLERANCE);
+	EXPECT_NEAR(HTest::confidenceInterval(f, 0.95).first, 26.46654965, TOLERANCE);
+	EXPECT_NEAR(HTest::confidenceInterval(f, 0.95).second, 33.27345035, TOLERANCE);
+
+	EXPECT_NEAR(HTest::test(f,b.begin(), b.end()), 20.99912, TOLERANCE);
+	EXPECT_NEAR(HTest::twoSidedPValue(f, 20.99912), 5.90418e-09, TOLERANCE);
+	EXPECT_NEAR(HTest::lowerTailedPValue(f, 20.99912), 1.0, TOLERANCE);
+	EXPECT_NEAR(HTest::upperTailedPValue(f, 20.99912), 2.95209e-09, TOLERANCE);
+	EXPECT_NEAR(HTest::confidenceInterval(f, 0.95).first, 33.19258222, TOLERANCE);
+	EXPECT_NEAR(HTest::confidenceInterval(f, 0.95).second, 41.20741778, TOLERANCE);
 }
 
 TEST(HTEST, IndependentTest)
@@ -105,4 +126,30 @@ TEST(HTEST, IndependentShrinkageTTest2)
 	EXPECT_NEAR(result[0], -2.1324815, TOLERANCE);
 	EXPECT_NEAR(result[1], -2.1551803, 0.1);
 	EXPECT_NEAR(result[2], -0.3615726, 0.1);
+}
+
+TEST(HTEST, OneSampleShrinkageTTest)
+{
+	OneSampleShrinkageTTest<double> t;
+	std::list<std::list<double>> aa;
+	aa.push_back(a);
+	std::list<std::list<double>> bb;
+	bb.push_back(b);
+	//This should deliver the same results than the OneSampleTTest
+	std::vector<double> resulta = t.test(aa.begin(), aa.end());
+	EXPECT_NEAR(resulta[0], 19.853568, TOLERANCE);
+	std::vector<double> resultb = t.test(bb.begin(), bb.end());
+	EXPECT_NEAR(resultb[0], 20.99912, TOLERANCE);
+}
+
+TEST(HTEST, DependentShrinkageTTest)
+{
+	DependentShrinkageTTest<double> t;
+	std::list<std::list<double>> aa;
+	aa.push_back(a);
+	std::list<std::list<double>> bb;
+	bb.push_back(b);
+	//This should be equal to the normal t-test.
+	std::vector<double> result = t.test(aa.begin(), aa.end(), bb.begin(), bb.end());
+	EXPECT_NEAR(result[0], -11.3706, TOLERANCE);
 }
