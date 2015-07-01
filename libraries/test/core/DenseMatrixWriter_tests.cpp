@@ -122,7 +122,7 @@ TEST_F(DenseMatrixWriterTest, writeText_known)
 	ASSERT_EQ(5, result.cols());
 
 	std::ifstream istrm(matrix45_ascii_);
-	ASSERT_TRUE(istrm);
+	ASSERT_TRUE(istrm.good());
 
 	// Read the correct file from file
 	char in_buffer[1024];
@@ -130,7 +130,7 @@ TEST_F(DenseMatrixWriterTest, writeText_known)
 	uint64_t bytes_read = istrm.gcount();
 
 	std::ostringstream ostrm;
-	ASSERT_TRUE(ostrm);
+	ASSERT_TRUE(ostrm.good());
 
 	// Write the test to the buffer
 	DenseMatrixWriter writer;
@@ -146,13 +146,13 @@ TEST_F(DenseMatrixWriterTest, binaryReadWrite_random)
 	DenseMatrix out = buildRandomMatrix();
 
 	std::ofstream ostrm(temp_file_name_, std::ios::binary);
-	ASSERT_TRUE(ostrm);
+	ASSERT_TRUE(ostrm.good());
 	DenseMatrixWriter writer;
 	writer.writeBinary(ostrm, out);
 	ostrm.close();
 
 	std::ifstream istrm(temp_file_name_, std::ios::binary);
-	ASSERT_TRUE(istrm);
+	ASSERT_TRUE(istrm.good());
 	DenseMatrixReader reader;
 	DenseMatrix in = reader.read(istrm);
 	istrm.close();
@@ -180,7 +180,7 @@ TEST_F(DenseMatrixWriterTest, binaryWrite_known)
 	DenseMatrix result = buildKnownMatrix();
 
 	std::ifstream istrm(matrix45_cm_, std::ios::binary);
-	ASSERT_TRUE(istrm);
+	ASSERT_TRUE(istrm.good());
 
 	// Read the correct file from file
 	char in_buffer[1024];
@@ -188,7 +188,7 @@ TEST_F(DenseMatrixWriterTest, binaryWrite_known)
 	uint64_t bytes_read = istrm.gcount();
 
 	std::ostringstream ostrm;
-	ASSERT_TRUE(ostrm);
+	ASSERT_TRUE(ostrm.good());
 
 	// Write the test to the buffer
 	DenseMatrixWriter writer;
@@ -204,13 +204,13 @@ TEST_F(DenseMatrixWriterTest, textReadWrite_random)
 	DenseMatrix out = buildRandomMatrix();
 
 	std::ofstream ostrm(temp_file_name_);
-	ASSERT_TRUE(ostrm);
+	ASSERT_TRUE(ostrm.good());
 	DenseMatrixWriter writer;
 	writer.writeText(ostrm, out);
 	ostrm.close();
 
 	std::ifstream istrm(temp_file_name_);
-	ASSERT_TRUE(istrm);
+	ASSERT_TRUE(istrm.good());
 	DenseMatrixReader reader;
 	DenseMatrix in = reader.read(istrm);
 	istrm.close();

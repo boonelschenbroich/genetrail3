@@ -54,7 +54,7 @@ TEST_F(DenseMatrixReaderTest, binaryRead)
 
 	std::ifstream strm(matrix45_rm_, std::ios::binary);
 
-	ASSERT_TRUE(strm);
+	ASSERT_TRUE(strm.good());
 
 	DenseMatrix result = reader.read(strm);
 
@@ -110,7 +110,7 @@ TEST_F(DenseMatrixReaderTest, read_valid_names)
 {
 	std::ifstream strm(matrix_name_file);
 
-	ASSERT_TRUE(strm);
+	ASSERT_TRUE(strm.good());
 
 	DenseMatrixReader reader;
 	DenseMatrix matrix = reader.read(strm, DenseMatrixReader::READ_ROW_NAMES);
@@ -155,7 +155,7 @@ TEST_F(DenseMatrixReaderTest, read_valid_names_transposed)
 {
 	std::ifstream strm(matrix_name_file);
 
-	ASSERT_TRUE(strm);
+	ASSERT_TRUE(strm.good());
 
 	DenseMatrixReader reader;
 	DenseMatrix matrix = reader.read(strm, DenseMatrixReader::READ_ROW_NAMES | DenseMatrixReader::TRANSPOSE);
@@ -200,7 +200,7 @@ TEST_F(DenseMatrixReaderTest, read_valid_names_additional_column)
 {
 	std::ifstream strm(matrix_name_additional_column_file);
 
-	ASSERT_TRUE(strm);
+	ASSERT_TRUE(strm.good());
 
 	DenseMatrixReader reader;
 	DenseMatrix matrix = reader.read(strm, DenseMatrixReader::READ_COL_NAMES | DenseMatrixReader::READ_ROW_NAMES | DenseMatrixReader::ADDITIONAL_COL_NAME);
@@ -253,7 +253,7 @@ TEST_F(DenseMatrixReaderTest, read_valid_nonames)
 {
 	std::ifstream strm(matrix_noname_file);
 
-	ASSERT_TRUE(strm);
+	ASSERT_TRUE(strm.good());
 
 	DenseMatrixReader reader;
 	DenseMatrix matrix = reader.read(strm, DenseMatrixReader::NO_OPTIONS);
