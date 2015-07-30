@@ -25,6 +25,8 @@
 
 #include "macros.h"
 
+#include <boost/range/irange.hpp>
+
 namespace GeneTrail
 {
 	/**
@@ -48,7 +50,16 @@ namespace GeneTrail
 			static DenseMatrixSubset createColSubset(DenseMatrix* mat, const SSubset& cols);
 			static DenseMatrixSubset createSubset   (DenseMatrix* mat, const SSubset& rows, const SSubset& cols);
 
+			template<typename Iterator>
+			static DenseMatrixSubset createColSubset(DenseMatrix* mat, Iterator begin, Iterator end);
+
+			template<typename Iterator>
+			static DenseMatrixSubset createRowSubset(DenseMatrix* mat, Iterator begin, Iterator end);
+
 			DenseMatrixSubset(DenseMatrix* mat, ISubset  rows, ISubset  cols);
+
+			template<typename RowIterator, typename ColIterator>
+			DenseMatrixSubset(DenseMatrix* mat, RowIterator beginRow, RowIterator endRow, ColIterator beginCol, ColIterator endCol);
 
 			DenseMatrixSubset(const DenseMatrixSubset& subs) = default;
 			DenseMatrixSubset(DenseMatrixSubset&& subs);
@@ -98,6 +109,28 @@ namespace GeneTrail
 
 			void remove_(const std::vector<Matrix::index_type>& indices, ISubset& subset);
 	};
+
+	template<typename Iterator>
+	DenseMatrixSubset DenseMatrixSubset::createColSubset(DenseMatrix* mat, Iterator begin, Iterator end)
+	{
+		auto rowIndices = boost::irange(static_cast<DenseMatrix::index_type>(0), mat->rows());
+		return DenseMatrixSubset(mat, boost::begin(rowIndices), boost::end(rowIndices), begin, end);
+	}
+
+	template<typename Iterator>
+	DenseMatrixSubset DenseMatrixSubset::createRowSubset(DenseMatrix* mat, Iterator begin, Iterator end)
+	{
+		auto colIndices = boost::irange(static_cast<DenseMatrix::index_type>(0), mat->cols());
+		return DenseMatrixSubset(mat, begin, end, boost::begin(colIndices), boost::end(colIndices));
+	}
+
+	template<typename RowIterator, typename ColIterator>
+	DenseMatrixSubset::DenseMatrixSubset(DenseMatrix* mat, RowIterator beginRow, RowIterator endRow, ColIterator beginCol, ColIterator endCol)
+		: mat_(mat),
+		  row_subset_(beginRow, endRow),
+		  col_subset_(beginCol, endCol)
+	{
+	}
 }
 
 #endif // GT2_DENSE_MATRIX_SUBSET_H
