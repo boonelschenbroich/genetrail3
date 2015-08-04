@@ -86,9 +86,7 @@ int intersectionSize(const Category& category, const std::vector<std::string>& t
 
 std::unique_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std::pair<int,std::string>& genes)
 {
-	auto result = std::make_unique<EnrichmentResult>();
-	result->name = c.name();
-	result->reference = c.reference();
+	auto result = std::make_unique<EnrichmentResult>(c);
 	
 	int RSc = gsea.computeRunningSum(c, identifierOfTestSet);
 	result->enriched = RSc > 0;

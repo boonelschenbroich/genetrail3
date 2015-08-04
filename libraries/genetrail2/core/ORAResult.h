@@ -31,7 +31,7 @@ namespace GeneTrail {
      */
     struct GT2_EXPORT ORAResult : public EnrichmentResult {
 
-		ORAResult() : expected_hits(0.0)
+		ORAResult(const Category& c) : EnrichmentResult(c), expected_hits(0.0)
 		{}
 
 		double expected_hits;

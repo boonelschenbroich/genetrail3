@@ -24,6 +24,7 @@
 #include "multiprecision.h"
 
 #include <string>
+#include "Category.h"
 
 #include <boost/lexical_cast.hpp>
 
@@ -33,16 +34,7 @@ namespace GeneTrail {
      * GeneralEnrichmentResult
      */
     struct GT2_EXPORT EnrichmentResult {
-		EnrichmentResult() : hits(0), pvalue(0.0), enriched(false), score(0.0)
-		{}
-
-		EnrichmentResult(const std::string& name, const std::string& reference)
-		    : name(name),
-		      reference(reference),
-		      hits(0),
-		      pvalue(1.0),
-		      enriched(false),
-		      score(0.0)
+		EnrichmentResult(const Category& c) : name(c.name()), reference(c.reference()), hits(0), pvalue(-1.0), enriched(false), score(0.0)
 		{}
 
 		std::string name;

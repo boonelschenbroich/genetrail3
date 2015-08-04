@@ -72,9 +72,7 @@ GeneSet adapt_all_gene_sets(const Category& all_genes_of_database)
 
 std::unique_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std::pair<int,std::string>& genes)
 {
-	auto result = std::make_unique<EnrichmentResult>();
-	result->name = c.name();
-	result->reference = c.reference();
+	auto result = std::make_unique<EnrichmentResult>(c);
 
 	std::vector<double> all_genes;
 	all_genes.resize(adapted_test_set.size());

@@ -21,9 +21,7 @@ bool OverRepresentationAnalysis::categoryContainsAllGenes(const Category& refere
 
 ORAResult OverRepresentationAnalysis::computePValue(const Category& category) {
 
-	ORAResult result;
-	result.reference = category.reference();
-	result.name = category.name();
+	ORAResult result(category);
 
 	// GeneTrail 1
 	//uint64_t l = category.size();

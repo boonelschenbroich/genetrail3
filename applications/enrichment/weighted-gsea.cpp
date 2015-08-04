@@ -89,9 +89,7 @@ computeEnrichment(const Category& c, const std::pair<int, std::string>& genes)
 {
 	WeightedGeneSetEnrichmentAnalysis<big_float> gsea(names, values);
 
-	auto result = std::make_unique<EnrichmentResult>();
-	result->name = c.name();
-	result->reference = c.reference();
+	auto result = std::make_unique<EnrichmentResult>(c);
 
 	double RSc = gsea.computeRunningSum(c).convert_to<double>();
 	;
