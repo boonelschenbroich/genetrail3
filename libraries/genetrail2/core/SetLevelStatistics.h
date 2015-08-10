@@ -213,13 +213,8 @@ namespace GeneTrail
 		public:
 		using RowWiseMode = SetLevelStatistics::Indirect;
 
-		//TODO: Improve the interface of WeightedGeneSetEnrichmentAnalysis
 		WeightedKolmogorovSmirnov(const Scores& scores)
-		    : scores_(scores),
-		      test_(std::vector<std::string>(scores.names().begin(),
-		                                     scores.names().end()),
-		            std::vector<double>(scores.scores().begin(),
-		                                scores.scores().end()))
+		    : test_(scores)
 		{
 		}
 
@@ -227,12 +222,10 @@ namespace GeneTrail
 
 		double computeScore(const Category& category)
 		{
-			return test_.computeRunningSum(category, scores_.begin(),
-			                               scores_.end());
+			return test_.computeRunningSum(category);
 		}
 
 		private:
-		Scores scores_;
 		WeightedGeneSetEnrichmentAnalysis<double> test_;
 	};
 }

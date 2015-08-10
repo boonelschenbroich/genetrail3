@@ -25,6 +25,7 @@
 
 #include "Category.h"
 #include "EnrichmentResult.h"
+#include "Scores.h"
 
 #include <vector>
 #include <iostream>
@@ -43,45 +44,38 @@ namespace GeneTrail
 	{
 		constexpr static bool debug = false;
 
-		using Names = std::vector<std::string>;
-		using Values = std::vector<double>;
 		using Indices = std::vector<size_t>;
-		using Pair = std::pair<Names, Values>;
 
 		private:
-		const Names& names_;
-		Values values_;
+		const Scores scores_;
 
 		public:
 		/**
 		 * Constructor
 		 */
-		WeightedGeneSetEnrichmentAnalysis(const Names& names,
-		                                  const Values& values)
-		    : names_(names)
+		WeightedGeneSetEnrichmentAnalysis(const Scores& scores)
+		    : scores_(scores)
 		{
-			values_.reserve(values.size());
-			for(auto v : values) {
-				values_.emplace_back(std::abs(v));
-			}
 		}
 
 		/**
 		 * This method computes the interaction between a category and a
-		 *testSet.
+		 * testSet.
 		 *
 		 * @param category Category
 		 * @param testSet Container
 		 */
-		Indices intersection(const Category& category, const Names& names) const
+		Indices intersection(const Category& category, const Scores& scores) const
 		{
 			Indices result;
-			result.reserve(std::min(category.size(), names.size()));
+			result.reserve(std::min(category.size(), scores.size()));
 
-			for(size_t i = 0; i < names.size(); ++i) {
-				if(category.contains(names[i])) {
+			size_t i = 0;
+			for(const auto& n : scores.names()) {
+				if(category.contains(n)) {
 					result.emplace_back(i);
 				}
+				++i;
 			}
 
 			return result;
@@ -97,7 +91,7 @@ namespace GeneTrail
 			using namespace std;
 			float_type result = 0.0;
 			for(; it != end; ++it) {
-				result += values_[*it];
+				result += std::abs(scores_[*it].score());
 			}
 			return result;
 		}
@@ -121,27 +115,25 @@ namespace GeneTrail
 		 * @param category Category for which the RSc should be computed.
 		 * @return The RSc for the given categories.
 		 */
-		template <typename InputIterator>
-		float_type computeRunningSum(const Category& category,
-		                             InputIterator begin,
-		                             InputIterator end) const
+		float_type computeRunningSum(const Category& category) const
 		{
-			Indices S = intersection(category, names_);
-			return computeRunningSum(category, begin, end);
+			Indices S = intersection(category, scores_);
+			return computeRunningSum(S.begin(), S.end());
 		}
 
 		/**
 		 * This method computes the running sum statistic, based on the given
-		 *categories.
+		 * categories.
 		 *
-		 * @param category Category for which the RSc should be computed.
+		 * @param begin Start of a sorted list of indices that identifiy the
+		 *              entities in the list of genes, that are members of a category.
+		 * @param end   End of a sorted list of indices that identifiy the
+		 *              entities in the list of genes, that are members of a category.
 		 * @return The RSc for the given categories.
 		 */
 		float_type computeRunningSum(Indices::const_iterator begin,
 		                             Indices::const_iterator end) const
 		{
-			assert(names_.size() == values_.size());
-
 			const auto category_size = std::distance(begin, end);
 
 			if(category_size == 0) {
@@ -149,19 +141,19 @@ namespace GeneTrail
 			}
 
 			const float_type NR_inv = 1.0 / sum(begin, end);
-			const float_type missv = 1.0 / (names_.size() - category_size);
+			const float_type missv = 1.0 / (scores_.size() - category_size);
 
 			float_type maxRS = 0.0;
 
 			float_type RS = -(*begin * missv);
 			float_type minRS = RS;
-			RS += NR_inv * values_[*begin];
+			RS += NR_inv * std::abs(scores_[*begin].score());
 			maxRS = (maxRS > RS) ? maxRS : RS;
 			size_t lastIndex = *begin;
 			for(auto it = begin + 1; it != end; ++it) {
 				RS -= (*it - lastIndex - 1) * missv;
 				minRS = (minRS < RS) ? minRS : RS;
-				RS += NR_inv * values_[*it];
+				RS += NR_inv * std::abs(scores_[*it].score());
 				maxRS = (maxRS > RS) ? maxRS : RS;
 
 				lastIndex = *it;
@@ -173,4 +165,3 @@ namespace GeneTrail
 }
 
 #endif // GT2_CORE_WEIGHTED_GENE_SET_ENRICHMENT_ANALYSIS_H
-
