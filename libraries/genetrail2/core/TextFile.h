@@ -18,7 +18,7 @@ namespace GeneTrail
 	{
 		public:
 
-		TextFile(const std::string& path, const std::string& delimiter, const std::set<std::string>& skipSymbols, FileOpenMode mode = FileOpenMode::READ);
+		TextFile(const std::string& path, const std::string& delimiter, const std::set<std::string>& skipSymbols = std::set<std::string>(), FileOpenMode mode = FileOpenMode::READ);
 
 		TextFile(TextFile&&) = default;
 		TextFile& operator=(TextFile&&) = default;
