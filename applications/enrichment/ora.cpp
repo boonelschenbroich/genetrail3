@@ -5,7 +5,6 @@
 #include <genetrail2/core/OverRepresentationAnalysis.h>
 #include <genetrail2/core/PValue.h>
 #include <genetrail2/core/GeneSet.h>
-#include <genetrail2/core/ORAResult.h>
 #include <genetrail2/core/multiprecision.h>
 #include <genetrail2/core/compat.h>
 

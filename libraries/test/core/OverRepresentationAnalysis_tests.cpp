@@ -5,7 +5,6 @@
 #include <boost/multiprecision/cpp_dec_float.hpp>
 
 #include <genetrail2/core/OverRepresentationAnalysis.h>
-#include <genetrail2/core/ORAResult.h>
 #include <genetrail2/core/Category.h>
 
 using namespace GeneTrail;
