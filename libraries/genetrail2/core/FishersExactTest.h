@@ -24,8 +24,6 @@
 
 #include <boost/math/special_functions/binomial.hpp>
 
-#include <iostream>
-
 namespace GeneTrail
 {
 
@@ -46,19 +44,16 @@ namespace GeneTrail
 		 * @param n Number of genes in test set (Number of draws)
 		 * @param k Number of genes in the test set that belong to the category
 		 *          (Number of successes)
-		 * @param i
-		 *
 		 * @return
 		 */
 		return_type compute(const unsigned_integer_type& m,
 		                    const unsigned_integer_type& l,
 		                    const unsigned_integer_type& n,
-		                    const unsigned_integer_type& k,
-		                    const unsigned_integer_type& i) const
+		                    const unsigned_integer_type& k) const
 		{
-			return (boost::math::binomial_coefficient<return_type>(n, i) *
-			        boost::math::binomial_coefficient<return_type>(m, l + k - i)) /
-			       boost::math::binomial_coefficient<return_type>(m + n, l + k);
+			return (boost::math::binomial_coefficient<return_type>(n, k) *
+			        boost::math::binomial_coefficient<return_type>(m, l)) /
+			        boost::math::binomial_coefficient<return_type>(m + n, l + k);
 		}
 
 		/**
@@ -71,8 +66,6 @@ namespace GeneTrail
 		 * @param n Number of genes in test set (Number of draws)
 		 * @param k Number of genes in the test set that belong to the category
 		 *          (Number of successes)
-		 * @param i
-		 *
 		 * @return
 		 */
 		return_type lowerTailedPValue(const unsigned_integer_type& m,
