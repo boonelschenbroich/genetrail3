@@ -20,22 +20,29 @@
 #ifndef GT2_CORE_ENRICHMENT_RESULT_H
 #define GT2_CORE_ENRICHMENT_RESULT_H
 
+#include "Category.h"
+
 #include "macros.h"
 #include "multiprecision.h"
 
+#include <ostream>
 #include <string>
-#include "Category.h"
 
-#include <boost/lexical_cast.hpp>
-
-namespace GeneTrail {
-
-    /**
-     * GeneralEnrichmentResult
-     */
-    struct GT2_EXPORT EnrichmentResult {
-		EnrichmentResult(const std::shared_ptr<Category>& c) : category(c), hits(0), pvalue(-1.0), enriched(false), score(0.0)
-		{}
+namespace GeneTrail
+{
+	/**
+	 * GeneralEnrichmentResult
+	 */
+	struct GT2_EXPORT EnrichmentResult
+	{
+		EnrichmentResult(const std::shared_ptr<Category>& c)
+		    : category(c),
+		      hits(0),
+		      pvalue(1.0),
+		      enriched(false),
+		      score(0.0)
+		{
+		}
 
 		std::shared_ptr<Category> category;
 		unsigned int hits;
@@ -44,7 +51,8 @@ namespace GeneTrail {
 		bool enriched;
 		double score;
 
-		virtual std::string header() const{
+		virtual std::string header() const
+		{
 			std::string header = "#";
 			header += "Name\t";
 			header += "Reference\t";
@@ -53,22 +61,26 @@ namespace GeneTrail {
 			header += "P-value\t";
 			header += "Info\t";
 			header += "Regulation_direction";
-			return header;	
+			return header;
 		}
 
-		virtual std::string serialize() const{
-			std::string result = "";
-			result += category->name() + "\t";
-			result += category->reference() + "\t";
-			result += boost::lexical_cast<std::string>(hits) + "\t";
-			result += boost::lexical_cast<std::string>(score) + "\t";
-			result += boost::lexical_cast<std::string>(pvalue) + "\t";
-			result += info + "\t";
-			result += boost::lexical_cast<std::string>(enriched);
-			return result;
+		virtual void serialize(std::ostream& strm) const
+		{
+			strm << category->name() << '\t'
+			     << category->reference() << '\t'
+			     << hits << '\t'
+			     << score << '\t'
+			     << pvalue << '\t'
+			     << info << '\t'
+			     << enriched;
 		}
 	};
+
+	inline std::ostream& operator<<(std::ostream& strm, const EnrichmentResult& result)
+	{
+		result.serialize(strm);
+		return strm;
+	}
 }
 
-#endif //GT2_CORE_ENRICHMENT_RESULT_H
-
+#endif // GT2_CORE_ENRICHMENT_RESULT_H

@@ -129,7 +129,7 @@ void writeFiles(const std::string& output_dir, const AllResults& all_results)
 		}
 		output << database.second.begin()->second->header() << std::endl;
 		for(const auto& ele : database.second) {
-			output << ele.second->serialize() << std::endl;
+			output << *ele.second << std::endl;
 		}
 		output.close();
 	}
