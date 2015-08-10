@@ -23,7 +23,6 @@
 #include "macros.h"
 
 #include "Category.h"
-#include "ORAResult.h"
 #include "FishersExactTest.h"
 #include "HypergeometricTest.h"
 #include "multiprecision.h"
@@ -65,7 +64,7 @@ namespace GeneTrail {
 			 * @param test_set Test set
 			 * @return P-value
 			 */
-			ORAResult computePValue(const Category& category);
+			double computePValue(const Category& category) const;
 
 		private:
 

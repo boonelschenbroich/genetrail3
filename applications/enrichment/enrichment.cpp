@@ -33,19 +33,10 @@ int numberOfPermutations;
 Params p;
 
 GeneSet test_set;
-GeneSet adapted_test_set;
 CategoryList cat_list;
 
-typedef std::vector<double>::iterator _viter;
-std::map<std::string, std::function<double(_viter, _viter)>>
-methods({{"mean",		statistic::mean<double, _viter>},
-         {"median",		statistic::median<double, _viter>},
-         {"sum",		statistic::sum<double, _viter>},
-         {"max-mean",	statistic::max_mean<double, _viter>}});
+typedef Scores::ConstScoreIterator _viter;
 
-double apply(std::vector<double>& v, std::string method){
-	return methods[method](v.begin(),v.end());
-}
 
 bool parseArguments(int argc, char* argv[])
 {
@@ -57,11 +48,7 @@ bool parseArguments(int argc, char* argv[])
 		("method,met", bpo::value<std::string>(&method)->default_value("no"),"Method for gene set tesing.")
 		("permutations,per", bpo::value<int>(&numberOfPermutations)->default_value(1000),"Number of permutations for p-value computation.");
 
-	if (methods.find(method) != methods.end())
-	{
-		std::cerr << "ERROR: Given method not defined!" << std::endl;
-	}
-
+	//TODO: Validate arguments
 	try
 	{
 		bpo::store(bpo::command_line_parser(argc, argv).options(desc).run(),vm);
@@ -77,60 +64,19 @@ bool parseArguments(int argc, char* argv[])
 	return true;
 }
 
-GeneSet adapt_all_gene_sets(const Category& all_genes_of_database)
-{
-	adapted_test_set = adapt_gene_set(test_set, all_genes_of_database);
-	return adapted_test_set;
-}
-
-std::unique_ptr<EnrichmentResult>
-computeEnrichment(const Category& c, const std::pair<int, std::string>& genes)
-{
-	auto result = std::make_unique<EnrichmentResult>(c);
-
-	std::vector<double> contained_genes;
-	std::vector<double> all_genes;
-	all_genes.resize(adapted_test_set.size());
-
-	for(size_t i = 0; i < adapted_test_set.size(); ++i) {
-		all_genes[i] = adapted_test_set[i].second;
-		if(c.contains(adapted_test_set[i].first)) {
-			contained_genes.push_back(adapted_test_set[i].second);
-		}
+EnrichmentAlgorithmPtr getAlgorithm(PValueMode mode, const std::string& method, const Scores& scores) {
+	if(method == "mean") {
+		return createEnrichmentAlgorithm<StatisticsEnrichment>(mode, statistic::mean<double, _viter>, scores);
+	} else if(method == "median") {
+		return createEnrichmentAlgorithm<StatisticsEnrichment>(mode, statistic::median<double, _viter>, scores);
+	} else if(method == "sum") {
+		return createEnrichmentAlgorithm<StatisticsEnrichment>(mode, statistic::sum<double, _viter>, scores);
+	} else if(method == "max-mean") {
+		return createEnrichmentAlgorithm<StatisticsEnrichment>(mode, statistic::max_mean<double, _viter>, scores);
 	}
 
-	result->score = apply(contained_genes, method);
-	if(method == "mean"){
-		result->enriched = result->score >= apply(all_genes, method);
-	}else if(method == "median"){
-		result->enriched = result->score >= apply(all_genes, method);
-	}else {
-		result->enriched = result->score >= 0.0;
-	}
-	result->hits = genes.first;
-	result->info = genes.second;
-	return result;
-}
-
-void computePValues(AllResults& all_results)
-{
-	std::vector<TestResult<double>> results;
-	std::vector<double> scores;
-	scores.reserve(adapted_test_set.size());
-	for(size_t i = 0; i < adapted_test_set.size(); ++i) {
-		scores.push_back(adapted_test_set[i].second);
-	}
-
-	for(const auto& it : all_results) {
-		for(const auto& jt : it.second) {
-			TestResult<double> t(it.first + "\t" + jt.first, jt.second->score, jt.second->hits);
-			t.enriched = jt.second->enriched;
-			results.emplace_back(t);
-		}
-	}
-	PermutationTest<double> pTest(results, scores, numberOfPermutations);
-	std::vector<std::pair<std::string, double>> pvalues = pTest.computePValue(methods[method]);
-	updatePValues(all_results, pvalues);
+	//TODO: Throw the proper exception
+	throw std::string("Unknown method: " + method);
 }
 
 int main(int argc, char* argv[])
@@ -143,7 +89,15 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	adapted_test_set = test_set;
+	GeneSetReader reader;
+	auto scoreSet = reader.readScoringFile(p.scores);
 
-	run(test_set, cat_list, p, true);
+	Scores scores(scoreSet.size());
+	for(const auto& score : scoreSet) {
+		scores.emplace_back(score.first, score.second);
+	}
+
+	auto algorithm = getAlgorithm(p.pValueMode, method, scores);
+
+	run(test_set, cat_list, algorithm, p, true);
 }

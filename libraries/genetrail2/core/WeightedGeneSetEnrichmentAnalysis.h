@@ -121,10 +121,13 @@ namespace GeneTrail
 		 * @param category Category for which the RSc should be computed.
 		 * @return The RSc for the given categories.
 		 */
-		float_type computeRunningSum(const Category& category) const
+		template <typename InputIterator>
+		float_type computeRunningSum(const Category& category,
+		                             InputIterator begin,
+		                             InputIterator end) const
 		{
 			Indices S = intersection(category, names_);
-			return computeRunningSum(S.begin(), S.end());
+			return computeRunningSum(category, begin, end);
 		}
 
 		/**

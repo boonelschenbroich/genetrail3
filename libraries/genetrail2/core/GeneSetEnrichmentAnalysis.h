@@ -28,6 +28,7 @@
 
 #include <boost/math/special_functions/binomial.hpp>
 
+#include <functional>
 #include <map>
 #include <vector>
 #include <iostream>
@@ -45,12 +46,12 @@ namespace GeneTrail
 		constexpr static bool debug = false;
 
 		public:
-		size_t intersectionSize(const Category& category,
-		                        const std::vector<std::string>& testSet)
+		template<typename Iterator>
+		size_t intersectionSize(const Category& category, Iterator begin, const Iterator& end)
 		{
 			size_t n = 0;
-			for(auto gene : testSet) {
-				if(category.contains(gene)) {
+			for(; begin != end; ++begin) {
+				if(category.contains(*begin)) {
 					++n;
 				}
 			}
@@ -59,7 +60,7 @@ namespace GeneTrail
 
 		big_int_type absMax(big_int_type a, big_int_type b)
 		{
-			return abs(a) < abs(b) ? b : a;
+			return std::abs(a) < std::abs(b) ? b : a;
 		}
 
 		/**
@@ -71,17 +72,18 @@ namespace GeneTrail
 		 *computed.
 		 * @return The RSc for the given categories.
 		 */
+		template<typename Iterator>
 		big_int_type computeRunningSum(const Category& category,
-		                               const std::vector<std::string>& testSet)
+									   Iterator begin, const Iterator& end)
 		{
-			size_t n = testSet.size();
-			size_t l = intersectionSize(category, testSet);
+			size_t n = std::distance(begin, end);
+			size_t l = intersectionSize(category, begin, end);
 			size_t nl = n - l;
 			big_int_type RSc = 0;
 			big_int_type rs = 0;
 
-			for(const auto& t : testSet) {
-				if(category.contains(t)) {
+			for(; begin != end; ++begin) {
+				if(category.contains(*begin)) {
 					rs += nl;
 					RSc = absMax(RSc, rs);
 				} else {
@@ -89,6 +91,7 @@ namespace GeneTrail
 					RSc = absMax(RSc, rs);
 				}
 			}
+
 			return RSc;
 		}
 
@@ -105,9 +108,9 @@ namespace GeneTrail
 		computeTwoSidedPValue(const Category& category,
 		                      const std::vector<std::string>& testSet)
 		{
-			big_int_type RSc = computeRunningSum(category, testSet);
+			big_int_type RSc = computeRunningSum(category, testSet.begin(), testSet.end());
 			return computeTwoSidedPValue(
-			    testSet.size(), intersectionSize(category, testSet), RSc);
+			    testSet.size(), intersectionSize(category, testSet.begin(), testSet.end()), RSc);
 		}
 
 		/**
@@ -140,7 +143,7 @@ namespace GeneTrail
 		                             const big_int_type& RSc)
 		{
 			return computePValue_(
-			    n, l, abs(RSc),
+			    n, l, std::abs(RSc),
 			    [](big_int_type v, big_int_type RSc) { return -RSc < v; });
 		}
 
@@ -157,7 +160,7 @@ namespace GeneTrail
 		                              const big_int_type& RSc)
 		{
 			return computePValue_(
-			    n, l, abs(RSc),
+			    n, l, std::abs(RSc),
 			    [](big_int_type v, big_int_type RSc) { return v < RSc; });
 		}
 
@@ -246,13 +249,13 @@ namespace GeneTrail
 		computeOneSidedPValue(const Category& category,
 		                      const std::vector<std::string>& testSet)
 		{
-			big_int_type RSc = computeRunningSum(category, testSet);
+			big_int_type RSc = computeRunningSum(category, testSet.begin(), testSet.end());
 			if(RSc < 0) {
 				return computeLeftPValue(
-				    testSet.size(), intersectionSize(category, testSet), RSc);
+				    testSet.size(), intersectionSize(category, testSet.begin(), testSet.end()), RSc);
 			} else {
 				return computeRightPValue(
-				    testSet.size(), intersectionSize(category, testSet), RSc);
+				    testSet.size(), intersectionSize(category, testSet.begin(), testSet.end()), RSc);
 			}
 		}
 

@@ -54,7 +54,7 @@ namespace GeneTrail
 		                    const unsigned_integer_type& l,
 		                    const unsigned_integer_type& n,
 		                    const unsigned_integer_type& k,
-		                    const unsigned_integer_type& i)
+		                    const unsigned_integer_type& i) const
 		{
 			return (boost::math::binomial_coefficient<return_type>(n, i) *
 			        boost::math::binomial_coefficient<return_type>(m, l + k - i)) /
@@ -78,7 +78,7 @@ namespace GeneTrail
 		return_type lowerTailedPValue(const unsigned_integer_type& m,
 		                              const unsigned_integer_type& l,
 		                              const unsigned_integer_type& n,
-		                              const unsigned_integer_type& k)
+		                              const unsigned_integer_type& k) const
 		{
 			return_type p = 0;
 			for(unsigned_integer_type i = 0; i <= k; ++i) {
@@ -104,7 +104,7 @@ namespace GeneTrail
 		return_type upperTailedPValue(const unsigned_integer_type& m,
 		                              const unsigned_integer_type& l,
 		                              const unsigned_integer_type& n,
-		                              const unsigned_integer_type& k)
+		                              const unsigned_integer_type& k) const
 		{
 			return_type p = 0;
 			unsigned_integer_type d = std::min(n, l + k);

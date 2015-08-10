@@ -8,6 +8,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include <genetrail2/core/Exception.h>
+#include <genetrail2/core/EnrichmentAlgorithm.h>
 #include <genetrail2/core/EnrichmentResult.h>
 #include <genetrail2/core/Category.h>
 #include <genetrail2/core/GeneSetReader.h>
@@ -28,6 +29,9 @@ namespace bpo = boost::program_options;
 namespace GeneTrail
 {
 	class GeneSet;
+	class EnrichmentAlgorithm;
+
+	using EnrichmentAlgorithmPtr = std::unique_ptr<EnrichmentAlgorithm>;
 }
 
 typedef std::map<std::string, std::shared_ptr<EnrichmentResult>> Results;
@@ -36,6 +40,7 @@ typedef std::vector<std::pair<std::string, double>> PValueList;
 
 struct Params
 {
+	std::string algorithm;
 	double significance;
 	std::string categories;
 	std::string scores;
@@ -45,8 +50,19 @@ struct Params
 	std::string out;
 	std::string adjustment;
 	bool runSeparately;
-	bool adaptGeneSets;
+	PValueMode pValueMode;
+	size_t numPermutations;
+	std::string dataMatrixPath;
+	std::string groups;
+	std::string scoringMethod;
 };
+
+using CategoryList = std::list<std::pair<std::string, std::string>>;
+
+namespace GeneTrail {
+	void validate(boost::any&, const std::vector<std::string>&, PValueMode*,
+	              int);
+}
 
 /**
  * This function adds common arguments to the BOOST commandline parser.
@@ -55,59 +71,6 @@ struct Params
  * @param p Parameter object
  */
 void addCommonCLIArgs(bpo::options_description& desc, Params& p);
-
-/**
- * This function parses the given input file and saves the information as GeneSet object.
- *
- * @param test_set GeneSet object to be filled by this function
- * @param p Parameter object
- */
-void readTestSet(GeneSet& test_set, const Params& p);
-
-typedef std::list<std::pair<std::string, std::string>> CategoryList;
-
-/**
- * This function parses the given category file and returns the contained information in a list.
- *
- * @param catfile_list File containing the categories for which pvalues should be computed.
- * @param single_cati TODO
- * @return List of (category name, path to category file) pairs.
- */
-CategoryList getCategoryList(const std::string& catfile_list, const std::string& single_cat);
-
-
-/**
- * This function converts a AllResults obeject into a PValueList object.
- *
- * @param results AllResults& object to be converted
- * @return List of (category name,  pvalue) pairs.
- */
-PValueList resultVector(const AllResults& results);
-
-/**
- * This function converts a Results obeject into a PValueList object.
- *
- * @param results Results& object to be converted
- * @return List of (category name,  pvalue) pairs.
- */
-PValueList resultVector(const Results& results);
-
-/**
- *
- * @param c Category that should be processed
- * @param test_set TestSet for which pvalue should be computed based on the category
- * @param p Parameter object
- * @return
- */
-std::pair<bool, std::pair<int, std::string>> processCategory(Category& c, GeneSet& test_set, const Params& p);
-
-/**
- * Writes the results for each database in a separate file.
- *
- * @param output_dir Path and prefix of the output files.
- * @param all_results AllResults object containing all results.
- */
-void writeFiles(const std::string& output_dir, const AllResults& all_results);
 
 /**
  * This function initializes the needed attributes.
@@ -130,91 +93,12 @@ int init(GeneSet& test_set, CategoryList& cat_list, const Params& p);
 std::vector<std::string> getSortedIdentifier(GeneSet& test_set, const Params& p, bool absolute, bool increasing);
 
 /**
- * This function adapts gene sets needed to compute the current enrichment.
- * It computes the intersection of all genes that are in the current database and
- * the given gene set.
- * 
- * @param test_set Test set of the used enrichment service
- * @param all_genes_of_database Union of all genes that belong to the database used in the current enrichment
- */
-GeneSet adapt_gene_set(GeneSet& gene_set, const Category& all_genes_of_database);
-
-/**
- * This function adapts all gene sets needed to compute an enrichment.
- * It computes the intersection of all genes that are in the current database and
- * all gene sets of the current enrichment service. 
- *
- * @param all_genes_of_database Union of all genes that belong to the database used in the current enrichment
- * @return Adapted test set of the current enrichment
- */
-GeneSet adapt_all_gene_sets(const Category& all_genes_of_database);
-
-/**
- * This function computes all results for a given Category.
- *
- * @param adapted_test_set Test set that should be used for computation.
- * @param c Category
- * @param genes
- * @return Shared pointer to an Enrichment result object.
- */
-std::unique_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std::pair<int, std::string>& genes);
-
-/**
- * This function updates all pvalues in a Results object.
- *
- * @params results Results object
- * @param pvalues This new pvalues
- */
-void updatePValues(Results& results, const PValueList& pvalues);
-
-/**
- * This function updates all pvalues in a AllResults object.
- *
- * @params results Results object
- * @param pvalues This new pvalues
- */
-void updatePValues(AllResults& results, const PValueList& pvalues);
-
-/**
- * This function adjusts all pvalues in a AllResults object combined.
- *
- * @params results Results object
- * @param pvalues This new pvalues
- */
-void adjustCombined(AllResults& results, const Params& p);
-
-/**
- * This function adjusts all pvalues in a AllResults object.
- * All databases will be separately adjusted.
- *
- * @params results Results object
- * @param pvalues This new pvalues
- */
-void adjustSeparately(AllResults& results, const Params& p);
-
-/**
- *
- */
-void computePValues(AllResults& results);
-
-/**
  * This function runs the entire pipeline.
  *
  * @param test_set Test set for which the computation should be started
  * @param cat_list List of categories for the computation
  * @param p
  */
-void run(GeneSet& test_set, CategoryList& cat_list, const Params& p);
-
-/**
- * This function runs the entire pipeline.
- *
- * @param test_set Test set for which the computation should be started
- * @param cat_list List of categories for the computation
- * @param p
- * @param Flag indicating if the p-value should be computed separately.
- */
-void run(GeneSet& test_set, CategoryList& cat_list, const Params& p, bool computePValue);
+void run(GeneSet& test_set, CategoryList& cat_list, EnrichmentAlgorithmPtr& algorithm, const Params& p, bool computePValues);
 
 #endif // GT2_APPLICATIONS_ENRICHMENT_COMMON_H
-

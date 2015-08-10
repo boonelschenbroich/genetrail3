@@ -24,6 +24,8 @@
 
 #include "macros.h"
 
+#include <memory>
+
 namespace GeneTrail {
 
     /**
@@ -31,7 +33,7 @@ namespace GeneTrail {
      */
     struct GT2_EXPORT ORAResult : public EnrichmentResult {
 
-		ORAResult(const Category& c) : EnrichmentResult(c), expected_hits(0.0)
+		ORAResult(const std::shared_ptr<Category>& c) : EnrichmentResult(c), expected_hits(0.0)
 		{}
 
 		double expected_hits;

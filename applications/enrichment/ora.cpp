@@ -1,4 +1,5 @@
 #include <genetrail2/core/Category.h>
+#include <genetrail2/core/EnrichmentAlgorithm.h>
 #include <genetrail2/core/GMTFile.h>
 #include <genetrail2/core/GeneSetReader.h>
 #include <genetrail2/core/OverRepresentationAnalysis.h>
@@ -34,9 +35,7 @@ std::string reference;
 Params p;
 
 GeneSet test_set;
-GeneSet adapted_test_set;
 GeneSet reference_set;
-GeneSet adapted_reference_set;
 CategoryList cat_list;
 OverRepresentationAnalysis ora;
 
@@ -65,23 +64,6 @@ bool parseArguments(int argc, char* argv[])
 	return true;
 }
 
-GeneSet adapt_all_gene_sets(const Category& all_genes_of_database)
-{
-	adapted_test_set = adapt_gene_set(test_set, all_genes_of_database);
-	adapted_reference_set = adapt_gene_set(reference_set, all_genes_of_database);
-	ora = OverRepresentationAnalysis(adapted_reference_set.toCategory("reference"), adapted_test_set.toCategory("test"));
-	return adapted_test_set;
-}
-
-std::unique_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std::pair<int, std::string>& genes)
-{
-	return std::make_unique<ORAResult>(ora.computePValue(c));
-}
-
-void computePValues(AllResults& results)
-{
-}
-
 int main(int argc, char* argv[])
 {
 	if(!parseArguments(argc, argv)) {
@@ -93,13 +75,10 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	adapted_test_set = test_set;
-
 	GeneSetReader reader;
 	try
 	{
 		reference_set = reader.readGeneList(reference);
-		adapted_reference_set = reference_set;
 	}
 	catch(IOError& exn)
 	{
@@ -107,10 +86,9 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	ora = OverRepresentationAnalysis(reference_set.toCategory("reference"), test_set.toCategory("test"));
+	auto enrichmentAlgorithm = createEnrichmentAlgorithm<Ora>(p.pValueMode, reference_set.toCategory("reference"), test_set.toCategory("test"));
 
-	run(test_set, cat_list, p);
+	run(test_set, cat_list, enrichmentAlgorithm, p, true);
 
 	return 0;
 }
-

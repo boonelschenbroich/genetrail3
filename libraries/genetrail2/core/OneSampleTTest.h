@@ -20,12 +20,13 @@
 #ifndef GT2_CORE_ONE_SAMPLE_TTEST_H
 #define GT2_CORE_ONE_SAMPLE_TTEST_H
 
-#include <cmath>
-#include <iterator>
-
 #include "macros.h"
 
 #include "Statistic.h"
+
+#include <cmath>
+#include <iterator>
+#include <iostream>
 
 namespace GeneTrail {
 
@@ -39,6 +40,11 @@ namespace GeneTrail {
 
         OneSampleTTest(value_type tol = 1e-5, value_type mu = 0.0) : tolerance_(tol), mu_(mu) {
         }
+
+		template<typename InputIterator1, typename InputIterator2>
+		value_type test(const InputIterator1& begin, const InputIterator1& end, const InputIterator2&, const InputIterator2&) {
+			return test(begin, end);
+		}
 
         /**
          * This method implements the "One Sample Student's T-Test".

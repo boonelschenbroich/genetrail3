@@ -1,13 +1,8 @@
 #include <genetrail2/core/Category.h>
 #include <genetrail2/core/GMTFile.h>
 #include <genetrail2/core/GeneSetReader.h>
-#include <genetrail2/core/WeightedGeneSetEnrichmentAnalysis.h>
-#include <genetrail2/core/WGSEAPermutationTest.h>
 #include <genetrail2/core/PermutationTest.h>
-#include <genetrail2/core/PValue.h>
 #include <genetrail2/core/GeneSet.h>
-#include <genetrail2/core/multiprecision.h>
-#include <genetrail2/core/compat.h>
 
 #include "common.h"
 
@@ -15,18 +10,9 @@ using namespace GeneTrail;
 namespace bpo = boost::program_options;
 namespace bm = boost::math;
 
-std::string json;
 bool increasing = false, absolute = false;
 
-Params p;
-
-GeneSet test_set;
-CategoryList cat_list;
-std::vector<std::string> names;
-std::vector<double> values;
-size_t numberOfPermutations;
-
-bool parseArguments(int argc, char* argv[])
+bool parseArguments(int argc, char* argv[], Params& p)
 {
 	bpo::variables_map vm;
 	bpo::options_description desc;
@@ -34,8 +20,7 @@ bool parseArguments(int argc, char* argv[])
 	addCommonCLIArgs(desc, p);
 	desc.add_options()("identifier, d", bpo::value<std::string>(&p.identifier), "A file containing identifier line by line.")(
 	                   "increasing,i", bpo::value(&increasing)->zero_tokens(), "Use increasingly sorted scores. (Decreasing is default)")(
-	                   "absolute,abs", bpo::value(&absolute)->zero_tokens(), "Use decreasingly sorted absolute scores.")(
-	                   "permutations,per", bpo::value<size_t>(&numberOfPermutations)->default_value(1000), "Number of permutations for p-value computation.");
+	                   "absolute,abs", bpo::value(&absolute)->zero_tokens(), "Use decreasingly sorted absolute scores.");
 
 	if(absolute && increasing) {
 		std::cerr << "ERROR: Please specify only one option to sort the file."
@@ -58,81 +43,21 @@ bool parseArguments(int argc, char* argv[])
 	return true;
 }
 
-void create_names_and_values(GeneSet& gene_set)
-{	
-	std::vector<std::pair<std::string, double>> sorted_test_set;
-
-	if(absolute) {
-		sorted_test_set = gene_set.getAbsoluteSortedScores();
-	} else {
-		sorted_test_set = gene_set.getSortedScores(!increasing);
-	}
-
-	names.reserve(sorted_test_set.size());
-	values.reserve(sorted_test_set.size());
-
-	for(const auto& t : sorted_test_set) {
-		names.emplace_back(t.first);
-		values.emplace_back(t.second);
-	}
-}
-
-GeneSet adapt_all_gene_sets(const Category& all_genes_of_database)
-{
-	GeneSet adapted_test_set = adapt_gene_set(test_set, all_genes_of_database);
-        create_names_and_values(adapted_test_set);
-	return adapted_test_set;
-}
-
-std::unique_ptr<EnrichmentResult>
-computeEnrichment(const Category& c, const std::pair<int, std::string>& genes)
-{
-	WeightedGeneSetEnrichmentAnalysis<big_float> gsea(names, values);
-
-	auto result = std::make_unique<EnrichmentResult>(c);
-
-	double RSc = gsea.computeRunningSum(c).convert_to<double>();
-	;
-	result->enriched = RSc > 0.0;
-
-	result->score = RSc;
-
-	result->hits = genes.first;
-	result->info = genes.second;
-	return result;
-}
-
-void computePValues(AllResults& all_results)
-{
-	std::vector<TestResult<double>> results;
-	for(const auto& it : all_results) {
-		for(const auto& jt : it.second) {
-			TestResult<double> t(it.first + "\t" + jt.first, jt.second->score, jt.second->hits);
-			t.enriched = jt.second->enriched;
-			results.emplace_back(t);
-		}
-	}
-
-	WeightedGeneSetEnrichmentAnalysis<double> wgsea(names, values);
-	WGSEAPermutationTest<double> pTest(results, wgsea, names.size(),
-	                                   numberOfPermutations);
-	std::vector<std::pair<std::string, double>> pvalues = pTest.computePValue();
-	updatePValues(all_results, pvalues);
-}
-
 int main(int argc, char* argv[])
 {
-	if(!parseArguments(argc, argv)) {
+	Params p;
+	if(!parseArguments(argc, argv, p)) {
 		return -1;
 	}
 
+	GeneSet test_set;
+	CategoryList cat_list;
 	if(init(test_set, cat_list, p) != 0) {
 		return -1;
 	}
 
-	create_names_and_values(test_set);
+	auto algorithm = createEnrichmentAlgorithm<WeightedKolmogorovSmirnov>(p.pValueMode, Scores(test_set));
 
-	run(test_set, cat_list, p, true);
+	run(test_set, cat_list, algorithm, p, true);
 	return 0;
 }
-

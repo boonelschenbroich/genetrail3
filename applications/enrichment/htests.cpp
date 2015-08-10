@@ -64,86 +64,18 @@ bool parseArguments(int argc, char* argv[])
 	return true;
 }
 
-GeneSet adapt_all_gene_sets(const Category& all_genes_of_database)
+EnrichmentAlgorithmPtr getAlgorithm(const std::string& method, const Scores& scores, PValueMode mode)
 {
-	adapted_test_set = adapt_gene_set(test_set, all_genes_of_database);
-	return adapted_test_set;
-}
-
-std::unique_ptr<EnrichmentResult> computeEnrichment(const Category& c, const std::pair<int,std::string>& genes)
-{
-	auto result = std::make_unique<EnrichmentResult>(c);
-
-	std::vector<double> all_genes;
-	all_genes.resize(adapted_test_set.size());
-
-	std::vector<double> contained_genes;
-	std::vector<double> not_contained_genes;
-
-	for(int i = 0; i < adapted_test_set.size(); ++i) {
-		all_genes[i] = adapted_test_set[i].second;
-		if(c.contains(adapted_test_set[i].first)) {
-			contained_genes.push_back(adapted_test_set[i].second);
-		}else{
-			not_contained_genes.push_back(adapted_test_set[i].second);
-		}
-	}
-
-	result->hits = genes.first;
-	result->info = genes.second;
-	result->score = 0;
-	result->pvalue = 1;
-
-	if(contained_genes.size() <= 1) {
-		std::cerr << "WARNING: Could not compute a p-value for category " + c.name() + ". The number of found genes is too small." << std::endl;
-		return result;
-	}
-
 	if(method == "one-sample-t-test") {
-		auto mean = statistic::mean<double, std::vector<double>::iterator>(all_genes.begin(), all_genes.end());
-		OneSampleTTest<double> ttest(1e-4, mean);
-		result->score = HTest::test(ttest, contained_genes.begin(), contained_genes.end());
-		if(result->score < 0){
-			result->pvalue = HTest::lowerTailedPValue(ttest, result->score);
-		}else{
-			result->pvalue = HTest::upperTailedPValue(ttest, result->score);
-		}
-		result->enriched = result->score > 0;
-
-		return result;
+		return createEnrichmentAlgorithm<HTestEnrichment<OneSampleTTest<double>>>(mode, scores);
+	} else if(method == "two-sample-t-test") {
+		return createEnrichmentAlgorithm<HTestEnrichment<IndependentTTest<double>>>(mode, scores);
+	} else if(method == "two-sample-wilcoxon") {
+		return createEnrichmentAlgorithm<HTestEnrichment<WilcoxonRankSumTest<double>>>(mode, scores);
 	}
 
-	if(not_contained_genes.size() <= 1){
-		std::cerr << "WARNING: Could not compute a p-value for category " + c.name() + ". The number of found genes is too small." << std::endl;
-		return result;
-	}
-
-	if(method == "two-sample-wilcoxon"){
-		WilcoxonRankSumTest<big_float> wilcox(1e-4);
-		auto score = HTest::test(wilcox, contained_genes.begin(), contained_genes.end(), not_contained_genes.begin(), not_contained_genes.end());
-		result->score = score.convert_to<double>();;
-		if(wilcox.enriched()){
-			result->pvalue = HTest::upperTailedPValue(wilcox, score);
-		}else{
-			result->pvalue = HTest::lowerTailedPValue(wilcox, score);
-		}
-		result->enriched = wilcox.enriched();
-	}else if(method == "two-sample-t-test"){
-		IndependentTTest<double> ttest(1e-4);
-		result->score = HTest::test(ttest, contained_genes.begin(), contained_genes.end(), not_contained_genes.begin(), not_contained_genes.end());
-		if(result->score < 0){
-			result->pvalue = HTest::lowerTailedPValue(ttest, result->score);
-		}else{
-			result->pvalue = HTest::upperTailedPValue(ttest, result->score);
-		}
-		result->enriched = result->score > 0;
-	}
-
-	return result;
+	throw std::string("Invalid method " + method);
 }
-
-void computePValues(AllResults& results)
-{}
 
 int main(int argc, char* argv[])
 {
@@ -156,7 +88,7 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	adapted_test_set = test_set;
+	auto algorithm = getAlgorithm(method, Scores(test_set), p.pValueMode);
 
-	run(test_set, cat_list, p);
+	run(test_set, cat_list, algorithm, p, true);
 }

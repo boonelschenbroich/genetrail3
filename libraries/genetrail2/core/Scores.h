@@ -35,51 +35,58 @@ namespace GeneTrail
 		class NamesProxy
 		{
 			private:
-				struct ExtractName {
-					const std::string& operator()(const Score& s) const {
-						return s.name();
-					};
+			struct ExtractName
+			{
+				const std::string& operator()(const Score& s) const
+				{
+					return s.name();
 				};
+			};
 			const std::vector<Score>* data_;
 
 			public:
-			using const_iterator = boost::transform_iterator<ExtractName, Scores::const_iterator>;
+			using const_iterator =
+			    boost::transform_iterator<ExtractName, Scores::const_iterator>;
 
 			NamesProxy(const std::vector<Score>* data);
 
 			const_iterator begin() const
 			{
-				return boost::make_transform_iterator(data_->begin(), ExtractName());
+				return boost::make_transform_iterator(data_->begin(),
+				                                      ExtractName());
 			}
 			const_iterator end() const
 			{
-				return boost::make_transform_iterator(data_->end(), ExtractName());
+				return boost::make_transform_iterator(data_->end(),
+				                                      ExtractName());
 			}
 		};
 
 		class ScoresProxy
 		{
 			private:
-				struct ExtractScore{
-					double operator()(const Score& s) const {
-						return s.score();
-					}
-				};
+			struct ExtractScore
+			{
+				double operator()(const Score& s) const { return s.score(); }
+			};
 			const std::vector<Score>* data_;
 
 			public:
-			using const_iterator = boost::transform_iterator<ExtractScore, Scores::const_iterator>;
+			using const_iterator =
+			    boost::transform_iterator<ExtractScore, Scores::const_iterator>;
 
 			ScoresProxy(const std::vector<Score>* data);
 
 			const_iterator begin() const
 			{
-				return boost::make_transform_iterator(data_->begin(), ExtractScore());
+				return boost::make_transform_iterator(data_->begin(),
+				                                      ExtractScore());
 			}
 
 			const_iterator end() const
 			{
-				return boost::make_transform_iterator(data_->end(), ExtractScore());
+				return boost::make_transform_iterator(data_->end(),
+				                                      ExtractScore());
 			}
 		};
 
@@ -109,10 +116,7 @@ namespace GeneTrail
 		iterator begin() { return data_.begin(); }
 		iterator end() { return data_.end(); }
 
-		const_iterator begin() const
-		{
-			return data_.begin();
-		}
+		const_iterator begin() const { return data_.begin(); }
 
 		const_iterator end() const { return data_.end(); }
 

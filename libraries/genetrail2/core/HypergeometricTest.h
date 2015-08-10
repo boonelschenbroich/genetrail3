@@ -46,7 +46,7 @@ namespace GeneTrail
 		 * @return The hypergeometric probability of the parameters
 		 */
 		return_type compute(const uintt& m, const uintt& l, const uintt& n,
-		                    const uintt& k)
+		                    const uintt& k) const
 		{
 			return (boost::math::binomial_coefficient<return_type>(l, k) *
 			        boost::math::binomial_coefficient<return_type>(m - l, n - k)) /
@@ -65,7 +65,7 @@ namespace GeneTrail
 		 * @return p-value
 		 */
 		return_type lowerTailedPValue(const uintt& m, const uintt& l,
-		                              const uintt& n, const uintt& k)
+		                              const uintt& n, const uintt& k) const
 		{
 			return_type p = 0.0;
 			// Make sure we do not compute undefined binomial coefficients
@@ -89,7 +89,7 @@ namespace GeneTrail
 		 * @return p-value
 		 */
 		return_type upperTailedPValue(const uintt& m, const uintt& l,
-		                              const uintt& n, const uintt& k)
+		                              const uintt& n, const uintt& k) const
 		{
 			return_type p = 0.0;
 			uintt d = std::min(n, l);

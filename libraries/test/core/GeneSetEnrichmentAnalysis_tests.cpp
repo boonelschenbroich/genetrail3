@@ -38,7 +38,7 @@ TEST(GeneSetEnrichmentAnalysis, twoSidedPValue2) {
 	cat.insert(boost::lexical_cast<std::string>(2));
 	cat.insert(boost::lexical_cast<std::string>(6));
 	GeneSetEnrichmentAnalysis<double, int> gsea;
-	EXPECT_NEAR(gsea.computeRunningSum(cat,test), 12, TOLERANCE);
+	EXPECT_NEAR(gsea.computeRunningSum(cat,test.begin(), test.end()), 12, TOLERANCE);
 	EXPECT_NEAR(gsea.computeTwoSidedPValue(cat,test), 0.228571, TOLERANCE);
 }
 

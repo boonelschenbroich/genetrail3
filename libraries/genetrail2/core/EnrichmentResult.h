@@ -34,11 +34,10 @@ namespace GeneTrail {
      * GeneralEnrichmentResult
      */
     struct GT2_EXPORT EnrichmentResult {
-		EnrichmentResult(const Category& c) : name(c.name()), reference(c.reference()), hits(0), pvalue(-1.0), enriched(false), score(0.0)
+		EnrichmentResult(const std::shared_ptr<Category>& c) : category(c), hits(0), pvalue(-1.0), enriched(false), score(0.0)
 		{}
 
-		std::string name;
-		std::string reference;
+		std::shared_ptr<Category> category;
 		unsigned int hits;
 		big_float pvalue;
 		std::string info;
@@ -59,8 +58,8 @@ namespace GeneTrail {
 
 		virtual std::string serialize() const{
 			std::string result = "";
-			result += name + "\t";
-			result += reference + "\t";
+			result += category->name() + "\t";
+			result += category->reference() + "\t";
 			result += boost::lexical_cast<std::string>(hits) + "\t";
 			result += boost::lexical_cast<std::string>(score) + "\t";
 			result += boost::lexical_cast<std::string>(pvalue) + "\t";

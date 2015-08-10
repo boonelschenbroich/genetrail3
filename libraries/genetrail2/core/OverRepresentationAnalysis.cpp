@@ -19,21 +19,15 @@ bool OverRepresentationAnalysis::categoryContainsAllGenes(const Category& refere
     return true;
 }
 
-ORAResult OverRepresentationAnalysis::computePValue(const Category& category) {
-
-	ORAResult result(category);
-
+double OverRepresentationAnalysis::computePValue(const Category& category) const {
 	// GeneTrail 1
 	//uint64_t l = category.size();
 
 	uint64_t l = Category::intersect("null", reference_set_, category).size();
 	Category intersection = Category::intersect("null", test_set_, category);
 	uint64_t k = intersection.size();
-	result.hits = k;
 	auto expected_k = ((double)l * n_) / ((double)m_);
-	result.expected_hits = expected_k;
 	bool enriched = expected_k < k;
-	result.enriched = enriched;
 
 	big_float p;
 
@@ -51,13 +45,5 @@ ORAResult OverRepresentationAnalysis::computePValue(const Category& category) {
 		}
 	}
 
-	result.pvalue = p;
-
-	std::string genes = "";
-	for (auto gene = intersection.begin(); gene != intersection.end(); ++gene) {
-		genes += (gene == intersection.begin()) ? *gene : "," + *gene;
-	}
-	result.info = genes;
-
-    	return result;
+	return p.convert_to<double>();
 }
