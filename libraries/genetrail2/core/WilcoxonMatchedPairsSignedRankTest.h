@@ -21,9 +21,9 @@
 #define GT2_CORE_WILCOXON_MATCHED_PAIRS_SIGNED_RANK_TEST_H
 
 
-#include <genetrail2/core/macros.h>
-#include <genetrail2/core/Statistic.h>
-#include <genetrail2/core/OneSampleWilcoxonSignedRankTest.h>
+#include "macros.h"
+#include "Statistic.h"
+#include "OneSampleWilcoxonSignedRankTest.h"
 
 #include <vector>
 #include <cmath>

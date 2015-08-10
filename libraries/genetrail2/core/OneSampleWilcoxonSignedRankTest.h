@@ -21,8 +21,8 @@
 #define GT2_CORE_ONE_SAMPLE_WILCOXON_SIGNED_RANK_TEST_H
 
 
-#include <genetrail2/core/macros.h>
-#include <genetrail2/core/Statistic.h>
+#include "macros.h"
+#include "Statistic.h"
 
 #include <vector>
 #include <cmath>
