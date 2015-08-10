@@ -40,7 +40,8 @@ namespace GeneTrail
 		      hits(0),
 		      pvalue(1.0),
 		      enriched(false),
-		      score(0.0)
+		      score(0.0),
+		      expected_score(0.0)
 		{
 		}
 
@@ -50,6 +51,7 @@ namespace GeneTrail
 		std::string info;
 		bool enriched;
 		double score;
+		double expected_score;
 
 		virtual std::string header() const
 		{
@@ -58,6 +60,7 @@ namespace GeneTrail
 			header += "Reference\t";
 			header += "Hits\t";
 			header += "Score\t";
+			header += "Expected Score\t";
 			header += "P-value\t";
 			header += "Info\t";
 			header += "Regulation_direction";
@@ -70,6 +73,7 @@ namespace GeneTrail
 			     << category->reference() << '\t'
 			     << hits << '\t'
 			     << score << '\t'
+			     << expected_score << '\t'
 			     << pvalue << '\t'
 			     << info << '\t'
 			     << enriched;
