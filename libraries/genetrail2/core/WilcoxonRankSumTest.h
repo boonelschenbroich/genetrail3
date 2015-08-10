@@ -21,8 +21,8 @@
 #define GT2_CORE_WILCOXON_RANK_SUM_TEST_H
 
 
-#include <genetrail2/core/macros.h>
-#include <genetrail2/core/Statistic.h>
+#include "macros.h"
+#include "Statistic.h"
 
 namespace GeneTrail {
 
@@ -39,7 +39,7 @@ namespace GeneTrail {
 
 		value_type computeZScore(value_type rank_sum, value_type size1, value_type size2){
 			value_type mu = (size1 * (size1 + size2 + 1) / ((value_type)2.0));
-			value_type sd = sqrt((size1 * size2 * (size1 + size2 + 1)) / ((value_type)12.0));
+			value_type sd = std::sqrt((size1 * size2 * (size1 + size2 + 1)) / ((value_type)12.0));
 			enriched_ = rank_sum > mu;
 			return (rank_sum - mu) / sd;
 		}
@@ -60,19 +60,14 @@ namespace GeneTrail {
             value_type rank_sum1 = 0;
             value_type rank_sum2 = 0;
 
-            value_type size1 = std::distance(first_begin,first_end);
-			value_type size2 = std::distance(second_begin,second_end);
-
-            auto iit = first_begin;
-			for (unsigned int i = 0; i < size1; ++i) {
-				r.push_back(std::make_pair(*iit, 0));
-				++iit;
+			size_t size1 = 0;
+			for(auto iit = first_begin; iit != first_end; ++iit, ++size1) {
+				r.emplace_back(*iit, 0);
             }
 
-			iit = second_begin;
-            for (unsigned int i = 0; i < size2; ++i) {
-                r.push_back(std::make_pair(*iit, 1));
-				++iit;
+			size_t size2 = 0;
+			for(auto iit = second_begin; iit != second_end; ++iit, ++size2) {
+				r.emplace_back(*iit, 1);
             }
 
             sort(r.begin(), r.end(),
