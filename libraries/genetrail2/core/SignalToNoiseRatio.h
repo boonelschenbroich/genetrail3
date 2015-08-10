@@ -31,9 +31,10 @@ namespace GeneTrail {
     /**
      * SignalToNoiseRatio
      */
-    template <typename value_type>
+    template <typename ValueType>
     class GT2_EXPORT SignalToNoiseRatio {
     public:
+		using value_type = ValueType;
 
         SignalToNoiseRatio(value_type tol = 1e-4) : tolerance_(tol),score_(0) {
         }

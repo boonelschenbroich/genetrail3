@@ -31,9 +31,10 @@ namespace GeneTrail {
     /**
      * F-Test
      */
-    template <typename value_type>
+    template <typename ValueType>
     class GT2_EXPORT FTest {
     public:
+		using value_type = ValueType;
 
         FTest(value_type tol = 1e-4) : tolerance_(tol),size1_(0),size2_(0),score_(0) {
         }

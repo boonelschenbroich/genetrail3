@@ -32,9 +32,10 @@ namespace GeneTrail {
     /**
      * One Sample Student's T-Test
      */
-    template <typename value_type>
+    template <typename ValueType>
     class GT2_EXPORT OneSampleTTest {
     public:
+		using value_type = ValueType;
 
         OneSampleTTest(value_type tol = 1e-5, value_type mu = 0.0) : tolerance_(tol), mu_(mu) {
         }

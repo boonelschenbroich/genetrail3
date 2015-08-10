@@ -29,9 +29,10 @@ namespace GeneTrail {
     /**
      * Wilcoxon Rank Sum Test
      */
-    template <typename value_type>
+    template <typename ValueType>
     class GT2_EXPORT WilcoxonRankSumTest {
     public:
+		using value_type = ValueType;
 
         WilcoxonRankSumTest(value_type tol = 1e-4) : tolerance_(tol) {
         }

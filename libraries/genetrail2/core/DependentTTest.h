@@ -32,9 +32,10 @@ namespace GeneTrail {
     /**
      * Dependent Student's T-Test
      */
-    template <typename value_type>
+    template <typename ValueType>
     class GT2_EXPORT DependentTTest {
     public:
+		using value_type = ValueType;
 
         DependentTTest(value_type tol = 1e-5, value_type mu = 0.0) : tolerance_(tol), mu_(mu) {
         }

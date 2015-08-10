@@ -31,9 +31,10 @@ namespace GeneTrail {
     /**
      * Independent Student's T-Test
      */
-    template <typename value_type>
+    template <typename ValueType>
     class GT2_EXPORT IndependentTTest {
     public:
+		using value_type = ValueType;
 
         IndependentTTest(value_type tol = 1e-5, value_type mu = 0.0) : tolerance_(tol), mu_(mu) {
         }

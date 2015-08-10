@@ -35,10 +35,10 @@ namespace GeneTrail {
     /**
      * Wilcoxon-Mann-WhitneyTest
      */
-    template <typename value_type>
+    template <typename ValueType>
     class GT2_EXPORT WilcoxonMatchedPairsSignedRankTest {
-
 		public:
+		using value_type = ValueType;
 
         WilcoxonMatchedPairsSignedRankTest(value_type tol = 1e-4, value_type mu = 0.0) : tolerance_(tol), mu_(mu), t_(tol, mu) {
 		}
