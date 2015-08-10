@@ -66,15 +66,16 @@ namespace GeneTrail {
 			 */
 			double computePValue(const Category& category) const;
 
+			double computeScore(const Category& category) const;
 		private:
 
 			Category reference_set_;
 			//Size of reference set
-			uint64_t m_;
+			size_t m_;
 
 			Category test_set_;
 			//Size of test set
-			uint64_t n_;
+			size_t n_;
 
 			bool useHypergeometricTest_;
 

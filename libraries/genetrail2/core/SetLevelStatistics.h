@@ -157,8 +157,7 @@ namespace GeneTrail
 
 		double computeScore(const Category& c) const
 		{
-			// TODO: fixme
-			return test_.computePValue(c);
+			return test_.computeScore(c);
 		}
 
 		double computeRowWisePValue(EnrichmentResult* result) const
