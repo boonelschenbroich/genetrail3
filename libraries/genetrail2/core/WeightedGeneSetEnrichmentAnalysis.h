@@ -47,7 +47,7 @@ namespace GeneTrail
 		using Indices = std::vector<size_t>;
 
 		private:
-		const Scores scores_;
+		Scores scores_;
 
 		public:
 		/**
@@ -56,6 +56,12 @@ namespace GeneTrail
 		WeightedGeneSetEnrichmentAnalysis(const Scores& scores)
 		    : scores_(scores)
 		{
+			scores_.sortByScore();
+		}
+
+		void setScores(const Scores& scores) {
+			scores_ = scores;
+			scores_.sortByScore();
 		}
 
 		/**

@@ -35,7 +35,6 @@ add_header_to_library(WilcoxonRankSumTest.h)
 add_header_to_library(AndersonDarlingTest.h)
 add_header_to_library(NormalityTest.h)
 add_header_to_library(WeightedGeneSetEnrichmentAnalysis.h)
-add_header_to_library(WGSEAPermutationTest.h)
 
 # Sources
 add_to_library(AbstractMatrix)

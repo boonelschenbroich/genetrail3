@@ -15,207 +15,244 @@
 
 namespace GeneTrail
 {
-	template <typename value_type> struct TestResult
+	namespace internal
 	{
-		TestResult(const Category* cat, value_type s, size_t ss)
-		    : category(cat), score(s), counter(0), sampleSize(ss), enriched(false)
-		{
-		}
-
-		const Category* category;
-		value_type score;
-		size_t counter;
-		size_t sampleSize;
-		bool enriched;
-
-		double computePValue(size_t permutations) const
-		{
-			// Here we add a pseudo count to avoid p-values of 0.
-			// Reference: Fewer permutations, more accurate P-values.
-			// http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2687965/
-
-			if(permutations == 0){
-				return 1;
-			}
-
-			return ((double)counter + 1) / ((double)permutations);
-		}
-	};
-
-	namespace internal {
 		template <typename value_type> class PermutationBase
 		{
-			public:
-			using TestResults = std::vector<TestResult<value_type>>;
-			using PValue = std::pair<std::string, double>;
-			using PValues = std::vector<PValue>;
-
 			protected:
-			template <typename Iterator>
-			void
-			performSinglePermutation_(TestResults& tests,
-			                          const EnrichmentAlgorithmPtr& algorithm,
-			                          const Category& c)
+			double computePValue_(size_t permutations, size_t counter) const
 			{
+				// Here we add a pseudo count to avoid p-values of 0.
+				// Reference: Fewer permutations, more accurate P-values.
+				// http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2687965/
+
+				if(permutations == 0) {
+					return 1;
+				}
+
+				return ((double)counter + 1) / ((double)permutations);
 			}
-		};
-	}
 
-	template <typename value_type> class GT2_EXPORT PermutationTest : public internal::PermutationBase<value_type>
-	{
-		public:
-		using Base = internal::PermutationBase<value_type>;
-		using TestResults = typename Base::TestResults;
-		using PValues = typename Base::PValues;
+			void sortResults_(EnrichmentResults& results)
+			{
+				// Sort vector of EnrichmentResults
+				// This makes computation faster
+				std::sort(results.begin(), results.end(),
+				          [](const EnrichmentResultPtr& a,
+				             const EnrichmentResultPtr& b) {
+					return a->hits < b->hits;
+				});
+			}
 
-		template <typename InputIterator>
-		PermutationTest(const TestResults& tests, InputIterator begin,
-		                InputIterator end, size_t permutations)
-		    : tests_(tests), permutations_(permutations), names_(begin, end)
-		{
-			// Sort vector of TestResults
-			// This makes computation faster
-			std::sort(tests_.begin(), tests_.end(),
-			     [](const TestResult<value_type>& a,
-			        const TestResult<value_type>& b)
-			         ->bool { return a.sampleSize < b.sampleSize; });
-		}
-
-		PValues computePValue(const EnrichmentAlgorithmPtr& algorithm)
-		{
-			PValues pvalues;
-			pvalues.reserve(tests_.size());
-
-			for(size_t i = 0; i < permutations_; ++i) {
-				std::cout << "INFO: Running - Permutation test " << i << "/"
-				          << permutations_ << std::endl;
-				// As we don't want to recompute any values,
-				// we save them here.
-				shuffle_();
-
-				size_t currentSampleSize = -1;
-				value_type currentScore = 0.0;
-				Category c;
-				for(size_t i = 0; i < tests_.size(); ++i) {
-					// Check if we need to compute new values
-					if(tests_[i].sampleSize != currentSampleSize) {
-						c = Category("", names_.begin(),
-						             names_.end() + currentSampleSize);
-						currentSampleSize = tests_[i].sampleSize;
-						currentScore = algorithm->computeEnrichmentScore(c);
+			void updateCounter_(const EnrichmentResultPtr& test,
+			                    size_t& counter, double score)
+			{
+				if(test->enriched) {
+					if(test->score <= score) {
+						++counter;
 					}
-					if(tests_[i].enriched) {
-						if(tests_[i].score <= currentScore) {
-							++tests_[i].counter;
-						}
-					} else {
-						if(tests_[i].score >= currentScore) {
-							++tests_[i].counter;
-						}
+				} else {
+					if(test->score >= score) {
+						++counter;
 					}
 				}
 			}
 
-			for(const auto& test : tests_) {
-				pvalues.emplace_back(test.category->name(),
-				                     test.computePValue(permutations_));
+			void updatePValues_(EnrichmentResults& tests,
+			                    const std::vector<size_t>& counter,
+			                    size_t permutations)
+			{
+				for(size_t i = 0; i < tests.size(); ++i) {
+					tests[i]->pvalue = computePValue_(permutations, counter[i]);
+				}
+			}
+		};
+	}
+
+	template <typename value_type>
+	class GT2_EXPORT RowPermutationTest
+	    : public internal::PermutationBase<value_type>
+	{
+		public:
+		template <typename InputIterator>
+		RowPermutationTest(InputIterator begin, InputIterator end,
+		                   size_t permutations)
+		    : permutations_(permutations),
+		      names_(begin, end),
+		      tmp_names_(std::distance(begin, end))
+		{
+		}
+
+		void computePValue(const EnrichmentAlgorithmPtr& algorithm,
+		                   EnrichmentResults& tests)
+		{
+			if(tests.empty()) {
+				return;
 			}
 
-			return pvalues;
+			this->sortResults_(tests);
+
+			std::vector<size_t> counter(tests.size());
+			for(size_t i = 0; i < permutations_; ++i) {
+				std::cout << "INFO: Running - Permutation test " << (i + 1)
+				          << "/" << permutations_ << std::endl;
+
+				performSinglePermutation_(algorithm, tests, counter);
+			}
+
+			this->updatePValues_(tests, counter, permutations_);
 		}
 
 		private:
-		void shuffle_()
+		void performSinglePermutation_(const EnrichmentAlgorithmPtr& algorithm,
+		                               const EnrichmentResults& tests,
+		                               std::vector<size_t>& counter)
 		{
-			std::shuffle(names_.begin(), names_.end(), twister_);
+			size_t currentSampleSize = 0;
+			value_type currentScore = 0.0;
+
+			// Shuffle the indices. The tests are sorted
+			// by the number of hits for every category, so we only
+			// need to shuffle tests.back()->hits many.
+			shuffle_(tests.back()->hits);
+
+			Category c;
+			for(size_t i = 0; i < tests.size(); ++i) {
+				// Check if the sampleSize has changed. As the tests_ vector is
+				// sorted we can use one running sum value for all categories of
+				// the same size.
+				if(tests[i]->hits != currentSampleSize) {
+					presort_(currentSampleSize, tests[i]->hits);
+					currentSampleSize = tests[i]->hits;
+
+					c = Category("", names_.begin(),
+					             names_.begin() + currentSampleSize);
+					currentScore = algorithm->computeEnrichmentScore(c);
+				}
+
+				this->updateCounter_(tests[i], counter[i], currentScore);
+			}
 		}
 
-		TestResults tests_;
+		void shuffle_(size_t n)
+		{
+			for(size_t i = 0; i < n; ++i) {
+				std::swap(names_[i],
+				          names_[i + twister_() % (names_.size() - i)]);
+			}
+		}
+
+		/**
+		 * This sorts the indices vector until position b.
+		 * It is assumed, that the vector is sorted up to position a.
+		 */
+		void presort_(size_t a, size_t b)
+		{
+			// Sort [a, b)
+			std::sort(names_.begin() + a, names_.begin() + b);
+
+			// Merge [0, a) and [a, b) into a temporary vector.
+			// Note that inplace_merge would reallocate a new vector
+			// every time it is called.
+			std::merge(names_.begin(), names_.begin() + a, names_.begin() + a,
+			           names_.begin() + b, tmp_names_.begin());
+
+			// Copy the sorted range [0, b) from the temporary vector
+			// to the names_ vector
+			std::copy(tmp_names_.begin(), tmp_names_.begin() + b,
+			          names_.begin());
+		}
+
 		Category category_;
 		size_t permutations_;
 		std::mt19937 twister_;
 		std::vector<std::string> names_;
+		std::vector<std::string> tmp_names_;
 	};
 
-	template <typename value_type> class SamplePermutationTest : public internal::PermutationBase<value_type>
+	template <typename value_type>
+	class ColumnPermutationTest : public internal::PermutationBase<value_type>
 	{
 		public:
-		using Base = internal::PermutationBase<value_type>;
-		using TestResults = typename Base::TestResults;
-		using PValues = typename Base::PValues;
-
-		SamplePermutationTest(TestResults tests, const DenseMatrix& data,
-		                size_t permutations, size_t sample_size, size_t reference_size, const std::string& method)
-			: tests_(tests),
-			  permutations_(permutations),
-			  data_(data),
-			  sample_size_(sample_size),
-			  reference_size_(reference_size),
-			  method_(method)
+		ColumnPermutationTest(const DenseMatrix& data, size_t permutations,
+		                      size_t reference_size, const std::string& method)
+		    : permutations_(permutations),
+		      data_(data),
+		      reference_size_(reference_size),
+		      method_(method),
+		      row_permutation_(data.rows())
 		{
-			//TODO: Initalize the random number generator.
+			// TODO: Initalize the random number generator.
 			//      Allow saving seeds, etc.
 
-			// Sort vector of TestResults
-			// This makes computation faster
-			std::sort(tests_.begin(), tests_.end(),
-			     [](const TestResult<value_type>& a,
-			        const TestResult<value_type>& b)
-			         ->bool { return a.sampleSize < b.sampleSize; });
+			using Sorter = std::pair<const std::string*, size_t>;
+			std::vector<Sorter> tmp(data.rows());
+			size_t i = 0;
+			std::transform(data_.rowNames().begin(), data_.rowNames().end(), tmp.begin(), [&i](const std::string& s) mutable {
+				return std::make_pair(&s, i++);
+			});
+
+			std::stable_sort(tmp.begin(), tmp.end(), [](const Sorter& a, const Sorter& b) {
+				return *a.first < *b.first;
+			});
+
+			std::transform(tmp.begin(), tmp.end(), row_permutation_.begin(), [](const Sorter& s) {
+				return s.second;
+			});
 		}
 
-		PValues computePValue(const EnrichmentAlgorithmPtr& algorithm)
+		void computePValue(const EnrichmentAlgorithmPtr& algorithm,
+		                   EnrichmentResults& tests)
 		{
-			MatrixHTest<DenseMatrixSubset> scoring_;
-			PValues pvalues;
-			pvalues.reserve(tests_.size());
+			this->sortResults_(tests);
+
+			std::vector<size_t> counter(tests.size());
 			std::vector<size_t> indices(data_.cols());
 			std::iota(indices.begin(), indices.end(), static_cast<size_t>(0));
 
 			for(size_t i = 0; i < permutations_; ++i) {
 				std::cout << "INFO: Running - Permutation test " << i << "/"
 				          << permutations_ << std::endl;
-				std::shuffle(indices.begin(), indices.end(), twister_);
 
-				auto reference = DenseMatrixSubset::createColSubset(&data_, indices.begin(), indices.begin() + reference_size_);
-				auto sample    = DenseMatrixSubset::createColSubset(&data_, indices.begin() + reference_size_, indices.end());
-				auto gene_set = scoring_.test(reference, sample, method_);
-
-				value_type currentScore = 0.0;
-				for(auto& test : tests_) {
-					currentScore =
-					    algorithm->computeEnrichmentScore(*test.category);
-					if(test.enriched) {
-						if(test.score <= currentScore) {
-							++test.counter;
-						}
-					} else {
-						if(test.score >= currentScore) {
-							++test.counter;
-						}
-					}
-				}
+				performSinglePermutation_(algorithm, tests, counter, indices);
 			}
 
-			for(auto&& test : tests_) {
-				pvalues.emplace_back(test.category->name(),
-				                     test.computePValue(permutations_));
-			}
-
-			return pvalues;
+			this->updatePValues_(tests, counter, permutations_);
 		}
 
 		private:
-		TestResults tests_;
+		void performSinglePermutation_(const EnrichmentAlgorithmPtr& algorithm,
+		                               const EnrichmentResults& tests,
+		                               std::vector<size_t>& counter,
+		                               std::vector<size_t>& indices)
+		{
+			MatrixHTest<DenseMatrixSubset> scoring;
+			std::shuffle(indices.begin(), indices.end(), twister_);
+
+			auto mid = indices.begin() + reference_size_;
+
+			DenseMatrixSubset ref(&data_, row_permutation_.begin(), row_permutation_.end(), indices.begin(), mid);
+			DenseMatrixSubset sam(&data_, row_permutation_.begin(), row_permutation_.end(), mid, indices.end());
+			Scores scores(scoring.test(ref, sam, method_));
+
+			algorithm->setScores(scores);
+
+			// TODO: Use the computed scores!!!!!
+			for(size_t i = 0; i < tests.size(); ++i) {
+				auto score =
+				    algorithm->computeEnrichmentScore(*tests[i]->category);
+
+				this->updateCounter_(tests[i], counter[i], score);
+			}
+		}
+
 		size_t permutations_;
 		DenseMatrix data_;
-		size_t sample_size_;
 		size_t reference_size_;
 		std::string method_;
 		std::mt19937 twister_;
+		std::vector<size_t> row_permutation_;
 	};
 }
 
 #endif // GT2_CORE_PERMUTATION_TEST_H
-
-

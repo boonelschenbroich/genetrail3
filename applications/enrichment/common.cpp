@@ -250,30 +250,43 @@ void adjustSeparately(AllResults& all_results, const Params& p)
 }
 
 void computeRowWisePValues(const EnrichmentAlgorithmPtr& algorithm,
-                           PermutationTest<double>::TestResults& results,
-                           const Params& p)
+                           EnrichmentResults& results, const Params& p)
 {
-	// TODO: the stuff below is a hack to get the
-	//      parameters into the right place.
 	GeneSetReader reader;
-	auto scoreSet = reader.readScoringFile(p.scores);
+	// TODO: the line below is a hack to get the
+	//      parameters into the right place.
+	Scores scores(reader.readScoringFile(p.scores));
 
-	Scores scoreList(scoreSet.size());
+	RowPermutationTest<double> test(scores.names().begin(),
+	                                scores.names().end(), p.numPermutations);
 
-	for(auto&& entry : scoreSet) {
-		scoreList.emplace_back(entry.first, entry.second);
+	test.computePValue(algorithm, results);
+}
+
+void removeUnusedColumns(DenseMatrix& data,
+                         const std::vector<std::string>& ref,
+                         const std::vector<std::string>& sample)
+{
+	std::vector<DenseMatrix::index_type> colsToDelete;
+	DenseMatrix::index_type i = 0;
+
+	auto colIsUsed = [&ref, &sample](const std::string& name) {
+		return std::find(ref.begin(), ref.end(), name) == ref.end() &&
+		       std::find(sample.begin(), sample.end(), name) == sample.end();
+	};
+
+	for(auto&& colName : data.colNames()) {
+		if(colIsUsed(colName)) {
+			colsToDelete.push_back(i);
+		}
+		++i;
 	}
-	// Hack end
 
-	PermutationTest<double> test(results, scoreList.names().begin(),
-	                             scoreList.names().end(), p.numPermutations);
-
-	test.computePValue(algorithm);
+	data.removeCols(colsToDelete);
 }
 
 void computeColumnWisePValues(const EnrichmentAlgorithmPtr& algorithm,
-                              PermutationTest<double>::TestResults& results,
-                              const Params& p)
+                              EnrichmentResults& results, const Params& p)
 {
 	std::ifstream input(p.dataMatrixPath);
 	DenseMatrixReader matrixReader;
@@ -284,30 +297,16 @@ void computeColumnWisePValues(const EnrichmentAlgorithmPtr& algorithm,
 	auto referenceGroup = t.read();
 	auto sampleGroup = t.read();
 
-	std::vector<DenseMatrix::index_type> rowsToDelete;
-	DenseMatrix::index_type i = 0;
-	for(auto&& colName : data.colNames()) {
-		if(std::find(referenceGroup.begin(), referenceGroup.end(), colName) ==
-		       referenceGroup.end() &&
-		   std::find(sampleGroup.begin(), sampleGroup.end(), colName) ==
-		       sampleGroup.end()) {
-			rowsToDelete.push_back(i);
-		}
-		++i;
-	}
+	removeUnusedColumns(data, referenceGroup, sampleGroup);
 
-	data.removeRows(rowsToDelete);
-
-	SamplePermutationTest<double> test(results, data, p.numPermutations,
-	                                   sampleGroup.size(),
+	ColumnPermutationTest<double> test(data, p.numPermutations,
 	                                   referenceGroup.size(), p.scoringMethod);
 
-	test.computePValue(algorithm);
+	test.computePValue(algorithm, results);
 }
 
 void
-computeRestandardizationPValues(const EnrichmentAlgorithmPtr& algorithm,
-                                PermutationTest<double>::TestResults& results)
+computeRestandardizationPValues(const EnrichmentAlgorithmPtr& algorithm)
 {
 	throw NotImplemented(__FILE__, __LINE__,
 	                     "void computeRestandardizationPValues(const "
@@ -318,24 +317,16 @@ computeRestandardizationPValues(const EnrichmentAlgorithmPtr& algorithm,
 void computePValues(EnrichmentAlgorithmPtr& algorithm,
                     const AllResults& name_to_cat_results, const Params& p)
 {
-	PermutationTest<double>::TestResults results;
+	EnrichmentResults results;
 
 	// TODO: This is really inefficient and clumsy
 	//      we should have a better way of getting the necessary stuff
 	//      together for pvalue computation.
-	for(auto&& db : name_to_cat_results) {
-		for(auto&& result : db.second) {
-			TestResult<double> t(result.second->category.get(),
-			                     result.second->score, result.second->hits);
-			t.enriched = result.second->enriched;
-			results.push_back(t);
+	for(const auto& db : name_to_cat_results) {
+		for(const auto& result : db.second) {
+			results.push_back(result.second);
 		}
 	}
-
-	std::sort(results.begin(), results.end(),
-	          [](const TestResult<double>& a, const TestResult<double>& b) {
-		return a.sampleSize < b.sampleSize;
-	});
 
 	switch(algorithm->pValueMode()) {
 		case PValueMode::RowWise:
@@ -345,7 +336,7 @@ void computePValues(EnrichmentAlgorithmPtr& algorithm,
 			computeColumnWisePValues(algorithm, results, p);
 			break;
 		case PValueMode::Restandardize:
-			computeRestandardizationPValues(algorithm, results);
+			computeRestandardizationPValues(algorithm);
 			break;
 	}
 }

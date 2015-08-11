@@ -25,12 +25,22 @@ namespace GeneTrail
 		struct Indirect
 		{
 		};
+		struct Scores
+		{
+		};
+		struct Identifiers
+		{
+		};
+		struct Matrix
+		{
+		};
 	}
 
 	class StatisticsEnrichment
 	{
 		public:
 		using RowWiseMode = SetLevelStatistics::Indirect;
+		using InputType = SetLevelStatistics::Scores;
 
 		using _viter = Scores::ConstScoreIterator;
 		using Statistics = std::function<double(_viter, _viter)>;
@@ -38,6 +48,12 @@ namespace GeneTrail
 		StatisticsEnrichment(const Statistics& test, const Scores& scores)
 		    : test_(test), scores_(scores)
 		{
+			scores_.sortByName();
+		}
+
+		void setInputScores(const Scores& scores) {
+			scores_ = scores;
+			scores_.sortByName();
 		}
 
 		bool canUseCategory(const Category&, size_t) const { return true; }
@@ -51,14 +67,20 @@ namespace GeneTrail
 
 		private:
 		Statistics test_;
-		const Scores& scores_;
+		Scores scores_;
 	};
 
 	template <typename Test> class HTestEnrichmentBase
 	{
 		public:
 		using RowWiseMode = SetLevelStatistics::Direct;
+		using InputType = SetLevelStatistics::Scores;
+
 		HTestEnrichmentBase(const Scores& scores) : scores_(scores) {}
+
+		void setInputScores(const Scores& scores) {
+			scores_ = scores;
+		}
 
 		double computeRowWisePValue(EnrichmentResult* result)
 		{
@@ -149,6 +171,7 @@ namespace GeneTrail
 	{
 		public:
 		using RowWiseMode = SetLevelStatistics::Direct;
+		using InputType = SetLevelStatistics::Identifiers;
 
 		Ora(const Category& reference_set, const Category& test_set)
 		    : test_(reference_set, test_set){};
@@ -173,11 +196,18 @@ namespace GeneTrail
 	{
 		public:
 		using RowWiseMode = SetLevelStatistics::Direct;
+		using InputType = SetLevelStatistics::Scores;
 
 		template <typename Iterator>
 		KolmogorovSmirnov(const Iterator& beginIds, const Iterator& endIds)
 		    : intersectionSize_(0), ids_(beginIds, endIds)
 		{
+		}
+
+		void setInputScores(Scores scores)
+		{
+			scores.sortByScore();
+			ids_.assign(scores.names().begin(), scores.names().end());
 		}
 
 		bool canUseCategory(const Category&, size_t) const { return true; }
@@ -212,10 +242,15 @@ namespace GeneTrail
 	{
 		public:
 		using RowWiseMode = SetLevelStatistics::Indirect;
+		using InputType = SetLevelStatistics::Scores;
 
 		WeightedKolmogorovSmirnov(const Scores& scores)
 		    : test_(scores)
 		{
+		}
+
+		void setInputScores(const Scores& scores) {
+			test_.setScores(scores);
 		}
 
 		bool canUseCategory(const Category&, size_t) const { return true; }

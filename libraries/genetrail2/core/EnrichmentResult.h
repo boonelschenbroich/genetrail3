@@ -85,6 +85,9 @@ namespace GeneTrail
 		result.serialize(strm);
 		return strm;
 	}
+
+	using EnrichmentResultPtr = std::shared_ptr<EnrichmentResult>;
+	using EnrichmentResults = std::vector<EnrichmentResultPtr>;
 }
 
 #endif // GT2_CORE_ENRICHMENT_RESULT_H

@@ -19,6 +19,7 @@ namespace GeneTrail
 		PValueMode pValueMode() const { return mode_; }
 		bool pValuesComputed() const;
 
+		virtual void setScores(const Scores& scores) = 0;
 		virtual bool canUseCategory(const Category& c, size_t hits) const = 0;
 		virtual std::unique_ptr<EnrichmentResult>
 		computeEnrichment(const std::shared_ptr<Category>& c) = 0;
@@ -42,6 +43,11 @@ namespace GeneTrail
 			    : EnrichmentAlgorithm(mode),
 			      statistics_(std::forward<Ts>(ts)...)
 			{
+			}
+
+			void setScores(const Scores& scores) override
+			{
+				setScoresDispatch_(scores, typename Statistics::InputType());
 			}
 
 			bool canUseCategory(const Category& c, size_t hits) const override
@@ -74,6 +80,13 @@ namespace GeneTrail
 			}
 
 			private:
+			void setScoresDispatch_(const Scores& scores, SetLevelStatistics::Scores) {
+				statistics_.setInputScores(scores);
+			}
+
+			void setScoresDispatch_(const Scores&, SetLevelStatistics::Identifiers) {
+			}
+
 			void computePValueDispatch_(EnrichmentResult* result,
 			                            SetLevelStatistics::Direct)
 			{
