@@ -36,7 +36,6 @@ namespace GeneTrail
 		typedef std::vector<std::vector<double>> _vv;
 		typedef std::vector<double>::iterator _viter;
 		typedef std::function<double(_v, _v)> return_type;
-		typedef std::function<GeneSet(Matrix&, Matrix&)> matrix_func;
 
 		return_type independent_t_test = [](_v a, _v b) {
 			IndependentTTest<double> independent_t;
