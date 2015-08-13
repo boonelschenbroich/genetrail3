@@ -1,5 +1,6 @@
 #include <genetrail2/core/Category.h>
 #include <genetrail2/core/EnrichmentAlgorithm.h>
+#include <genetrail2/core/Exception.h>
 #include <genetrail2/core/GMTFile.h>
 #include <genetrail2/core/GeneSetReader.h>
 #include <genetrail2/core/OverRepresentationAnalysis.h>
@@ -87,7 +88,8 @@ int main(int argc, char* argv[])
 
 	auto enrichmentAlgorithm = createEnrichmentAlgorithm<Ora>(p.pValueMode, reference_set.toCategory("reference"), test_set.toCategory("test"));
 
-	run(test_set, cat_list, enrichmentAlgorithm, p, true);
+	Scores scores(test_set);
+	run(scores, cat_list, enrichmentAlgorithm, p, true);
 
 	return 0;
 }

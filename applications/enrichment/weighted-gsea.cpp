@@ -56,8 +56,10 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	auto algorithm = createEnrichmentAlgorithm<WeightedKolmogorovSmirnov>(p.pValueMode, Scores(test_set));
+	Scores scores(test_set);
 
-	run(test_set, cat_list, algorithm, p, true);
+	auto algorithm = createEnrichmentAlgorithm<WeightedKolmogorovSmirnov>(p.pValueMode, scores);
+
+	run(scores, cat_list, algorithm, p, true);
 	return 0;
 }

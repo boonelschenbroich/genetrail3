@@ -89,15 +89,9 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	GeneSetReader reader;
-	auto scoreSet = reader.readScoringFile(p.scores);
-
-	Scores scores(scoreSet.size());
-	for(const auto& score : scoreSet) {
-		scores.emplace_back(score.first, score.second);
-	}
+	Scores scores(test_set);
 
 	auto algorithm = getAlgorithm(p.pValueMode, method, scores);
 
-	run(test_set, cat_list, algorithm, p, true);
+	run(scores, cat_list, algorithm, p, true);
 }

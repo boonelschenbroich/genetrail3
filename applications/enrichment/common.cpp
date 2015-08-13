@@ -2,11 +2,15 @@
 
 #include <genetrail2/core/DenseMatrixReader.h>
 #include <genetrail2/core/GeneSet.h>
+#include <genetrail2/core/GeneSetReader.h>
+#include <genetrail2/core/GMTFile.h>
 #include <genetrail2/core/EnrichmentAlgorithm.h>
 #include <genetrail2/core/PermutationTest.h>
+#include <genetrail2/core/PValue.h>
 #include <genetrail2/core/TextFile.h>
 
 #include <algorithm>
+#include <fstream>
 
 void addCommonCLIArgs(bpo::options_description& desc, Params& p)
 {
@@ -95,18 +99,17 @@ PValueList resultVector(const AllResults& results)
 }
 
 std::tuple<bool, size_t, std::string>
-processCategory(const Category& c, const GeneSet& test_set, const Params& p)
+processCategory(const Category& c, const Scores& test_set, const Params& p)
 {
-	size_t hits = 0;
-	std::string genes = "";
-	for(auto s : test_set) {
-		if(c.contains(s.first)) {
-			genes += genes == "" ? s.first : "," + s.first;
-			++hits;
-		}
-	}
+	Scores subset = test_set.subset(c);
 
-	return std::make_tuple(p.minimum <= c.size() && c.size() <= p.maximum, hits,
+	std::string genes = ",";
+	for(const auto& c : subset.names()) {
+		genes += c + ',';
+	}
+	genes.resize(genes.size() - 1);
+
+	return std::make_tuple(p.minimum <= c.size() && c.size() <= p.maximum, subset.size(),
 	                       genes);
 }
 
@@ -191,7 +194,7 @@ void updatePValues(AllResults& results, const PValueList& pvalues)
 	}
 }
 
-AllResults compute(GeneSet& test_set, CategoryList& cat_list,
+AllResults compute(Scores& test_set, CategoryList& cat_list,
                    EnrichmentAlgorithmPtr& algorithm, const Params& p)
 {
 	AllResults name_to_cat_results;
@@ -341,9 +344,11 @@ void computePValues(EnrichmentAlgorithmPtr& algorithm,
 	}
 }
 
-void run(GeneSet& test_set, CategoryList& cat_list,
+void run(Scores& test_set, CategoryList& cat_list,
          EnrichmentAlgorithmPtr& algorithm, const Params& p, bool computePValue)
 {
+	test_set.sortByName();
+
 	AllResults name_to_cat_results(compute(test_set, cat_list, algorithm, p));
 	if(computePValue && !algorithm->pValuesComputed()) {
 		computePValues(algorithm, name_to_cat_results, p);

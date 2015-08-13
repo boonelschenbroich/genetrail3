@@ -88,7 +88,9 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	auto algorithm = getAlgorithm(method, Scores(test_set), p.pValueMode);
+	Scores scores(test_set);
 
-	run(test_set, cat_list, algorithm, p, true);
+	auto algorithm = getAlgorithm(method, scores, p.pValueMode);
+
+	run(scores, cat_list, algorithm, p, true);
 }

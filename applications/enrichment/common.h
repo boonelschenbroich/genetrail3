@@ -1,35 +1,23 @@
 #ifndef GT2_APPLICATIONS_ENRICHMENT_COMMON_H
 #define GT2_APPLICATIONS_ENRICHMENT_COMMON_H
 
-#include <boost/program_options.hpp>
-#include <boost/algorithm/string/trim.hpp>
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/predicate.hpp>
-#include <boost/lexical_cast.hpp>
-
-#include <genetrail2/core/Exception.h>
 #include <genetrail2/core/EnrichmentAlgorithm.h>
-#include <genetrail2/core/EnrichmentResult.h>
-#include <genetrail2/core/Category.h>
-#include <genetrail2/core/GeneSetReader.h>
-#include <genetrail2/core/GMTFile.h>
-#include <genetrail2/core/PValue.h>
+
+#include <boost/program_options.hpp>
 
 #include <list>
 #include <utility>
-#include <fstream>
 #include <string>
-#include <iostream>
 #include <memory>
-#include <cassert>
+
+namespace bpo = boost::program_options;
 
 using namespace GeneTrail;
-namespace bpo = boost::program_options;
 
 namespace GeneTrail
 {
 	class GeneSet;
-	class EnrichmentAlgorithm;
+	class EnrichmentResult;
 
 	using EnrichmentAlgorithmPtr = std::unique_ptr<EnrichmentAlgorithm>;
 }
@@ -72,6 +60,7 @@ namespace GeneTrail {
  */
 void addCommonCLIArgs(bpo::options_description& desc, Params& p);
 
+bool checkCLIArgs(const Params& p);
 /**
  * This function initializes the needed attributes.
  *
@@ -99,6 +88,6 @@ std::vector<std::string> getSortedIdentifier(GeneSet& test_set, const Params& p,
  * @param cat_list List of categories for the computation
  * @param p
  */
-void run(GeneSet& test_set, CategoryList& cat_list, EnrichmentAlgorithmPtr& algorithm, const Params& p, bool computePValues);
+void run(Scores& test_set, CategoryList& cat_list, EnrichmentAlgorithmPtr& algorithm, const Params& p, bool computePValues);
 
 #endif // GT2_APPLICATIONS_ENRICHMENT_COMMON_H

@@ -82,6 +82,8 @@ int main(int argc, char* argv[])
 	auto gsea = createEnrichmentAlgorithm<KolmogorovSmirnov>(
 	    p.pValueMode, identifierOfTestSet.begin(), identifierOfTestSet.end());
 
-	run(test_set, cat_list, gsea, p, true);
+	Scores scores(test_set);
+
+	run(scores, cat_list, gsea, p, true);
 	return 0;
 }
