@@ -135,7 +135,7 @@ namespace GeneTrail
 		 * @param r Row index
 		 * @return Vector containing all values that are not NAN.
 		 */
-		std::vector<double> removeNANs(Matrix& m, unsigned int r)
+		std::vector<double> removeNANs(const Matrix& m, unsigned int r)
 		{
 			std::vector<double> result;
 			result.reserve(m.cols());
@@ -155,7 +155,7 @@ namespace GeneTrail
 		 * @param m Matrix
 		 * @return Vector containing all values that are not NAN.
 		 */
-		std::vector<std::vector<double>> removeAllNANs(Matrix& m)
+		std::vector<std::vector<double>> removeAllNANs(const Matrix& m)
 		{
 			std::vector<std::vector<double>> result;
 			result.reserve(m.rows());
@@ -175,7 +175,7 @@ namespace GeneTrail
 		 * @return Pair of Vectors containing all values that are not NAN.
 		 */
 		std::tuple<std::vector<double>, std::vector<double>>
-		removePairwiseNANs(Matrix& ref, Matrix& s, unsigned int r)
+		removePairwiseNANs(const Matrix& ref, const Matrix& s, unsigned int r)
 		{
 			std::vector<double> result1;
 			result1.reserve(ref.cols());
@@ -189,7 +189,7 @@ namespace GeneTrail
 				result1.push_back(ref(r, c));
 				result2.push_back(s(r, c));
 			}
-			return make_tuple(result1, result2);
+			return std::make_tuple(result1, result2);
 		}
 
 		/**
@@ -277,7 +277,7 @@ namespace GeneTrail
 		/**
 		 *
 		 */
-		GeneSet independentShrinkageTTest(Matrix& reference, Matrix& sample)
+		GeneSet independentShrinkageTTest(const Matrix& reference, const Matrix& sample)
 		{
 			GeneSet result;
 			IndependentShrinkageTTest<double> t;
