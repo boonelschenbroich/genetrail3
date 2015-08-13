@@ -70,26 +70,35 @@ namespace GeneTrail {
 		Gene<value_type> computeVariances(InputIterator begin,
 		                                  InputIterator end)
 		{
-			value_type mean = statistic::mean<value_type>(begin, end);
-			size_t size = std::distance(begin, end);
+			const size_t size = std::distance(begin, end);
+			wik_.resize(size);
 
-			std::vector<value_type> wik;
-			wik.reserve(size);
-        	for (auto iter = begin; iter != end; ++iter) {
-          		wik.emplace_back(std::pow(*iter - mean, 2));
-        	}
-
-			auto sum_wik = std::accumulate(wik.begin(), wik.end(),  0.0);
-			auto wk = sum_wik / ((value_type)size);
-			value_type vk = sum_wik / ((value_type)(size - 1));
-
-			value_type Var = (value_type) 0;
-			for (auto iter = wik.begin(); iter != wik.end(); ++iter) {
-				Var += std::pow(*iter - wk, 2);
+			value_type mean = 0.0;
+			for (size_t i = 0; i < size; ++i, ++begin) {
+				mean += wik_[i] = *begin;
 			}
-			Var *= ((value_type)size) / std::pow((value_type)(size -1),3);
+			mean /= size;
 
-			return Gene<value_type>{mean, vk, Var, 0.0, size};
+			value_type sum_wik = 0.0;
+			for(auto& item : wik_) {
+				item -= mean;
+				item *= item;
+				sum_wik += item;
+			}
+
+			const auto wk = sum_wik / size;
+
+			//TODO: Use compensated variance algorithm here
+			value_type Var = (value_type) 0;
+			for (const auto& item : wik_) {
+				auto diff = item - wk;
+				Var += diff*diff;
+			}
+
+			const size_t size_1 = size - 1;
+			Var *= ((value_type)size) / (size_1 * size_1 * size_1);
+
+			return Gene<value_type>{mean, sum_wik / size_1, Var, 0.0, size};
 		}
 
 		/**
@@ -142,6 +151,9 @@ namespace GeneTrail {
 				g.shrink_var = tmp + lambda_comp * g.var;
 			}
 		}
+
+		private:
+			std::vector<value_type> wik_;
 	};
 }
 
