@@ -1,45 +1,20 @@
-#include <genetrail2/core/Category.h>
 #include <genetrail2/core/EnrichmentAlgorithm.h>
 #include <genetrail2/core/Exception.h>
-#include <genetrail2/core/GMTFile.h>
+#include <genetrail2/core/GeneSet.h>
 #include <genetrail2/core/GeneSetReader.h>
 #include <genetrail2/core/OverRepresentationAnalysis.h>
-#include <genetrail2/core/PValue.h>
-#include <genetrail2/core/GeneSet.h>
-#include <genetrail2/core/multiprecision.h>
-#include <genetrail2/core/compat.h>
 
 #include "common.h"
 
-#include <boost/algorithm/string/split.hpp>
-#include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
-#include <boost/algorithm/string/trim.hpp>
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/trim.hpp>
-#include <boost/algorithm/string/predicate.hpp>
-
 #include <iostream>
-#include <fstream>
-#include <cstdint>
-#include <utility>
-#include <tuple>
-#include <map>
-#include <functional>
 
 using namespace GeneTrail;
 namespace bpo = boost::program_options;
-namespace bm = boost::math;
 
 std::string reference;
-Params p;
 
-GeneSet test_set;
-GeneSet reference_set;
-CategoryList cat_list;
-OverRepresentationAnalysis ora;
-
-bool parseArguments(int argc, char* argv[])
+bool parseArguments(int argc, char* argv[], Params& p)
 {
 	bpo::variables_map vm;
 	bpo::options_description desc;
@@ -66,11 +41,16 @@ bool parseArguments(int argc, char* argv[])
 
 int main(int argc, char* argv[])
 {
-	if(!parseArguments(argc, argv)) {
+	Params p;
+	if(!parseArguments(argc, argv, p)) {
 		return -1;
 	}
 
-	if(init(test_set,cat_list,p) != 0)
+	GeneSet test_set;
+	GeneSet reference_set;
+	CategoryList cat_list;
+
+	if(init(test_set, cat_list, p) != 0)
 	{
 		return -1;
 	}

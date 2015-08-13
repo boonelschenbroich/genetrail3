@@ -1,10 +1,10 @@
-#include <genetrail2/core/Category.h>
-#include <genetrail2/core/GMTFile.h>
-#include <genetrail2/core/GeneSetReader.h>
-#include <genetrail2/core/PermutationTest.h>
 #include <genetrail2/core/GeneSet.h>
+#include <genetrail2/core/EnrichmentAlgorithm.h>
 
 #include "common.h"
+
+
+#include <iostream>
 
 using namespace GeneTrail;
 namespace bpo = boost::program_options;

@@ -1,31 +1,13 @@
-#include <genetrail2/core/Category.h>
-#include <genetrail2/core/GMTFile.h>
-#include <genetrail2/core/GeneSetReader.h>
-#include <genetrail2/core/PValue.h>
+#include <genetrail2/core/EnrichmentAlgorithm.h>
 #include <genetrail2/core/GeneSet.h>
-#include <genetrail2/core/HTest.h>
-#include <genetrail2/core/Statistic.h>
-#include <genetrail2/core/OneSampleWilcoxonSignedRankTest.h>
 #include <genetrail2/core/WilcoxonRankSumTest.h>
 #include <genetrail2/core/OneSampleTTest.h>
 #include <genetrail2/core/IndependentTTest.h>
-#include <genetrail2/core/multiprecision.h>
-#include <genetrail2/core/compat.h>
 
 #include "common.h"
 
-#include <boost/algorithm/string/split.hpp>
-#include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
-#include <boost/algorithm/string/trim.hpp>
-
 #include <iostream>
-#include <fstream>
-#include <cstdint>
-#include <utility>
-#include <map>
-#include <cstdlib>
-#include <vector>
 
 using namespace GeneTrail;
 namespace bpo = boost::program_options;
