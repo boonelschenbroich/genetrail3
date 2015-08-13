@@ -61,6 +61,8 @@ bool parseArguments(int argc, char* argv[])
 		return false;
 	}
 
+	checkCLIArgs(p);
+
 	return true;
 }
 

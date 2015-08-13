@@ -34,6 +34,27 @@ void addCommonCLIArgs(bpo::options_description& desc, Params& p)
 	;
 }
 
+bool checkCLIArgs(const Params& p) {
+	if(p.pValueMode == PValueMode::ColumnWise || p.pValueMode == PValueMode::RowWise) {
+		if(p.scoringMethod == "") {
+			std::cerr << "You must specify a valid scoring method for this pvalue strategy" << std::endl;
+			return false;
+		}
+
+		if(p.dataMatrixPath == "") {
+			std::cerr << "You must specify a data matrix from which scores can be computed" << std::endl;
+			return false;
+		}
+
+		if(p.groups == "") {
+			std::cerr << "You must specify a file containing the groups of the data matrix that are used during score computation." << std::endl;
+			return false;
+		}
+	}
+
+	return true;
+}
+
 CategoryList getCategoryList(const std::string& catfile_list)
 {
 	CategoryList categories;
