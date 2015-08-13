@@ -9,7 +9,7 @@
 #include "WilcoxonMatchedPairsSignedRankTest.h"
 #include "IndependentShrinkageTTest.h"
 #include "SignalToNoiseRatio.h"
-#include "IndexIterator.h"
+#include "MatrixIterator.h"
 #include "GeneSet.h"
 
 #include "macros.h"
@@ -290,6 +290,25 @@ namespace GeneTrail
 			return result;
 		}
 
+		GeneSet independentShrinkageTTestNoNANs(const Matrix& reference,
+		                                        const Matrix& sample)
+		{
+			GeneSet result;
+			IndependentShrinkageTTest<double> t;
+
+			RowMajorMatrixIterator<Matrix>
+				ref_begin(&reference, 0),
+				ref_end  (&reference, reference.rows()),
+				sam_begin(&sample, 0),
+				sam_end  (&sample, sample.rows());
+
+			auto v = t.test(ref_begin, ref_end, sam_begin, sam_end);
+			for(unsigned int r = 0; r < reference.rows(); ++r) {
+				result.insert(reference.rowName(r), v[r]);
+			}
+			return result;
+		}
+
 		public:
 		/**
 		 * This functions applies the given test row-wise to the given matrices.
@@ -303,7 +322,7 @@ namespace GeneTrail
 		GeneSet test(Matrix& reference, Matrix& sample, const std::string& test)
 		{
 			if(test == "independent-shrinkage-t-test") {
-				return independentShrinkageTTest(reference, sample);
+				return independentShrinkageTTestNoNANs(reference, sample);
 			} else {
 				if(dependentTests.find(test) != dependentTests.end()) {
 					assert(reference.cols() == sample.cols());
