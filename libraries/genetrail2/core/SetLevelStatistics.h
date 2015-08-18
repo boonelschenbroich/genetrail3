@@ -48,12 +48,12 @@ namespace GeneTrail
 		StatisticsEnrichment(const Statistics& test, const Scores& scores)
 		    : test_(test), scores_(scores)
 		{
-			scores_.sortByName();
+			scores_.sortByIndex();
 		}
 
 		void setInputScores(const Scores& scores) {
 			scores_ = scores;
-			scores_.sortByName();
+			scores_.sortByIndex();
 		}
 
 		bool canUseCategory(const Category&, size_t) const { return true; }
@@ -112,9 +112,9 @@ namespace GeneTrail
 			using namespace boost;
 
 			auto filter_pos =
-			    [&c](const Score& s) { return c.contains(s.name()); };
+			    [&c](const Score& s) { return c.contains(s.index()); };
 			auto filter_neg =
-			    [&c](const Score& s) { return !c.contains(s.name()); };
+			    [&c](const Score& s) { return !c.contains(s.index()); };
 
 			auto it_tmp_beg = make_filter_iterator(
 			    filter_pos, this->scores_.begin(), this->scores_.end());
@@ -152,7 +152,7 @@ namespace GeneTrail
 			using namespace boost;
 
 			auto filter_pos =
-			    [&c](const Score& s) { return c.contains(s.name()); };
+			    [&c](const Score& s) { return c.contains(s.index()); };
 
 			auto it_tmp_beg = make_filter_iterator(
 			    filter_pos, this->scores_.begin(), this->scores_.end());

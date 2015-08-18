@@ -26,6 +26,10 @@ using namespace GeneTrail;
 
 class ScoresTest : public ::testing::Test
 {
+	public:
+	void TearDown() override {
+		EntityDatabase::global->clear();
+	}
 };
 
 TEST_F(ScoresTest, Constructor)
@@ -37,7 +41,8 @@ TEST_F(ScoresTest, Constructor)
 
 TEST_F(ScoresTest, Iteration)
 {
-	Scores scores;
+	auto db = std::make_shared<EntityDatabase>();
+	Scores scores(db);
 
 	scores.emplace_back("A", 1.2);
 	scores.emplace_back("D", 1.1);
@@ -49,23 +54,23 @@ TEST_F(ScoresTest, Iteration)
 
 	auto begin = scores.begin();
 
-	EXPECT_EQ("A", begin->name());
+	EXPECT_EQ("A", begin->name(*scores.db()));
 	EXPECT_EQ(1.2, begin->score());
 	++begin;
 
-	EXPECT_EQ("D", begin->name());
+	EXPECT_EQ("D", begin->name(*scores.db()));
 	EXPECT_EQ(1.1, begin->score());
 	++begin;
 
-	EXPECT_EQ("G", begin->name());
+	EXPECT_EQ("G", begin->name(*scores.db()));
 	EXPECT_EQ(1.0, begin->score());
 	++begin;
 
-	EXPECT_EQ("B", begin->name());
+	EXPECT_EQ("B", begin->name(*scores.db()));
 	EXPECT_EQ(-1.2, begin->score());
 	++begin;
 
-	EXPECT_EQ("C", begin->name());
+	EXPECT_EQ("C", begin->name(*scores.db()));
 	EXPECT_EQ(1.0, begin->score());
 	++begin;
 
@@ -74,7 +79,7 @@ TEST_F(ScoresTest, Iteration)
 
 TEST_F(ScoresTest, NameIteration)
 {
-	Scores scores;
+	Scores scores(std::make_shared<EntityDatabase>());
 
 	scores.emplace_back("A", 1.2);
 	scores.emplace_back("D", 1.1);
@@ -106,7 +111,7 @@ TEST_F(ScoresTest, NameIteration)
 
 TEST_F(ScoresTest, ScoreIteration)
 {
-	Scores scores;
+	Scores scores(std::make_shared<EntityDatabase>());
 
 	scores.emplace_back("A", 1.2);
 	scores.emplace_back("D", 1.1);
@@ -136,24 +141,32 @@ TEST_F(ScoresTest, ScoreIteration)
 	EXPECT_EQ(scores.scores().end(), begin);
 }
 
-TEST_F(ScoresTest, sortByNameInvariant)
+TEST_F(ScoresTest, sortByIndex)
 {
-	Scores scores;
-	EXPECT_TRUE(scores.isSortedByName());
+	auto db = std::make_shared<EntityDatabase>();
+	Scores scores(db);
+	EXPECT_TRUE(scores.isSortedByIndex());
+
+	db->index("E");
+
+	EXPECT_TRUE(scores.isSortedByIndex());
 
 	scores.emplace_back("AA", 1.0);
-	ASSERT_TRUE(scores.isSortedByName());
+	EXPECT_TRUE(scores.isSortedByIndex());
 	scores.emplace_back("B", 1.0);
-	ASSERT_TRUE(scores.isSortedByName());
+	EXPECT_TRUE(scores.isSortedByIndex());
 	scores.emplace_back("C", 1.0);
-	ASSERT_TRUE(scores.isSortedByName());
+	EXPECT_TRUE(scores.isSortedByIndex());
 	scores.emplace_back("E", 1.0);
-	ASSERT_TRUE(scores.isSortedByName());
+	EXPECT_FALSE(scores.isSortedByIndex());
 	scores.emplace_back("AB", 1.0);
-	ASSERT_FALSE(scores.isSortedByName());
+	EXPECT_FALSE(scores.isSortedByIndex());
+
+	scores.sortByIndex();
+	EXPECT_TRUE(scores.isSortedByIndex());
 
 	scores.sortByName();
-	ASSERT_TRUE(scores.isSortedByName());
+	EXPECT_FALSE(scores.isSortedByIndex());
 }
 
 TEST_F(ScoresTest, subsetSorted)
@@ -166,9 +179,10 @@ TEST_F(ScoresTest, subsetSorted)
 
 	Scores scores;
 	scores.emplace_back("A", 1.1);
-	scores.emplace_back("B", 1.1);
 	scores.emplace_back("G", 1.1);
-	EXPECT_TRUE(scores.isSortedByName());
+	scores.emplace_back("B", 1.1);
+
+	ASSERT_TRUE(scores.isSortedByIndex());
 
 	Scores subset = scores.subset(c);
 
@@ -194,7 +208,8 @@ TEST_F(ScoresTest, subsetUnsorted)
 	scores.emplace_back("P", 1.1);
 	scores.emplace_back("B", 1.1);
 	scores.emplace_back("G", 1.1);
-	EXPECT_FALSE(scores.isSortedByName());
+
+	ASSERT_FALSE(scores.isSortedByIndex());
 
 	Scores subset = scores.subset(c);
 

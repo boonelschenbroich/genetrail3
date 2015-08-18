@@ -281,8 +281,8 @@ void computeRowWisePValues(const EnrichmentAlgorithmPtr& algorithm,
 	//      parameters into the right place.
 	Scores scores(reader.readScoringFile(p.scores));
 
-	RowPermutationTest<double> test(scores.names().begin(),
-	                                scores.names().end(), p.numPermutations);
+	RowPermutationTest<double> test(scores.indices().begin(),
+	                                scores.indices().end(), p.numPermutations);
 
 	test.computePValue(algorithm, results);
 }
@@ -368,7 +368,7 @@ void computePValues(EnrichmentAlgorithmPtr& algorithm,
 void run(Scores& test_set, CategoryList& cat_list,
          EnrichmentAlgorithmPtr& algorithm, const Params& p, bool computePValue)
 {
-	test_set.sortByName();
+	test_set.sortByIndex();
 
 	AllResults name_to_cat_results(compute(test_set, cat_list, algorithm, p));
 	if(computePValue && !algorithm->pValuesComputed()) {

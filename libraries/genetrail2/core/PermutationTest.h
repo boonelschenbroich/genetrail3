@@ -78,8 +78,8 @@ namespace GeneTrail
 		RowPermutationTest(InputIterator begin, InputIterator end,
 		                   size_t permutations)
 		    : permutations_(permutations),
-		      names_(begin, end),
-		      tmp_names_(std::distance(begin, end))
+		      indices_(begin, end),
+		      tmp_indices_(std::distance(begin, end))
 		{
 		}
 
@@ -116,7 +116,6 @@ namespace GeneTrail
 			// need to shuffle tests.back()->hits many.
 			shuffle_(tests.back()->hits);
 
-			Category c;
 			for(size_t i = 0; i < tests.size(); ++i) {
 				// Check if the sampleSize has changed. As the tests_ vector is
 				// sorted we can use one running sum value for all categories of
@@ -125,9 +124,8 @@ namespace GeneTrail
 					presort_(currentSampleSize, tests[i]->hits);
 					currentSampleSize = tests[i]->hits;
 
-					c = Category("", names_.begin(),
-					             names_.begin() + currentSampleSize);
-					currentScore = algorithm->computeEnrichmentScore(c);
+					category_.replaceAll(indices_.begin(), indices_.begin() + currentSampleSize);
+					currentScore = algorithm->computeEnrichmentScore(category_);
 				}
 
 				this->updateCounter_(tests[i], counter[i], currentScore);
@@ -137,8 +135,8 @@ namespace GeneTrail
 		void shuffle_(size_t n)
 		{
 			for(size_t i = 0; i < n; ++i) {
-				std::swap(names_[i],
-				          names_[i + twister_() % (names_.size() - i)]);
+				std::swap(indices_[i],
+				          indices_[i + twister_() % (indices_.size() - i)]);
 			}
 		}
 
@@ -149,25 +147,25 @@ namespace GeneTrail
 		void presort_(size_t a, size_t b)
 		{
 			// Sort [a, b)
-			std::sort(names_.begin() + a, names_.begin() + b);
+			std::sort(indices_.begin() + a, indices_.begin() + b);
 
 			// Merge [0, a) and [a, b) into a temporary vector.
 			// Note that inplace_merge would reallocate a new vector
 			// every time it is called.
-			std::merge(names_.begin(), names_.begin() + a, names_.begin() + a,
-			           names_.begin() + b, tmp_names_.begin());
+			std::merge(indices_.begin(), indices_.begin() + a, indices_.begin() + a,
+			           indices_.begin() + b, tmp_indices_.begin());
 
 			// Copy the sorted range [0, b) from the temporary vector
 			// to the names_ vector
-			std::copy(tmp_names_.begin(), tmp_names_.begin() + b,
-			          names_.begin());
+			std::copy(tmp_indices_.begin(), tmp_indices_.begin() + b,
+			          indices_.begin());
 		}
 
 		Category category_;
 		size_t permutations_;
-		std::mt19937 twister_;
-		std::vector<std::string> names_;
-		std::vector<std::string> tmp_names_;
+		std::mt19937_64 twister_;
+		std::vector<size_t> indices_;
+		std::vector<size_t> tmp_indices_;
 	};
 
 	template <typename value_type>

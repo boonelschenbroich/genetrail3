@@ -64,7 +64,7 @@ double computeEnrichment(const DenseMatrix& cdata, const DenseMatrix& sdata,
 	IVec indices;
 	indices.reserve(c.size());
 
-	for(const auto& s : c) {
+	for(const auto& s : c.names()) {
 		auto i = cdata.colIndex(s);
 
 		if(i != std::numeric_limits<decltype(i)>::max()) {

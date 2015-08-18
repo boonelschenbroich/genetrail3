@@ -6,26 +6,36 @@
 
 namespace GeneTrail
 {
+	Scores::IndexProxy::IndexProxy(const std::vector<Score>* data) : data_(data)
+	{
+	}
+
 	Scores::ScoresProxy::ScoresProxy(const std::vector<Score>* data)
 	    : data_(data)
 	{
 	}
 
-	Scores::NamesProxy::NamesProxy(const std::vector<Score>* data) : data_(data)
+	Scores::NamesProxy::NamesProxy(const std::vector<Score>* data,
+	                               const EntityDatabase* db)
+	    : data_(data), db_(db)
 	{
 	}
 
-	Scores::Scores(const std::vector<Score>& data)
-	    : data_(data), isSortedByName_(false)
+	Scores::Scores(const std::vector<Score>& data,
+	               const std::shared_ptr<EntityDatabase>& db)
+	    : data_(data), isSortedByIndex_(false), db_(db)
 	{
 	}
 
-	Scores::Scores(std::vector<Score>&& data)
-	    : data_(std::move(data)), isSortedByName_(false)
+	Scores::Scores(std::vector<Score>&& data,
+	               const std::shared_ptr<EntityDatabase>& db)
+	    : data_(std::move(data)), isSortedByIndex_(false), db_(db)
 	{
 	}
 
-	Scores::Scores(const GeneTrail::GeneSet& gene_set) : isSortedByName_(true)
+	Scores::Scores(const GeneTrail::GeneSet& gene_set,
+	               const std::shared_ptr<EntityDatabase>& db)
+	    : isSortedByIndex_(true), db_(db)
 	{
 		data_.reserve(gene_set.size());
 
@@ -36,7 +46,9 @@ namespace GeneTrail
 		}
 	}
 
-	Scores::Scores(GeneSet&& gene_set) : isSortedByName_(true)
+	Scores::Scores(GeneSet&& gene_set,
+	               const std::shared_ptr<EntityDatabase>& db)
+	    : isSortedByIndex_(true), db_(db)
 	{
 		data_.reserve(gene_set.size());
 
@@ -47,11 +59,19 @@ namespace GeneTrail
 		}
 	}
 
-	Scores::Scores(size_t size) : isSortedByName_(true) { data_.reserve(size); }
+	Scores::Scores(const std::shared_ptr<EntityDatabase>& db)
+	    : isSortedByIndex_(true), db_(db)
+	{
+	}
+	Scores::Scores(size_t size, const std::shared_ptr<EntityDatabase>& db)
+	    : isSortedByIndex_(true), db_(db)
+	{
+		data_.reserve(size);
+	}
 
 	Scores Scores::subset(const Category& c) const
 	{
-		if(isSortedByName_) {
+		if(isSortedByIndex_) {
 			return subsetMerge_(c);
 		}
 
@@ -60,22 +80,21 @@ namespace GeneTrail
 
 	Scores Scores::subsetMerge_(const Category& c) const
 	{
-		Scores result(std::min(size(), c.size()));
+		Scores result(std::min(size(), c.size()), db_);
 
 		auto scoresIt = begin();
 		auto categoryIt = c.begin();
 
-		auto predicate = [](const Score& a, const Score& b) {
-			return a.name() < b.name();
-		};
+		auto predicate = [](const Score& a,
+		                    const Score& b) { return a.index() < b.index(); };
 
 		while(scoresIt != end() && categoryIt != c.end()) {
-			//TODO: Temporary can be optimized away using C++14 heterogenous
+			// TODO: Temporary can be optimized away using C++14 heterogenous
 			//      lookup.
 			Score dummy(*categoryIt, 0.0);
 			scoresIt = std::lower_bound(scoresIt, end(), dummy, predicate);
 
-			if(scoresIt->name() == *categoryIt) {
+			if(scoresIt->index() == *categoryIt) {
 				result.emplace_back(*scoresIt);
 				++scoresIt;
 			}
@@ -90,7 +109,7 @@ namespace GeneTrail
 		Scores result(std::min(size(), c.size()));
 
 		for(const auto& entry : *this) {
-			if(c.contains(entry.name())) {
+			if(c.contains(entry.index())) {
 				result.emplace_back(entry);
 			}
 		}
@@ -98,24 +117,34 @@ namespace GeneTrail
 		return result;
 	}
 
-	void Scores::sortByName()
+	void Scores::sortByIndex()
 	{
 		// Nothing to do here
-		if(isSortedByName_) {
+		if(isSortedByIndex_) {
 			return;
 		}
 
-		isSortedByName_ = true;
+		isSortedByIndex_ = true;
 
-		std::sort(
-		    data_.begin(), data_.end(),
-		    [](const Score& a, const Score& b) { return a.name() < b.name(); });
+		std::sort(data_.begin(), data_.end(),
+		          [](const Score& a,
+		             const Score& b) { return a.index() < b.index(); });
+	}
+
+	void Scores::sortByName()
+	{
+		isSortedByIndex_ = size() <= 1;
+
+		std::sort(data_.begin(), data_.end(),
+		          [this](const Score& a, const Score& b) {
+			return a.name(*db_) < b.name(*db_);
+		});
 	}
 
 	void Scores::sortByScore()
 	{
 		// The data is only sorted by name if there is at most one item present.
-		isSortedByName_ = size() <= 1;
+		isSortedByIndex_ = size() <= 1;
 
 		std::sort(data_.begin(), data_.end(),
 		          [](const Score& a,
@@ -126,14 +155,17 @@ namespace GeneTrail
 	{
 		// TODO: This might be replaced with heterogenous lookup from
 		//      C++14
-		Score dummy(name, 0.0);
-		if(isSortedByName_) {
+		Score dummy(*db_, name, 0.0);
+		if(isSortedByIndex_) {
 			return std::binary_search(data_.begin(), data_.end(), dummy,
 			                          [](const Score& a, const Score& s) {
-				return a.name() < s.name();
+				return a.index() < s.index();
 			});
 		} else {
-			return std::find_if(data_.begin(), data_.end(), [&name](const Score& a) {return a.name() == name; }) != data_.end();
+			return std::find_if(data_.begin(), data_.end(),
+			                    [&dummy](const Score& a) {
+				       return a.index() == dummy.index();
+				   }) != data_.end();
 		}
 	}
 }
