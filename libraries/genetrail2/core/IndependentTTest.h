@@ -54,18 +54,17 @@ namespace GeneTrail {
          */
         template<typename InputIterator1, typename InputIterator2>
         value_type test(const InputIterator1& first_begin, const InputIterator1& first_end, const InputIterator2& second_begin, const InputIterator2& second_end) {
-            auto mean1 = statistic::mean<value_type>(first_begin, first_end);
-            auto mean2 = statistic::mean<value_type>(second_begin, second_end);
-            auto var1 = statistic::var<value_type>(first_begin, first_end);
-            auto var2 = statistic::var<value_type>(second_begin, second_end);
+			value_type mean1, mean2, var1, var2;
+			size_t size1, size2;
 
-            size_t size1 = std::distance(first_begin,first_end);
-            size_t size2 = std::distance(second_begin,second_end);
+			std::tie(mean1, var1, size1) = statistic::mean_var_size<value_type>(first_begin, first_end);
+			std::tie(mean2, var2, size2) = statistic::mean_var_size<value_type>(second_begin, second_end);
 
-            value_type stdErr1 = std::sqrt(var1 / size1);
-            value_type stdErr2 = std::sqrt(var2 / size2);
-            this->stdErr_ = std::sqrt(std::pow(stdErr1, 2) + std::pow(stdErr2, 2));
-			this->df_ = std::pow(stdErr_, 4) / (std::pow(stdErr1, 4) / (size1 - 1) + std::pow(stdErr2, 4) / (size2 - 1));
+			auto stdErr1_2 = var1 / size1;
+			auto stdErr2_2 = var2 / size2;
+			auto stdErr_2 = stdErr1_2 + stdErr2_2;
+			this->stdErr_ = std::sqrt(stdErr_2);
+			this->df_ = (stdErr_2 * stdErr_2) / (stdErr1_2*stdErr1_2 / (size1 - 1) + stdErr2_2*stdErr2_2 / (size2 - 1));
 
             if (stdErr_ < tolerance_) {
                 score_ = 0;
