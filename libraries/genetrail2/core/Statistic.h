@@ -247,14 +247,12 @@ namespace GeneTrail
 		 * @return Variance of the given range
 		 */
 		template <typename value_type, typename InputIterator>
-		value_type var(InputIterator begin, InputIterator end)
+		value_type var(InputIterator begin, InputIterator end, value_type mean)
 		{
 			int n = std::distance(begin, end);
-			if(n == 1) {
+			if(n <= 1) {
 				return ((value_type)0);
 			} else {
-				const value_type s = std::accumulate(begin, end, value_type());
-				const value_type mean = s / n;
 				value_type v = value_type();
 				value_type ep = value_type();
 				for(auto it = begin; it != end; ++it) {
@@ -267,6 +265,25 @@ namespace GeneTrail
 		}
 
 		/**
+		 * This method calculates the pooled variance of a given range.
+		 *
+		 * @param begin InputIterator
+		 * @param end InputIterator
+		 * @return Variance of the given range
+		 */
+		template <typename value_type, typename InputIterator>
+		value_type var(InputIterator begin, InputIterator end)
+		{
+			int n = std::distance(begin, end);
+			if(n <= 1) {
+				return ((value_type)0);
+			} else {
+				const value_type s = std::accumulate(begin, end, value_type());
+				const value_type mean = s / n;
+				return var(begin, end, mean);
+			}
+		}
+
 		 * This method calculates the standard deviation of a given range.
 		 *
 		 * @param begin InputIterator
