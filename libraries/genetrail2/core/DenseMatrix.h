@@ -149,12 +149,12 @@ namespace GeneTrail
 			/**
 			 * Returns a reference to the matrix coefficient at position (i,j)
 			 */
-			value_type& operator()(index_type i, index_type j);
+			value_type& operator()(index_type i, index_type j) { return m_(i,j); }
 
 			/**
 			 * Returns the matrix coefficient at position (i,j)
 			 */
-			value_type  operator()(index_type i, index_type j) const;
+			value_type  operator()(index_type i, index_type j) const { return m_(i,j); }
 
 			/**
 			 * Move assignment operator

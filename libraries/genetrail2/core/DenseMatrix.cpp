@@ -75,16 +75,6 @@ namespace GeneTrail
 		return m_;
 	}
 
-	DenseMatrix::value_type& DenseMatrix::operator()(index_type i, index_type j)
-	{
-		return m_(i,j);
-	}
-
-	DenseMatrix::value_type DenseMatrix::operator()(index_type i, index_type j) const
-	{
-		return m_(i,j);
-	}
-
 	DenseMatrix::DMatrix::RowXpr DenseMatrix::row(index_type i)
 	{
 		return m_.row(i);

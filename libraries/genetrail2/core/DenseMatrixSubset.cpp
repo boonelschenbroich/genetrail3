@@ -256,16 +256,6 @@ namespace GeneTrail
 		}
 	}
 
-	Matrix::value_type& DenseMatrixSubset::operator()(index_type i, index_type j)
-	{
-		return (*mat_)(row_subset_[i], col_subset_[j]);
-	}
-
-	Matrix::value_type DenseMatrixSubset::operator()(index_type i, index_type j) const
-	{
-		return (*mat_)(row_subset_[i], col_subset_[j]);
-	}
-
 	/*
 	 * Matrix Operations
 	 */
