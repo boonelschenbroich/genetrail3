@@ -126,8 +126,8 @@ TEST_F(DenseMatrixTest, NameConstructor_rl)
 
 	DenseMatrix result(std::move(row_names), col_names);
 
-	ASSERT_EQ(4, result.rows());
-	ASSERT_EQ(5, result.cols());
+	ASSERT_EQ(4u, result.rows());
+	ASSERT_EQ(5u, result.cols());
 
 	EXPECT_EQ(tmp_ptr, &result.rowNames()[0]);
 
@@ -143,8 +143,8 @@ TEST_F(DenseMatrixTest, NameConstructor_lr)
 
 	DenseMatrix result(row_names, std::move(col_names));
 
-	ASSERT_EQ(4, result.rows());
-	ASSERT_EQ(5, result.cols());
+	ASSERT_EQ(4u, result.rows());
+	ASSERT_EQ(5u, result.cols());
 
 	EXPECT_EQ(tmp_ptr, &result.colNames()[0]);
 
@@ -161,8 +161,8 @@ TEST_F(DenseMatrixTest, NameConstructor_rr)
 
 	DenseMatrix result(std::move(row_names), std::move(col_names));
 
-	ASSERT_EQ(4, result.rows());
-	ASSERT_EQ(5, result.cols());
+	ASSERT_EQ(4u, result.rows());
+	ASSERT_EQ(5u, result.cols());
 
 	EXPECT_EQ(tmp_ptr_r, &result.rowNames()[0]);
 	EXPECT_EQ(tmp_ptr_c, &result.colNames()[0]);
@@ -287,8 +287,8 @@ TEST_F(DenseMatrixTest, Move_Assignment)
 	// Move the matrix
 	DenseMatrix mat2(10, 10);
 
-	ASSERT_EQ(10, mat2.rows());
-	ASSERT_EQ(10, mat2.cols());
+	ASSERT_EQ(10u, mat2.rows());
+	ASSERT_EQ(10u, mat2.cols());
 
 	mat2 = std::move(mat);
 
@@ -340,8 +340,8 @@ TEST_F(DenseMatrixTest, rbind)
 
 	m.rbind(n);
 
-	EXPECT_EQ(m.cols(), 3);
-	EXPECT_EQ(m.rows(), 4);
+	EXPECT_EQ(3u, m.cols());
+	EXPECT_EQ(4u, m.rows());
 
 	EXPECT_EQ(m(0, 0), 1.0);
 	EXPECT_EQ(m(0, 1), 2.0);
@@ -384,8 +384,8 @@ TEST_F(DenseMatrixTest, cbind)
 
 	m.cbind(n);
 
-	EXPECT_EQ(m.cols(), 6);
-	EXPECT_EQ(m.rows(), 2);
+	EXPECT_EQ(6u, m.cols());
+	EXPECT_EQ(2u, m.rows());
 
 	EXPECT_EQ(m(0, 0), 1.0);
 	EXPECT_EQ(m(0, 1), 2.0);
