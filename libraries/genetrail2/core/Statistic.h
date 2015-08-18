@@ -20,8 +20,9 @@
 #ifndef GT2_CORE_STATISTIC_H
 #define GT2_CORE_STATISTIC_H
 
-#include <cmath>
 #include <algorithm>
+#include <cmath>
+#include <tuple>
 #include <vector>
 
 namespace GeneTrail
@@ -284,6 +285,41 @@ namespace GeneTrail
 			}
 		}
 
+		/**
+		 * This implements the online algorithm by Knuth for calculating the variance
+		 * the advantage of this method is, that every input value needs to be read only
+		 * once. It additionally computes the mean and the number of input samples.
+		 *
+		 * For more information see:
+		 * Donald Knuth, The Art of Computer Programming, Vol 2, page 232, 3rd edition.
+		 *
+		 * @param begin InputIterator pointing to the start of a range for which the
+		 *              variance should be computed.
+		 * @param end   InputIterator pointing at the end of the range.
+		 */
+		template<typename value_type, typename InputIterator>
+		std::tuple<value_type, value_type, size_t> mean_var_size(InputIterator begin, InputIterator end)
+		{
+			value_type mean = 0.0;
+			value_type var = 0.0;
+			size_t size = 0u;
+
+			for(; begin != end; ++begin) {
+				auto x = *begin;
+				++size;
+				auto delta = x - mean;
+				mean += delta / size;
+				var += delta * (x - mean);
+			}
+
+			if(size <= 1) {
+				return std::make_tuple(mean, value_type(), size);
+			}
+
+			return std::make_tuple(mean, var / (size - 1), size);
+		}
+
+		/**
 		 * This method calculates the standard deviation of a given range.
 		 *
 		 * @param begin InputIterator
