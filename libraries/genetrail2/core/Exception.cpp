@@ -66,5 +66,11 @@ namespace GeneTrail
 		return msg_.c_str();
 	}
 
+	UnknownEntry::UnknownEntry(const std::string& entry_as_string) noexcept
+		: msg_("Error during lookup! Unknown entry \"" + entry_as_string + "\".")
+	{
+	}
+
+	const char* UnknownEntry::what() const noexcept { return msg_.c_str(); }
 }
 

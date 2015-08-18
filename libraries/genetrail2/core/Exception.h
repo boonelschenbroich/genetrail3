@@ -59,6 +59,16 @@ namespace GeneTrail
 		private:
 			std::string msg_;
 	};
+
+	class GT2_EXPORT UnknownEntry : public std::exception
+	{
+		public:
+		UnknownEntry(const std::string& entry_as_string) noexcept;
+		const char* what() const noexcept override;
+
+		private:
+		std::string msg_;
+	};
 }
 
 #endif // GT2_EXCEPTION_H
