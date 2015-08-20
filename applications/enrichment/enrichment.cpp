@@ -6,29 +6,20 @@
 #include <boost/program_options.hpp>
 #include <iostream>
 
-using namespace GeneTrail;
 namespace bpo = boost::program_options;
-namespace bm = boost::math;
+
+using namespace GeneTrail;
 
 std::string method;
-int numberOfPermutations;
-Params p;
 
-GeneSet test_set;
-CategoryList cat_list;
-
-typedef Scores::ConstScoreIterator _viter;
-
-
-bool parseArguments(int argc, char* argv[])
+bool parseArguments(int argc, char* argv[], Params& p)
 {
 	bpo::variables_map vm;
 	bpo::options_description desc;
 
 	addCommonCLIArgs(desc, p);
 	desc.add_options()
-		("method,met", bpo::value<std::string>(&method)->default_value("no"),"Method for gene set tesing.")
-		("permutations,per", bpo::value<int>(&numberOfPermutations)->default_value(1000),"Number of permutations for p-value computation.");
+		("method,met", bpo::value<std::string>(&method)->default_value("no"),"Method for gene set tesing.");
 
 	//TODO: Validate arguments
 	try
@@ -49,6 +40,8 @@ bool parseArguments(int argc, char* argv[])
 }
 
 EnrichmentAlgorithmPtr getAlgorithm(PValueMode mode, const std::string& method, const Scores& scores) {
+	using _viter = Scores::ConstScoreIterator;
+
 	if(method == "mean") {
 		return createEnrichmentAlgorithm<StatisticsEnrichment>(mode, statistic::mean<double, _viter>, scores);
 	} else if(method == "median") {
@@ -65,10 +58,13 @@ EnrichmentAlgorithmPtr getAlgorithm(PValueMode mode, const std::string& method, 
 
 int main(int argc, char* argv[])
 {
-	if(!parseArguments(argc, argv)) {
+	Params p;
+	if(!parseArguments(argc, argv, p)) {
 		return -1;
 	}
 
+	GeneSet test_set;
+	CategoryList cat_list;
 	if(init(test_set, cat_list, p) != 0) {
 		return -1;
 	}

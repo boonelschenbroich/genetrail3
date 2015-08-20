@@ -7,22 +7,13 @@
 #include "common.h"
 
 #include <boost/program_options.hpp>
-#include <iostream>
 
 using namespace GeneTrail;
 namespace bpo = boost::program_options;
-namespace bm = boost::math;
 
 std::string method;
 
-Params p;
-
-GeneSet test_set;
-GeneSet adapted_test_set;
-CategoryList cat_list;
-AllResults name_to_cat_results;
-
-bool parseArguments(int argc, char* argv[])
+bool parseArguments(int argc, char* argv[], Params& p)
 {
 	bpo::variables_map vm;
 	bpo::options_description desc;
@@ -61,10 +52,13 @@ EnrichmentAlgorithmPtr getAlgorithm(const std::string& method, const Scores& sco
 
 int main(int argc, char* argv[])
 {
-	if(!parseArguments(argc, argv)) {
+	Params p;
+	if(!parseArguments(argc, argv, p)) {
 		return -1;
 	}
 
+	GeneSet test_set;
+	CategoryList cat_list;
 	if(init(test_set,cat_list,p) != 0)
 	{
 		return -1;

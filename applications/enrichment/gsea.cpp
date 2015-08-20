@@ -8,7 +8,6 @@
 
 using namespace GeneTrail;
 namespace bpo = boost::program_options;
-namespace bm = boost::math;
 
 bool increasing = false, absolute = false;
 
@@ -18,12 +17,10 @@ bool parseArguments(int argc, char* argv[], Params& p)
 	bpo::options_description desc;
 
 	addCommonCLIArgs(desc, p);
-	desc.add_options()("identifier, d", bpo::value<std::string>(&p.identifier),
-	                   "A file containing identifier line by line.")(
-	    "increasing,i", bpo::value(&increasing)->zero_tokens(),
-	    "Use increasingly sorted scores. (Decreasing is default)")(
-	    "absolute,abs", bpo::value(&absolute)->zero_tokens(),
-	    "Use decreasingly sorted absolute scores.");
+	desc.add_options()
+		("identifier, d", bpo::value(&p.identifier), "A file containing identifier line by line.")
+		("increasing,i",  bpo::value(&increasing)->zero_tokens(), "Use increasingly sorted scores. (Decreasing is default)")
+		("absolute,abs",  bpo::value(&absolute)->zero_tokens(), "Use decreasingly sorted absolute scores.");
 
 	if(absolute && increasing) {
 		std::cerr << "ERROR: Please specify only one option to sort the file."
