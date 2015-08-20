@@ -80,7 +80,8 @@ namespace GeneTrail
 
 	Scores Scores::subsetMerge_(const Category& c) const
 	{
-		Scores result(std::min(size(), c.size()), db_);
+		auto n = size();
+		Scores result(std::min(n, c.size()), db_);
 
 		auto scoresIt = begin();
 		auto categoryIt = c.begin();
@@ -89,10 +90,39 @@ namespace GeneTrail
 		                    const Score& b) { return a.index() < b.index(); };
 
 		while(scoresIt != end() && categoryIt != c.end()) {
+			auto search_end = end();
+
+			// This is a heuristic that tries to guess the position
+			// of the current category element in the scores vector
+			// For this purpose we assume that the scores vector contains
+			// almost all identifiers in the entity database and we can simply
+			// perform a lookup in the scores vector to get an approximate location
+			if(*categoryIt < n) {
+				auto cat_lookup = begin() + *categoryIt;
+				auto scores_index = cat_lookup->index();
+
+				if(scores_index == *categoryIt) {
+					// If we hit what we were looking for, we
+					// are done and can continue.
+					scoresIt = cat_lookup + 1;
+					++categoryIt;
+					result.emplace_back(*cat_lookup);
+					continue;
+				} else if(scores_index > *categoryIt) {
+					// If the found index is larger than what we were looking
+					// for move the end of the search range here.
+					search_end = cat_lookup;
+				} else {
+					// Otherwise the searched element must be somewhere behind
+					// the examined position.
+					scoresIt = cat_lookup;
+				}
+			}
+
 			// TODO: Temporary can be optimized away using C++14 heterogenous
 			//      lookup.
 			Score dummy(*categoryIt, 0.0);
-			scoresIt = std::lower_bound(scoresIt, end(), dummy, predicate);
+			scoresIt = std::lower_bound(scoresIt, search_end, dummy, predicate);
 
 			if(scoresIt->index() == *categoryIt) {
 				result.emplace_back(*scoresIt);
