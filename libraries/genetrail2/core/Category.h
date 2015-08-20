@@ -1,6 +1,7 @@
 #ifndef GT2_CORE_CATEGORY_H
 #define GT2_CORE_CATEGORY_H
 
+#include <cassert>
 #include <forward_list>
 #include <memory>
 #include <string>
