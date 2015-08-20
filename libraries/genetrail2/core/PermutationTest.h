@@ -76,8 +76,9 @@ namespace GeneTrail
 		public:
 		template <typename InputIterator>
 		RowPermutationTest(InputIterator begin, InputIterator end,
-		                   size_t permutations)
+		                   size_t permutations, uint64_t randomSeed)
 		    : permutations_(permutations),
+		      twister_(randomSeed),
 		      indices_(begin, end),
 		      tmp_indices_(std::distance(begin, end))
 		{
@@ -173,11 +174,12 @@ namespace GeneTrail
 	{
 		public:
 		ColumnPermutationTest(const DenseMatrix& data, size_t permutations,
-		                      size_t reference_size, const std::string& method)
+		                      size_t reference_size, const std::string& method, uint64_t randomSeed)
 		    : permutations_(permutations),
 		      data_(data),
 		      reference_size_(reference_size),
 		      method_(method),
+		      twister_(randomSeed),
 		      row_permutation_(data.rows())
 		{
 			// TODO: Initalize the random number generator.

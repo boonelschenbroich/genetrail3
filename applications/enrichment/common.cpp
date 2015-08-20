@@ -25,17 +25,18 @@ void addCommonCLIArgs(bpo::options_description& desc, Params& p)
 		("maximum,x",      value(&p.maximum)->default_value(1000), "Maximum number of genes allowed in categories.")
 		("output,o",       value(&p.out), "Output prefix for text files.")
 		("adjustment,a",   value(&p.adjustment)->default_value("no"), "P-value adjustment method for multiple testing.")
-		("adjust_separately,p", value(&p.runSeparately)->zero_tokens(), "Indicates if databases are adjusted separatly or combined.")
+		("adjust_separately,u", value(&p.adjustSeparately)->default_value(false)->zero_tokens(), "Indicates if databases are adjusted separatly or combined.")
 		("pvalue_strategy,m",   value(&p.pValueMode)->default_value(PValueMode::RowWise, "row-wise"), "How should p-values be computed. Possible choices are 'row-wise', 'column-wise', and 'restandardize'")
-		("num_permutations,u",  value(&p.numPermutations)->default_value(1000000), "If p-values are computed using a permutation test, how many permutations should be used.")
+		("permutations,p",      value(&p.numPermutations)->default_value(1000000), "If p-values are computed using a permutation test, how many permutations should be used.")
 		("data_matrix_path,d",  value(&p.dataMatrixPath), "If p-values are computed not using the row-wise strategy, a data matrix must be specified from which scores can be computed.")
 		("groups,g",            value(&p.groups), "If p-values are computed not using the 'row-wise' strategy, this file determines the samples used for sample and reference group.")
 		("scoring_method,h",    value(&p.scoringMethod), "If p-values are computed not using the 'row-wise' strategy, a scoring method must be provided with which scores should be computed.")
+		("seed,r",              value(&p.randomSeed), "If p-values are computed using a permutation test, this option can be used for providing a seed for the random number generator.")
 	;
 }
 
 bool checkCLIArgs(const Params& p) {
-	if(p.pValueMode == PValueMode::ColumnWise || p.pValueMode == PValueMode::RowWise) {
+	if(p.pValueMode == PValueMode::ColumnWise || p.pValueMode == PValueMode::Restandardize) {
 		if(p.scoringMethod == "") {
 			std::cerr << "You must specify a valid scoring method for this pvalue strategy" << std::endl;
 			return false;
@@ -123,15 +124,16 @@ std::tuple<bool, size_t, std::string>
 processCategory(const Category& c, const Scores& test_set, const Params& p)
 {
 	Scores subset = test_set.subset(c);
+	subset.sortByName();
 
-	std::string genes = ",";
-	for(const auto& c : subset.names()) {
-		genes += c + ',';
+	std::string entries;
+	for(const auto& entry : subset.names()) {
+		entries += entry + ',';
 	}
-	genes.resize(genes.size() - 1);
 
-	return std::make_tuple(p.minimum <= c.size() && c.size() <= p.maximum, subset.size(),
-	                       genes);
+	entries.resize(entries.size() - 1);
+
+	return std::make_tuple(p.minimum <= c.size() && c.size() <= p.maximum, subset.size(), std::move(entries));
 }
 
 void writeFiles(const std::string& output_dir, const AllResults& all_results)
@@ -236,14 +238,21 @@ AllResults compute(Scores& test_set, CategoryList& cat_list,
 				std::cout << "INFO: Processing - " << cat.first << " - "
 				          << c->name() << std::endl;
 				auto processed = processCategory(*c, test_set, p);
-				if(!std::get<0>(processed) ||
-				   !algorithm->canUseCategory(*c, std::get<1>(processed))) {
+
+				std::shared_ptr<EnrichmentResult> result;
+
+				if(!std::get<0>(processed)) {
 					continue;
 				}
 
-				auto result = algorithm->computeEnrichment(c);
+				if(!algorithm->canUseCategory(*c, std::get<1>(processed))) {
+					result = std::make_shared<EnrichmentResult>(c);
+				} else {
+					result = algorithm->computeEnrichment(c);
+				}
+
 				result->hits = std::get<1>(processed);
-				result->info = std::get<2>(processed);
+				result->info = std::move(std::get<2>(processed));
 
 				name_to_result.emplace(c->name(), std::move(result));
 			}
@@ -282,7 +291,7 @@ void computeRowWisePValues(const EnrichmentAlgorithmPtr& algorithm,
 	Scores scores(reader.readScoringFile(p.scores));
 
 	RowPermutationTest<double> test(scores.indices().begin(),
-	                                scores.indices().end(), p.numPermutations);
+	                                scores.indices().end(), p.numPermutations, p.randomSeed);
 
 	test.computePValue(algorithm, results);
 }
@@ -324,7 +333,7 @@ void computeColumnWisePValues(const EnrichmentAlgorithmPtr& algorithm,
 	removeUnusedColumns(data, referenceGroup, sampleGroup);
 
 	ColumnPermutationTest<double> test(data, p.numPermutations,
-	                                   referenceGroup.size(), p.scoringMethod);
+	                                   referenceGroup.size(), p.scoringMethod, p.randomSeed);
 
 	test.computePValue(algorithm, results);
 }
@@ -376,7 +385,7 @@ void run(Scores& test_set, CategoryList& cat_list,
 	}
 
 	// Checks how they should be adjusted
-	if(p.runSeparately) {
+	if(p.adjustSeparately) {
 		adjustSeparately(name_to_cat_results, p);
 	} else {
 		adjustCombined(name_to_cat_results, p);

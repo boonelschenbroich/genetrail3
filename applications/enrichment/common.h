@@ -9,6 +9,7 @@
 #include <utility>
 #include <string>
 #include <memory>
+#include <random>
 
 namespace bpo = boost::program_options;
 
@@ -28,6 +29,17 @@ typedef std::vector<std::pair<std::string, double>> PValueList;
 
 struct Params
 {
+	Params()
+		: significance(0.05),
+		  minimum(2),
+		  maximum(700),
+		  adjustSeparately(false),
+		  pValueMode(PValueMode::RowWise),
+		  numPermutations(100000),
+		  randomSeed(std::random_device{}())
+	{
+	}
+
 	std::string algorithm;
 	double significance;
 	std::string categories;
@@ -37,12 +49,13 @@ struct Params
 	size_t maximum;
 	std::string out;
 	std::string adjustment;
-	bool runSeparately;
+	bool adjustSeparately;
 	PValueMode pValueMode;
 	size_t numPermutations;
 	std::string dataMatrixPath;
 	std::string groups;
 	std::string scoringMethod;
+	size_t randomSeed;
 };
 
 using CategoryList = std::list<std::pair<std::string, std::string>>;
