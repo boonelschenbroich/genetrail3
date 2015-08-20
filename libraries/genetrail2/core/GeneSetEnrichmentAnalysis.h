@@ -142,6 +142,7 @@ namespace GeneTrail
 		float_type computeLeftPValue(const size_t& n, const size_t& l,
 		                             const big_int_type& RSc)
 		{
+			assert(n >= l);
 			return computePValue_(
 			    n, l, std::abs(RSc),
 			    [](big_int_type v, big_int_type RSc) { return -RSc < v; });
@@ -159,6 +160,7 @@ namespace GeneTrail
 		float_type computeRightPValue(const size_t& n, const size_t& l,
 		                              const big_int_type& RSc)
 		{
+			assert(n >= l);
 			return computePValue_(
 			    n, l, std::abs(RSc),
 			    [](big_int_type v, big_int_type RSc) { return v < RSc; });
