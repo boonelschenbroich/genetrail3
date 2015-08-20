@@ -126,7 +126,7 @@ namespace GeneTrail
 					currentSampleSize = tests[i]->hits;
 
 					category_.replaceAll(indices_.begin(), indices_.begin() + currentSampleSize);
-					currentScore = algorithm->computeEnrichmentScore(category_);
+					currentScore = std::get<0>(algorithm->computeEnrichmentScore(category_));
 				}
 
 				this->updateCounter_(tests[i], counter[i], currentScore);
@@ -240,7 +240,7 @@ namespace GeneTrail
 			// TODO: Use the computed scores!!!!!
 			for(size_t i = 0; i < tests.size(); ++i) {
 				auto score =
-				    algorithm->computeEnrichmentScore(*tests[i]->category);
+				    std::get<0>(algorithm->computeEnrichmentScore(*tests[i]->category));
 
 				this->updateCounter_(tests[i], counter[i], score);
 			}

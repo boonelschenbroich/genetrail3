@@ -67,6 +67,8 @@ namespace GeneTrail {
 			double computePValue(const Category& category) const;
 
 			double computeScore(const Category& category) const;
+
+			double expectedNumberOfHits(const Category& category) const;
 		private:
 
 			Category reference_set_;

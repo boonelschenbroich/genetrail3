@@ -49,25 +49,33 @@ namespace GeneTrail
 		    : test_(test), scores_(scores)
 		{
 			scores_.sortByIndex();
+			expected_value_ =
+			    test_(scores_.scores().begin(), scores_.scores().end());
 		}
 
-		void setInputScores(const Scores& scores) {
+		void setInputScores(const Scores& scores)
+		{
 			scores_ = scores;
 			scores_.sortByIndex();
+			expected_value_ =
+			    test_(scores_.scores().begin(), scores_.scores().end());
 		}
 
 		bool canUseCategory(const Category&, size_t) const { return true; }
 
-		double computeScore(const Category& c) const
+		std::tuple<double, double> computeScore(const Category& c) const
 		{
 			auto intersection = scores_.subset(c);
-			return test_(intersection.scores().begin(),
-			             intersection.scores().end());
+			auto score = test_(intersection.scores().begin(),
+			                   intersection.scores().end());
+
+			return std::make_tuple(score, expected_value_);
 		}
 
 		private:
 		Statistics test_;
 		Scores scores_;
+		double expected_value_;
 	};
 
 	template <typename Test> class HTestEnrichmentBase
@@ -78,22 +86,17 @@ namespace GeneTrail
 
 		HTestEnrichmentBase(const Scores& scores) : scores_(scores) {}
 
-		void setInputScores(const Scores& scores) {
-			scores_ = scores;
-		}
-
-		double computeRowWisePValue(EnrichmentResult* result)
+		double computeRowWisePValue(Test& test, EnrichmentResult* result)
 		{
-			if(result->score > 0.0) {
-				return HTest::upperTailedPValue(test_, result->score);
+			if(result->enriched) {
+				return HTest::upperTailedPValue(test, result->score);
 			} else {
-				return HTest::lowerTailedPValue(test_, result->score);
+				return HTest::lowerTailedPValue(test, result->score);
 			}
 		}
 
 		protected:
 		Scores scores_;
-		Test test_;
 	};
 
 	template <typename Test>
@@ -102,12 +105,18 @@ namespace GeneTrail
 		public:
 		using HTestEnrichmentBase<Test>::HTestEnrichmentBase;
 
+		void setInputScores(const Scores& scores) { this->scores_ = scores; }
+
 		bool canUseCategory(const Category&, size_t hits) const
 		{
 			return hits > 2;
 		}
 
-		double computeScore(const Category& c)
+		double computeRowWisePValue(EnrichmentResult* result) {
+			return HTestEnrichmentBase<Test>::computeRowWisePValue(test_, result);
+		}
+
+		std::tuple<double, double> computeScore(const Category& c)
 		{
 			using namespace boost;
 
@@ -131,8 +140,13 @@ namespace GeneTrail
 			auto jt_beg = make_transform_iterator(jt_tmp_beg, project_to_score);
 			auto jt_end = make_transform_iterator(jt_tmp_end, project_to_score);
 
-			return HTest::test(this->test_, it_beg, it_end, jt_beg, jt_end);
+			auto score = HTest::test(test_, it_beg, it_end, jt_beg, jt_end);
+
+			return std::make_tuple(score, 0.0);
 		}
+
+		private:
+		Test test_;
 	};
 
 	template <typename T>
@@ -140,14 +154,28 @@ namespace GeneTrail
 	    : public HTestEnrichmentBase<OneSampleTTest<T>>
 	{
 		public:
-		using HTestEnrichmentBase<OneSampleTTest<T>>::HTestEnrichmentBase;
+		HTestEnrichment(const Scores& scores)
+		    : HTestEnrichmentBase<OneSampleTTest<T>>(scores),
+		      test_(1e-5, getExpectedValue_())
+		{
+		}
+
+		void setInputScores(const Scores& scores)
+		{
+			this->scores_ = scores;
+			//TODO: update test here
+		}
 
 		bool canUseCategory(const Category&, size_t hits) const
 		{
 			return hits > 1;
 		}
 
-		double computeScore(const Category& c)
+		double computeRowWisePValue(EnrichmentResult* result) {
+			return HTestEnrichmentBase<OneSampleTTest<T>>::computeRowWisePValue(test_, result);
+		}
+
+		std::tuple<double, double> computeScore(const Category& c)
 		{
 			using namespace boost;
 
@@ -163,8 +191,20 @@ namespace GeneTrail
 			auto it_beg = make_transform_iterator(it_tmp_beg, project_to_score);
 			auto it_end = make_transform_iterator(it_tmp_end, project_to_score);
 
-			return HTest::test(this->test_, it_beg, it_end);
+			auto score = HTest::test(this->test_, it_beg, it_end);
+
+			return std::make_tuple(score, 0.0);
 		}
+
+		private:
+		T getExpectedValue_()
+		{
+			return statistic::mean<T>(this->scores_.scores().begin(),
+			                          this->scores_.scores().end());
+		}
+
+		private:
+		OneSampleTTest<T> test_;
 	};
 
 	class Ora
@@ -178,9 +218,10 @@ namespace GeneTrail
 
 		bool canUseCategory(const Category&, size_t) const { return true; }
 
-		double computeScore(const Category& c) const
+		std::tuple<double, double> computeScore(const Category& c) const
 		{
-			return test_.computeScore(c);
+			auto score = test_.computeScore(c);
+			return std::make_tuple(score, test_.expectedNumberOfHits(c));
 		}
 
 		double computeRowWisePValue(EnrichmentResult* result) const
@@ -200,7 +241,7 @@ namespace GeneTrail
 
 		template <typename Iterator>
 		KolmogorovSmirnov(const Iterator& beginIds, const Iterator& endIds)
-		    : intersectionSize_(0), ids_(beginIds, endIds)
+		    : ids_(beginIds, endIds)
 		{
 		}
 
@@ -212,28 +253,30 @@ namespace GeneTrail
 
 		bool canUseCategory(const Category&, size_t) const { return true; }
 
-		double computeScore(const Category& category)
+		std::tuple<double, double> computeScore(const Category& category)
 		{
-			intersectionSize_ =
-			    test_.intersectionSize(category, ids_.begin(), ids_.end());
-			return test_.computeRunningSum(category, ids_.begin(), ids_.end());
+			auto score =
+			    test_.computeRunningSum(category, ids_.begin(), ids_.end());
+			return std::make_tuple(score, 0.0);
 		}
 
 		double computeRowWisePValue(EnrichmentResult* result)
 		{
+			auto intersection_size = test_.intersectionSize(
+			    *result->category, ids_.begin(), ids_.end());
+
 			if(result->score > 0.0) {
-				return test_.computeRightPValue(intersectionSize_, ids_.size(),
+				return test_.computeRightPValue(ids_.size(), intersection_size,
 				                                result->score)
 				    .convert_to<double>();
 			} else {
-				return test_.computeLeftPValue(intersectionSize_, ids_.size(),
+				return test_.computeLeftPValue(ids_.size(), intersection_size,
 				                               result->score)
 				    .convert_to<double>();
 			}
 		}
 
 		private:
-		size_t intersectionSize_;
 		std::vector<std::string> ids_;
 		GeneSetEnrichmentAnalysis<big_float, int64_t> test_;
 	};
@@ -244,20 +287,17 @@ namespace GeneTrail
 		using RowWiseMode = SetLevelStatistics::Indirect;
 		using InputType = SetLevelStatistics::Scores;
 
-		WeightedKolmogorovSmirnov(const Scores& scores)
-		    : test_(scores)
-		{
-		}
+		WeightedKolmogorovSmirnov(const Scores& scores) : test_(scores) {}
 
-		void setInputScores(const Scores& scores) {
-			test_.setScores(scores);
-		}
+		void setInputScores(const Scores& scores) { test_.setScores(scores); }
 
 		bool canUseCategory(const Category&, size_t) const { return true; }
 
-		double computeScore(const Category& category)
+		std::tuple<double, double> computeScore(const Category& category)
 		{
-			return test_.computeRunningSum(category);
+			auto score = test_.computeRunningSum(category);
+
+			return std::make_tuple(score, 0.0);
 		}
 
 		private:

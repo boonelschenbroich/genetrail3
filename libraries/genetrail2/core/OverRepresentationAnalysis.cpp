@@ -25,6 +25,11 @@ OverRepresentationAnalysis::categoryContainsAllGenes(const Category& reference,
 	return true;
 }
 
+double OverRepresentationAnalysis::expectedNumberOfHits(const Category& category) const {
+	auto l = Category::intersect("null", category, reference_set_).size();
+	return (l * n_) / static_cast<double>(m_);
+}
+
 double OverRepresentationAnalysis::computePValue(const Category& category) const
 {
 	// GeneTrail 1

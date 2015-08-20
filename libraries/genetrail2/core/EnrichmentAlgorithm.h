@@ -23,7 +23,7 @@ namespace GeneTrail
 		virtual bool canUseCategory(const Category& c, size_t hits) const = 0;
 		virtual std::unique_ptr<EnrichmentResult>
 		computeEnrichment(const std::shared_ptr<Category>& c) = 0;
-		virtual double computeEnrichmentScore(const Category& c) = 0;
+		virtual std::tuple<double, double> computeEnrichmentScore(const Category& c) = 0;
 		virtual bool rowWisePValueIsDirect() const = 0;
 
 		private:
@@ -55,7 +55,7 @@ namespace GeneTrail
 				return statistics_.canUseCategory(c, hits);
 			}
 
-			double computeEnrichmentScore(const Category& c) override
+			std::tuple<double, double> computeEnrichmentScore(const Category& c) override
 			{
 				return statistics_.computeScore(c);
 			}
@@ -65,7 +65,8 @@ namespace GeneTrail
 			{
 				auto result = std::make_unique<EnrichmentResult>(c);
 
-				result->score = computeEnrichmentScore(*c);
+				std::tie(result->score, result->expected_score) = computeEnrichmentScore(*c);
+				result->enriched = result->score > result->expected_score;
 
 				computePValueDispatch_(result.get(),
 				                       typename Statistics::RowWiseMode());
