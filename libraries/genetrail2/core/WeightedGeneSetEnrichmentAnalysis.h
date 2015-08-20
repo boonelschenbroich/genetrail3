@@ -77,7 +77,7 @@ namespace GeneTrail
 			result.reserve(std::min(category.size(), scores.size()));
 
 			size_t i = 0;
-			for(const auto& n : scores.names()) {
+			for(const auto& n : scores.indices()) {
 				if(category.contains(n)) {
 					result.emplace_back(i);
 				}
