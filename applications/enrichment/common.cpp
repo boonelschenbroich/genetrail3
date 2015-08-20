@@ -131,7 +131,9 @@ processCategory(const Category& c, const Scores& test_set, const Params& p)
 		entries += entry + ',';
 	}
 
-	entries.resize(entries.size() - 1);
+	if(!entries.empty()) {
+		entries.resize(entries.size() - 1);
+	}
 
 	return std::make_tuple(p.minimum <= c.size() && c.size() <= p.maximum, subset.size(), std::move(entries));
 }
