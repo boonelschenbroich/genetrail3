@@ -7,6 +7,8 @@
 #include "EnrichmentAlgorithm.h"
 #include "MatrixHTest.h"
 
+#include <boost/iterator/counting_iterator.hpp>
+
 #include <algorithm>
 #include <vector>
 #include <utility>
@@ -74,14 +76,23 @@ namespace GeneTrail
 	    : public internal::PermutationBase<value_type>
 	{
 		public:
-		template <typename InputIterator>
-		RowPermutationTest(InputIterator begin, InputIterator end,
-		                   size_t permutations, uint64_t randomSeed)
-		    : permutations_(permutations),
-		      twister_(randomSeed),
-		      indices_(begin, end),
-		      tmp_indices_(std::distance(begin, end))
+		static std::unique_ptr<RowPermutationTest>
+		IndexBased(const Scores& s, size_t permutations,
+		               uint64_t randomSeed)
 		{
+			return std::unique_ptr<RowPermutationTest>(new RowPermutationTest(
+			    boost::counting_iterator<size_t>(0),
+			    boost::counting_iterator<size_t>(s.size()), permutations,
+			    randomSeed));
+		}
+
+		static std::unique_ptr<RowPermutationTest>
+		CategoryBased(const Scores& s, size_t permutations,
+		                  uint64_t randomSeed)
+		{
+			return std::unique_ptr<RowPermutationTest>(new RowPermutationTest(
+			    s.indices().begin(), s.indices().end(), permutations,
+			    randomSeed));
 		}
 
 		void computePValue(const EnrichmentAlgorithmPtr& algorithm,
@@ -105,6 +116,31 @@ namespace GeneTrail
 		}
 
 		private:
+		template <typename InputIterator>
+		RowPermutationTest(InputIterator begin, InputIterator end,
+		                   size_t permutations, uint64_t randomSeed)
+		    : permutations_(permutations),
+		      twister_(randomSeed),
+		      indices_(begin, end),
+		      tmp_indices_(std::distance(begin, end))
+		{
+		}
+
+		std::tuple<double, double>
+		computeEnrichmentScore_(const EnrichmentAlgorithmPtr& algorithm,
+		                        size_t currentSampleSize)
+		{
+			auto start = indices_.begin();
+			auto stop = indices_.begin() + currentSampleSize;
+
+			if(algorithm->supportsIndices()) {
+				return algorithm->computeEnrichmentScore(start, stop);
+			} else {
+				category_.replaceAll(start, stop);
+				return algorithm->computeEnrichmentScore(category_);
+			}
+		}
+
 		void performSinglePermutation_(const EnrichmentAlgorithmPtr& algorithm,
 		                               const EnrichmentResults& tests,
 		                               std::vector<size_t>& counter)
@@ -125,8 +161,7 @@ namespace GeneTrail
 					presort_(currentSampleSize, tests[i]->hits);
 					currentSampleSize = tests[i]->hits;
 
-					category_.replaceAll(indices_.begin(), indices_.begin() + currentSampleSize);
-					currentScore = std::get<0>(algorithm->computeEnrichmentScore(category_));
+					currentScore = std::get<0>(computeEnrichmentScore_(algorithm, currentSampleSize));
 				}
 
 				this->updateCounter_(tests[i], counter[i], currentScore);
@@ -237,7 +272,6 @@ namespace GeneTrail
 
 			algorithm->setScores(scores);
 
-			// TODO: Use the computed scores!!!!!
 			for(size_t i = 0; i < tests.size(); ++i) {
 				auto score =
 				    std::get<0>(algorithm->computeEnrichmentScore(*tests[i]->category));

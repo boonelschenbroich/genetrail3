@@ -17,7 +17,10 @@ namespace GeneTrail
 	class DenseMatrix;
 	class DenseMatrixSubset;
 
-	namespace SetLevelStatistics
+	using Indices = std::vector<size_t>;
+	using IndexIterator = Indices::const_iterator;
+
+	namespace StatTags
 	{
 		struct Direct
 		{
@@ -34,14 +37,28 @@ namespace GeneTrail
 		struct Matrix
 		{
 		};
+		struct SupportsIndices
+		{
+		};
+		struct DoesNotSupportIndices
+		{
+		};
 	}
 
-	class StatisticsEnrichment
+	template <typename Mode = StatTags::Indirect,
+	          typename Indices = StatTags::DoesNotSupportIndices,
+	          typename Input = StatTags::Scores>
+	class SetLevelStatistics
 	{
 		public:
-		using RowWiseMode = SetLevelStatistics::Indirect;
-		using InputType = SetLevelStatistics::Scores;
+		using RowWiseMode = Mode;
+		using InputType = Input;
+		using SupportsIndices = Indices;
+	};
 
+	class StatisticsEnrichment : public SetLevelStatistics<>
+	{
+		public:
 		using _viter = Scores::ConstScoreIterator;
 		using Statistics = std::function<double(_viter, _viter)>;
 
@@ -78,12 +95,10 @@ namespace GeneTrail
 		double expected_value_;
 	};
 
-	template <typename Test> class HTestEnrichmentBase
+	template <typename Test>
+	class HTestEnrichmentBase : public SetLevelStatistics<StatTags::Direct>
 	{
 		public:
-		using RowWiseMode = SetLevelStatistics::Direct;
-		using InputType = SetLevelStatistics::Scores;
-
 		HTestEnrichmentBase(const Scores& scores) : scores_(scores) {}
 
 		double computeRowWisePValue(Test& test, EnrichmentResult* result)
@@ -112,8 +127,10 @@ namespace GeneTrail
 			return hits > 2;
 		}
 
-		double computeRowWisePValue(EnrichmentResult* result) {
-			return HTestEnrichmentBase<Test>::computeRowWisePValue(test_, result);
+		double computeRowWisePValue(EnrichmentResult* result)
+		{
+			return HTestEnrichmentBase<Test>::computeRowWisePValue(test_,
+			                                                       result);
 		}
 
 		std::tuple<double, double> computeScore(const Category& c)
@@ -163,7 +180,7 @@ namespace GeneTrail
 		void setInputScores(const Scores& scores)
 		{
 			this->scores_ = scores;
-			//TODO: update test here
+			// TODO: update test here
 		}
 
 		bool canUseCategory(const Category&, size_t hits) const
@@ -171,8 +188,10 @@ namespace GeneTrail
 			return hits > 1;
 		}
 
-		double computeRowWisePValue(EnrichmentResult* result) {
-			return HTestEnrichmentBase<OneSampleTTest<T>>::computeRowWisePValue(test_, result);
+		double computeRowWisePValue(EnrichmentResult* result)
+		{
+			return HTestEnrichmentBase<OneSampleTTest<T>>::computeRowWisePValue(
+			    test_, result);
 		}
 
 		std::tuple<double, double> computeScore(const Category& c)
@@ -207,12 +226,11 @@ namespace GeneTrail
 		OneSampleTTest<T> test_;
 	};
 
-	class Ora
+	class Ora : public SetLevelStatistics<StatTags::Direct,
+	                                      StatTags::DoesNotSupportIndices,
+	                                      StatTags::Identifiers>
 	{
 		public:
-		using RowWiseMode = SetLevelStatistics::Direct;
-		using InputType = SetLevelStatistics::Identifiers;
-
 		Ora(const Category& reference_set, const Category& test_set)
 		    : test_(reference_set, test_set){};
 
@@ -233,12 +251,9 @@ namespace GeneTrail
 		OverRepresentationAnalysis test_;
 	};
 
-	class KolmogorovSmirnov
+	class KolmogorovSmirnov : public SetLevelStatistics<StatTags::Direct>
 	{
 		public:
-		using RowWiseMode = SetLevelStatistics::Direct;
-		using InputType = SetLevelStatistics::Scores;
-
 		template <typename Iterator>
 		KolmogorovSmirnov(const Iterator& beginIds, const Iterator& endIds)
 		    : ids_(beginIds, endIds)
@@ -282,11 +297,10 @@ namespace GeneTrail
 	};
 
 	class WeightedKolmogorovSmirnov
+	    : public SetLevelStatistics<StatTags::Indirect,
+	                                StatTags::SupportsIndices>
 	{
 		public:
-		using RowWiseMode = SetLevelStatistics::Indirect;
-		using InputType = SetLevelStatistics::Scores;
-
 		WeightedKolmogorovSmirnov(const Scores& scores) : test_(scores) {}
 
 		void setInputScores(const Scores& scores) { test_.setScores(scores); }
@@ -296,7 +310,13 @@ namespace GeneTrail
 		std::tuple<double, double> computeScore(const Category& category)
 		{
 			auto score = test_.computeRunningSum(category);
+			return std::make_tuple(score, 0.0);
+		}
 
+		std::tuple<double, double> computeScore(IndexIterator begin,
+		                                        IndexIterator end)
+		{
+			auto score = test_.computeRunningSum(begin, end);
 			return std::make_tuple(score, 0.0);
 		}
 

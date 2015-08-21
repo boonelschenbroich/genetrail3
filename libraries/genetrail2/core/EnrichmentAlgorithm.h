@@ -2,6 +2,7 @@
 #define GT2_ENRICHMENT_ALGORITHM_H
 
 #include "compat.h"
+#include "Exception.h"
 #include "SetLevelStatistics.h"
 #include "macros.h"
 
@@ -19,12 +20,20 @@ namespace GeneTrail
 		PValueMode pValueMode() const { return mode_; }
 		bool pValuesComputed() const;
 
-		virtual void setScores(const Scores& scores) = 0;
 		virtual bool canUseCategory(const Category& c, size_t hits) const = 0;
+		virtual bool rowWisePValueIsDirect() const = 0;
+		virtual bool supportsIndices() const = 0;
+
+		virtual void setScores(const Scores& scores) = 0;
+
 		virtual std::unique_ptr<EnrichmentResult>
 		computeEnrichment(const std::shared_ptr<Category>& c) = 0;
-		virtual std::tuple<double, double> computeEnrichmentScore(const Category& c) = 0;
-		virtual bool rowWisePValueIsDirect() const = 0;
+
+		virtual std::tuple<double, double>
+		computeEnrichmentScore(const Category& c) = 0;
+
+		virtual std::tuple<double, double>
+		computeEnrichmentScore(IndexIterator begin, IndexIterator end) = 0;
 
 		private:
 		PValueMode mode_;
@@ -55,9 +64,18 @@ namespace GeneTrail
 				return statistics_.canUseCategory(c, hits);
 			}
 
-			std::tuple<double, double> computeEnrichmentScore(const Category& c) override
+			std::tuple<double, double>
+			computeEnrichmentScore(const Category& c) override
 			{
 				return statistics_.computeScore(c);
+			}
+
+			std::tuple<double, double>
+			computeEnrichmentScore(IndexIterator begin,
+			                       IndexIterator end) override
+			{
+				return computeEnrichmentScoreDispatch_(
+				    typename Statistics::SupportsIndices(), begin, end);
 			}
 
 			std::unique_ptr<EnrichmentResult>
@@ -65,7 +83,8 @@ namespace GeneTrail
 			{
 				auto result = std::make_unique<EnrichmentResult>(c);
 
-				std::tie(result->score, result->expected_score) = computeEnrichmentScore(*c);
+				std::tie(result->score, result->expected_score) =
+				    computeEnrichmentScore(*c);
 				result->enriched = result->score > result->expected_score;
 
 				computePValueDispatch_(result.get(),
@@ -80,37 +99,68 @@ namespace GeneTrail
 				    typename Statistics::RowWiseMode());
 			}
 
+			bool supportsIndices() const override
+			{
+				return supportsIndicesDispatch_(
+				    typename Statistics::SupportsIndices());
+			}
+
 			private:
-			void setScoresDispatch_(const Scores& scores, SetLevelStatistics::Scores) {
+			void setScoresDispatch_(const Scores& scores, StatTags::Scores)
+			{
 				statistics_.setInputScores(scores);
 			}
 
-			void setScoresDispatch_(const Scores&, SetLevelStatistics::Identifiers) {
-			}
+			void setScoresDispatch_(const Scores&, StatTags::Identifiers) {}
 
 			void computePValueDispatch_(EnrichmentResult* result,
-			                            SetLevelStatistics::Direct)
+			                            StatTags::Direct)
 			{
 				if(pValuesComputed()) {
 					result->pvalue = statistics_.computeRowWisePValue(result);
 				}
 			}
 
-			void computePValueDispatch_(EnrichmentResult*,
-			                            SetLevelStatistics::Indirect)
+			void computePValueDispatch_(EnrichmentResult*, StatTags::Indirect)
 			{
 			}
 
-			bool
-			    rowWisePValueIsDirectDispatch_(SetLevelStatistics::Direct) const
+			bool rowWisePValueIsDirectDispatch_(StatTags::Direct) const
 			{
 				return true;
 			}
 
-			bool rowWisePValueIsDirectDispatch_(
-			    SetLevelStatistics::Indirect) const
+			bool rowWisePValueIsDirectDispatch_(StatTags::Indirect) const
 			{
 				return false;
+			}
+
+			bool supportsIndicesDispatch_(StatTags::SupportsIndices) const
+			{
+				return true;
+			}
+
+			bool supportsIndicesDispatch_(StatTags::DoesNotSupportIndices) const
+			{
+				return false;
+			}
+
+			std::tuple<double, double>
+			computeEnrichmentScoreDispatch_(StatTags::SupportsIndices,
+			                                IndexIterator begin,
+			                                IndexIterator end)
+			{
+				return statistics_.computeScore(begin, end);
+			}
+
+			std::tuple<double, double>
+			    computeEnrichmentScoreDispatch_(StatTags::DoesNotSupportIndices,
+			                                    IndexIterator, IndexIterator)
+			{
+				throw NotImplemented(__FILE__, __LINE__,
+				                     "This type does not implement the "
+				                     "computation of enrichment scores using "
+				                     "indices.");
 			}
 
 			Statistics statistics_;

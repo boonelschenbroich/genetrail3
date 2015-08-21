@@ -285,17 +285,16 @@ void adjustSeparately(AllResults& all_results, const Params& p)
 }
 
 void computeRowWisePValues(const EnrichmentAlgorithmPtr& algorithm,
-                           EnrichmentResults& results, const Params& p)
+                           EnrichmentResults& results, const Scores& scores, const Params& p)
 {
-	GeneSetReader reader;
-	// TODO: the line below is a hack to get the
-	//      parameters into the right place.
-	Scores scores(reader.readScoringFile(p.scores));
+	using Test = RowPermutationTest<double>;
 
-	RowPermutationTest<double> test(scores.indices().begin(),
-	                                scores.indices().end(), p.numPermutations, p.randomSeed);
+	auto test =
+	    algorithm->supportsIndices()
+	        ? Test::IndexBased(scores, p.numPermutations, p.randomSeed)
+	        : Test::CategoryBased(scores, p.numPermutations, p.randomSeed);
 
-	test.computePValue(algorithm, results);
+	test->computePValue(algorithm, results);
 }
 
 void removeUnusedColumns(DenseMatrix& data,
@@ -350,7 +349,7 @@ computeRestandardizationPValues(const EnrichmentAlgorithmPtr& algorithm)
 }
 
 void computePValues(EnrichmentAlgorithmPtr& algorithm,
-                    const AllResults& name_to_cat_results, const Params& p)
+                    const AllResults& name_to_cat_results, const Scores& scores, const Params& p)
 {
 	EnrichmentResults results;
 
@@ -365,7 +364,7 @@ void computePValues(EnrichmentAlgorithmPtr& algorithm,
 
 	switch(algorithm->pValueMode()) {
 		case PValueMode::RowWise:
-			computeRowWisePValues(algorithm, results, p);
+			computeRowWisePValues(algorithm, results, scores, p);
 			break;
 		case PValueMode::ColumnWise:
 			computeColumnWisePValues(algorithm, results, p);
@@ -383,7 +382,7 @@ void run(Scores& test_set, CategoryList& cat_list,
 
 	AllResults name_to_cat_results(compute(test_set, cat_list, algorithm, p));
 	if(computePValue && !algorithm->pValuesComputed()) {
-		computePValues(algorithm, name_to_cat_results, p);
+		computePValues(algorithm, name_to_cat_results, test_set, p);
 	}
 
 	// Checks how they should be adjusted
