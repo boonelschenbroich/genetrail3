@@ -53,15 +53,10 @@ namespace GeneTrail
 		/**
 		 * Constructor
 		 */
-		WeightedGeneSetEnrichmentAnalysis(const Scores& scores)
-		    : scores_(scores)
-		{
-			scores_.sortByScore();
-		}
+		WeightedGeneSetEnrichmentAnalysis() = default;
 
-		void setScores(const Scores& scores) {
-			scores_ = scores;
-			scores_.sortByScore();
+		void setScores(Scores&& scores) {
+			scores_ = std::move(scores);
 		}
 
 		/**

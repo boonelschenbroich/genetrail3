@@ -301,9 +301,17 @@ namespace GeneTrail
 	                                StatTags::SupportsIndices>
 	{
 		public:
-		WeightedKolmogorovSmirnov(const Scores& scores) : test_(scores) {}
+		WeightedKolmogorovSmirnov(const Scores& scores, Order order)
+		    : order_(order)
+		{
+			setInputScores(scores);
+		}
 
-		void setInputScores(const Scores& scores) { test_.setScores(scores); }
+		void setInputScores(Scores scores)
+		{
+			scores.sortByScore(order_);
+			test_.setScores(std::move(scores));
+		}
 
 		bool canUseCategory(const Category&, size_t) const { return true; }
 
@@ -321,6 +329,7 @@ namespace GeneTrail
 		}
 
 		private:
+		Order order_;
 		WeightedGeneSetEnrichmentAnalysis<double> test_;
 	};
 }

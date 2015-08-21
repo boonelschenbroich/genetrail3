@@ -96,7 +96,8 @@ namespace GeneTrail
 			// of the current category element in the scores vector
 			// For this purpose we assume that the scores vector contains
 			// almost all identifiers in the entity database and we can simply
-			// perform a lookup in the scores vector to get an approximate location
+			// perform a lookup in the scores vector to get an approximate
+			// location
 			if(*categoryIt < n) {
 				auto cat_lookup = begin() + *categoryIt;
 				auto scores_index = cat_lookup->index();
@@ -171,14 +172,25 @@ namespace GeneTrail
 		});
 	}
 
-	void Scores::sortByScore()
+	void Scores::sortByScore(Order order)
 	{
 		// The data is only sorted by name if there is at most one item present.
 		isSortedByIndex_ = size() <= 1;
 
-		std::sort(data_.begin(), data_.end(),
-		          [](const Score& a,
-		             const Score& b) { return a.score() < b.score(); });
+		auto inc = [](const Score& a,
+		              const Score& b) { return a.score() < b.score(); };
+
+		auto dec = [](const Score& a,
+		              const Score& b) { return a.score() > b.score(); };
+
+		switch(order) {
+			case Order::Increasing:
+				std::sort(data_.begin(), data_.end(), inc);
+				break;
+			case Order::Decreasing:
+				std::sort(data_.begin(), data_.end(), dec);
+				break;
+		}
 	}
 
 	bool Scores::contains(const std::string& name) const

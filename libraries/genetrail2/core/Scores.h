@@ -14,6 +14,11 @@ namespace GeneTrail
 	class Category;
 	class GeneSet;
 
+	enum class Order {
+		Increasing,
+		Decreasing
+	};
+
 	class GT2_EXPORT Score
 	{
 		public:
@@ -183,7 +188,7 @@ namespace GeneTrail
 
 		void sortByName();
 		void sortByIndex();
-		void sortByScore();
+		void sortByScore(Order order = Order::Increasing);
 
 		bool isSortedByIndex() { return isSortedByIndex_; }
 		bool contains(const std::string& name) const;

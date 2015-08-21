@@ -58,7 +58,9 @@ int main(int argc, char* argv[])
 
 	Scores scores(test_set);
 
-	auto algorithm = createEnrichmentAlgorithm<WeightedKolmogorovSmirnov>(p.pValueMode, scores);
+	auto order = increasing ? Order::Increasing : Order::Decreasing;
+
+	auto algorithm = createEnrichmentAlgorithm<WeightedKolmogorovSmirnov>(p.pValueMode, scores, order);
 
 	run(scores, cat_list, algorithm, p, true);
 	return 0;
