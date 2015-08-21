@@ -161,7 +161,8 @@ namespace GeneTrail
 					presort_(currentSampleSize, tests[i]->hits);
 					currentSampleSize = tests[i]->hits;
 
-					currentScore = std::get<0>(computeEnrichmentScore_(algorithm, currentSampleSize));
+					currentScore = std::get<0>(
+					    computeEnrichmentScore_(algorithm, currentSampleSize));
 				}
 
 				this->updateCounter_(tests[i], counter[i], currentScore);
@@ -188,8 +189,9 @@ namespace GeneTrail
 			// Merge [0, a) and [a, b) into a temporary vector.
 			// Note that inplace_merge would reallocate a new vector
 			// every time it is called.
-			std::merge(indices_.begin(), indices_.begin() + a, indices_.begin() + a,
-			           indices_.begin() + b, tmp_indices_.begin());
+			std::merge(indices_.begin(), indices_.begin() + a,
+			           indices_.begin() + a, indices_.begin() + b,
+			           tmp_indices_.begin());
 
 			// Copy the sorted range [0, b) from the temporary vector
 			// to the names_ vector
@@ -209,7 +211,8 @@ namespace GeneTrail
 	{
 		public:
 		ColumnPermutationTest(const DenseMatrix& data, size_t permutations,
-		                      size_t reference_size, const std::string& method, uint64_t randomSeed)
+		                      size_t reference_size, const std::string& method,
+		                      uint64_t randomSeed)
 		    : permutations_(permutations),
 		      data_(data),
 		      reference_size_(reference_size),
@@ -223,17 +226,18 @@ namespace GeneTrail
 			using Sorter = std::pair<const std::string*, size_t>;
 			std::vector<Sorter> tmp(data.rows());
 			size_t i = 0;
-			std::transform(data_.rowNames().begin(), data_.rowNames().end(), tmp.begin(), [&i](const std::string& s) mutable {
+			std::transform(data_.rowNames().begin(), data_.rowNames().end(),
+			               tmp.begin(), [&i](const std::string& s) mutable {
 				return std::make_pair(&s, i++);
 			});
 
-			std::stable_sort(tmp.begin(), tmp.end(), [](const Sorter& a, const Sorter& b) {
+			std::stable_sort(tmp.begin(), tmp.end(),
+			                 [](const Sorter& a, const Sorter& b) {
 				return *a.first < *b.first;
 			});
 
-			std::transform(tmp.begin(), tmp.end(), row_permutation_.begin(), [](const Sorter& s) {
-				return s.second;
-			});
+			std::transform(tmp.begin(), tmp.end(), row_permutation_.begin(),
+			               [](const Sorter& s) { return s.second; });
 		}
 
 		void computePValue(const EnrichmentAlgorithmPtr& algorithm,
@@ -266,15 +270,17 @@ namespace GeneTrail
 
 			auto mid = indices.begin() + reference_size_;
 
-			DenseMatrixSubset ref(&data_, row_permutation_.begin(), row_permutation_.end(), indices.begin(), mid);
-			DenseMatrixSubset sam(&data_, row_permutation_.begin(), row_permutation_.end(), mid, indices.end());
+			DenseMatrixSubset ref(&data_, row_permutation_.begin(),
+			                      row_permutation_.end(), indices.begin(), mid);
+			DenseMatrixSubset sam(&data_, row_permutation_.begin(),
+			                      row_permutation_.end(), mid, indices.end());
 			Scores scores(scoring.test(ref, sam, method_));
 
 			algorithm->setScores(scores);
 
 			for(size_t i = 0; i < tests.size(); ++i) {
-				auto score =
-				    std::get<0>(algorithm->computeEnrichmentScore(*tests[i]->category));
+				auto score = std::get<0>(
+				    algorithm->computeEnrichmentScore(*tests[i]->category));
 
 				this->updateCounter_(tests[i], counter[i], score);
 			}
