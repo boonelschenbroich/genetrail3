@@ -101,20 +101,22 @@ namespace GeneTrail
 		double cached_;
 	};
 
-	class SumEnrichment final : public StatisticsEnrichment
+	class GT2_EXPORT SumEnrichment final : public StatisticsEnrichment
 	{
 		public:
 		SumEnrichment(const Scores& scores)
 		    : StatisticsEnrichment(statistic::sum<double, _viter>, scores, 0.0)
 		{
+			cached_ = cacheStatistic_();
 		}
 
 		protected:
-		double cacheStatistic_() const override
-		{
-			return 0.0;
-		}
+		double cacheStatistic_() const override;
 
+		double getExpectedValue_(const Category& c) const override
+		{
+			return c.size() * cached_;
+		}
 	};
 
 	class MaxMeanEnrichment final : public StatisticsEnrichment

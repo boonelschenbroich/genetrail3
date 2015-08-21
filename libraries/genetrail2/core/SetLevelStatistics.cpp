@@ -63,4 +63,10 @@ namespace GeneTrail
 	{
 		return cached_;
 	}
+
+	double SumEnrichment::cacheStatistic_() const
+	{
+		return statistic::mean<double>(scores_.scores().begin(),
+		                               scores_.scores().end());
+	}
 }
