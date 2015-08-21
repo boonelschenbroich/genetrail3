@@ -1,3 +1,23 @@
+/*
+ * GeneTrail2 - An efficent library for interpreting genetic data
+ * Copyright (C) 2015 Daniel Stöckel <dstoeckel@bioinf.uni-sb.de>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the Lesser GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * Lesser GNU General Public License for more details.
+ *
+ * You should have received a copy of the Lesser GNU General Public
+ * License along with this program.
+ * If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
 #ifndef GT2_SET_LEVEL_STATISTICS_H
 #define GT2_SET_LEVEL_STATISTICS_H
 
@@ -56,43 +76,76 @@ namespace GeneTrail
 		using SupportsIndices = Indices;
 	};
 
-	class StatisticsEnrichment : public SetLevelStatistics<>
+	class GT2_EXPORT StatisticsEnrichment : public SetLevelStatistics<>
 	{
 		public:
 		using _viter = Scores::ConstScoreIterator;
 		using Statistics = std::function<double(_viter, _viter)>;
 
-		StatisticsEnrichment(const Statistics& test, const Scores& scores)
-		    : test_(test), scores_(scores)
-		{
-			scores_.sortByIndex();
-			expected_value_ =
-			    test_(scores_.scores().begin(), scores_.scores().end());
-		}
+		StatisticsEnrichment(const Statistics& test, const Scores& scores);
+		StatisticsEnrichment(const Statistics& test, const Scores& scores,
+		                     double cached);
 
-		void setInputScores(const Scores& scores)
-		{
-			scores_ = scores;
-			scores_.sortByIndex();
-			expected_value_ =
-			    test_(scores_.scores().begin(), scores_.scores().end());
-		}
+		void setInputScores(const Scores& scores);
 
 		bool canUseCategory(const Category&, size_t) const { return true; }
 
-		std::tuple<double, double> computeScore(const Category& c) const
-		{
-			auto intersection = scores_.subset(c);
-			auto score = test_(intersection.scores().begin(),
-			                   intersection.scores().end());
+		std::tuple<double, double> computeScore(const Category& c) const;
 
-			return std::make_tuple(score, expected_value_);
-		}
+		protected:
+		virtual double cacheStatistic_() const;
+		virtual double getExpectedValue_(const Category&) const;
 
-		private:
 		Statistics test_;
 		Scores scores_;
-		double expected_value_;
+		double cached_;
+	};
+
+	class SumEnrichment final : public StatisticsEnrichment
+	{
+		public:
+		SumEnrichment(const Scores& scores)
+		    : StatisticsEnrichment(statistic::sum<double, _viter>, scores, 0.0)
+		{
+		}
+
+		protected:
+		double cacheStatistic_() const override
+		{
+			return 0.0;
+		}
+
+	};
+
+	class MaxMeanEnrichment final : public StatisticsEnrichment
+	{
+		public:
+		MaxMeanEnrichment(const Scores& scores)
+		    : StatisticsEnrichment(statistic::max_mean<double, _viter>, scores,
+		                           0.0)
+		{
+		}
+
+		protected:
+		double cacheStatistic_() const override { return 0.0; }
+	};
+
+	class MedianEnrichment final : public StatisticsEnrichment
+	{
+		public:
+		MedianEnrichment(const Scores& scores)
+		    : StatisticsEnrichment(statistic::median<double, _viter>, scores)
+		{
+		}
+	};
+
+	class MeanEnrichment final : public StatisticsEnrichment
+	{
+		public:
+		MeanEnrichment(const Scores& scores)
+		    : StatisticsEnrichment(statistic::mean<double, _viter>, scores)
+		{
+		}
 	};
 
 	template <typename Test>

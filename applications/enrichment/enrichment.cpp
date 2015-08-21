@@ -40,16 +40,14 @@ bool parseArguments(int argc, char* argv[], Params& p)
 }
 
 EnrichmentAlgorithmPtr getAlgorithm(PValueMode mode, const std::string& method, const Scores& scores) {
-	using _viter = Scores::ConstScoreIterator;
-
 	if(method == "mean") {
-		return createEnrichmentAlgorithm<StatisticsEnrichment>(mode, statistic::mean<double, _viter>, scores);
+		return createEnrichmentAlgorithm<MeanEnrichment>(mode, scores);
 	} else if(method == "median") {
-		return createEnrichmentAlgorithm<StatisticsEnrichment>(mode, statistic::median<double, _viter>, scores);
+		return createEnrichmentAlgorithm<MedianEnrichment>(mode, scores);
 	} else if(method == "sum") {
-		return createEnrichmentAlgorithm<StatisticsEnrichment>(mode, statistic::sum<double, _viter>, scores);
+		return createEnrichmentAlgorithm<SumEnrichment>(mode, scores);
 	} else if(method == "max-mean") {
-		return createEnrichmentAlgorithm<StatisticsEnrichment>(mode, statistic::max_mean<double, _viter>, scores);
+		return createEnrichmentAlgorithm<MaxMeanEnrichment>(mode, scores);
 	}
 
 	//TODO: Throw the proper exception
