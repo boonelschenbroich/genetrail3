@@ -230,7 +230,7 @@ namespace GeneTrail
 			std::vector<size_t> indices(data_.cols());
 			std::iota(indices.begin(), indices.end(), static_cast<size_t>(0));
 
-			for(size_t i = 0; i < permutations_; ++i) {
+			for(size_t i = 1; i <= permutations_; ++i) {
 				std::cout << "INFO: Running - Permutation test " << i << "/"
 				          << permutations_ << std::endl;
 
