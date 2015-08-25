@@ -220,31 +220,12 @@ namespace GeneTrail
 		      twister_(randomSeed),
 		      row_permutation_(data.rows())
 		{
-			// TODO: Initalize the random number generator.
-			//      Allow saving seeds, etc.
-
-			using Sorter = std::pair<const std::string*, size_t>;
-			std::vector<Sorter> tmp(data.rows());
-			size_t i = 0;
-			std::transform(data_.rowNames().begin(), data_.rowNames().end(),
-			               tmp.begin(), [&i](const std::string& s) mutable {
-				return std::make_pair(&s, i++);
-			});
-
-			std::stable_sort(tmp.begin(), tmp.end(),
-			                 [](const Sorter& a, const Sorter& b) {
-				return *a.first < *b.first;
-			});
-
-			std::transform(tmp.begin(), tmp.end(), row_permutation_.begin(),
-			               [](const Sorter& s) { return s.second; });
+			assert(rowNamesStrictlySorted_(data));
 		}
 
 		void computePValue(const EnrichmentAlgorithmPtr& algorithm,
 		                   EnrichmentResults& tests)
 		{
-			this->sortResults_(tests);
-
 			std::vector<size_t> counter(tests.size());
 			std::vector<size_t> indices(data_.cols());
 			std::iota(indices.begin(), indices.end(), static_cast<size_t>(0));
@@ -260,6 +241,19 @@ namespace GeneTrail
 		}
 
 		private:
+		bool rowNamesStrictlySorted_(const DenseMatrix& data)
+		{
+			Matrix::index_type i = 0;
+
+			for(auto j = i + 1; j < data.rows(); ++j, ++i) {
+				if(data.rowName(i) >= data.rowName(j)) {
+					return false;
+				}
+			}
+
+			return true;
+		};
+
 		void performSinglePermutation_(const EnrichmentAlgorithmPtr& algorithm,
 		                               const EnrichmentResults& tests,
 		                               std::vector<size_t>& counter,

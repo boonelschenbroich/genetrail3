@@ -319,6 +319,19 @@ void removeUnusedColumns(DenseMatrix& data,
 	data.removeCols(colsToDelete);
 }
 
+void sortMatrixRows(DenseMatrix& data) {
+	std::vector<size_t> matrix_indices(data.rows());
+	EntityDatabase::global->transform(data.rowNames(), matrix_indices.begin());
+
+	auto permutation = sort_permutation(matrix_indices.begin(), matrix_indices.end(), std::less<size_t>());
+
+	std::vector<DenseMatrix::index_type> tmp(permutation.size());
+
+	std::copy(permutation.begin(), permutation.end(), tmp.begin());
+
+	data.shuffleRows(tmp);
+}
+
 void computeColumnWisePValues(const EnrichmentAlgorithmPtr& algorithm,
                               EnrichmentResults& results, const Params& p)
 {
@@ -332,6 +345,7 @@ void computeColumnWisePValues(const EnrichmentAlgorithmPtr& algorithm,
 	auto sampleGroup = t.read();
 
 	removeUnusedColumns(data, referenceGroup, sampleGroup);
+	sortMatrixRows(data);
 
 	ColumnPermutationTest<double> test(data, p.numPermutations,
 	                                   referenceGroup.size(), p.scoringMethod, p.randomSeed);
