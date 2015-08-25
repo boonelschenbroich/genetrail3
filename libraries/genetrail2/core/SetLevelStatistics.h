@@ -306,7 +306,7 @@ namespace GeneTrail
 		OverRepresentationAnalysis test_;
 	};
 
-	class KolmogorovSmirnov : public SetLevelStatistics<StatTags::Direct>
+	class KolmogorovSmirnov : public SetLevelStatistics<StatTags::Direct, StatTags::SupportsIndices>
 	{
 		public:
 		template <typename Iterator>
@@ -327,6 +327,13 @@ namespace GeneTrail
 		{
 			auto score =
 			    test_.computeRunningSum(category, ids_.begin(), ids_.end());
+			return std::make_tuple(score, 0.0);
+		}
+
+		std::tuple<double, double> computeScore(IndexIterator begin, IndexIterator end)
+		{
+			auto score =
+			    test_.computeRunningSum(ids_.size(), begin, end);
 			return std::make_tuple(score, 0.0);
 		}
 
