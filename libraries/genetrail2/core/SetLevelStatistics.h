@@ -318,7 +318,7 @@ namespace GeneTrail
 		void setInputScores(Scores scores)
 		{
 			scores.sortByScore();
-			ids_.assign(scores.names().begin(), scores.names().end());
+			ids_.assign(scores.indices().begin(), scores.indices().end());
 		}
 
 		bool canUseCategory(const Category&, size_t) const { return true; }
@@ -347,7 +347,7 @@ namespace GeneTrail
 		}
 
 		private:
-		std::vector<std::string> ids_;
+		std::vector<size_t> ids_;
 		GeneSetEnrichmentAnalysis<big_float, int64_t> test_;
 	};
 
