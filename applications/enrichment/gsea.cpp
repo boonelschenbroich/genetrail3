@@ -40,6 +40,16 @@ bool parseArguments(int argc, char* argv[], Params& p)
 	return true;
 }
 
+void prepareScores(Scores& scores) {
+	if(absolute) {
+		std::transform(scores.scores().begin(), scores.scores().end(),
+		               scores.scores().begin(),
+		               static_cast<double (*)(double)>(std::abs));
+	}
+
+	scores.sortByScore(increasing ? Order::Increasing : Order::Decreasing);
+}
+
 int main(int argc, char* argv[])
 {
 	Params p;
@@ -55,14 +65,15 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	auto identifierOfTestSet =
-	    getSortedIdentifier(test_set, p, absolute, increasing);
+	Scores scores(test_set);
+
+	if(p.identifier == "") {
+		prepareScores(scores);
+	}
 
 	// TODO: Improve this interface.
 	auto gsea = createEnrichmentAlgorithm<KolmogorovSmirnov>(
-	    p.pValueMode, identifierOfTestSet.begin(), identifierOfTestSet.end());
-
-	Scores scores(test_set);
+	    p.pValueMode, scores.indices().begin(), scores.indices().end());
 
 	run(scores, cat_list, gsea, p, true);
 	return 0;
