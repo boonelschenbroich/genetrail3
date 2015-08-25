@@ -21,6 +21,10 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" ST
 	LIST(APPEND CXX_FLAGS "-Wextra")
 	LIST(APPEND CXX_FLAGS "-std=c++11")
 
+	if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+		list(APPEND CXX_FLAGS "-fno-omit-frame-pointer")
+	endif()
+
 	SET(GT2_EXPORT                 "__attribute__((visibility (\"default\")))")
 	SET(GT2_LOCAL                  "__attribute__((visibility (\"hidden\")))")
 	SET(GT2_EXTERN_VARIABLE "extern __attribute__((visibility (\"default\")))")
