@@ -95,6 +95,34 @@ namespace GeneTrail
 			return RSc;
 		}
 
+		template<typename Iterator>
+		big_int_type computeRunningSum(size_t n, Iterator begin, const Iterator& end)
+		{
+			size_t l = std::distance(begin, end);
+			size_t nl = n - l;
+
+			big_int_type RSc = *begin * l;
+			big_int_type rs = -RSc;
+
+			rs += nl;
+
+			RSc = absMax(RSc, rs);
+
+			size_t lastIndex = *begin;
+
+			for(++begin; begin != end; lastIndex = *begin, ++begin) {
+				rs -= (*begin - lastIndex - 1) * l;
+				RSc = absMax(RSc, rs);
+				rs += nl;
+				RSc = absMax(RSc, rs);
+			}
+
+			rs -= (n - lastIndex - 1) * l;
+			RSc = absMax(RSc, rs);
+
+			return RSc;
+		}
+
 		/**
 		 * This method computes the running sum statistic and the corresponding
 		 *p-value, based on the given categories.

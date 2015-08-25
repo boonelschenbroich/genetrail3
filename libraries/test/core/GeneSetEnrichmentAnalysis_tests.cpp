@@ -54,6 +54,44 @@ TEST(GeneSetEnrichmentAnalysis, littleExample2) {
 	EXPECT_NEAR(gsea.computeOneSidedPValueD(8,4,-16), gsea.computeRightPValue(8,4,-16), TOLERANCE);
 }
 
+TEST(GeneSetEnrichmentAnalysis, smallExampleIndices) {
+	/*
+	 * For this test we assume a list of ten genes,
+	 * where three belong the category we want to examine:
+	 *
+	 * 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+	 * 0 | 1 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0
+	 *
+	 * Here '1' indicates, that the genes was found in the
+	 * category.
+	 */
+	std::vector<size_t> indices { 1, 3, 4 };
+
+	GeneSetEnrichmentAnalysis<double, int> gsea;
+	auto max_RSc = gsea.computeRunningSum(10, indices.begin(), indices.end());
+
+	EXPECT_EQ(15, max_RSc);
+}
+
+TEST(GeneSetEnrichmentAnalysis, smallExampleIndices2) {
+	/*
+	 * For this test we assume a list of fifteen genes,
+	 * where six belong to the category we want to examine:
+	 *
+	 * 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14
+	 * 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 |  1 |  1 |  1 |  0 |  1
+	 *
+	 * Here '1' indicates, that the genes was found in the
+	 * category.
+	 */
+	std::vector<size_t> indices { 0, 7, 10, 11, 12, 14 };
+
+	GeneSetEnrichmentAnalysis<double, int> gsea;
+	auto max_RSc = gsea.computeRunningSum(15, indices.begin(), indices.end());
+
+	EXPECT_EQ(-30, max_RSc);
+}
+
 /*TEST(GeneSetEnrichmentAnalysis, bigExampleCompareOldAndNewImplementation) {
 	GeneSetReader<double> reader;
 	GeneSet<double> scores = reader.readScoringFile("/home/student/tkehl/GT_TEST/bigScores.txt");
