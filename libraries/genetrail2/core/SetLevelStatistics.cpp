@@ -47,7 +47,7 @@ namespace GeneTrail
 	std::tuple<double, double>
 	StatisticsEnrichment::computeScore(const Category& c) const
 	{
-		auto intersection = scores_.subset(c);
+		const auto intersection = scores_.subset(c);
 		auto score =
 		    test_(intersection.scores().begin(), intersection.scores().end());
 

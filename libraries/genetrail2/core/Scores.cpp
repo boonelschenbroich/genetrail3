@@ -10,7 +10,12 @@ namespace GeneTrail
 	{
 	}
 
-	Scores::ScoresProxy::ScoresProxy(const std::vector<Score>* data)
+	Scores::ConstScoresProxy::ConstScoresProxy(const std::vector<Score>* data)
+	    : data_(data)
+	{
+	}
+
+	Scores::ScoresProxy::ScoresProxy(std::vector<Score>* data)
 	    : data_(data)
 	{
 	}

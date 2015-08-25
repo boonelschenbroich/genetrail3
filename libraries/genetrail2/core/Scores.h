@@ -24,8 +24,11 @@ namespace GeneTrail
 		public:
 		Score(EntityDatabase& db, const std::string& n, double s) : entity_(db(n)), score_(s) {}
 		Score(size_t i, double s) : entity_(i), score_(s) {}
+
 		const std::string& name(const EntityDatabase& db) const { return db(entity_); }
 		size_t index() const { return entity_; }
+
+		double& score() { return score_; }
 		double score() const { return score_; }
 
 		private:
@@ -99,7 +102,7 @@ namespace GeneTrail
 			}
 		};
 
-		class ScoresProxy
+		class ConstScoresProxy
 		{
 			private:
 			struct ExtractScore
@@ -112,7 +115,7 @@ namespace GeneTrail
 			using const_iterator =
 			    boost::transform_iterator<ExtractScore, Scores::const_iterator>;
 
-			ScoresProxy(const std::vector<Score>* data);
+			ConstScoresProxy(const std::vector<Score>* data);
 
 			const_iterator begin() const
 			{
@@ -127,7 +130,36 @@ namespace GeneTrail
 			}
 		};
 
-		using ConstScoreIterator = ScoresProxy::const_iterator;
+		class ScoresProxy
+		{
+			private:
+			struct ExtractScore
+			{
+				double& operator()(Score& s) const { return s.score(); }
+			};
+			std::vector<Score>* data_;
+
+			public:
+			using iterator =
+			    boost::transform_iterator<ExtractScore, Scores::iterator>;
+
+			ScoresProxy(std::vector<Score>* data);
+
+			iterator begin()
+			{
+				return boost::make_transform_iterator(data_->begin(),
+				                                      ExtractScore());
+			}
+
+			iterator end()
+			{
+				return boost::make_transform_iterator(data_->end(),
+				                                      ExtractScore());
+			}
+		};
+
+		using ScoreIterator = ScoresProxy::iterator;
+		using ConstScoreIterator = ConstScoresProxy::const_iterator;
 		using ConstNameIterator = NamesProxy::const_iterator;
 
 		explicit Scores(const std::shared_ptr<EntityDatabase>& db = EntityDatabase::global);
@@ -176,7 +208,8 @@ namespace GeneTrail
 
 		IndexProxy indices() const { return IndexProxy(&data_); };
 		NamesProxy names() const { return NamesProxy(&data_, db_.get()); };
-		ScoresProxy scores() const { return ScoresProxy(&data_); };
+		ConstScoresProxy scores() const { return ConstScoresProxy(&data_); };
+		ScoresProxy scores() { return ScoresProxy(&data_); };
 
 		const std::shared_ptr<EntityDatabase>& db() const { return db_; }
 
