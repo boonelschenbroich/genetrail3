@@ -77,8 +77,7 @@ namespace GeneTrail
 	{
 		public:
 		static std::unique_ptr<RowPermutationTest>
-		IndexBased(const Scores& s, size_t permutations,
-		               uint64_t randomSeed)
+		IndexBased(const Scores& s, size_t permutations, uint64_t randomSeed)
 		{
 			return std::unique_ptr<RowPermutationTest>(new RowPermutationTest(
 			    boost::counting_iterator<size_t>(0),
@@ -87,12 +86,11 @@ namespace GeneTrail
 		}
 
 		static std::unique_ptr<RowPermutationTest>
-		CategoryBased(const Scores& s, size_t permutations,
-		                  uint64_t randomSeed)
+		CategoryBased(const Scores& s, size_t permutations, uint64_t randomSeed)
 		{
-			return std::unique_ptr<RowPermutationTest>(new RowPermutationTest(
-			    s.indices().begin(), s.indices().end(), permutations,
-			    randomSeed));
+			return std::unique_ptr<RowPermutationTest>(
+			    new RowPermutationTest(s.indices().begin(), s.indices().end(),
+			                           permutations, randomSeed));
 		}
 
 		void computePValue(const EnrichmentAlgorithmPtr& algorithm,
