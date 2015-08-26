@@ -2,6 +2,7 @@
 #define GT2_CORE_PERMUTATION_TEST_H
 
 #include "macros.h"
+#include "misc_algorithms.h"
 #include "DenseMatrix.h"
 #include "DenseMatrixSubset.h"
 #include "EnrichmentAlgorithm.h"
@@ -215,8 +216,7 @@ namespace GeneTrail
 		      data_(data),
 		      reference_size_(reference_size),
 		      method_(method),
-		      twister_(randomSeed),
-		      row_permutation_(data.rows())
+		      twister_(randomSeed)
 		{
 			assert(rowNamesStrictlySorted_(data));
 		}
@@ -224,15 +224,23 @@ namespace GeneTrail
 		void computePValue(const EnrichmentAlgorithmPtr& algorithm,
 		                   EnrichmentResults& tests)
 		{
+			positions_.clear();
+
 			std::vector<size_t> counter(tests.size());
-			std::vector<size_t> indices(data_.cols());
-			std::iota(indices.begin(), indices.end(), static_cast<size_t>(0));
+			std::vector<size_t> column_indices(data_.cols());
+			std::iota(column_indices.begin(), column_indices.end(), static_cast<size_t>(0));
 
 			for(size_t i = 1; i <= permutations_; ++i) {
 				std::cout << "INFO: Running - Permutation test " << i << "/"
 				          << permutations_ << std::endl;
 
-				performSinglePermutation_(algorithm, tests, counter, indices);
+				if(algorithm->supportsIndices()) {
+					performSinglePermutationIndices_(algorithm, tests, counter,
+					                                 column_indices);
+				} else {
+					performSinglePermutation_(algorithm, tests, counter,
+					                          column_indices);
+				}
 			}
 
 			this->updatePValues_(tests, counter, permutations_);
@@ -252,21 +260,26 @@ namespace GeneTrail
 			return true;
 		};
 
+		Scores computeScores_(std::vector<size_t>::iterator begin,
+		                      std::vector<size_t>::iterator end)
+		{
+			std::shuffle(begin, end, twister_);
+
+			auto mid = begin + reference_size_;
+
+			auto ref = DenseMatrixSubset::createColSubset(&data_, begin, mid);
+			auto sam = DenseMatrixSubset::createColSubset(&data_, mid, end);
+
+			MatrixHTest<DenseMatrixSubset> scoring;
+			return Scores(scoring.test(ref, sam, method_));
+		}
+
 		void performSinglePermutation_(const EnrichmentAlgorithmPtr& algorithm,
 		                               const EnrichmentResults& tests,
 		                               std::vector<size_t>& counter,
-		                               std::vector<size_t>& indices)
+		                               std::vector<size_t>& column_indices)
 		{
-			MatrixHTest<DenseMatrixSubset> scoring;
-			std::shuffle(indices.begin(), indices.end(), twister_);
-
-			auto mid = indices.begin() + reference_size_;
-
-			DenseMatrixSubset ref(&data_, row_permutation_.begin(),
-			                      row_permutation_.end(), indices.begin(), mid);
-			DenseMatrixSubset sam(&data_, row_permutation_.begin(),
-			                      row_permutation_.end(), mid, indices.end());
-			Scores scores(scoring.test(ref, sam, method_));
+			Scores scores = computeScores_(column_indices.begin(), column_indices.end());
 
 			algorithm->setScores(scores);
 
@@ -278,12 +291,77 @@ namespace GeneTrail
 			}
 		}
 
+		void setupPositons_(const Scores& scores, const EnrichmentResults& tests) {
+			positions_.resize(tests.size());
+
+			for(size_t i = 0; i < tests.size(); ++i) {
+				positions_[i] = scores.subsetIndices(*tests[i]->category);
+			}
+		}
+
+		void performSinglePermutationIndices_(
+		    const EnrichmentAlgorithmPtr& algorithm,
+		    const EnrichmentResults& tests, std::vector<size_t>& counter,
+		    std::vector<size_t>& column_indices)
+		{
+			Scores scores = computeScores_(column_indices.begin(), column_indices.end());
+
+			// We first need to sort the scores by index, as we know the
+			// position of the category genes in the sorted list.
+			scores.sortByIndex();
+
+			// If we do not yet know the positions compute them.
+			// We can only do this here as we do not have the scores
+			// available earlier.
+			if(positions_.empty()) {
+				setupPositons_(scores, tests);
+			}
+
+			// We now obtain the permutation of the genes that is used
+			// for sorting the scores by value.
+			sort_permutation(permutation_, scores.scores().begin(),
+			                 scores.scores().end(), std::less<double>());
+
+			// After that we invert the permutation so that we
+			// can use it as a lookup table to get the new position.
+			invert_permutation(permutation_, inv_permutation_);
+
+			// Now pass the scores to the algorithm
+			algorithm->setScores(scores);
+
+			for(size_t i = 0; i < tests.size(); ++i) {
+				// Setup the vector that will hold the positions of the category
+				// genes in the new score vector.
+				intersection_.resize(tests[i]->hits);
+
+				// Fill the intersection vector using the inverse permutation
+				std::transform(
+				    positions_[i].begin(), positions_[i].end(),
+				    intersection_.begin(),
+				    [&](size_t entry) { return inv_permutation_[entry]; });
+
+				// Sort the intersection_ vector
+				std::sort(intersection_.begin(), intersection_.end());
+
+				// Compute the enrichment score for this permutation
+				auto score = std::get<0>(algorithm->computeEnrichmentScore(
+				    intersection_.begin(), intersection_.end()));
+
+				// Update the counter with the newly computed value
+				this->updateCounter_(tests[i], counter[i], score);
+			}
+		}
+
 		size_t permutations_;
 		DenseMatrix data_;
 		size_t reference_size_;
 		std::string method_;
 		std::mt19937 twister_;
-		std::vector<size_t> row_permutation_;
+
+		std::vector<size_t> permutation_;
+		std::vector<size_t> inv_permutation_;
+		std::vector<size_t> intersection_;
+		std::vector<std::vector<size_t>> positions_;
 	};
 }
 
