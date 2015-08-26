@@ -321,6 +321,23 @@ void removeUnusedColumns(DenseMatrix& data,
 	data.removeCols(colsToDelete);
 }
 
+void removeUnusedRows(DenseMatrix& data, const Scores& scores) {
+	std::vector<Matrix::index_type> rowsToRemove;
+
+	Matrix::index_type i = 0;
+	for(const auto& rowName : data.rowNames()) {
+		if(!scores.contains(rowName)) {
+			rowsToRemove.push_back(i);
+		}
+	}
+
+	data.removeRows(rowsToRemove);
+
+	if(data.rows() != scores.size()) {
+		throw std::string("Input scores and matrix are incompatible");
+	}
+}
+
 void sortMatrixRows(DenseMatrix& data) {
 	std::vector<size_t> matrix_indices(data.rows());
 	EntityDatabase::global->transform(data.rowNames(), matrix_indices.begin());
@@ -335,7 +352,7 @@ void sortMatrixRows(DenseMatrix& data) {
 }
 
 void computeColumnWisePValues(const EnrichmentAlgorithmPtr& algorithm,
-                              EnrichmentResults& results, const Params& p)
+                              EnrichmentResults& results, const Scores& scores, const Params& p)
 {
 	std::ifstream input(p.dataMatrixPath);
 	DenseMatrixReader matrixReader;
@@ -347,6 +364,7 @@ void computeColumnWisePValues(const EnrichmentAlgorithmPtr& algorithm,
 	auto sampleGroup = t.read();
 
 	removeUnusedColumns(data, referenceGroup, sampleGroup);
+	removeUnusedRows(data, scores);
 	sortMatrixRows(data);
 
 	ColumnPermutationTest<double> test(data, p.numPermutations,
@@ -383,7 +401,7 @@ void computePValues(EnrichmentAlgorithmPtr& algorithm,
 			computeRowWisePValues(algorithm, results, scores, p);
 			break;
 		case PValueMode::ColumnWise:
-			computeColumnWisePValues(algorithm, results, p);
+			computeColumnWisePValues(algorithm, results, scores, p);
 			break;
 		case PValueMode::Restandardize:
 			computeRestandardizationPValues(algorithm);
