@@ -153,6 +153,20 @@ namespace GeneTrail
 		return result;
 	}
 
+	std::vector<size_t> Scores::subsetIndices(const Category& c) const
+	{
+		std::vector<size_t> result;
+		result.reserve(std::min(size(), c.size()));
+
+		for(size_t i = 0; i < size(); ++i) {
+			if(c.contains(data_[i].index())) {
+				result.emplace_back(i);
+			}
+		}
+
+		return result;
+	}
+
 	void Scores::sortByIndex()
 	{
 		// Nothing to do here

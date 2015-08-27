@@ -216,6 +216,7 @@ namespace GeneTrail
 		size_t size() const { return data_.size(); }
 
 		Scores subset(const Category& c) const;
+		std::vector<size_t> subsetIndices(const Category& c) const;
 
 		const Score& operator[](size_t i) const { return data_[i]; }
 
