@@ -1,5 +1,13 @@
 source $1
 
+function runScoreMethod {
+	runMethod "$1" "$2" "$3" --scores "${BASE_DIR}/input/scores.txt"
+}
+
+function runIdentifierMethod {
+	runMethod "$1" "$2" "$3" --identifier "${BASE_DIR}/input/gse28807.list"
+}
+
 function runMethod {
 	mkdir -p "${OUTPUT}"
 
@@ -7,7 +15,7 @@ function runMethod {
 
 	echo -n "Running ${ID}... "
 
-	"${BINARY_PATH}/$1" $3 --seed ${RANDOM_SEED} --scores "${BASE_DIR}/input/scores.txt" --categories "${GENERATED_INPUT_DIR}/categories.txt" -o "${OUTPUT}" > /dev/null
+	"${BINARY_PATH}/$1" $3 --seed ${RANDOM_SEED} --categories "${GENERATED_INPUT_DIR}/categories.txt" -o "${OUTPUT}" ${@:4} > /dev/null
 
 	if [[ ! -f "${OUTPUT}/KEGG.txt" ]]; then
 		echo "No output has been produced!"
@@ -43,17 +51,19 @@ function runMethod {
 methods=( sum mean median max-mean )
 for i in ${methods[@]}
 do
-	runMethod enrichment "${i}_rowwise" "--method $i --permutations ${PERMUTATIONS}"
+	runScoreMethod enrichment "${i}_rowwise" "--method $i --permutations ${PERMUTATIONS}"
 done
 
-runMethod gsea rowwise
-runMethod weighted-gsea rowwise "--permutations ${PERMUTATIONS}"
+runScoreMethod gsea rowwise
+runIdentifierMethod gsea identifier_rowwise
+
+runScoreMethod weighted-gsea rowwise "--permutations ${PERMUTATIONS}"
 
 methods=( 'one-sample-t-test' 'two-sample-t-test' 'two-sample-wilcoxon' )
 for i in ${methods[@]}
 do
-	runMethod htests "${i}_rowwise" "--method $i"
+	runScoreMethod htests "${i}_rowwise" "--method $i"
 done
 
-runMethod ora rowwise "--reference ${BASE_DIR}/input/reference.txt"
+runScoreMethod ora rowwise "--reference ${BASE_DIR}/input/reference.txt"
 
