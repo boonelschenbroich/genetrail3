@@ -69,11 +69,3 @@ add_to_library(SparseMatrixWriter)
 add_to_library(OverRepresentationAnalysis)
 add_to_library(TextFile)
 
-# Experimental
-add_header_to_library(experimental/Dataset.h)
-add_header_to_library(experimental/DenseDataset.h)
-add_header_to_library(experimental/DenseSubset.h)
-add_to_library(experimental/DenseDatasetImpl)
-add_to_library(experimental/DenseSubset)
-add_to_library(experimental/Ontology)
-add_to_library(experimental/Parameter)
