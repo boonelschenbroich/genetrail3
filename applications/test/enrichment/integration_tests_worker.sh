@@ -1,11 +1,24 @@
 source $1
 
+RANDOM_SEED=8095254980
+PERMUTATIONS=50000
+
 function runScoreMethod {
 	runMethod "$1" "$2" "$3" --scores "${BASE_DIR}/input/scores.txt"
 }
 
 function runIdentifierMethod {
 	runMethod "$1" "$2" "$3" --identifier "${BASE_DIR}/input/gse28807.list"
+}
+
+function runScoreMethodColwise {
+	runMethod "$1" "$2" "$3" \
+		--scores "${BASE_DIR}/input/scores_colwise.txt" \
+		--pvalue_strategy column-wise \
+		--scoring_method independent-shrinkage-t-test \
+		--groups ${BASE_DIR}/input/groups.txt \
+		--data_matrix_path ${BASE_DIR}/input/data.txt \
+		--permutations ${PERMUTATIONS}
 }
 
 function runMethod {
@@ -56,6 +69,8 @@ done
 
 runScoreMethod gsea rowwise
 runIdentifierMethod gsea identifier_rowwise
+runScoreMethodColwise gsea colwise
+runIdentifierMethodColwise gsea identifier_colwise
 
 runScoreMethod weighted-gsea rowwise "--permutations ${PERMUTATIONS}"
 
