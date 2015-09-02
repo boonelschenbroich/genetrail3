@@ -34,9 +34,7 @@ bool parseArguments(int argc, char* argv[], Params& p)
 		return false;
 	}
 
-	checkCLIArgs(p);
-
-	return true;
+	return checkCLIArgs(p);
 }
 
 EnrichmentAlgorithmPtr getAlgorithm(PValueMode mode, const std::string& method, const Scores& scores) {

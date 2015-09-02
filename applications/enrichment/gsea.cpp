@@ -37,7 +37,7 @@ bool parseArguments(int argc, char* argv[], Params& p)
 		return false;
 	}
 
-	return true;
+	return checkCLIArgs(p);
 }
 
 void prepareScores(Scores& scores) {
