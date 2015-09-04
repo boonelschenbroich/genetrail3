@@ -310,14 +310,14 @@ namespace GeneTrail
 	{
 		public:
 		template <typename Iterator>
-		KolmogorovSmirnov(const Iterator& beginIds, const Iterator& endIds)
-		    : ids_(beginIds, endIds)
+		KolmogorovSmirnov(const Iterator& beginIds, const Iterator& endIds, Order order)
+		    : order_(order), ids_(beginIds, endIds)
 		{
 		}
 
 		void setInputScores(Scores scores)
 		{
-			scores.sortByScore();
+			scores.sortByScore(order_);
 			ids_.assign(scores.indices().begin(), scores.indices().end());
 		}
 
@@ -354,6 +354,7 @@ namespace GeneTrail
 		}
 
 		private:
+		Order order_;
 		std::vector<size_t> ids_;
 		GeneSetEnrichmentAnalysis<big_float, int64_t> test_;
 	};

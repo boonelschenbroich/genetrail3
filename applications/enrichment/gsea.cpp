@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
 
 	// TODO: Improve this interface.
 	auto gsea = createEnrichmentAlgorithm<KolmogorovSmirnov>(
-	    p.pValueMode, scores.indices().begin(), scores.indices().end());
+	    p.pValueMode, scores.indices().begin(), scores.indices().end(), increasing ? Order::Increasing : Order::Decreasing);
 
 	run(scores, cat_list, gsea, p, true);
 	return 0;
