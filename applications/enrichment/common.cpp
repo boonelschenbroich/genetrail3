@@ -9,6 +9,8 @@
 #include <genetrail2/core/PValue.h>
 #include <genetrail2/core/TextFile.h>
 
+#include <boost/filesystem.hpp>
+
 #include <algorithm>
 #include <fstream>
 
@@ -47,10 +49,28 @@ bool checkCLIArgs(const Params& p) {
 			return false;
 		}
 
+		if(!boost::filesystem::exists(p.dataMatrixPath)) {
+			std::cerr << "The file '" << p.dataMatrixPath << "' does not exist." << std::endl;
+			return false;
+		}
+
 		if(p.groups == "") {
 			std::cerr << "You must specify a file containing the groups of the data matrix that are used during score computation." << std::endl;
 			return false;
 		}
+
+		if(!boost::filesystem::exists(p.groups)) {
+			std::cerr << "The file '" << p.groups << "' does not exist." << std::endl;
+			return false;
+		}
+	}
+
+	if(p.scores != "" && !boost::filesystem::exists(p.scores)) {
+		std::cerr << "ERROR: the file '" << p.scores << "' does not exist." << std::endl;
+	}
+
+	if(p.identifier != "" && !boost::filesystem::exists(p.identifier)) {
+		std::cerr << "ERROR: the file '" << p.scores << "' does not exist." << std::endl;
 	}
 
 	return true;
@@ -286,13 +306,13 @@ void removeUnusedColumns(DenseMatrix& data,
 	std::vector<DenseMatrix::index_type> colsToDelete;
 	DenseMatrix::index_type i = 0;
 
-	auto colIsUsed = [&ref, &sample](const std::string& name) {
+	auto colIsNotUsed = [&ref, &sample](const std::string& name) {
 		return std::find(ref.begin(), ref.end(), name) == ref.end() &&
 		       std::find(sample.begin(), sample.end(), name) == sample.end();
 	};
 
 	for(auto&& colName : data.colNames()) {
-		if(colIsUsed(colName)) {
+		if(colIsNotUsed(colName)) {
 			colsToDelete.push_back(i);
 		}
 		++i;
