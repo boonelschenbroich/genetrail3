@@ -185,24 +185,6 @@ int init(GeneSet& test_set, CategoryList& cat_list, const Params& p)
 	return 0;
 }
 
-std::vector<std::string> getSortedIdentifier(GeneSet& test_set, const Params& p,
-                                             bool absolute, bool increasing)
-{
-	if(p.scores != "") {
-		if(absolute) {
-			return test_set.getAbsoluteSortedIdentifier();
-		} else {
-			if(increasing) {
-				return test_set.getIncreasinglySortedIdentifier();
-			} else {
-				return test_set.getDecreasinglySortedIdentifier();
-			}
-		}
-	} else {
-		return test_set.getIdentifier();
-	}
-}
-
 void updatePValues(Results& results, const PValueList& pvalues)
 {
 	for(const auto& it : pvalues) {

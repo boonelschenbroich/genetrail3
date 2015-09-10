@@ -85,16 +85,6 @@ bool checkCLIArgs(const Params& p);
 int init(GeneSet& test_set, CategoryList& cat_list, const Params& p);
 
 /**
- * This function returns the sorted identifier of a GeneSet.
- *
- * @param test_set GeneSet
- * @param alsolute
- * @param increasing
- * @return Sorted list of identifier.
- */
-std::vector<std::string> getSortedIdentifier(GeneSet& test_set, const Params& p, bool absolute, bool increasing);
-
-/**
  * This function runs the entire pipeline.
  *
  * @param test_set Test set for which the computation should be started
