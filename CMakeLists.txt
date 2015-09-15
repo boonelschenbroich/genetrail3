@@ -119,7 +119,6 @@ endif()
 
 add_subdirectory(libraries)
 add_subdirectory(applications)
-add_subdirectory(bindings)
 
 ####################################################################################################
 # Documentation
