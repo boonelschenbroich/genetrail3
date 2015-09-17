@@ -27,6 +27,9 @@ namespace GeneTrail
 {
 	template <typename Matrix>
 	class ColumnIterator : public std::iterator<std::random_access_iterator_tag,
+	                                            typename Matrix::value_type,
+	                                            std::ptrdiff_t,
+	                                            typename Matrix::value_type*,
 	                                            typename Matrix::value_type>
 	{
 		public:
@@ -112,9 +115,9 @@ namespace GeneTrail
 			return col_ >= it.col_;
 		}
 
-		void operator+=(ptrdiff_t n) const { col_ += n; }
+		void operator+=(ptrdiff_t n) { col_ += n; }
 
-		void operator-=(ptrdiff_t n) const { col_ -= n; }
+		void operator-=(ptrdiff_t n) { col_ -= n; }
 
 		value_type operator[](ptrdiff_t n) const
 		{
