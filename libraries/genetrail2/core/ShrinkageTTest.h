@@ -112,12 +112,21 @@ namespace GeneTrail {
 		 */
 		template <typename InputIterator>
 		std::tuple<std::vector<Gene<value_type>>,value_type> computeAllVariances(InputIterator begin, InputIterator end){
+			const auto n = std::distance(begin, end);
+
 			std::vector<Gene<value_type>> variances;
 			std::vector<value_type> vars;
+
+			variances.reserve(n);
+			vars.reserve(n);
+
 			for (auto iter = begin; iter != end; ++iter) {
 				variances.emplace_back(computeVariances(iter->begin(), iter->end()));
 				vars.emplace_back(variances.back().var);
 			}
+
+			return std::make_pair(variances, statistic::median<value_type>(vars.begin(), vars.end()));
+		}
 
 		/**
 		 * Computes variances for all genes.
