@@ -29,6 +29,8 @@
 
 #include "Statistic.h"
 
+#include <boost/iterator/filter_iterator.hpp>
+
 namespace GeneTrail {
 
 	template <typename value_type>
@@ -116,6 +118,33 @@ namespace GeneTrail {
 				variances.emplace_back(computeVariances(iter->begin(), iter->end()));
 				vars.emplace_back(variances.back().var);
 			}
+
+		/**
+		 * Computes variances for all genes.
+		 *
+		 * @param begin InputIterator
+		 * @param end InputIterator
+		 * @return Vector of genes
+		 */
+		template <typename InputIterator>
+		std::tuple<std::vector<Gene<value_type>>,value_type> computeAllVariancesRemoveNaN(InputIterator begin, InputIterator end) {
+			const auto n = std::distance(begin, end);
+
+			std::vector<Gene<value_type>> variances;
+			std::vector<value_type> vars;
+
+			variances.reserve(n);
+			vars.reserve(n);
+
+			auto is_not_nan = [](value_type x) { return !std::isnan(x); };
+			for (auto iter = begin; iter != end; ++iter) {
+				auto fit_begin = boost::make_filter_iterator(is_not_nan, iter->begin(), iter->end());
+				auto fit_end   = boost::make_filter_iterator(is_not_nan, iter->end(), iter->end());
+
+				variances.emplace_back(computeVariances(fit_begin, fit_end));
+				vars.emplace_back(variances.back().var);
+			}
+
 			return std::make_pair(variances, statistic::median<value_type>(vars.begin(), vars.end()));
 		}
 

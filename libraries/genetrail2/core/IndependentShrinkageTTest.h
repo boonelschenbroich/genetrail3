@@ -66,6 +66,33 @@ namespace GeneTrail {
 			}
 			return t_scores;
 		}
+
+		/**
+		 * Computes the shrinkage t-statistic for each gene in the given range.
+		 *
+		 * @param begin_first InputIterator
+		 * @param end_first InputIterator
+		 * @param begin_second InputIterator
+		 * @param end_second InputIterator
+		 * @return Vector of t-scores
+		 */
+		template<typename InputIterator1, typename InputIterator2>
+		std::vector<value_type> testRemoveNaN(InputIterator1 begin_first, InputIterator1 end_first, InputIterator2 begin_second, InputIterator2 end_second){
+			std::vector<value_type> t_scores;
+			std::vector<Gene<value_type>> genes_first, genes_second;
+			value_type var_median_first, var_median_second;
+			std::tie(genes_first, var_median_first) = this->computeAllVariancesRemoveNaN(begin_first, end_first);
+			std::tie(genes_second, var_median_second) = this->computeAllVariancesRemoveNaN(begin_second, end_second);
+			this->computePooledVariances(genes_first, var_median_first);
+			this->computePooledVariances(genes_second, var_median_second);
+
+			for(unsigned int i=0; i<genes_first.size(); ++i){
+				auto* a = &genes_first[i];
+				auto* b = &genes_second[i];
+				t_scores.emplace_back((a->mean - b->mean) / std::sqrt( a->shrink_var/a->size + b->shrink_var/b->size ));
+			}
+			return t_scores;
+		}
 	};
 }
 
