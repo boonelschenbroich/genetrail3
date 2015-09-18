@@ -73,8 +73,8 @@ int main(int argc, char* argv[])
 	try {
 		auto subset = splitMatrix(matrix, reference, sample);
 
-		MatrixHTest<DenseMatrixSubset> htest;
-		auto gene_set = htest.test(std::get<0>(subset), std::get<1>(subset), method);
+		MatrixHTest htest;
+		auto gene_set = htest.test(method, std::get<0>(subset), std::get<1>(subset));
 
 		GeneSetWriter writer;
 		writer.writeScoringFile(gene_set, output);

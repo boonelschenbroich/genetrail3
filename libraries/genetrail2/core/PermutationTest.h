@@ -270,8 +270,8 @@ namespace GeneTrail
 			auto ref = DenseMatrixSubset::createColSubset(&data_, begin, mid);
 			auto sam = DenseMatrixSubset::createColSubset(&data_, mid, end);
 
-			MatrixHTest<DenseMatrixSubset> scoring;
-			return Scores(scoring.test(ref, sam, method_));
+			MatrixHTest scoring;
+			return Scores(scoring.test(method_, ref, sam));
 		}
 
 		void performSinglePermutation_(const EnrichmentAlgorithmPtr& algorithm,

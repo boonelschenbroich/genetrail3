@@ -10,6 +10,7 @@
 namespace GeneTrail
 {
 	class GeneSet;
+	class Scores;
 
 	class GT2_EXPORT GeneSetWriter
 	{
@@ -17,14 +18,14 @@ namespace GeneTrail
 
 		GeneSetWriter(){};
 
-		void write(const GeneSet& gene_set, const std::string& path,
+		void write(const Scores& gene_set, const std::string& path,
 		           const std::string& delimiter,
 		           const std::string& header = "") const;
 
-		void writeNAFile(const GeneSet& gene_set,
+		void writeNAFile(const Scores& gene_set,
 		                 const std::string& path) const;
 
-		void writeScoringFile(const GeneSet& gene_set,
+		void writeScoringFile(const Scores& gene_set,
 		                      const std::string& path) const;
 	};
 }

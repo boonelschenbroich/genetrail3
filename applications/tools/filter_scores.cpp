@@ -2,6 +2,7 @@
 #include <genetrail2/core/GeneSetFilters.h>
 #include <genetrail2/core/GeneSetReader.h>
 #include <genetrail2/core/GeneSetWriter.h>
+#include <genetrail2/core/Scores.h>
 
 #include <boost/program_options.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -129,7 +130,7 @@ int main(int argc, char* argv[])
 		}
 
 		GeneSetWriter writer;
-		writer.writeScoringFile(gene_set, outfile);
+		writer.writeScoringFile(Scores(gene_set), outfile);
 	} catch(InvalidFilterSyntax& e) {
 		std::cerr << e.what() << std::endl;
 		return -2;

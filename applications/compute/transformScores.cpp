@@ -11,6 +11,7 @@
 #include <genetrail2/core/GeneSet.h>
 #include <genetrail2/core/GeneSetReader.h>
 #include <genetrail2/core/GeneSetWriter.h>
+#include <genetrail2/core/Scores.h>
 
 using namespace GeneTrail;
 namespace bpo = boost::program_options;
@@ -61,7 +62,7 @@ int main(int argc, char* argv[])
 	auto gene_set = reader.readScoringFile(scores);
 	apply[method](gene_set);
 	GeneSetWriter writer;
-	writer.writeScoringFile(gene_set, output);
+	writer.writeScoringFile(Scores(gene_set), output);
 
 	return 0;
 }
