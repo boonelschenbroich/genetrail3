@@ -7,10 +7,16 @@ SET(GT2_ENRICHMNET_DEP_LIBRARIES
 SET(DIR ${PROJECT_SOURCE_DIR})
 SET(LIBNAME "ENRICHMENT")
 
+add_header_to_library(
+	PermutationTest.h
+)
+
 add_to_library(
 	common
 	CommandLineInterface
+	EnrichmentAlgorithm
 	Parameters
+	SetLevelStatistics
 )
 
 add_library(gtenrichment SHARED

@@ -18,15 +18,15 @@
  *
  */
 
-#ifndef GT2_SET_LEVEL_STATISTICS_H
-#define GT2_SET_LEVEL_STATISTICS_H
+#ifndef GT2_ENRICHMENT_SET_LEVEL_STATISTICS_H
+#define GT2_ENRICHMENT_SET_LEVEL_STATISTICS_H
 
-#include "HTest.h"
-#include "Scores.h"
-#include "GeneSetEnrichmentAnalysis.h"
-#include "WeightedGeneSetEnrichmentAnalysis.h"
-#include "OverRepresentationAnalysis.h"
-#include "OneSampleTTest.h"
+#include <genetrail2/core/HTest.h>
+#include <genetrail2/core/Scores.h>
+#include <genetrail2/core/GeneSetEnrichmentAnalysis.h>
+#include <genetrail2/core/WeightedGeneSetEnrichmentAnalysis.h>
+#include <genetrail2/core/OverRepresentationAnalysis.h>
+#include <genetrail2/core/OneSampleTTest.h>
 
 #include <boost/iterator/filter_iterator.hpp>
 #include <boost/iterator/transform_iterator.hpp>

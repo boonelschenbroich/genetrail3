@@ -1,7 +1,7 @@
-#include <genetrail2/enrichment/Parameters.h>
-
 #include "CommandLineInterface.h"
-#include <genetrail2/core/PermutationTest.h>
+
+#include "Parameters.h"
+#include "PermutationTest.h"
 
 #include <boost/any.hpp>
 #include <boost/program_options.hpp>

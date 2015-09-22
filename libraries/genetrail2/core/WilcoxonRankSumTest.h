@@ -24,6 +24,8 @@
 #include "macros.h"
 #include "Statistic.h"
 
+#include <boost/math/distributions/normal.hpp>
+
 namespace GeneTrail {
 
     /**

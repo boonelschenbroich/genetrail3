@@ -24,6 +24,8 @@
 
 #include "Statistic.h"
 
+#include <boost/math/distributions/students_t.hpp>
+
 #include <cmath>
 #include <iterator>
 #include <iostream>

@@ -1,10 +1,11 @@
-#ifndef GT2_ENRICHMENT_ALGORITHM_H
-#define GT2_ENRICHMENT_ALGORITHM_H
+#ifndef GT2_ENRICHMENT_ENRICHMENT_ALGORITHM_H
+#define GT2_ENRICHMENT_ENRICHMENT_ALGORITHM_H
 
-#include "compat.h"
-#include "Exception.h"
 #include "SetLevelStatistics.h"
-#include "macros.h"
+
+#include <genetrail2/core/compat.h>
+#include <genetrail2/core/Exception.h>
+#include <genetrail2/core/macros.h>
 
 #include <memory>
 
@@ -176,4 +177,4 @@ namespace GeneTrail
 	}
 }
 
-#endif // GT2_ENRICHMENT_ALGORITHM_H
+#endif // GT2_ENRICHMENT_ENRICHMENT_ALGORITHM_H

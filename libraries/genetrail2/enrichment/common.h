@@ -1,9 +1,9 @@
-#ifndef GT2_APPLICATIONS_ENRICHMENT_COMMON_H
-#define GT2_APPLICATIONS_ENRICHMENT_COMMON_H
+#ifndef GT2_ENRICHMENT_COMMON_H
+#define GT2_ENRICHMENT_COMMON_H
 
 #include "CommandLineInterface.h"
+#include "EnrichmentAlgorithm.h"
 
-#include <genetrail2/core/EnrichmentAlgorithm.h>
 #include <genetrail2/core/MatrixHTest.h>
 #include <genetrail2/core/macros.h>
 #include <genetrail2/core/PValue.h>

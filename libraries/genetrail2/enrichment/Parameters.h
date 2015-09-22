@@ -1,9 +1,10 @@
 #ifndef GT2_ENRICHMENT_PARAMETERS_H
 #define GT2_ENRICHMENT_PARAMETERS_H
 
+#include "PermutationTest.h"
+
 #include <genetrail2/core/MatrixHTest.h>
 #include <genetrail2/core/PValue.h>
-#include <genetrail2/core/PermutationTest.h>
 
 #include <boost/optional/optional.hpp>
 

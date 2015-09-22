@@ -1,5 +1,6 @@
+#include "PermutationTest.h"
+
 #include <genetrail2/core/macros.h>
-#include <genetrail2/core/PermutationTest.h>
 #include <genetrail2/core/PValue.h>
 
 #include <boost/optional/optional.hpp>

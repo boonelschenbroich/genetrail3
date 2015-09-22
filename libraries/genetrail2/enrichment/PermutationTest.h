@@ -1,12 +1,13 @@
 #ifndef GT2_CORE_PERMUTATION_TEST_H
 #define GT2_CORE_PERMUTATION_TEST_H
 
-#include "macros.h"
-#include "misc_algorithms.h"
-#include "DenseMatrix.h"
-#include "DenseMatrixSubset.h"
 #include "EnrichmentAlgorithm.h"
-#include "MatrixHTest.h"
+
+#include <genetrail2/core/macros.h>
+#include <genetrail2/core/misc_algorithms.h>
+#include <genetrail2/core/DenseMatrix.h>
+#include <genetrail2/core/DenseMatrixSubset.h>
+#include <genetrail2/core/MatrixHTest.h>
 
 #include <boost/iterator/counting_iterator.hpp>
 
