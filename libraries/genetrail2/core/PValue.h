@@ -1,6 +1,8 @@
 #ifndef GT2_CORE_PVALUE_H
 #define GT2_CORE_PVALUE_H
 
+#include "Exception.h"
+
 #include <algorithm>
 #include <cmath>
 #include <map>
@@ -8,9 +10,22 @@
 
 #include <boost/math/distributions/chi_squared.hpp>
 #include <boost/math/distributions/normal.hpp>
+#include <boost/optional/optional.hpp>
 
 namespace GeneTrail
 {
+	enum class MultipleTestingCorrection {
+		Bonferroni,
+		Sidak,
+		Holm,
+		HolmSidak,
+		Finner,
+		BenjaminiHochberg,
+		BenjaminiYekutieli,
+		Hochberg,
+		Simes
+	};
+
 	template <typename float_type> using pValue = typename std::pair<std::string, float_type>;
 	template <typename float_type = double>
 	class pvalue
@@ -275,25 +290,68 @@ namespace GeneTrail
 			return stepUp(adjustByOrder(pvalues, fdr_func));
 		}
 
-		static std::vector<pValue<float_type>>
-		adjustPValues(const std::vector<pValue<float_type>>& pvalues, std::string method)
-		{
-			std::map<std::string, std::function<std::vector<pValue<float_type>>(
-			                          const std::vector<pValue<float_type>>&)>> methods;
-			methods["bonferroni"] = bonferroni;
-			methods["sidak"] = sidak;
-			methods["holm"] = holm;
-			methods["holm_sidak"] = holm_sidak;
-			methods["finner"] = finner;
-			methods["benjamini_hochberg"] = benjamini_hochberg;
-			methods["benjamini_yekutieli"] = benjamini_yekutieli;
-			methods["hochberg"] = hochberg;
-			methods["simes"] = simes;
-			auto it = methods.find(method);
-			if(it != methods.end()) {
-				return methods[method](pvalues);
+		using CorrectionMethod = std::vector<pValue<float_type>>(*)(const std::vector<pValue<float_type>>&);
+
+		static boost::optional<MultipleTestingCorrection> getCorrectionMethod(const std::string& method) {
+			if(method == "bonferroni") {
+				return boost::make_optional(MultipleTestingCorrection::Bonferroni);
 			}
-			return pvalues;
+
+			if(method == "sidak") {
+				return boost::make_optional(MultipleTestingCorrection::Sidak);
+			}
+
+			if(method == "holm") {
+				return boost::make_optional(MultipleTestingCorrection::Holm);
+			}
+
+			if(method == "holm_sidak" || method == "holm-sidak") {
+				return boost::make_optional(MultipleTestingCorrection::HolmSidak);
+			}
+
+			if(method == "finner") {
+				return boost::make_optional(MultipleTestingCorrection::Finner);
+			}
+
+			if(method == "benjamini_hochberg" || method == "benjamini-hochberg") {
+				return boost::make_optional(MultipleTestingCorrection::BenjaminiHochberg);
+			}
+
+			if(method == "benjamini_yekutieli" || method == "benjamini-yekutieli") {
+				return boost::make_optional(MultipleTestingCorrection::BenjaminiYekutieli);
+			}
+
+			if(method == "hochberg") {
+				return boost::make_optional(MultipleTestingCorrection::Hochberg);
+			}
+
+			if(method == "simes") {
+				return boost::make_optional(MultipleTestingCorrection::Simes);
+			}
+
+			return boost::none;
+		}
+
+		static CorrectionMethod getCorrectionMethod(MultipleTestingCorrection method) {
+			switch(method) {
+				case MultipleTestingCorrection::Bonferroni: return bonferroni;
+				case MultipleTestingCorrection::Sidak: return sidak;
+				case MultipleTestingCorrection::Holm: return holm;
+				case MultipleTestingCorrection::HolmSidak: return holm_sidak;
+				case MultipleTestingCorrection::Finner: return finner;
+				case MultipleTestingCorrection::BenjaminiHochberg: return benjamini_hochberg;
+				case MultipleTestingCorrection::BenjaminiYekutieli: return benjamini_yekutieli;
+				case MultipleTestingCorrection::Hochberg: return hochberg;
+				case MultipleTestingCorrection::Simes: return simes;
+				default:
+					throw NotImplemented(__FILE__, __LINE__, "The requested correction method has not yet been implemented.");
+			}
+		}
+
+		static std::vector<pValue<float_type>>
+		adjustPValues(const std::vector<pValue<float_type>>& pvalues, MultipleTestingCorrection method)
+		{
+			return getCorrectionMethod(method)(pvalues);
 		}
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////

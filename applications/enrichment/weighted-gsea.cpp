@@ -1,8 +1,9 @@
 #include <genetrail2/core/GeneSet.h>
 #include <genetrail2/core/EnrichmentAlgorithm.h>
 
-#include "common.h"
-
+#include <genetrail2/enrichment/common.h>
+#include <genetrail2/enrichment/CommandLineInterface.h>
+#include <genetrail2/enrichment/Parameters.h>
 
 #include <iostream>
 
@@ -18,7 +19,7 @@ bool parseArguments(int argc, char* argv[], Params& p)
 	bpo::options_description desc;
 
 	addCommonCLIArgs(desc, p);
-	desc.add_options()("identifier, d", bpo::value<std::string>(&p.identifier), "A file containing identifier line by line.")(
+	desc.add_options()("identifier, d", bpo::value(&p.identifier_), "A file containing identifier line by line.")(
 	                   "increasing,i", bpo::value(&increasing)->zero_tokens(), "Use increasingly sorted scores. (Decreasing is default)")(
 	                   "absolute,abs", bpo::value(&absolute)->zero_tokens(), "Use decreasingly sorted absolute scores.");
 

@@ -3,6 +3,8 @@ project(GENETRAIL2_LIBRARIES)
 if(Boost_FOUND)
 	add_subdirectory(core)
 	add_subdirectory(cluster)
+	add_subdirectory(enrichment)
+
 	if(SEQAN_FOUND)
 		add_subdirectory(sequencing)
 	else()

@@ -1,7 +1,12 @@
 #ifndef GT2_APPLICATIONS_ENRICHMENT_COMMON_H
 #define GT2_APPLICATIONS_ENRICHMENT_COMMON_H
 
+#include "CommandLineInterface.h"
+
 #include <genetrail2/core/EnrichmentAlgorithm.h>
+#include <genetrail2/core/MatrixHTest.h>
+#include <genetrail2/core/macros.h>
+#include <genetrail2/core/PValue.h>
 
 #include <boost/program_options.hpp>
 
@@ -19,6 +24,9 @@ namespace GeneTrail
 {
 	class GeneSet;
 	class EnrichmentResult;
+	class FilePath;
+	class DirectoryPath;
+	class Params;
 
 	using EnrichmentAlgorithmPtr = std::unique_ptr<EnrichmentAlgorithm>;
 }
@@ -27,53 +35,9 @@ typedef std::map<std::string, std::shared_ptr<EnrichmentResult>> Results;
 typedef std::map<std::string, Results> AllResults;
 typedef std::vector<std::pair<std::string, double>> PValueList;
 
-struct Params
-{
-	Params()
-		: significance(0.05),
-		  minimum(2),
-		  maximum(700),
-		  adjustSeparately(false),
-		  pValueMode(PValueMode::RowWise),
-		  numPermutations(100000),
-		  randomSeed(std::random_device{}())
-	{
-	}
-
-	std::string algorithm;
-	double significance;
-	std::string categories;
-	std::string scores;
-	std::string identifier;
-	size_t minimum;
-	size_t maximum;
-	std::string out;
-	std::string adjustment;
-	bool adjustSeparately;
-	PValueMode pValueMode;
-	size_t numPermutations;
-	std::string dataMatrixPath;
-	std::string groups;
-	std::string scoringMethod;
-	size_t randomSeed;
-};
-
 using CategoryList = std::list<std::pair<std::string, std::string>>;
 
-namespace GeneTrail {
-	void validate(boost::any&, const std::vector<std::string>&, PValueMode*,
-	              int);
-}
 
-/**
- * This function adds common arguments to the BOOST commandline parser.
- *
- * @param desc BOOST program-options description
- * @param p Parameter object
- */
-void addCommonCLIArgs(bpo::options_description& desc, Params& p);
-
-bool checkCLIArgs(const Params& p);
 /**
  * This function initializes the needed attributes.
  *
@@ -82,7 +46,7 @@ bool checkCLIArgs(const Params& p);
  * @param p Parameter object
  * @return -1 if an error occurred and 0 if not
  */
-int init(GeneSet& test_set, CategoryList& cat_list, const Params& p);
+GT2_EXPORT int init(GeneSet& test_set, CategoryList& cat_list, const Params& p);
 
 /**
  * This function runs the entire pipeline.
@@ -91,6 +55,6 @@ int init(GeneSet& test_set, CategoryList& cat_list, const Params& p);
  * @param cat_list List of categories for the computation
  * @param p
  */
-void run(Scores& test_set, CategoryList& cat_list, EnrichmentAlgorithmPtr& algorithm, const Params& p, bool computePValues);
+GT2_EXPORT void run(Scores& test_set, CategoryList& cat_list, EnrichmentAlgorithmPtr& algorithm, const Params& p, bool computePValues);
 
 #endif // GT2_APPLICATIONS_ENRICHMENT_COMMON_H

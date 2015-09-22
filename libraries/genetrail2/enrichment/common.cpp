@@ -9,74 +9,14 @@
 #include <genetrail2/core/PValue.h>
 #include <genetrail2/core/TextFile.h>
 
+#include "Parameters.h"
+
 #include <boost/filesystem.hpp>
 
 #include <algorithm>
 #include <fstream>
 
-void addCommonCLIArgs(bpo::options_description& desc, Params& p)
-{
-	using namespace bpo;
-
-	desc.add_options()
-		("help,h", "Display this message")
-		("significance,t", value(&p.significance)->default_value(0.01), "The critical value for rejecting the H0 hypothesis.")
-		("categories,c",   value(&p.categories)->required(), "A .gmt file containing the categories to be tested.")
-		("scores,s",       value(&p.scores), "A whitespace seperated file containing identifier and scores.")
-		("minimum,n",      value(&p.minimum)->default_value(0), "Minimum number of genes allowed in categories.")
-		("maximum,x",      value(&p.maximum)->default_value(1000), "Maximum number of genes allowed in categories.")
-		("output,o",       value(&p.out), "Output prefix for text files.")
-		("adjustment,a",   value(&p.adjustment)->default_value("no"), "P-value adjustment method for multiple testing.")
-		("adjust_separately,u", value(&p.adjustSeparately)->default_value(false)->zero_tokens(), "Indicates if databases are adjusted separatly or combined.")
-		("pvalue_strategy,m",   value(&p.pValueMode)->default_value(PValueMode::RowWise, "row-wise"), "How should p-values be computed. Possible choices are 'row-wise', 'column-wise', and 'restandardize'")
-		("permutations,p",      value(&p.numPermutations)->default_value(1000000), "If p-values are computed using a permutation test, how many permutations should be used.")
-		("data_matrix_path,d",  value(&p.dataMatrixPath), "If p-values are computed not using the row-wise strategy, a data matrix must be specified from which scores can be computed.")
-		("groups,g",            value(&p.groups), "If p-values are computed not using the 'row-wise' strategy, this file determines the samples used for sample and reference group.")
-		("scoring_method,h",    value(&p.scoringMethod), "If p-values are computed not using the 'row-wise' strategy, a scoring method must be provided with which scores should be computed.")
-		("seed,r",              value(&p.randomSeed), "If p-values are computed using a permutation test, this option can be used for providing a seed for the random number generator.")
-	;
-}
-
-bool checkCLIArgs(const Params& p) {
-	if(p.pValueMode == PValueMode::ColumnWise || p.pValueMode == PValueMode::Restandardize) {
-		if(p.scoringMethod == "") {
-			std::cerr << "You must specify a valid scoring method for this pvalue strategy" << std::endl;
-			return false;
-		}
-
-		if(p.dataMatrixPath == "") {
-			std::cerr << "You must specify a data matrix from which scores can be computed" << std::endl;
-			return false;
-		}
-
-		if(!boost::filesystem::exists(p.dataMatrixPath)) {
-			std::cerr << "The file '" << p.dataMatrixPath << "' does not exist." << std::endl;
-			return false;
-		}
-
-		if(p.groups == "") {
-			std::cerr << "You must specify a file containing the groups of the data matrix that are used during score computation." << std::endl;
-			return false;
-		}
-
-		if(!boost::filesystem::exists(p.groups)) {
-			std::cerr << "The file '" << p.groups << "' does not exist." << std::endl;
-			return false;
-		}
-	}
-
-	if(p.scores != "" && !boost::filesystem::exists(p.scores)) {
-		std::cerr << "ERROR: the file '" << p.scores << "' does not exist." << std::endl;
-	}
-
-	if(p.identifier != "" && !boost::filesystem::exists(p.identifier)) {
-		std::cerr << "ERROR: the file '" << p.scores << "' does not exist." << std::endl;
-	}
-
-	return true;
-}
-
-CategoryList getCategoryList(const std::string& catfile_list)
+static CategoryList getCategoryList(const std::string& catfile_list)
 {
 	CategoryList categories;
 
@@ -101,21 +41,21 @@ CategoryList getCategoryList(const std::string& catfile_list)
 	return categories;
 }
 
-void readTestSet(GeneSet& test_set, const Params& p)
+static void readTestSet(GeneSet& test_set, const Params& p)
 {
 	GeneSetReader reader;
-	if(p.scores != "" && p.identifier != "") {
+	if(p.scores() != "" && p.identifier() != "") {
 		throw GeneTrail::IOError("Too many input files specified.");
-	} else if(p.scores != "") {
-		test_set = reader.readScoringFile(p.scores);
-	} else if(p.identifier != "") {
-		test_set = reader.readGeneList(p.identifier);
+	} else if(p.scores() != "") {
+		test_set = reader.readScoringFile(p.scores());
+	} else if(p.identifier() != "") {
+		test_set = reader.readGeneList(p.identifier());
 	} else {
 		throw GeneTrail::IOError("No input file specified.");
 	}
 }
 
-PValueList resultVector(const Results& results)
+static PValueList resultVector(const Results& results)
 {
 	PValueList result;
 	result.reserve(results.size());
@@ -126,7 +66,7 @@ PValueList resultVector(const Results& results)
 	return result;
 }
 
-PValueList resultVector(const AllResults& results)
+static PValueList resultVector(const AllResults& results)
 {
 	PValueList result;
 	result.reserve(results.size());
@@ -140,7 +80,7 @@ PValueList resultVector(const AllResults& results)
 	return result;
 }
 
-std::tuple<bool, size_t, std::string>
+static std::tuple<bool, size_t, std::string>
 processCategory(const Category& c, const Scores& test_set, const Params& p)
 {
 	Scores subset = test_set.subset(c);
@@ -158,7 +98,7 @@ processCategory(const Category& c, const Scores& test_set, const Params& p)
 	return std::make_tuple(p.minimum <= c.size() && c.size() <= p.maximum, subset.size(), std::move(entries));
 }
 
-void writeFiles(const std::string& output_dir, const AllResults& all_results)
+static void writeFiles(const std::string& output_dir, const AllResults& all_results)
 {
 
 	size_t size = 0;
@@ -196,7 +136,7 @@ int init(GeneSet& test_set, CategoryList& cat_list, const Params& p)
 
 	try {
 		// TODO: Add single category feature
-		cat_list = getCategoryList(p.categories);
+		cat_list = getCategoryList(p.categories());
 	} catch(IOError& exn) {
 		std::cerr << "ERROR: Failed to read categories. Reason: " << exn.what()
 		          << std::endl;
@@ -205,14 +145,14 @@ int init(GeneSet& test_set, CategoryList& cat_list, const Params& p)
 	return 0;
 }
 
-void updatePValues(Results& results, const PValueList& pvalues)
+static void updatePValues(Results& results, const PValueList& pvalues)
 {
 	for(const auto& it : pvalues) {
 		results[it.first]->pvalue = it.second;
 	}
 }
 
-void updatePValues(AllResults& results, const PValueList& pvalues)
+static void updatePValues(AllResults& results, const PValueList& pvalues)
 {
 	for(unsigned int i = 0; i < pvalues.size(); ++i) {
 		std::vector<std::string> s;
@@ -221,7 +161,7 @@ void updatePValues(AllResults& results, const PValueList& pvalues)
 	}
 }
 
-AllResults compute(Scores& test_set, CategoryList& cat_list,
+static AllResults compute(Scores& test_set, CategoryList& cat_list,
                    EnrichmentAlgorithmPtr& algorithm, const Params& p)
 {
 	AllResults name_to_cat_results;
@@ -270,23 +210,23 @@ AllResults compute(Scores& test_set, CategoryList& cat_list,
 	return name_to_cat_results;
 }
 
-void adjustCombined(AllResults& all_results, const Params& p)
+static void adjustCombined(AllResults& all_results, MultipleTestingCorrection correction)
 {
 	auto results = resultVector(all_results);
-	results = pvalue<double>::adjustPValues(results, p.adjustment);
+	results = pvalue<double>::adjustPValues(results, correction);
 	updatePValues(all_results, results);
 }
 
-void adjustSeparately(AllResults& all_results, const Params& p)
+static void adjustSeparately(AllResults& all_results, MultipleTestingCorrection correction)
 {
 	for(auto& results_it : all_results) {
 		auto results = resultVector(results_it.second);
-		results = pvalue<double>::adjustPValues(results, p.adjustment);
+		results = pvalue<double>::adjustPValues(results, correction);
 		updatePValues(results_it.second, results);
 	}
 }
 
-void computeRowWisePValues(const EnrichmentAlgorithmPtr& algorithm,
+static void computeRowWisePValues(const EnrichmentAlgorithmPtr& algorithm,
                            EnrichmentResults& results, const Scores& scores, const Params& p)
 {
 	using Test = RowPermutationTest<double>;
@@ -299,7 +239,7 @@ void computeRowWisePValues(const EnrichmentAlgorithmPtr& algorithm,
 	test->computePValue(algorithm, results);
 }
 
-void removeUnusedColumns(DenseMatrix& data,
+static void removeUnusedColumns(DenseMatrix& data,
                          const std::vector<std::string>& ref,
                          const std::vector<std::string>& sample)
 {
@@ -321,7 +261,7 @@ void removeUnusedColumns(DenseMatrix& data,
 	data.removeCols(colsToDelete);
 }
 
-void removeUnusedRows(DenseMatrix& data, const Scores& scores) {
+static void removeUnusedRows(DenseMatrix& data, const Scores& scores) {
 	std::vector<Matrix::index_type> rowsToRemove;
 
 	Matrix::index_type i = 0;
@@ -338,7 +278,7 @@ void removeUnusedRows(DenseMatrix& data, const Scores& scores) {
 	}
 }
 
-void sortMatrixRows(DenseMatrix& data) {
+static void sortMatrixRows(DenseMatrix& data) {
 	std::vector<size_t> matrix_indices(data.rows());
 	EntityDatabase::global->transform(data.rowNames(), matrix_indices.begin());
 
@@ -351,14 +291,14 @@ void sortMatrixRows(DenseMatrix& data) {
 	data.shuffleRows(tmp);
 }
 
-void computeColumnWisePValues(const EnrichmentAlgorithmPtr& algorithm,
+static void computeColumnWisePValues(const EnrichmentAlgorithmPtr& algorithm,
                               EnrichmentResults& results, const Scores& scores, const Params& p)
 {
-	std::ifstream input(p.dataMatrixPath);
+	std::ifstream input(p.dataMatrixPath());
 	DenseMatrixReader matrixReader;
 	DenseMatrix data = matrixReader.read(input);
 
-	TextFile t(p.groups, ",");
+	TextFile t(p.groups(), ",");
 
 	auto referenceGroup = t.read();
 	auto sampleGroup = t.read();
@@ -368,13 +308,13 @@ void computeColumnWisePValues(const EnrichmentAlgorithmPtr& algorithm,
 	sortMatrixRows(data);
 
 	ColumnPermutationTest<double> test(data, p.numPermutations,
-	                                   referenceGroup.size(), p.scoringMethod, p.randomSeed);
+	                                   referenceGroup.size(), p.scoringMethod.get(), p.randomSeed);
 
 	test.computePValue(algorithm, results);
 }
 
-void
-computeRestandardizationPValues(const EnrichmentAlgorithmPtr& algorithm)
+static void
+computeRestandardizationPValues(const EnrichmentAlgorithmPtr&)
 {
 	throw NotImplemented(__FILE__, __LINE__,
 	                     "void computeRestandardizationPValues(const "
@@ -382,7 +322,7 @@ computeRestandardizationPValues(const EnrichmentAlgorithmPtr& algorithm)
 	                     "PermutationTest<double>::TestResults&)");
 }
 
-void computePValues(EnrichmentAlgorithmPtr& algorithm,
+static void computePValues(EnrichmentAlgorithmPtr& algorithm,
                     const AllResults& name_to_cat_results, const Scores& scores, const Params& p)
 {
 	EnrichmentResults results;
@@ -419,34 +359,14 @@ void run(Scores& test_set, CategoryList& cat_list,
 		computePValues(algorithm, name_to_cat_results, test_set, p);
 	}
 
-	// Checks how they should be adjusted
-	if(p.adjustSeparately) {
-		adjustSeparately(name_to_cat_results, p);
-	} else {
-		adjustCombined(name_to_cat_results, p);
-	}
-
-	writeFiles(p.out, name_to_cat_results);
-}
-
-namespace GeneTrail
-{
-	void validate(boost::any& v, const std::vector<std::string>& values,
-	              PValueMode*, int)
-	{
-		bpo::validators::check_first_occurrence(v);
-
-		const auto& mode = bpo::validators::get_single_string(values);
-
-		if(mode == "row-wise") {
-			v = boost::any(PValueMode::RowWise);
-		} else if(mode == "column-wise") {
-			v = boost::any(PValueMode::ColumnWise);
-		} else if(mode == "restandardize") {
-			v = boost::any(PValueMode::Restandardize);
+	if(p.adjustment) {
+		// Checks how they should be adjusted
+		if(p.adjustSeparately) {
+			adjustSeparately(name_to_cat_results, p.adjustment.get());
 		} else {
-			throw bpo::validation_error(
-			    bpo::validation_error::invalid_option_value);
+			adjustCombined(name_to_cat_results, p.adjustment.get());
 		}
 	}
+
+	writeFiles(p.out(), name_to_cat_results);
 }

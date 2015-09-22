@@ -1,7 +1,9 @@
 #include <genetrail2/core/EnrichmentAlgorithm.h>
 #include <genetrail2/core/GeneSet.h>
 
-#include "common.h"
+#include <genetrail2/enrichment/common.h>
+#include <genetrail2/enrichment/CommandLineInterface.h>
+#include <genetrail2/enrichment/Parameters.h>
 
 #include <boost/program_options.hpp>
 #include <iostream>
@@ -18,7 +20,7 @@ bool parseArguments(int argc, char* argv[], Params& p)
 
 	addCommonCLIArgs(desc, p);
 	desc.add_options()
-		("identifier, d", bpo::value(&p.identifier), "A file containing identifier line by line.")
+		("identifier, d", bpo::value(&p.identifier_), "A file containing identifier line by line.")
 		("increasing,i",  bpo::value(&increasing)->zero_tokens(), "Use increasingly sorted scores. (Decreasing is default)")
 		("absolute,abs",  bpo::value(&absolute)->zero_tokens(), "Use decreasingly sorted absolute scores.");
 
@@ -67,7 +69,7 @@ int main(int argc, char* argv[])
 
 	Scores scores(test_set);
 
-	if(p.identifier == "") {
+	if(p.identifier() == "") {
 		prepareScores(scores);
 	}
 

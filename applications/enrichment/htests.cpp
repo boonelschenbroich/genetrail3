@@ -4,7 +4,8 @@
 #include <genetrail2/core/OneSampleTTest.h>
 #include <genetrail2/core/IndependentTTest.h>
 
-#include "common.h"
+#include <genetrail2/enrichment/common.h>
+#include <genetrail2/enrichment/Parameters.h>
 
 #include <boost/program_options.hpp>
 

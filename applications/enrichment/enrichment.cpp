@@ -1,7 +1,8 @@
 #include <genetrail2/core/EnrichmentAlgorithm.h>
 #include <genetrail2/core/GeneSet.h>
 
-#include "common.h"
+#include <genetrail2/enrichment/common.h>
+#include <genetrail2/enrichment/Parameters.h>
 
 #include <boost/program_options.hpp>
 #include <iostream>

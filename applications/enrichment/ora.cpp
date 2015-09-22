@@ -4,7 +4,8 @@
 #include <genetrail2/core/GeneSetReader.h>
 #include <genetrail2/core/OverRepresentationAnalysis.h>
 
-#include "common.h"
+#include <genetrail2/enrichment/common.h>
+#include <genetrail2/enrichment/Parameters.h>
 
 #include <boost/program_options.hpp>
 #include <iostream>
@@ -21,7 +22,7 @@ bool parseArguments(int argc, char* argv[], Params& p)
 
 	addCommonCLIArgs(desc, p);
 	desc.add_options()
-		("identifier, d", bpo::value<std::string>(&p.identifier), "A file containing identifier line by line.")
+		("identifier, d", bpo::value(&p.identifier_), "A file containing identifier line by line.")
 		("reference, r", bpo::value<std::string>(&reference)->required(), "A file containing identifier line by line.");
 
 	try
