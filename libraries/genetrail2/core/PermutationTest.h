@@ -210,7 +210,7 @@ namespace GeneTrail
 	{
 		public:
 		ColumnPermutationTest(const DenseMatrix& data, size_t permutations,
-		                      size_t reference_size, const std::string& method,
+		                      size_t reference_size, MatrixHTests method,
 		                      uint64_t randomSeed)
 		    : permutations_(permutations),
 		      data_(data),
@@ -221,10 +221,24 @@ namespace GeneTrail
 			assert(rowNamesStrictlySorted_(data));
 		}
 
+		void initScoring_() {
+			std::vector<size_t> row_db_indices(data_.rows());
+
+			EntityDatabase::global->transform(
+				data_.rowNames().begin(),
+				data_.rowNames().end(),
+				row_db_indices.begin()
+			);
+
+			scoring.setRowDBIndices(row_db_indices);
+		}
+
 		void computePValue(const EnrichmentAlgorithmPtr& algorithm,
 		                   EnrichmentResults& tests)
 		{
 			positions_.clear();
+
+			initScoring_();
 
 			std::vector<size_t> counter(tests.size());
 			std::vector<size_t> column_indices(data_.cols());
@@ -270,7 +284,6 @@ namespace GeneTrail
 			auto ref = DenseMatrixSubset::createColSubset(&data_, begin, mid);
 			auto sam = DenseMatrixSubset::createColSubset(&data_, mid, end);
 
-			MatrixHTest scoring;
 			return Scores(scoring.test(method_, ref, sam));
 		}
 
@@ -355,9 +368,10 @@ namespace GeneTrail
 		size_t permutations_;
 		DenseMatrix data_;
 		size_t reference_size_;
-		std::string method_;
+		MatrixHTests method_;
 		std::mt19937 twister_;
 
+		MatrixHTest scoring;
 		std::vector<size_t> permutation_;
 		std::vector<size_t> inv_permutation_;
 		std::vector<size_t> intersection_;
