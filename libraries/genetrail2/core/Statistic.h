@@ -286,8 +286,8 @@ namespace GeneTrail
 		}
 
 		/**
-		 * This implements the online algorithm by Knuth for calculating the variance
-		 * the advantage of this method is, that every input value needs to be read only
+		 * This implements the online algorithm by Knuth for calculating the variance.
+		 * The advantage of this method is, that every input value needs to be read only
 		 * once. It additionally computes the mean and the number of input samples.
 		 *
 		 * For more information see:
