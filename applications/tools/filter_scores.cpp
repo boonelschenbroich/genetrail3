@@ -1,3 +1,4 @@
+#include <genetrail2/core/compat.h>
 #include <genetrail2/core/GeneSet.h>
 #include <genetrail2/core/GeneSetFilters.h>
 #include <genetrail2/core/GeneSetReader.h>
@@ -14,7 +15,7 @@
 #include <vector>
 
 using namespace GeneTrail;
-using namespace GeneTrail::GeneSetFilter;
+
 namespace bpo = boost::program_options;
 
 using GSFPointer = std::unique_ptr<GeneSetFilter::GeneSetFilter>;
@@ -49,31 +50,31 @@ GSFPointer parseFilter(const std::string& filter)
 	}
 
 	if(splitted[0] == "larger") {
-		return GSFPointer(new LargerFilter(parameter));
+		return std::make_unique<GeneSetFilter::LargerFilter>(parameter);
 	}
 
 	if(splitted[0] == "smaller") {
-		return GSFPointer(new SmallerFilter(parameter));
+		return std::make_unique<GeneSetFilter::SmallerFilter>(parameter);
 	}
 
 	if(splitted[0] == "absLarger") {
-		return GSFPointer(new AbsLargerFilter(parameter));
+		return std::make_unique<GeneSetFilter::AbsLargerFilter>(parameter);
 	}
 
 	if(splitted[0] == "absSmaller") {
-		return GSFPointer(new AbsSmallerFilter(parameter));
+		return std::make_unique<GeneSetFilter::AbsSmallerFilter>(parameter);
 	}
 
 	if(splitted[0] == "upperQuantile") {
-		return GSFPointer(new UpperQuantileFilter(parameter));
+		return std::make_unique<GeneSetFilter::UpperQuantileFilter>(parameter);
 	}
 
 	if(splitted[0] == "lowerQuantile") {
-		return GSFPointer(new LowerQuantileFilter(parameter));
+		return std::make_unique<GeneSetFilter::LowerQuantileFilter>(parameter);
 	}
 
 	if(splitted[0] == "quantile") {
-		return GSFPointer(new QuantileFilter(parameter));
+		return std::make_unique<GeneSetFilter::QuantileFilter>(parameter);
 	}
 
 	throw InvalidFilterSyntax("Unknown filter '" + splitted[0] + "'.");
