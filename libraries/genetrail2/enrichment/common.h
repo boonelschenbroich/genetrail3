@@ -23,10 +23,11 @@ using namespace GeneTrail;
 namespace GeneTrail
 {
 	class GeneSet;
-	class EnrichmentResult;
-	class FilePath;
-	class DirectoryPath;
-	class Params;
+
+	struct DirectoryPath;
+	struct EnrichmentResult;
+	struct FilePath;
+	struct Params;
 
 	using EnrichmentAlgorithmPtr = std::unique_ptr<EnrichmentAlgorithm>;
 }

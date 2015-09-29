@@ -16,9 +16,9 @@ namespace boost {
 }
 
 namespace GeneTrail {
-	class Params;
-	class FilePath;
-	class DirectoryPath;
+	struct DirectoryPath;
+	struct FilePath;
+	struct Params;
 
 	/**
 	 * This function adds common arguments to the BOOST commandline parser.
