@@ -197,40 +197,6 @@ namespace GeneTrail
 			///@{
 
 			/**
-			 * Reorder the rows of the matrix according to a given
-			 * permutation.
-			 *
-			 * \param perm A vector of matrix indices. The new matrix
-			 *             will consist of the rows at the indices
-			 *             contained in perm in the order they were
-			 *             specified.
-			 */
-			virtual void shuffleRows(const std::vector<index_type>& perm) = 0;
-
-			/**
-			 * Reorder the columns of the matrix according to a given
-			 * permutation.
-			 *
-			 * \see Matrix::shuffleRows
-			 */
-			virtual void shuffleCols(const std::vector<index_type>& perm) = 0;
-
-			/**
-			 * Remove the rows identified by the passed indices
-			 *
-			 * \param indices a vector of row indices
-			 * \warning the passed indices must be sorted in ascending order
-			 */
-			virtual void removeRows(const std::vector<index_type>& indices) = 0;
-
-			/**
-			 * Remove the columns identified by the passed indices
-			 *
-			 * \see Matrix::removeRows
-			 */
-			virtual void removeCols(const std::vector<index_type>& indices) = 0;
-
-			/**
 			 * \copydoc Matrix::transpose
 			 */
 			virtual void transpose() override;

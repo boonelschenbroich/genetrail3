@@ -67,11 +67,13 @@ namespace GeneTrail
 			DenseMatrixSubset& operator=(const DenseMatrixSubset& subs) = default;
 			DenseMatrixSubset& operator=(DenseMatrixSubset&& subs);
 
-			value_type& operator()(index_type i, index_type j) {
+			value_type& operator()(index_type i, index_type j) override
+			{
 				return (*mat_)(row_subset_[i], col_subset_[j]);
 			}
 
-			value_type  operator()(index_type i, index_type j) const {
+			value_type operator()(index_type i, index_type j) const override
+			{
 				return (*mat_)(row_subset_[i], col_subset_[j]);
 			}
 

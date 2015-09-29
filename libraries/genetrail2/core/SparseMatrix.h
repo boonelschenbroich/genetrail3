@@ -79,14 +79,14 @@ namespace GeneTrail
 			 *
 			 * \warning This method is in O(1) for sparse matrices
 			 */
-			value_type& operator()(index_type i, index_type j);
+			value_type& operator()(index_type i, index_type j) override;
 
 			/**
 			 * Returns the matrix coefficient at position (i,j)
 			 *
 			 * \warning This method is in O(1) for sparse matrices
 			 */
-			value_type  operator()(index_type i, index_type j) const;
+			value_type operator()(index_type i, index_type j) const override;
 
 			/**
 			 * Move assignment operator
