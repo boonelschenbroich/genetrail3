@@ -592,10 +592,10 @@ namespace GeneTrail
 			return scores;
 		}
 
-		template <typename Matrix>
+		template <typename Matrix, typename Dep>
 		Scores test_(const MatrixHTestFactory::MethodDescriptor& descriptor,
 		             const Matrix& ref, const Matrix& sam, RemoveNaN,
-		             Independent, Vectorized) const
+		             Dep, Vectorized) const
 		{
 			Scores scores(ref.rows());
 
@@ -607,7 +607,7 @@ namespace GeneTrail
 			using Iterator2 = decltype(sam_begin);
 
 			auto method = factory.create<Iterator1, Iterator2>(
-			    descriptor.id, Independent(), Vectorized());
+			    descriptor.id, Dep(), Vectorized());
 
 			auto v =
 			    method->testRemoveNaN(ref_begin, ref_end, sam_begin, sam_end);
