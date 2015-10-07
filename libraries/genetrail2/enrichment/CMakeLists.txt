@@ -32,3 +32,19 @@ target_include_directories(gtenrichment PRIVATE
 )
 
 target_link_libraries(gtenrichment gtcore ${GT2_ENRICHMENT_DEP_LIBRARIES})
+
+####################################################################################################
+# Install the library
+####################################################################################################
+
+INSTALL(FILES ${ENRICHMENT_HEADERS}
+	DESTINATION include/genetrail2/enrichment/
+)
+
+INSTALL(TARGETS gtenrichment
+	EXPORT GeneTrail2Targets
+	RUNTIME DESTINATION bin COMPONENT libraries
+	LIBRARY DESTINATION lib COMPONENT libraries
+	ARCHIVE DESTINATION lib COMPONENT libraries
+)
+
