@@ -26,6 +26,8 @@
 
 #include "Statistic.h"
 
+#include <boost/math/distributions/students_t.hpp>
+
 namespace GeneTrail {
 
     /**
