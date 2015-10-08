@@ -549,6 +549,9 @@ namespace GeneTrail
 				                          sam_nan_begin, sam_nan_end);
 
 				scores.emplace_back(name, score);
+
+				++ref_it;
+				++sam_it;
 			}
 
 			return scores;
@@ -587,6 +590,9 @@ namespace GeneTrail
 				auto score = method->test(ref_nan_begin, ref_nan_end,
 				                          sam_nan_begin, sam_nan_end);
 				scores.emplace_back(name, score);
+
+				++ref_it;
+				++sam_it;
 			}
 
 			return scores;
@@ -632,7 +638,7 @@ namespace GeneTrail
 			auto method = factory.create<Iterator1, Iterator2>(descriptor.id,
 			                                                   Dep(), Scalar());
 
-			for(size_t r = 0; r < ref.rows(); ++r) {
+			for(size_t r = 0; r < ref.rows(); ++r, ++ref_it, ++sam_it) {
 				auto score = method->test(ref_it->begin(), ref_it->end(),
 				                          sam_it->begin(), sam_it->end());
 				if(row_db_indices_.empty()) {
