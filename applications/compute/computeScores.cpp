@@ -66,9 +66,23 @@ int main(int argc, char* argv[])
 	}
 
 	TextFile t(groups, ",", std::set<std::string>());
-	DenseMatrix matrix(buildDenseMatrix(expr1, expr2, matrixOptions));
-	std::vector<std::string> reference = t.read();
-	std::vector<std::string> sample = t.read();
+	DenseMatrix matrix(0,0);
+
+	try {
+		matrix = buildDenseMatrix(expr1, expr2, matrixOptions);
+	} catch(const IOError& e) {
+		std::cerr << "ERROR: Could not open input data matrix for reading." << std::endl;
+		return -4;
+	}
+
+	std::vector<std::string> reference, sample;
+	try {
+		reference = t.read();
+		sample = t.read();
+	} catch(const IOError& e) {
+		std::cerr << "ERROR: Could not read from group file " << groups << std::endl;
+		return -5;
+	}
 
 	try {
 		auto subset = splitMatrix(matrix, reference, sample);
