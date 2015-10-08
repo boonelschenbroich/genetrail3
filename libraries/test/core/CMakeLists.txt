@@ -6,7 +6,7 @@ create_test_config_file()
 # Unit tests for all classes
 ####################################################################################################
 
-add_gtest(GeneSetReader_tests           LIBRARIES gtcore)
+add_gtest(GeneSetReader_tests               LIBRARIES gtcore)
 add_gtest(BoostGraphParser_tests            LIBRARIES gtcore)
 add_gtest(BoostGraphProcessor_tests         LIBRARIES gtcore)
 add_gtest(Matrix_tests                      LIBRARIES gtcore)
@@ -16,6 +16,7 @@ add_gtest(DenseMatrix_tests                 LIBRARIES gtcore)
 add_gtest(DenseMatrixReader_tests           LIBRARIES gtcore)
 add_gtest(DenseMatrixWriter_tests           LIBRARIES gtcore)
 add_gtest(HTests_test                       LIBRARIES gtcore)
+add_gtest(MatrixHTests_tests		    LIBRARIES gtcore)
 add_gtest(GMTFile_tests                     LIBRARIES gtcore)
 add_gtest(HypergeometricTest_tests          LIBRARIES gtcore)
 add_gtest(FishersExactTest_tests            LIBRARIES gtcore)
