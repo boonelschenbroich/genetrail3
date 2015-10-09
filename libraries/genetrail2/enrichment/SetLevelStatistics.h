@@ -179,7 +179,7 @@ namespace GeneTrail
 
 		bool canUseCategory(const Category&, size_t hits) const
 		{
-			return hits > 2;
+			return hits > 1;
 		}
 
 		double computeRowWisePValue(EnrichmentResult* result)
