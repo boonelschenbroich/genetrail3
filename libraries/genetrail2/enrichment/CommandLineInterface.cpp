@@ -92,6 +92,7 @@ namespace GeneTrail {
 		const auto& param = bpo::validators::get_single_string(values);
 
 		if(param == "none") {
+			v = boost::any(boost::optional<MultipleTestingCorrection>());
 			return;
 		}
 
