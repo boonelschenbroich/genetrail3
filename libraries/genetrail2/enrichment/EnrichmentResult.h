@@ -20,10 +20,9 @@
 #ifndef GT2_CORE_ENRICHMENT_RESULT_H
 #define GT2_CORE_ENRICHMENT_RESULT_H
 
-#include "Category.h"
-
-#include "macros.h"
-#include "multiprecision.h"
+#include <genetrail2/core/Category.h>
+#include <genetrail2/core/macros.h>
+#include <genetrail2/core/multiprecision.h>
 
 #include <ostream>
 #include <string>

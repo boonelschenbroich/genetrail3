@@ -21,6 +21,8 @@
 #ifndef GT2_ENRICHMENT_SET_LEVEL_STATISTICS_H
 #define GT2_ENRICHMENT_SET_LEVEL_STATISTICS_H
 
+#include "EnrichmentResult.h"
+
 #include <genetrail2/core/HTest.h>
 #include <genetrail2/core/Scores.h>
 #include <genetrail2/core/GeneSetEnrichmentAnalysis.h>

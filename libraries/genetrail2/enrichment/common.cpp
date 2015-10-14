@@ -1,6 +1,7 @@
 #include "common.h"
 
 #include "EnrichmentAlgorithm.h"
+#include "EnrichmentResult.h"
 #include "Parameters.h"
 #include "PermutationTest.h"
 

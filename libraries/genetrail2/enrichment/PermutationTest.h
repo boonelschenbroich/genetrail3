@@ -2,6 +2,7 @@
 #define GT2_CORE_PERMUTATION_TEST_H
 
 #include "EnrichmentAlgorithm.h"
+#include "EnrichmentResult.h"
 
 #include <genetrail2/core/macros.h>
 #include <genetrail2/core/misc_algorithms.h>

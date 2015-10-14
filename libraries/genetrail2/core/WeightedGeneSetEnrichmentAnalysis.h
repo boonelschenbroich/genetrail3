@@ -24,7 +24,6 @@
 #include "macros.h"
 
 #include "Category.h"
-#include "EnrichmentResult.h"
 #include "Scores.h"
 
 #include <vector>

@@ -8,6 +8,7 @@ SET(DIR ${PROJECT_SOURCE_DIR})
 SET(LIBNAME "ENRICHMENT")
 
 add_header_to_library(
+	EnrichmentResult.h
 	PermutationTest.h
 )
 

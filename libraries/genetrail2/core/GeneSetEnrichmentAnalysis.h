@@ -24,7 +24,6 @@
 #include "macros.h"
 
 #include "Category.h"
-#include "EnrichmentResult.h"
 
 #include <boost/math/special_functions/binomial.hpp>
 
