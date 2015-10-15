@@ -1,6 +1,7 @@
 #include "GMTFile.h"
 
 #include "Exception.h"
+#include "EntityDatabase.h"
 
 #include <boost/algorithm/string/finder.hpp>
 #include <boost/algorithm/string/find_iterator.hpp>
@@ -61,7 +62,8 @@ namespace GeneTrail
 
 		// Create the category using our newly created transform iterators
 		// we move name and reference, as we do not need them any longer
-		Category c(std::move(name), cit, cend);
+		Category c(EntityDatabase::global.get(), cit, cend);
+		c.setName(std::move(name));
 		c.setReference(std::move(url));
 
 		// Prefetch the next line from the file.

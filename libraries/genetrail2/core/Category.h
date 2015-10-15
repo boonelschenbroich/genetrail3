@@ -49,45 +49,50 @@ namespace GeneTrail
 			const EntityDatabase* db_;
 		};
 
-		static Category intersect(std::string name, const Category& a,
-		                          const Category& b);
-		static Category combine(std::string name, const Category& a,
-		                        const Category& b);
+		template <typename T>
+		using is_integer_iterator = typename std::enable_if<
+		    std::is_integral<typename T::value_type>::value>::type;
 
 		template <typename InputIterator>
-		Category(InputIterator first, InputIterator last)
-			: container_(first, last), database_(EntityDatabase::global)
+		Category(EntityDatabase* database, InputIterator first,
+		         InputIterator last, is_integer_iterator<InputIterator>* = 0)
+		    : container_(first, last), database_(database)
 		{
 		}
 
+		template <typename T>
+		using is_string_iterator = typename std::enable_if<std::is_convertible<
+		    typename std::decay<typename T::value_type>::type,
+		    std::string>::value>::type;
+
 		template <typename InputIterator>
-		Category(std::string name, InputIterator first, InputIterator last)
-		    : name_(std::move(name)), database_(EntityDatabase::global)
+		Category(EntityDatabase* database, InputIterator first,
+		         InputIterator last, is_string_iterator<InputIterator>* = 0)
+		    : database_(database)
 		{
 			container_.reserve(std::distance(first, last));
-			database_->transform(
+			database->transform(
 			    first, last, std::inserter(container_, std::end(container_)));
 		}
 
-		explicit Category(std::string name);
-		explicit Category(std::string name,
-		                  const std::shared_ptr<Category>& parent);
+		explicit Category(EntityDatabase*, const std::string& name);
+		explicit Category(EntityDatabase* database);
 
-		Category() : database_(EntityDatabase::global){}
 		Category(const Category&) = default;
 		Category(Category&&) = default;
 
 		Category& operator=(const Category&) = default;
 		Category& operator=(Category&&) = default;
 
-		NamesProxy names() const { return NamesProxy(*this, database_.get()); }
+		NamesProxy names() const { return NamesProxy(*this, database_); }
 
 		//
 		// Setters and Getters
 		//
 
 		const std::string& name() const;
-		void setName(std::string n);
+		void setName(const std::string& n);
+		void setName(std::string&& n);
 
 		const std::string& reference() const;
 		void setReference(std::string r);
@@ -128,9 +133,9 @@ namespace GeneTrail
 		//
 		// Operations
 		//
-		friend Category intersect(std::string name, const Category& a,
+		static Category intersect(const std::string& name, const Category& a,
 		                          const Category& b);
-		friend Category combine(std::string name, const Category& a,
+		static Category combine(const std::string& name, const Category& a,
 		                        const Category& b);
 
 		friend std::ostream& operator<<(std::ostream& strm,
@@ -142,7 +147,7 @@ namespace GeneTrail
 		std::string name_;
 		std::string reference_;
 
-		std::shared_ptr<EntityDatabase> database_;
+		EntityDatabase* database_;
 
 		std::shared_ptr<Category> parent_;
 		std::forward_list<std::shared_ptr<Category>> children_;

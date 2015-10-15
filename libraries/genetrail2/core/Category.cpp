@@ -4,22 +4,20 @@
 
 namespace GeneTrail
 {
-	Category::Category(std::string name)
-	    : name_(std::move(name)), database_(EntityDatabase::global)
+	Category::Category(EntityDatabase* database, const std::string& name)
+	    : name_(name), database_(database)
 	{
 	}
 
-	Category::Category(std::string name,
-	                   const std::shared_ptr<Category>& parent)
-	    : name_(std::move(name)),
-	      database_(EntityDatabase::global),
-	      parent_(parent)
+	Category::Category(EntityDatabase* database)
+	    : database_(database)
 	{
 	}
 
 	const std::string& Category::name() const { return name_; }
 
-	void Category::setName(std::string n) { name_ = std::move(n); }
+	void Category::setName(const std::string& n) { name_ = n; }
+	void Category::setName(std::string&& n) { name_ = std::move(n); }
 
 	const std::string& Category::reference() const { return reference_; }
 
@@ -41,8 +39,6 @@ namespace GeneTrail
 	}
 
 	bool Category::insert(size_t i) { return container_.emplace(i).second; }
-
-	const std::shared_ptr<Category>& Category::getParent() { return parent_; }
 
 	size_t Category::size() const { return container_.size(); }
 
@@ -73,10 +69,16 @@ namespace GeneTrail
 		return true;
 	}
 
-	Category Category::intersect(std::string name, const Category& a,
+	Category Category::intersect(const std::string& name, const Category& a,
 	                             const Category& b)
 	{
-		Category result(std::move(name));
+		Category result(a.database_);
+
+		result.setName(name);
+
+		if(a.database_ != b.database_) {
+			throw "";
+		}
 
 		std::set_intersection(
 		    a.container_.begin(), a.container_.end(), b.container_.begin(),
@@ -86,10 +88,16 @@ namespace GeneTrail
 		return result;
 	}
 
-	Category Category::combine(std::string name, const Category& a,
+	Category Category::combine(const std::string& name, const Category& a,
 	                           const Category& b)
 	{
-		Category result(std::move(name));
+		Category result(a.database_);
+		result.setName(name);
+
+		if(a.database_ != b.database_) {
+			throw "";
+		}
+
 		result.container_.reserve(std::max(a.size(), b.size()));
 
 		std::set_union(

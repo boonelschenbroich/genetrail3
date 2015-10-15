@@ -4,8 +4,9 @@
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/multiprecision/cpp_dec_float.hpp>
 
-#include <genetrail2/core/OverRepresentationAnalysis.h>
 #include <genetrail2/core/Category.h>
+#include <genetrail2/core/EntityDatabase.h>
+#include <genetrail2/core/OverRepresentationAnalysis.h>
 
 using namespace GeneTrail;
 
@@ -15,15 +16,16 @@ const double TOLERANCE = 0.00001;
  * Test-set < Reference-set
  */
 TEST(OverRepresentationAnalysis, HypergeometricTestCase1) {
-	Category ref("reference");
+	EntityDatabase db;
+	Category ref(&db);
 	for(int i=0; i<50; ++i){
 		ref.insert(boost::lexical_cast<std::string>(i));
 	}
-	Category cat("category");
+	Category cat(&db);
 	for(int i=0; i<5; ++i){
 		cat.insert(boost::lexical_cast<std::string>(i));
 	}
-	Category test("test");
+	Category test(&db);
 	for(int i=1; i<11; ++i){
 		test.insert(boost::lexical_cast<std::string>(i));
 	}
@@ -32,15 +34,16 @@ TEST(OverRepresentationAnalysis, HypergeometricTestCase1) {
 }
 
 TEST(OverRepresentationAnalysis, HypergeometricTestCase2) {
-	Category ref("reference");
+	EntityDatabase db;
+	Category ref(&db);
 	for(int i=0; i<50; ++i){
 		ref.insert(boost::lexical_cast<std::string>(i));
 	}
-	Category cat("category");
+	Category cat(&db);
 	for(int i=0; i<5; ++i){
 		cat.insert(boost::lexical_cast<std::string>(i));
 	}
-	Category test("test");
+	Category test(&db);
 	for(int i=4; i<14; ++i){
 		test.insert(boost::lexical_cast<std::string>(i));
 	}
@@ -49,15 +52,16 @@ TEST(OverRepresentationAnalysis, HypergeometricTestCase2) {
 }
 
 TEST(OverRepresentationAnalysis, FisherTestCase1) {
-	Category ref("reference");
+	EntityDatabase db;
+	Category ref(&db);
 	for(int i=0; i<14; ++i){
 		ref.insert(boost::lexical_cast<std::string>(i));
 	}
-	Category cat("category");
+	Category cat(&db);
 	for(int i=5; i<14; ++i){
 		cat.insert(boost::lexical_cast<std::string>(i));
 	}
-	Category test("test");
+	Category test(&db);
 	for(int i=7; i<17; ++i){
 		test.insert(boost::lexical_cast<std::string>(i));
 	}
@@ -67,15 +71,16 @@ TEST(OverRepresentationAnalysis, FisherTestCase1) {
 }
 
 TEST(OverRepresentationAnalysis, FisherTestCase2) {
-	Category ref("reference");
+	EntityDatabase db;
+	Category ref(&db);
 	for(int i=0; i<14; ++i){
 		ref.insert(boost::lexical_cast<std::string>(i));
 	}
-	Category cat("category");
+	Category cat(&db);
 	for(int i=5; i<14; ++i){
 		cat.insert(boost::lexical_cast<std::string>(i));
 	}
-	Category test("test");
+	Category test(&db);
 	for(int i=13; i<23; ++i){
 		test.insert(boost::lexical_cast<std::string>(i));
 	}

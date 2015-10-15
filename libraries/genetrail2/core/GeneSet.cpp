@@ -150,7 +150,8 @@ namespace GeneTrail
 
 	Category GeneSet::toCategory(const std::string& name) const
 	{
-		Category res(name);
+		Category res(EntityDatabase::global.get());
+		res.setName(name);
 		for(const auto& it : container_) {
 			res.insert(it.first);
 		}

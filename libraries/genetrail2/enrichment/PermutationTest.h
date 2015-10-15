@@ -120,10 +120,11 @@ namespace GeneTrail
 		template <typename InputIterator>
 		RowPermutationTest(InputIterator begin, InputIterator end,
 		                   size_t permutations, uint64_t randomSeed)
-		    : permutations_(permutations),
-		      twister_(randomSeed),
-		      indices_(begin, end),
-		      tmp_indices_(std::distance(begin, end))
+			: category_(nullptr),
+			  permutations_(permutations),
+			  twister_(randomSeed),
+			  indices_(begin, end),
+			  tmp_indices_(std::distance(begin, end))
 		{
 		}
 

@@ -171,13 +171,14 @@ TEST_F(ScoresTest, sortByIndex)
 
 TEST_F(ScoresTest, subsetSorted)
 {
-	Category c("");
+	auto db = std::make_shared<EntityDatabase>();
+	Category c(db.get());
 
 	c.insert("A");
 	c.insert("G");
 	c.insert("H");
 
-	Scores scores;
+	Scores scores(db);
 	scores.emplace_back("A", 1.1);
 	scores.emplace_back("G", 1.1);
 	scores.emplace_back("B", 1.1);
@@ -195,14 +196,15 @@ TEST_F(ScoresTest, subsetSorted)
 
 TEST_F(ScoresTest, subsetUnsorted)
 {
-	Category c("");
+	auto db = std::make_shared<EntityDatabase>();
+	Category c(db.get());
 
 	c.insert("P");
 	c.insert("A");
 	c.insert("G");
 	c.insert("H");
 
-	Scores scores;
+	Scores scores(db);
 	scores.emplace_back("F", 1.1);
 	scores.emplace_back("A", 1.1);
 	scores.emplace_back("P", 1.1);

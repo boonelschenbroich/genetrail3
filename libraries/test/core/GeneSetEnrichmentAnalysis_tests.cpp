@@ -28,11 +28,12 @@ TEST(GeneSetEnrichmentAnalysis, twoSidedPValue) {
 }
 
 TEST(GeneSetEnrichmentAnalysis, twoSidedPValue2) {
+	EntityDatabase db;
 	std::vector<std::string> test;
 	for(int i=0; i<8; ++i){
 		test.push_back(boost::lexical_cast<std::string>(i));
 	}
-	Category cat("ca");
+	Category cat(&db);
 	cat.insert(boost::lexical_cast<std::string>(0));
 	cat.insert(boost::lexical_cast<std::string>(1));
 	cat.insert(boost::lexical_cast<std::string>(2));
