@@ -136,9 +136,10 @@ TEST(GeneSetEnrichmentAnalysis, bigExampleCompareWebserverAndNewImplementation)
 		}
 	}
 
-	GMTFile input2("/home/student/tkehl/GT_TEST/bigCategories.gmt");
-	while(input2) {
-		Category c = input2.read();
+	auto db = std::make_shared<EntityDatabase>();
+	GMTFile input2(db, "/home/student/tkehl/GT_TEST/bigCategories.gmt");
+	auto categories = input2.read();
+	for(const auto& c : categories) {
 		GeneSetEnrichmentAnalysis<big_float, int64_t> gsea;
 		EXPECT_NEAR(
 		    gsea.computeOneSidedPValue(c, test_set).convert_to<double>(),

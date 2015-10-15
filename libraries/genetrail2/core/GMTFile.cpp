@@ -25,20 +25,33 @@ struct copy_range_f : public std::unary_function<Range, std::string>
 
 namespace GeneTrail
 {
-	GMTFile::GMTFile(const std::string& path, FileOpenMode mode)
-		: CategoryFile(path, mode)
+	GMTFile::GMTFile(const std::shared_ptr<EntityDatabase>& db,
+	                 const std::string& path, FileOpenMode mode)
+	    : CategoryDatabaseFile(path, mode), entity_database_(db)
 	{
 		if(mode == FileOpenMode::READ) {
 			advanceLine_();
 		}
 	}
 
-	Category GMTFile::read()
+	CategoryDatabase GMTFile::read()
 	{
 		if(!isValid_() || !isReading()) {
 			throw IOError("File is not open for reading");
 		}
 
+		CategoryDatabase result(entity_database_);
+
+		while(isValid_()) {
+			readCategory_(result);
+			advanceLine_();
+		}
+
+		return result;
+	}
+
+	void GMTFile::readCategory_(CategoryDatabase& db)
+	{
 		auto split_it =
 		    make_split_iterator(next_line_, first_finder("\t", is_equal()));
 		decltype(split_it) end_it;
@@ -62,31 +75,26 @@ namespace GeneTrail
 
 		// Create the category using our newly created transform iterators
 		// we move name and reference, as we do not need them any longer
-		Category c(EntityDatabase::global.get(), cit, cend);
+		auto& c = db.addCategory(cit, cend);
 		c.setName(std::move(name));
 		c.setReference(std::move(url));
-
-		// Prefetch the next line from the file.
-		// This is needed in order to determine whether there still are
-		// relevant categories
-		advanceLine_();
-
-		return c;
 	}
 
-	bool GMTFile::write(const Category& cat)
+	bool GMTFile::write(const CategoryDatabase& db)
 	{
 		if(!isValid_() || !isWriting()) {
 			throw IOError("File is not open for writing");
 		}
 
-		(*out_strm_) << cat.name() << '\t' << cat.reference();
+		for(const auto& cat : db) {
+			(*out_strm_) << cat.name() << '\t' << cat.reference();
 
-		for(const auto& s : cat) {
-			(*out_strm_) << '\t' << s;
+			for(const auto& s : cat.names()) {
+				(*out_strm_) << '\t' << s;
+			}
+
+			(*out_strm_) << '\n';
 		}
-
-		(*out_strm_) << '\n';
 
 		return true;
 	}

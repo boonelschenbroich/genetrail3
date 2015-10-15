@@ -1,19 +1,21 @@
 #ifndef GT2_CORE_GMTFILE_H
 #define GT2_CORE_GMTFILE_H
 
-#include "CategoryFile.h"
-#include "Category.h"
+#include "CategoryDatabaseFile.h"
+#include "CategoryDatabase.h"
 
 #include "macros.h"
 
 namespace GeneTrail
 {
-	class GT2_EXPORT GMTFile : public CategoryFile
+	class GT2_EXPORT GMTFile : public CategoryDatabaseFile
 	{
-		public:
-		GMTFile(const std::string& path, FileOpenMode mode = FileOpenMode::READ);
+	  public:
+	    GMTFile(const std::shared_ptr<EntityDatabase>& db,
+	            const std::string& path,
+	            FileOpenMode mode = FileOpenMode::READ);
 
-		GMTFile(GMTFile&&) = default;
+	    GMTFile(GMTFile&&) = default;
 		GMTFile& operator=(GMTFile&&) = default;
 
 		/// GMTFile is not copy constructible
@@ -22,15 +24,17 @@ namespace GeneTrail
 
 		/// GMTFile cannot be copied
 		/// as file streams cannotbe copied
-		Category& operator=(const GMTFile&) = delete;
+		GMTFile& operator=(const GMTFile&) = delete;
 
-		Category read();
-		bool write(const Category& cat);
+		CategoryDatabase read() override;
+		bool write(const CategoryDatabase& db) override;
 
-		private:
-		std::string next_line_;
-
+	  private:
 		void advanceLine_();
+		void readCategory_(CategoryDatabase& db);
+
+		std::string next_line_;
+		std::shared_ptr<EntityDatabase> entity_database_;
 	};
 }
 

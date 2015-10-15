@@ -9,17 +9,14 @@ using namespace GeneTrail;
 
 TEST(GMTFile, read)
 {
-	GMTFile f(TEST_DATA_PATH("categories.gmt"));
+	auto db = std::make_shared<EntityDatabase>();
+	GMTFile f(db, TEST_DATA_PATH("categories.gmt"));
 
 	ASSERT_TRUE(f);
 
-	std::vector<Category> categories;
+	auto categories = f.read();
 
-	while(f) {
-		categories.push_back(f.read());
-	}
-
-	EXPECT_EQ(5, categories.size());
+	ASSERT_EQ(5, categories.size());
 
 	EXPECT_EQ("CatA", categories[0].name());
 	EXPECT_EQ("CatB", categories[1].name());

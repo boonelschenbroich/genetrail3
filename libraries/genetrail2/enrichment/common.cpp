@@ -168,7 +168,7 @@ static AllResults compute(Scores& test_set, CategoryList& cat_list,
 	AllResults name_to_cat_results;
 	for(const auto& cat : cat_list) {
 		try {
-			GMTFile input(cat.second);
+			GMTFile input(EntityDatabase::global, cat.second);
 
 			if(!input) {
 				std::cerr << "WARNING: Could not open database " + cat.first +
@@ -177,12 +177,12 @@ static AllResults compute(Scores& test_set, CategoryList& cat_list,
 				continue;
 			}
 
+			auto category_db = input.read();
 			Results name_to_result;
-			while(input) {
-				auto c = std::make_shared<Category>(input.read());
+			for(const auto& c : category_db) {
 				std::cout << "INFO: Processing - " << cat.first << " - "
-				          << c->name() << std::endl;
-				auto processed = processCategory(*c, test_set, p);
+				          << c.name() << std::endl;
+				auto processed = processCategory(c, test_set, p);
 
 				std::shared_ptr<EnrichmentResult> result;
 
@@ -190,16 +190,18 @@ static AllResults compute(Scores& test_set, CategoryList& cat_list,
 					continue;
 				}
 
-				if(!algorithm->canUseCategory(*c, std::get<1>(processed))) {
-					result = std::make_shared<EnrichmentResult>(c);
+				// TODO: get rid of this
+				auto tmp_cat = std::make_shared<Category>(c);
+				if(!algorithm->canUseCategory(c, std::get<1>(processed))) {
+					result = std::make_shared<EnrichmentResult>(tmp_cat);
 				} else {
-					result = algorithm->computeEnrichment(c);
+					result = algorithm->computeEnrichment(tmp_cat);
 				}
 
 				result->hits = std::get<1>(processed);
 				result->info = std::move(std::get<2>(processed));
 
-				name_to_result.emplace(c->name(), std::move(result));
+				name_to_result.emplace(c.name(), std::move(result));
 			}
 			name_to_cat_results.emplace(cat.first, std::move(name_to_result));
 		} catch(IOError& exn) {
