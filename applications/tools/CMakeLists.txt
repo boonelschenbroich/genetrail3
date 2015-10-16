@@ -14,6 +14,11 @@ target_link_libraries(mconvert gtcore)
 GT2_COMPILE_FLAGS(mconvert)
 list(APPEND EXECUTABLES mconvert)
 
+add_executable(category_convert category_convert.cpp)
+target_link_libraries(category_convert gtcore)
+GT2_COMPILE_FLAGS(category_convert)
+list(APPEND EXECUTABLES category_convert)
+
 add_executable(filter-scores filter_scores.cpp)
 target_link_libraries(filter-scores gtcore)
 GT2_COMPILE_FLAGS(filter-scores)
