@@ -14,7 +14,6 @@ SET(LIBNAME "CORE")
 # Headers
 add_header_to_library(BoostGraph.h)
 add_header_to_library(BoostGraphParser.h)
-add_header_to_library(CategoryFile.h)
 add_header_to_library(CategoryDatabaseFile.h)
 add_header_to_library(GeneSetEnrichmentAnalysis.h)
 add_header_to_library(Matrix.h)
