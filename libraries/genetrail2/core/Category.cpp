@@ -23,6 +23,10 @@ namespace GeneTrail
 
 	void Category::setReference(std::string r) { reference_ = std::move(r); }
 
+	const Metadata& Category::metadata() const { return metadata_; }
+
+	Metadata& Category::metadata() { return metadata_; }
+
 	bool Category::contains(const std::string& id) const
 	{
 		return contains(database_->index(id));

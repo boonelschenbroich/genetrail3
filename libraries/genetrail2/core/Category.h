@@ -12,6 +12,7 @@
 #include "macros.h"
 
 #include "EntityDatabase.h"
+#include "Metadata.h"
 
 namespace GeneTrail
 {
@@ -97,6 +98,9 @@ namespace GeneTrail
 		const std::string& reference() const;
 		void setReference(std::string r);
 
+		const Metadata& metadata() const;
+		Metadata& metadata();
+
 		template<typename InputIterator>
 		void replaceAll(InputIterator begin, InputIterator end) {
 			container_.clear();
@@ -147,6 +151,7 @@ namespace GeneTrail
 		std::string name_;
 		std::string reference_;
 
+		Metadata metadata_;
 		EntityDatabase* database_;
 
 		std::shared_ptr<Category> parent_;
