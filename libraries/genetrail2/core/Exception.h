@@ -60,6 +60,16 @@ namespace GeneTrail
 			std::string msg_;
 	};
 
+	class GT2_EXPORT InvalidKey : public std::exception
+	{
+	  public:
+		InvalidKey(const std::string& str) noexcept;
+		const char* what() const noexcept override;
+
+	  private:
+		std::string msg_;
+	};
+
 	class GT2_EXPORT UnknownEntry : public std::exception
 	{
 		public:
