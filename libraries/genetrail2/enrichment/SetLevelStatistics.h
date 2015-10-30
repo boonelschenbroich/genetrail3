@@ -295,8 +295,9 @@ namespace GeneTrail
 
 		std::tuple<double, double> computeScore(const Category& c) const
 		{
-			auto score = test_.computeScore(c);
-			return std::make_tuple(score, test_.expectedNumberOfHits(c));
+			//!! IMPORTANT:
+			//!! Here we need to compare the number of hits and the expected number of hits.
+			return std::make_tuple(test_.numberOfHits(c), test_.expectedNumberOfHits(c));
 		}
 
 		double computeRowWisePValue(EnrichmentResult* result) const
