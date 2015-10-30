@@ -25,6 +25,10 @@ OverRepresentationAnalysis::categoryContainsAllGenes(const Category& reference,
 	return true;
 }
 
+double OverRepresentationAnalysis::numberOfHits(const Category& category) const {
+	return static_cast<double>(Category::intersect("null", category, test_set_).size());
+}
+
 double OverRepresentationAnalysis::expectedNumberOfHits(const Category& category) const {
 	auto l = Category::intersect("null", category, reference_set_).size();
 	return (l * n_) / static_cast<double>(m_);
