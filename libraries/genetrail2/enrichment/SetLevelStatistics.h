@@ -371,7 +371,7 @@ namespace GeneTrail
 	{
 		public:
 		WeightedKolmogorovSmirnov(const Scores& scores, Order order)
-		    : order_(order)
+		    : scores_(scores.db()), order_(order)
 		{
 			setInputScores(scores);
 		}

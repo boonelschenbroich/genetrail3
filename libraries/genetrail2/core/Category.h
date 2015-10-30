@@ -145,6 +145,9 @@ namespace GeneTrail
 		friend std::ostream& operator<<(std::ostream& strm,
 		                                const Category& cat);
 
+		EntityDatabase* entityDatabase() { return database_; }
+		const EntityDatabase* entityDatabase() const { return database_; }
+
 		private:
 		Container container_;
 

@@ -162,12 +162,12 @@ namespace GeneTrail
 		using ConstScoreIterator = ConstScoresProxy::const_iterator;
 		using ConstNameIterator = NamesProxy::const_iterator;
 
-		explicit Scores(const std::shared_ptr<EntityDatabase>& db = EntityDatabase::global);
-		explicit Scores(size_t size, const std::shared_ptr<EntityDatabase>& db = EntityDatabase::global);
-		explicit Scores(std::vector<Score>&& data, const std::shared_ptr<EntityDatabase>& db = EntityDatabase::global);
-		explicit Scores(const std::vector<Score>& data, const std::shared_ptr<EntityDatabase>& db = EntityDatabase::global);
-		explicit Scores(const GeneSet& gene_set, const std::shared_ptr<EntityDatabase>& db = EntityDatabase::global);
-		explicit Scores(GeneSet&& gene_set, const std::shared_ptr<EntityDatabase>& db = EntityDatabase::global);
+		explicit Scores(const std::shared_ptr<EntityDatabase>& db);
+		explicit Scores(size_t size, const std::shared_ptr<EntityDatabase>& db);
+		explicit Scores(std::vector<Score>&& data, const std::shared_ptr<EntityDatabase>& db);
+		explicit Scores(const std::vector<Score>& data, const std::shared_ptr<EntityDatabase>& db);
+		explicit Scores(const GeneSet& gene_set, const std::shared_ptr<EntityDatabase>& db);
+		explicit Scores(GeneSet&& gene_set, const std::shared_ptr<EntityDatabase>& db);
 
 		Scores(const Scores& o) = default;
 		Scores(Scores&& o) = default;

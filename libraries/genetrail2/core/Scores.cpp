@@ -142,7 +142,9 @@ namespace GeneTrail
 
 	Scores Scores::subsetFind_(const Category& c) const
 	{
-		Scores result(std::min(size(), c.size()));
+		assert(c.db_.get() == c.entityDatabase());
+
+		Scores result(std::min(size(), c.size()), db_);
 
 		for(const auto& entry : *this) {
 			if(c.contains(entry.index())) {
