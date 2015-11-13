@@ -206,7 +206,7 @@ namespace GeneTrail
 			auto res = ids_.find(method);
 
 			if(res == ids_.end()) {
-				throw boost::none;
+				return boost::none;
 			}
 
 			return boost::make_optional(res->second);
