@@ -44,6 +44,11 @@ namespace GeneTrail
 			IsDependent::Independent,
 			SupportsVectors::Scalar};
 
+		MethodDescriptor log_median_fold_quotient_descriptor{
+			MatrixHTests::LogMedianFoldQuotient,
+			IsDependent::Independent,
+			SupportsVectors::Scalar};
+
 		MethodDescriptor mean_fold_quotient_descriptor{
 			MatrixHTests::MeanFoldQuotient,
 			IsDependent::Independent,
@@ -51,6 +56,16 @@ namespace GeneTrail
 
 		MethodDescriptor mean_fold_difference_descriptor{
 			MatrixHTests::MeanFoldDifference,
+			IsDependent::Independent,
+			SupportsVectors::Scalar};
+
+		MethodDescriptor median_fold_quotient_descriptor{
+			MatrixHTests::MedianFoldQuotient,
+			IsDependent::Independent,
+			SupportsVectors::Scalar};
+
+		MethodDescriptor median_fold_difference_descriptor{
+			MatrixHTests::MedianFoldDifference,
 			IsDependent::Independent,
 			SupportsVectors::Scalar};
 
@@ -78,8 +93,11 @@ namespace GeneTrail
 		ids_.emplace("dependent-wilcoxon", MatrixHTests::DependentWilcoxonTest);
 		ids_.emplace("signal-to-noise-ratio", MatrixHTests::SignalToNoiseRatio);
 		ids_.emplace("log-mean-fold-quotient", MatrixHTests::LogMeanFoldQuotient);
+		ids_.emplace("log-median-fold-quotient", MatrixHTests::LogMedianFoldQuotient);
 		ids_.emplace("mean-fold-quotient", MatrixHTests::MeanFoldQuotient);
 		ids_.emplace("mean-fold-difference", MatrixHTests::MeanFoldDifference);
+		ids_.emplace("median-fold-quotient", MatrixHTests::MedianFoldQuotient);
+		ids_.emplace("median-fold-difference", MatrixHTests::MedianFoldDifference);
 		ids_.emplace("pearson_correlation", MatrixHTests::PearsonCorrelation);
 		ids_.emplace("spearman_correlation", MatrixHTests::SpearmanCorrelation);
 		ids_.emplace("z-score", MatrixHTests::ZScore);
@@ -94,8 +112,11 @@ namespace GeneTrail
 			f_test_descriptor,
 			signal_to_noise_ratio_descriptor,
 			log_mean_fold_quotient_descriptor,
+			log_median_fold_quotient_descriptor,
 			mean_fold_quotient_descriptor,
 			mean_fold_difference_descriptor,
+			median_fold_quotient_descriptor,
+			median_fold_difference_descriptor,
 			pearson_correlation_descriptor,
 			spearman_correlation_descriptor,
 			z_score_descriptor};

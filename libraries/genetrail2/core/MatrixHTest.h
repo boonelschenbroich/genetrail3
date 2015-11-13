@@ -64,8 +64,11 @@ namespace GeneTrail
 		FTest,
 		SignalToNoiseRatio,
 		LogMeanFoldQuotient,
+		LogMedianFoldQuotient,
 		MeanFoldQuotient,
 		MeanFoldDifference,
+		MedianFoldQuotient,
+		MedianFoldDifference,
 		PearsonCorrelation,
 		SpearmanCorrelation,
 		ZScore
@@ -180,12 +183,21 @@ namespace GeneTrail
 				case MatrixHTests::LogMeanFoldQuotient:
 					return std::make_unique<
 					    log_mean_fold_quotient<Iterator1, Iterator2>>();
+				case MatrixHTests::LogMedianFoldQuotient:
+				    return std::make_unique<
+				        log_median_fold_quotient<Iterator1, Iterator2>>();
 				case MatrixHTests::MeanFoldQuotient:
 					return std::make_unique<
 					    mean_fold_quotient<Iterator1, Iterator2>>();
 				case MatrixHTests::MeanFoldDifference:
 					return std::make_unique<
 					    mean_fold_difference<Iterator1, Iterator2>>();
+				case MatrixHTests::MedianFoldQuotient:
+					return std::make_unique<
+					    median_fold_quotient<Iterator1, Iterator2>>();
+				case MatrixHTests::MedianFoldDifference:
+					return std::make_unique<
+					    median_fold_difference<Iterator1, Iterator2>>();
 				case MatrixHTests::PearsonCorrelation:
 					return std::make_unique<
 					    pearson_correlation<Iterator1, Iterator2>>();
@@ -340,6 +352,17 @@ namespace GeneTrail
 		};
 
 		template <class Iterator1, class Iterator2>
+		class log_median_fold_quotient : public Test<Iterator1, Iterator2>
+		{
+			double test(Iterator1 fst_begin, Iterator1 fst_end,
+			            Iterator2 snd_begin, Iterator2 snd_end) const override
+			{
+				return statistic::log_median_fold_quotient<double>(
+				    fst_begin, fst_end, snd_begin, snd_end);
+			}
+		};
+
+		template <class Iterator1, class Iterator2>
 		class mean_fold_quotient : public Test<Iterator1, Iterator2>
 		{
 			double test(Iterator1 fst_begin, Iterator1 fst_end,
@@ -357,6 +380,28 @@ namespace GeneTrail
 			            Iterator2 snd_begin, Iterator2 snd_end) const override
 			{
 				return statistic::mean_fold_difference<double>(
+				    fst_begin, fst_end, snd_begin, snd_end);
+			}
+		};
+
+		template <class Iterator1, class Iterator2>
+		class median_fold_quotient : public Test<Iterator1, Iterator2>
+		{
+			double test(Iterator1 fst_begin, Iterator1 fst_end,
+			            Iterator2 snd_begin, Iterator2 snd_end) const override
+			{
+				return statistic::median_fold_quotient<double>(
+				    fst_begin, fst_end, snd_begin, snd_end);
+			}
+		};
+
+		template <class Iterator1, class Iterator2>
+		class median_fold_difference : public Test<Iterator1, Iterator2>
+		{
+			double test(Iterator1 fst_begin, Iterator1 fst_end,
+			            Iterator2 snd_begin, Iterator2 snd_end) const override
+			{
+				return statistic::median_fold_difference<double>(
 				    fst_begin, fst_end, snd_begin, snd_end);
 			}
 		};

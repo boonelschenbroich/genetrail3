@@ -450,6 +450,26 @@ namespace GeneTrail
 		}
 
 		/**
+		 * Log-Median-Fold-Quotient
+		 * This function calculates log(median(a)) -  log(median(b)).
+		 *
+		 * @param begin1
+		 * @param end1
+		 * @param begin2
+		 * @param end2
+		 * @return log(median(a)) -  log(median(b))
+		 */
+		template <typename value_type, typename InputIterator1,
+		          typename InputIterator2>
+		value_type
+		log_median_fold_quotient(InputIterator1 begin1, InputIterator1 end1,
+		                         InputIterator2 begin2, InputIterator2 end2)
+		{
+			return std::log(median<value_type, InputIterator1>(begin1, end1)) -
+			       std::log(median<value_type, InputIterator2>(begin2, end2));
+		}
+
+		/**
 		 * This function calculates mean(a) /  mean(b).
 		 * Mean-Fold-Quotient
 		 *
@@ -487,6 +507,46 @@ namespace GeneTrail
 		{
 			return mean<value_type, InputIterator1>(begin1, end1) -
 			       mean<value_type, InputIterator2>(begin2, end2);
+		}
+
+		/**
+		 * Median-Fold-Quotient
+		 * This function calculates median(a) /  median(b).
+		 *
+		 * @param begin1
+		 * @param end1
+		 * @param begin2
+		 * @param end2
+		 * @return median(a) /  median(b)
+		 */
+		template <typename value_type, typename InputIterator1,
+		          typename InputIterator2>
+		value_type
+		median_fold_quotient(InputIterator1 begin1, InputIterator1 end1,
+		                     InputIterator2 begin2, InputIterator2 end2)
+		{
+			return median<value_type, InputIterator1>(begin1, end1) /
+			       median<value_type, InputIterator2>(begin2, end2);
+		}
+
+		/**
+		 * Mean-Fold-Difference
+		 * This function calculates median(a) -  median(b).
+		 *
+		 * @param begin1
+		 * @param end1
+		 * @param begin2
+		 * @param end2
+		 * @return median(a) -  median(b)
+		 */
+		template <typename value_type, typename InputIterator1,
+		          typename InputIterator2>
+		value_type
+		median_fold_difference(InputIterator1 begin1, InputIterator1 end1,
+		                       InputIterator2 begin2, InputIterator2 end2)
+		{
+			return median<value_type, InputIterator1>(begin1, end1) -
+			       median<value_type, InputIterator2>(begin2, end2);
 		}
 
 		/**
