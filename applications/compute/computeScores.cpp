@@ -92,9 +92,12 @@ int main(int argc, char* argv[])
 
 		GeneSetWriter writer;
 		writer.writeScoringFile(gene_set, output);
-	} catch(EmptyGroup& e) {
+	} catch(const EmptyGroup& e) {
 		std::cerr << "ERROR: " << e.what() << "\n";
 		return -3;
+	} catch(const std::invalid_argument& e) {
+		std::cerr << "ERROR: Unknown method '" << e.what() << "'\n";
+		return -6;
 	}
 
 	return 0;
