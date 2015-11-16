@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #include <cstdlib>
 #include <tuple>
 
@@ -89,6 +90,14 @@ int main(int argc, char* argv[])
 
 		MatrixHTest htest;
 		auto gene_set = htest.test(method, std::get<0>(subset), std::get<1>(subset));
+
+		for(const auto& score : gene_set.scores()) {
+			if(isnan(score)) {
+				std::cerr
+				    << "WARNING: NaNs generated during score computation.\n";
+				break;
+			}
+		}
 
 		GeneSetWriter writer;
 		writer.writeScoringFile(gene_set, output);
