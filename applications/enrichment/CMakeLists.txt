@@ -13,7 +13,7 @@ macro(add_enrichment NAME)
 	)
 endmacro()
 
-add_executable(hotelling_t_test main.cpp)
+add_executable(hotelling_t_test hotelling.cpp)
 target_link_libraries(hotelling_t_test gtcore)
 set_target_properties(hotelling_t_test PROPERTIES
     INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
