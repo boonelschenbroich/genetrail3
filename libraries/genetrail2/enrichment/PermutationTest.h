@@ -290,23 +290,6 @@ namespace GeneTrail
 			return Scores(scoring.test(method_, ref, sam));
 		}
 
-		void performSinglePermutation_(const EnrichmentAlgorithmPtr& algorithm,
-		                               const EnrichmentResults& tests,
-		                               std::vector<size_t>& counter,
-		                               std::vector<size_t>& column_indices)
-		{
-			Scores scores = computeScores_(column_indices.begin(), column_indices.end());
-
-			algorithm->setScores(scores);
-
-			for(size_t i = 0; i < tests.size(); ++i) {
-				auto score = std::get<0>(
-				    algorithm->computeEnrichmentScore(*tests[i]->category));
-
-				this->updateCounter_(tests[i], counter[i], score);
-			}
-		}
-
 		void setupPositons_(const Scores& scores, const EnrichmentResults& tests) {
 			positions_.resize(tests.size());
 
@@ -315,10 +298,7 @@ namespace GeneTrail
 			}
 		}
 
-		void performSinglePermutationIndices_(
-		    const EnrichmentAlgorithmPtr& algorithm,
-		    const EnrichmentResults& tests, std::vector<size_t>& counter,
-		    std::vector<size_t>& column_indices)
+		Scores updateScores(const EnrichmentResults& tests, std::vector<size_t>& column_indices)
 		{
 			Scores scores = computeScores_(column_indices.begin(), column_indices.end());
 
@@ -342,26 +322,57 @@ namespace GeneTrail
 			// can use it as a lookup table to get the new position.
 			invert_permutation(permutation_, inv_permutation_);
 
+			return scores;
+		}
+
+		double computeEnrichmentScore_(const EnrichmentAlgorithmPtr& algorithm, const EnrichmentResults& tests, size_t i) {
+			// Setup the vector that will hold the positions of the category
+			// genes in the new score vector.
+			intersection_.resize(tests[i]->hits);
+
+			// Fill the intersection vector using the inverse permutation
+			std::transform(
+			    positions_[i].begin(), positions_[i].end(),
+			    intersection_.begin(),
+			    [&](size_t entry) { return inv_permutation_[entry]; });
+
+			// Sort the intersection_ vector
+			std::sort(intersection_.begin(), intersection_.end());
+
+			// Compute the enrichment score for this permutation
+			return std::get<0>(algorithm->computeEnrichmentScore(
+			    intersection_.begin(), intersection_.end()));
+		}
+
+		void performSinglePermutation_(const EnrichmentAlgorithmPtr& algorithm,
+		                               const EnrichmentResults& tests,
+		                               std::vector<size_t>& counter,
+		                               std::vector<size_t>& column_indices)
+		{
+			Scores scores = computeScores_(column_indices.begin(), column_indices.end());
+
+			algorithm->setScores(scores);
+
+			for(size_t i = 0; i < tests.size(); ++i) {
+				auto score = std::get<0>(
+				    algorithm->computeEnrichmentScore(*tests[i]->category));
+
+				this->updateCounter_(tests[i], counter[i], score);
+			}
+		}
+
+		void performSinglePermutationIndices_(
+		    const EnrichmentAlgorithmPtr& algorithm,
+		    const EnrichmentResults& tests, std::vector<size_t>& counter,
+		    std::vector<size_t>& column_indices)
+		{
+			Scores scores = updateScores(tests, column_indices);
+
 			// Now pass the scores to the algorithm
 			algorithm->setScores(scores);
 
 			for(size_t i = 0; i < tests.size(); ++i) {
-				// Setup the vector that will hold the positions of the category
-				// genes in the new score vector.
-				intersection_.resize(tests[i]->hits);
-
-				// Fill the intersection vector using the inverse permutation
-				std::transform(
-				    positions_[i].begin(), positions_[i].end(),
-				    intersection_.begin(),
-				    [&](size_t entry) { return inv_permutation_[entry]; });
-
-				// Sort the intersection_ vector
-				std::sort(intersection_.begin(), intersection_.end());
-
-				// Compute the enrichment score for this permutation
-				auto score = std::get<0>(algorithm->computeEnrichmentScore(
-				    intersection_.begin(), intersection_.end()));
+				auto score = computeEnrichmentScore_(algorithm, tests, i);
 
 				// Update the counter with the newly computed value
 				this->updateCounter_(tests[i], counter[i], score);
