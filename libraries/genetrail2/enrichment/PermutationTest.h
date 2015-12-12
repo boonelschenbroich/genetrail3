@@ -1,5 +1,5 @@
-#ifndef GT2_CORE_PERMUTATION_TEST_H
-#define GT2_CORE_PERMUTATION_TEST_H
+#ifndef GT2_ENRICHMENT_PERMUTATION_TEST_H
+#define GT2_ENRICHMENT_PERMUTATION_TEST_H
 
 #include "EnrichmentAlgorithm.h"
 #include "EnrichmentResult.h"
@@ -394,4 +394,4 @@ class ColumnPermutationTest : public internal::PermutationBase<value_type>
 };
 }
 
-#endif // GT2_CORE_PERMUTATION_TEST_H
+#endif // GT2_ENRICHMENT_PERMUTATION_TEST_H
