@@ -25,6 +25,12 @@ namespace internal
 template <typename value_type> class PermutationBase
 {
   protected:
+	void printStatus_(size_t i, size_t count)
+	{
+		std::cout << "INFO: Running - Permutation test " << (i + 1) << "/"
+		          << count << std::endl;
+	}
+
 	double computePValue_(size_t permutations, size_t counter) const
 	{
 		// Here we add a pseudo count to avoid p-values of 0.
@@ -105,8 +111,7 @@ class GT2_EXPORT RowPermutationTest
 
 		std::vector<size_t> counter(tests.size());
 		for(size_t i = 0; i < permutations_; ++i) {
-			std::cout << "INFO: Running - Permutation test " << (i + 1) << "/"
-			          << permutations_ << std::endl;
+			this->printStatus_(i, permutations_);
 
 			performSinglePermutation_(algorithm, tests, counter);
 		}
@@ -244,9 +249,8 @@ class ColumnPermutationTest : public internal::PermutationBase<value_type>
 		std::iota(column_indices.begin(), column_indices.end(),
 		          static_cast<size_t>(0));
 
-		for(size_t i = 1; i <= permutations_; ++i) {
-			std::cout << "INFO: Running - Permutation test " << i << "/"
-			          << permutations_ << std::endl;
+		for(size_t i = 0; i < permutations_; ++i) {
+			this->printStatus_(i, permutations_);
 
 			if(algorithm->supportsIndices()) {
 				performSinglePermutationIndices_(algorithm, tests, counter,
