@@ -20,7 +20,7 @@ namespace GeneTrail {
 			("help,h", "Display this message")
 			("significance,t", value(&p.significance)->default_value(0.01), "The critical value for rejecting the H0 hypothesis.")
 			("categories,c",   value(&p.categories_)->required(), "A .gmt file containing the categories to be tested.")
-			("scores,s",       value(&p.scores_), "A whitespace seperated file containing identifier and scores.")
+			("scores,s",       value(&p.scores_), "A whitespace separated file containing identifier and scores.")
 			("minimum,n",      value(&p.minimum)->default_value(0), "Minimum number of genes allowed in categories.")
 			("maximum,x",      value(&p.maximum)->default_value(1000), "Maximum number of genes allowed in categories.")
 			("output,o",       value(&p.out_)->required(), "Output prefix for text files.")
