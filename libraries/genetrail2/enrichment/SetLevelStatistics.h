@@ -318,6 +318,10 @@ namespace GeneTrail
 		{
 		}
 
+		Order getOrder() const {
+			return order_;
+		}
+
 		void setInputScores(Scores scores)
 		{
 			scores.sortByScore(order_);
@@ -363,14 +367,17 @@ namespace GeneTrail
 	};
 
 	class WeightedKolmogorovSmirnov
-	    : public SetLevelStatistics<StatTags::Indirect,
-	                                StatTags::SupportsIndices>
+	    : public SetLevelStatistics<StatTags::Indirect, StatTags::SupportsIndices>
 	{
 		public:
 		WeightedKolmogorovSmirnov(const Scores& scores, Order order)
 		    : order_(order)
 		{
 			setInputScores(scores);
+		}
+
+		Order getOrder() const {
+			return order_;
 		}
 
 		void setInputScores(Scores scores)

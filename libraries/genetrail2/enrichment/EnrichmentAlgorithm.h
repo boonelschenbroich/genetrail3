@@ -24,6 +24,7 @@ namespace GeneTrail
 		virtual bool canUseCategory(const Category& c, size_t hits) const = 0;
 		virtual bool rowWisePValueIsDirect() const = 0;
 		virtual bool supportsIndices() const = 0;
+		virtual Order getOrder() const = 0;
 
 		virtual void setScores(const Scores& scores) = 0;
 
@@ -106,6 +107,11 @@ namespace GeneTrail
 				    typename Statistics::SupportsIndices());
 			}
 
+			Order getOrder() const override
+			{
+				return getOrderDispatch_(typename Statistics::SupportsIndices());
+			}
+
 			private:
 			void setScoresDispatch_(const Scores& scores, StatTags::Scores)
 			{
@@ -144,6 +150,19 @@ namespace GeneTrail
 			bool supportsIndicesDispatch_(StatTags::DoesNotSupportIndices) const
 			{
 				return false;
+			}
+
+			Order getOrderDispatch_(StatTags::SupportsIndices) const
+			{
+				return statistics_.getOrder();
+			}
+
+			Order getOrderDispatch_(StatTags::DoesNotSupportIndices) const
+			{
+				throw NotImplemented(__FILE__, __LINE__,
+				                    "This type does not support the concept of "
+				                    "sort orders. If you encounter this message "
+				                    "this means there is a bug.");
 			}
 
 			std::tuple<double, double>
