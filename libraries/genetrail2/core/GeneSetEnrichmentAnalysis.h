@@ -97,6 +97,10 @@ namespace GeneTrail
 		template<typename Iterator>
 		big_int_type computeRunningSum(size_t n, Iterator begin, const Iterator& end)
 		{
+			if(begin == end) {
+				return 0;
+			}
+
 			size_t l = std::distance(begin, end);
 			size_t nl = n - l;
 
