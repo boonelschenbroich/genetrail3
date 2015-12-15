@@ -308,10 +308,15 @@ static void computeColumnWisePValues(const EnrichmentAlgorithmPtr& algorithm,
 	removeUnusedRows(data, scores);
 	sortMatrixRows(data);
 
-	ColumnPermutationTest<double> test(data, p.numPermutations,
-	                                   referenceGroup.size(), p.scoringMethod.get(), p.randomSeed);
-
-	test.computePValue(algorithm, results);
+	if(p.adjustment && p.adjustment == MultipleTestingCorrection::GSEA) {
+		KSColumnPermutationTest<double> test(data, p.numPermutations,
+		                                     referenceGroup.size(), p.scoringMethod.get(), p.randomSeed);
+		test.computePValue(algorithm, results);
+	} else {
+		ColumnPermutationTest<double> test(data, p.numPermutations,
+	                                       referenceGroup.size(), p.scoringMethod.get(), p.randomSeed);
+		test.computePValue(algorithm, results);
+	}
 }
 
 static void
@@ -360,7 +365,7 @@ void run(Scores& test_set, CategoryList& cat_list,
 		computePValues(algorithm, name_to_cat_results, test_set, p);
 	}
 
-	if(p.adjustment) {
+	if(p.adjustment && boost::get(p.adjustment) != MultipleTestingCorrection::GSEA) {
 		// Checks how they should be adjusted
 		if(p.adjustSeparately) {
 			adjustSeparately(name_to_cat_results, p.adjustment.get());
