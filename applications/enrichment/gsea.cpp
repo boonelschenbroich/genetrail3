@@ -22,7 +22,7 @@ bool parseArguments(int argc, char* argv[], Params& p)
 	desc.add_options()
 		("identifier, d", bpo::value(&p.identifier_), "A file containing identifier line by line.")
 		("increasing,i",  bpo::value(&increasing)->zero_tokens(), "Use increasingly sorted scores. (Decreasing is default)")
-		("absolute,abs",  bpo::value(&absolute)->zero_tokens(), "Use decreasingly sorted absolute scores.");
+		("absolute,b",  bpo::value(&absolute)->zero_tokens(), "Use decreasingly sorted absolute scores.");
 
 	if(absolute && increasing) {
 		std::cerr << "ERROR: Please specify only one option to sort the file."
