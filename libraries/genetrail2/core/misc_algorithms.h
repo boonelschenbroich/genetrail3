@@ -18,9 +18,9 @@ namespace GeneTrail
 	                      InputIterator end, Compare compare)
 	{
 		p.resize(std::distance(begin, end));
-		std::iota(p.begin(), p.end(), 0);
+		std::iota(p.begin(), p.end(), static_cast<std::size_t>(0));
 		std::sort(p.begin(), p.end(),
-		          [&](int i, int j) { return compare(begin[i], begin[j]); });
+		          [&](std::size_t i, std::size_t j) { return compare(begin[i], begin[j]); });
 	}
 
 	template <typename InputIterator, typename Compare>
