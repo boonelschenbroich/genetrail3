@@ -50,9 +50,8 @@ template <typename value_type> class PermutationBase
 		// This makes computation faster
 		std::sort(
 		    results.begin(), results.end(),
-		    [](const EnrichmentResultPtr& a, const EnrichmentResultPtr& b) {
-			    return a->hits < b->hits;
-			});
+		    [](const EnrichmentResultPtr& a,
+		       const EnrichmentResultPtr& b) { return a->hits < b->hits; });
 	}
 
 	void updateCounter_(const EnrichmentResultPtr& test, size_t& counter,
@@ -211,10 +210,10 @@ class GT2_EXPORT RowPermutationTest
 };
 
 template <typename value_type>
-class ColumnPermutationTest : public internal::PermutationBase<value_type>
+class ColumnPermutationBase : public internal::PermutationBase<value_type>
 {
   public:
-	ColumnPermutationTest(const DenseMatrix& data, size_t permutations,
+	ColumnPermutationBase(const DenseMatrix& data, size_t permutations,
 	                      size_t reference_size, MatrixHTests method,
 	                      uint64_t randomSeed)
 	    : permutations_(permutations),
@@ -237,34 +236,7 @@ class ColumnPermutationTest : public internal::PermutationBase<value_type>
 		scoring.setRowDBIndices(row_db_indices);
 	}
 
-	void computePValue(const EnrichmentAlgorithmPtr& algorithm,
-	                   EnrichmentResults& tests)
-	{
-		positions_.clear();
-
-		initScoring_();
-
-		std::vector<size_t> counter(tests.size());
-		std::vector<size_t> column_indices(data_.cols());
-		std::iota(column_indices.begin(), column_indices.end(),
-		          static_cast<size_t>(0));
-
-		for(size_t i = 0; i < permutations_; ++i) {
-			this->printStatus_(i, permutations_);
-
-			if(algorithm->supportsIndices()) {
-				performSinglePermutationIndices_(algorithm, tests, counter,
-				                                 column_indices);
-			} else {
-				performSinglePermutation_(algorithm, tests, counter,
-				                          column_indices);
-			}
-		}
-
-		this->updatePValues_(tests, counter, permutations_);
-	}
-
-  private:
+  protected:
 	bool rowNamesStrictlySorted_(const DenseMatrix& data)
 	{
 		Matrix::index_type i = 0;
@@ -300,12 +272,9 @@ class ColumnPermutationTest : public internal::PermutationBase<value_type>
 		}
 	}
 
-	Scores updateScores(const EnrichmentResults& tests,
-	                    std::vector<size_t>& column_indices)
+	Scores updateLookupTables_(const EnrichmentResults& tests, Scores& scores,
+	                           Order order)
 	{
-		Scores scores =
-		    computeScores_(column_indices.begin(), column_indices.end());
-
 		// We first need to sort the scores by index, as we know the
 		// position of the category genes in the sorted list.
 		scores.sortByIndex();
@@ -317,10 +286,16 @@ class ColumnPermutationTest : public internal::PermutationBase<value_type>
 			setupPositons_(scores, tests);
 		}
 
-		// We now obtain the permutation of the genes that is used
+		// We now obtain the permution of the genes that is used
 		// for sorting the scores by value.
-		sort_permutation(permutation_, scores.scores().begin(),
-		                 scores.scores().end(), std::less<double>());
+		switch(order) {
+			case Order::Decreasing:
+				sort_permutation(permutation_, scores.scores().begin(),
+				                 scores.scores().end(), std::less<double>());
+			case Order::Increasing:
+				sort_permutation(permutation_, scores.scores().begin(),
+				                 scores.scores().end(), std::greater<double>());
+		}
 
 		// After that we invert the permutation so that we
 		// can use it as a lookup table to get the new position.
@@ -349,13 +324,65 @@ class ColumnPermutationTest : public internal::PermutationBase<value_type>
 		    intersection_.begin(), intersection_.end()));
 	}
 
+	size_t permutations_;
+	DenseMatrix data_;
+	size_t reference_size_;
+	MatrixHTests method_;
+	std::mt19937 twister_;
+
+	MatrixHTest scoring;
+	std::vector<size_t> permutation_;
+	std::vector<size_t> inv_permutation_;
+	std::vector<size_t> intersection_;
+	std::vector<std::vector<size_t>> positions_;
+};
+
+template <typename value_type>
+class ColumnPermutationTest : public ColumnPermutationBase<value_type>
+{
+  public:
+	ColumnPermutationTest(const DenseMatrix& data, size_t permutations,
+	                      size_t reference_size, MatrixHTests method,
+	                      uint64_t randomSeed)
+	    : ColumnPermutationBase<value_type>(data, permutations, reference_size,
+	                                        method, randomSeed)
+	{
+	}
+
+	void computePValue(const EnrichmentAlgorithmPtr& algorithm,
+	                   EnrichmentResults& tests)
+	{
+		this->positions_.clear();
+
+		this->initScoring_();
+
+		std::vector<size_t> counter(tests.size());
+		std::vector<size_t> column_indices(this->data_.cols());
+		std::iota(column_indices.begin(), column_indices.end(),
+		          static_cast<size_t>(0));
+
+		for(size_t i = 0; i < this->permutations_; ++i) {
+			this->printStatus_(i, this->permutations_);
+
+			if(algorithm->supportsIndices()) {
+				performSinglePermutationIndices_(algorithm, tests, counter,
+				                                 column_indices);
+			} else {
+				performSinglePermutation_(algorithm, tests, counter,
+				                          column_indices);
+			}
+		}
+
+		this->updatePValues_(tests, counter, this->permutations_);
+	}
+
 	void performSinglePermutation_(const EnrichmentAlgorithmPtr& algorithm,
 	                               const EnrichmentResults& tests,
 	                               std::vector<size_t>& counter,
 	                               std::vector<size_t>& column_indices)
 	{
 		Scores scores =
-		    computeScores_(column_indices.begin(), column_indices.end());
+		    this->computeScores_(column_indices.begin(), column_indices.end());
 
 		algorithm->setScores(scores);
 
@@ -371,30 +398,216 @@ class ColumnPermutationTest : public internal::PermutationBase<value_type>
 	    const EnrichmentAlgorithmPtr& algorithm, const EnrichmentResults& tests,
 	    std::vector<size_t>& counter, std::vector<size_t>& column_indices)
 	{
-		Scores scores = updateScores(tests, column_indices);
+		// Create a new permutation and compute new scores.
+		Scores scores =
+		    this->computeScores_(column_indices.begin(), column_indices.end());
+
+		// Update all the required lookup tables needed for finding
+		// category members quickly.
+		this->updateLookupTables_(tests, scores, algorithm->getOrder());
 
 		// Now pass the scores to the algorithm
 		algorithm->setScores(scores);
 
 		for(size_t i = 0; i < tests.size(); ++i) {
-			auto score = computeEnrichmentScore_(algorithm, tests, i);
+			auto score = this->computeEnrichmentScore_(algorithm, tests, i);
 
 			// Update the counter with the newly computed value
 			this->updateCounter_(tests[i], counter[i], score);
 		}
 	}
+};
 
-	size_t permutations_;
-	DenseMatrix data_;
-	size_t reference_size_;
-	MatrixHTests method_;
-	std::mt19937 twister_;
+template <typename value_type>
+class KSColumnPermutationTest : public ColumnPermutationBase<value_type>
+{
+  public:
+	KSColumnPermutationTest(const DenseMatrix& data, size_t permutations,
+	                        size_t reference_size, MatrixHTests method,
+	                        uint64_t randomSeed)
+	    : ColumnPermutationBase<value_type>(data, permutations, reference_size,
+	                                        method, randomSeed)
+	{
+	}
 
-	MatrixHTest scoring;
-	std::vector<size_t> permutation_;
-	std::vector<size_t> inv_permutation_;
-	std::vector<size_t> intersection_;
-	std::vector<std::vector<size_t>> positions_;
+	void computePValue(const EnrichmentAlgorithmPtr& algorithm,
+	                   EnrichmentResults& tests)
+	{
+		this->positions_.clear();
+
+		this->initScoring_();
+
+		std::vector<double> permuted_values(tests.size() * this->permutations_);
+		std::vector<size_t> column_indices(this->data_.cols());
+		std::iota(column_indices.begin(), column_indices.end(),
+		          static_cast<size_t>(0));
+
+		for(size_t i = 0; i < this->permutations_; ++i) {
+			this->printStatus_(i, this->permutations_);
+
+			if(algorithm->supportsIndices()) {
+				performSinglePermutationIndices_(
+				    i, algorithm, tests, permuted_values, column_indices);
+			} else {
+				performSinglePermutation_(i, algorithm, tests, permuted_values,
+				                          column_indices);
+			}
+		}
+
+		updatePValues_(tests, permuted_values);
+	}
+
+  protected:
+	ptrdiff_t computeGreaterPos(const std::vector<double>& v,
+	                            const std::vector<double>::const_iterator zero,
+	                            double value)
+	{
+		return v.end() - std::lower_bound(zero, v.end(), value);
+	}
+
+	ptrdiff_t computeGreaterNeg(const std::vector<double>& v,
+	                            const std::vector<double>::const_iterator zero,
+	                            double value)
+	{
+		return std::lower_bound(v.begin(), zero, value) - v.begin();
+	}
+
+	void updatePValues_(EnrichmentResults& tests, std::vector<double>& scores)
+	{
+		std::vector<double> mean_pos(tests.size());
+		std::vector<double> mean_neg(tests.size());
+		std::vector<double> normalized_scores(tests.size());
+
+		size_t total_perm_pos = 0;
+		size_t total_perm_neg = 0;
+		size_t total_score_pos = 0;
+		size_t total_score_neg = 0;
+		for(size_t i = 0; i < tests.size(); ++i) {
+			size_t num_pos = 0;
+			size_t num_neg = 0;
+			for(size_t j = 0; j < this->permutations_; ++j) {
+				const auto& s = scores[i * this->permutations_ + j];
+
+				if(s > 0) {
+					++num_pos;
+					mean_pos[i] += s;
+				} else {
+					++num_neg;
+					mean_neg[i] -= s;
+				}
+			}
+
+			total_perm_pos += num_pos;
+			total_perm_neg += num_neg;
+
+			mean_pos[i] /= num_pos;
+			mean_neg[i] /= num_neg;
+
+			std::cout << mean_pos[i] << ' ' << mean_neg[i] << '\n';
+
+			for(size_t j = 0; j < this->permutations_; ++j) {
+				auto& s = scores[i * this->permutations_ + j];
+
+				s /= s > 0 ? mean_pos[i] : mean_neg[i];
+			}
+
+			// normalized_scores[i] = tests[i]->score / glob_mean;
+
+			if(tests[i]->score > 0) {
+				normalized_scores[i] = tests[i]->score / mean_pos[i];
+				++total_score_pos;
+			} else {
+				normalized_scores[i] = tests[i]->score / mean_neg[i];
+				++total_score_neg;
+			}
+
+			std::cout << tests[i]->category->name() << ' ' << tests[i]->score
+			          << ' ' << normalized_scores[i] << '\n';
+		}
+
+		std::sort(scores.begin(), scores.end());
+		std::sort(normalized_scores.begin(), normalized_scores.end());
+
+		auto zero_p = std::lower_bound(scores.begin(), scores.end(), 0.0);
+		auto zero_s = std::lower_bound(normalized_scores.begin(),
+		                               normalized_scores.end(), 0.0);
+
+		for(size_t i = 0; i < tests.size(); ++i) {
+			size_t greater_p = 0;
+			size_t greater_s = 0;
+			if(tests[i]->score > 0) {
+				greater_p = computeGreaterPos(scores, zero_p,
+				                              tests[i]->score / mean_pos[i]);
+				greater_s = computeGreaterPos(normalized_scores, zero_s,
+				                              tests[i]->score / mean_pos[i]);
+			} else {
+				greater_p = computeGreaterNeg(scores, zero_p,
+				                              tests[i]->score / mean_neg[i]);
+				greater_s = computeGreaterNeg(normalized_scores, zero_s,
+				                              tests[i]->score / mean_neg[i]);
+			}
+
+			if(greater_s == 0) {
+				tests[i]->pvalue = 1.0;
+			} else {
+				if(tests[i]->score > 0) {
+					tests[i]->pvalue =
+					    static_cast<double>(greater_p * total_score_pos) /
+					    (greater_s * total_perm_pos);
+				} else {
+					tests[i]->pvalue =
+					    static_cast<double>(greater_p * total_score_neg) /
+					    (greater_s * total_perm_neg);
+				}
+			}
+
+			if(tests[i]->pvalue > 1.0) {
+				tests[i]->pvalue = 1.0;
+			}
+		}
+	}
+
+	void performSinglePermutation_(size_t j,
+	                               const EnrichmentAlgorithmPtr& algorithm,
+	                               const EnrichmentResults& tests,
+	                               std::vector<double>& permuted_values,
+	                               std::vector<size_t>& column_indices)
+	{
+		Scores scores =
+		    this->computeScores_(column_indices.begin(), column_indices.end());
+
+		algorithm->setScores(scores);
+
+		for(size_t i = 0; i < tests.size(); ++i) {
+			auto score = std::get<0>(
+			    algorithm->computeEnrichmentScore(*tests[i]->category));
+
+			permuted_values[i * this->permutations_ + j] = score;
+		}
+	}
+
+	void performSinglePermutationIndices_(
+	    size_t j, const EnrichmentAlgorithmPtr& algorithm,
+	    const EnrichmentResults& tests, std::vector<double>& permuted_values,
+	    std::vector<size_t>& column_indices)
+	{
+		// Compute scores for a new permutation
+		Scores scores =
+		    this->computeScores_(column_indices.begin(), column_indices.end());
+
+		// Update all the required lookup tables needed for finding
+		// category members quickly.
+		this->updateLookupTables_(tests, scores, algorithm->getOrder());
+
+		// Now pass the scores to the algorithm
+		algorithm->setScores(scores);
+
+		for(size_t i = 0; i < tests.size(); ++i) {
+			auto score = this->computeEnrichmentScore_(algorithm, tests, i);
+
+			permuted_values[i * this->permutations_ + j] = score;
+		}
+	}
 };
 }
 
