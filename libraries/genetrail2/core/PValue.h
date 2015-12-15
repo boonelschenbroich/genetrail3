@@ -23,7 +23,8 @@ namespace GeneTrail
 		BenjaminiHochberg,
 		BenjaminiYekutieli,
 		Hochberg,
-		Simes
+		Simes,
+		GSEA
 	};
 
 	template <typename float_type> using pValue = typename std::pair<std::string, float_type>;
@@ -290,6 +291,11 @@ namespace GeneTrail
 			return stepUp(adjustByOrder(pvalues, fdr_func));
 		}
 
+		static std::vector<pValue<float_type>> noop(const std::vector<pValue<float_type>>& pvalues)
+		{
+			return pvalues;
+		}
+
 		using CorrectionMethod = std::vector<pValue<float_type>>(*)(const std::vector<pValue<float_type>>&);
 
 		static boost::optional<MultipleTestingCorrection> getCorrectionMethod(const std::string& method) {
@@ -329,6 +335,10 @@ namespace GeneTrail
 				return boost::make_optional(MultipleTestingCorrection::Simes);
 			}
 
+			if(method == "gsea" || method == "GSEA") {
+				return boost::make_optional(MultipleTestingCorrection::GSEA);
+			}
+
 			return boost::none;
 		}
 
@@ -343,6 +353,7 @@ namespace GeneTrail
 				case MultipleTestingCorrection::BenjaminiYekutieli: return benjamini_yekutieli;
 				case MultipleTestingCorrection::Hochberg: return hochberg;
 				case MultipleTestingCorrection::Simes: return simes;
+				case MultipleTestingCorrection::GSEA: return noop;
 				default:
 					throw NotImplemented(__FILE__, __LINE__, "The requested correction method has not yet been implemented.");
 			}
