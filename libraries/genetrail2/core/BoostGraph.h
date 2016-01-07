@@ -68,6 +68,8 @@
 #include <boost/graph/johnson_all_pairs_shortest.hpp>
 #endif
 
+#include <string>
+
 enum vertex_identifier_t { vertex_identifier };
 namespace boost
 {
