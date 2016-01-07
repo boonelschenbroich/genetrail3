@@ -17,7 +17,6 @@
  * If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 #ifndef GT2_CORE_BOOST_GRAPH_PARSER_H
 #define GT2_CORE_BOOST_GRAPH_PARSER_H
 

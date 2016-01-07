@@ -1,6 +1,6 @@
 /*
  * GeneTrail2 - An efficent library for interpreting genetic data
- * Copyright (C) 2014 Tim Kehl tkehl@bioinf.uni-sb.de>
+ * Copyright (C) 2014 Tim Kehl <tkehl@bioinf.uni-sb.de>
  *
  * This program is free software: you can redist_ribute it and/or modify
  * it under the terms of the Lesser GNU General Public License as

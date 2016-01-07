@@ -1,6 +1,3 @@
-#ifndef GT2_MATRIX_ITERATOR_H
-#define GT2_MATRIX_ITERATOR_H
-
 /*
  * GeneTrail2 - An efficent library for interpreting genetic data
  * Copyright (C) 2015 Daniel Stöckel <dstoeckel@bioinf.uni-sb.de>
@@ -20,6 +17,8 @@
  * If not, see <http://www.gnu.org/licenses/>.
  *
  */
+#ifndef GT2_MATRIX_ITERATOR_H
+#define GT2_MATRIX_ITERATOR_H
 
 #include <iterator>
 

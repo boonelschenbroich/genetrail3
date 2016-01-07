@@ -1,6 +1,6 @@
 /*
  * GeneTrail2 - An efficent library for interpreting genetic data
- * Copyright (C) 2013 Daniel Stöckel daniel@bioinf.uni-sb.de>
+ * Copyright (C) 2013 Daniel Stöckel <daniel@bioinf.uni-sb.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Lesser GNU General Public License as
@@ -17,7 +17,6 @@
  * If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 #include "AbstractMatrix.h"
 
 #include <cassert>

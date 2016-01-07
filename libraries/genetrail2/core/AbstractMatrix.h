@@ -17,7 +17,6 @@
  * If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
 #ifndef GT2_ABSTRACT_MATRIX_H
 #define GT2_ABSTRACT_MATRIX_H
 
