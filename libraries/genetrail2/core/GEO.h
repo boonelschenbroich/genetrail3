@@ -34,7 +34,6 @@
 #include <initializer_list>
 
 #include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/regex.hpp>
 
 #include "Statistic.h"
 #include "macros.h"

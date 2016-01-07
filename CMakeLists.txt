@@ -42,7 +42,7 @@ endif()
 ####################################################################################################
 
 # Find Boost
-find_package(Boost 1.55.0 COMPONENTS iostreams regex filesystem system program_options REQUIRED)
+find_package(Boost 1.55.0 COMPONENTS iostreams filesystem system program_options REQUIRED)
 
 if(NOT Boost_FOUND)
 	message(FATAL_ERROR "Boost version 1.55.0 or higher is required by GeneTrail 2")
@@ -50,7 +50,6 @@ endif()
 
 SET(Boost_LIBRARIES
 	${Boost_IOSTREAMS_LIBRARY}
-	${Boost_REGEX_LIBRARY}
 	${Boost_FILESYSTEM_LIBRARY}
 	${Boost_SYSTEM_LIBRARY}
 	${Boost_PROGRAM_OPTIONS_LIBRARY}

@@ -20,6 +20,9 @@
  */
 #include "GEO.h"
 
+#include <boost/algorithm/string/finder.hpp>
+#include <boost/algorithm/string/iter_find.hpp>
+
 using namespace GeneTrail;
 
 GEO::GEO() {}
@@ -102,7 +105,7 @@ void GEO::writeGEOMap(const std::string& filename, const GEOMap& map)
 	for(auto it = map.gene2exprs.begin(); it != map.gene2exprs.end(); it++) {
 		if(it->first != "") {
 			std::vector<std::string> strs;
-			boost::algorithm::split_regex(strs, it->first, boost::regex("///"));
+			boost::algorithm::iter_split(strs, it->first, boost::first_finder("///"));
 			out << strs[0];
 			for(unsigned int i = 0; i < it->second.size(); ++i) {
 				out << "\t" << it->second[i];

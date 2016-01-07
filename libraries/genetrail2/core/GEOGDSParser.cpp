@@ -98,7 +98,7 @@ GEOMap GEOGDSParser::readGDSFile(const std::string& filename)
 		// A vector to save the entries of read line
 		std::vector<std::string> tabs;
 
-		boost::algorithm::split_regex(tabs, line, boost::regex("\t"));
+		boost::algorithm::split(tabs, line, [](char c) { return c == '\t'; });
 
 		for(unsigned int i = 0; i < sample_count; i++) {
 			double expression_value;
