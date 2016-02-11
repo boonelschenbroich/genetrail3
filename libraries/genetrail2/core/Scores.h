@@ -226,6 +226,7 @@ namespace GeneTrail
 
 		bool isSortedByIndex() { return isSortedByIndex_; }
 		bool contains(const std::string& name) const;
+		bool contains(const Score& score) const;
 
 		private:
 		Scores subsetMerge_(const Category& c) const;

@@ -218,17 +218,24 @@ namespace GeneTrail
 	{
 		// TODO: This might be replaced with heterogenous lookup from
 		//      C++14
-		Score dummy(*db_, name, 0.0);
+		return contains(Score(*db_, name, 0.0));
+	}
+
+	bool Scores::contains(const Score& score) const
+	{
 		if(isSortedByIndex_) {
-			return std::binary_search(data_.begin(), data_.end(), dummy,
-			                          [](const Score& a, const Score& s) {
+			auto pred = [](const Score& a, const Score& s) {
 				return a.index() < s.index();
-			});
+			};
+
+			return std::binary_search(data_.begin(), data_.end(), score, pred);
 		} else {
-			return std::find_if(data_.begin(), data_.end(),
-			                    [&dummy](const Score& a) {
-				       return a.index() == dummy.index();
-				   }) != data_.end();
+			auto pred = [&score](const Score& a) {
+				return a.index() == score.index();
+			};
+
+			return std::find_if(data_.begin(), data_.end(), pred) !=
+		           data_.end();
 		}
 	}
 }
