@@ -4,6 +4,8 @@
 #include <genetrail2/enrichment/EnrichmentAlgorithm.h>
 #include <genetrail2/enrichment/Parameters.h>
 
+#include <genetrail2/core/EntityDatabase.h>
+
 #include <boost/program_options.hpp>
 #include <iostream>
 
@@ -66,7 +68,7 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	Scores scores(test_set);
+	Scores scores(test_set, EntityDatabase::global);
 
 	auto algorithm = getAlgorithm(p.pValueMode, method, scores);
 

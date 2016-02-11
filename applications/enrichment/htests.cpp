@@ -1,3 +1,4 @@
+#include <genetrail2/core/EntityDatabase.h>
 #include <genetrail2/core/GeneSet.h>
 #include <genetrail2/core/WilcoxonRankSumTest.h>
 #include <genetrail2/core/OneSampleTTest.h>
@@ -65,7 +66,7 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	Scores scores(test_set);
+	Scores scores(test_set, EntityDatabase::global);
 
 	auto algorithm = getAlgorithm(method, scores, p.pValueMode);
 

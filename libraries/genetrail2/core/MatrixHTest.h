@@ -5,6 +5,7 @@
 #include "FTest.h"
 #include "IndependentTTest.h"
 #include "DependentTTest.h"
+#include "EntityDatabase.h"
 #include "WilcoxonRankSumTest.h"
 #include "WilcoxonMatchedPairsSignedRankTest.h"
 #include "IndependentShrinkageTTest.h"
@@ -547,7 +548,7 @@ namespace GeneTrail
 		             const Matrix& ref, const Matrix& sam, RemoveNaN, Dependent,
 		             Scalar) const
 		{
-			Scores scores(ref.rows());
+			Scores scores(ref.rows(), EntityDatabase::global);
 
 			RowMajorMatrixIterator<Matrix> ref_it(&ref, 0), sam_it(&sam, 0);
 
@@ -607,7 +608,7 @@ namespace GeneTrail
 		             const Matrix& ref, const Matrix& sam, RemoveNaN,
 		             Independent, Scalar) const
 		{
-			Scores scores(ref.rows());
+			Scores scores(ref.rows(), EntityDatabase::global);
 
 			RowMajorMatrixIterator<Matrix> ref_it(&ref, 0), sam_it(&sam, 0);
 
@@ -648,7 +649,7 @@ namespace GeneTrail
 		             const Matrix& ref, const Matrix& sam, RemoveNaN,
 		             Dep, Vectorized) const
 		{
-			Scores scores(ref.rows());
+			Scores scores(ref.rows(), EntityDatabase::global);
 
 			RowMajorMatrixIterator<Matrix> ref_begin(&ref, 0),
 			    ref_end(&ref, ref.rows()), sam_begin(&sam, 0),
@@ -673,7 +674,7 @@ namespace GeneTrail
 		             const Matrix& ref, const Matrix& sam, IgnoreNaN, Dep,
 		             Scalar) const
 		{
-			Scores scores(ref.rows());
+			Scores scores(ref.rows(), EntityDatabase::global);
 
 			RowMajorMatrixIterator<Matrix> ref_it(&ref, 0), sam_it(&sam, 0);
 
@@ -701,7 +702,7 @@ namespace GeneTrail
 		             const Matrix& ref, const Matrix& sam, IgnoreNaN, Dep,
 		             Vectorized) const
 		{
-			Scores scores(ref.rows());
+			Scores scores(ref.rows(), EntityDatabase::global);
 
 			RowMajorMatrixIterator<Matrix> ref_begin(&ref, 0),
 			    ref_end(&ref, ref.rows()), sam_begin(&sam, 0),

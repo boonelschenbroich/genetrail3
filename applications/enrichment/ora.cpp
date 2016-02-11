@@ -1,3 +1,4 @@
+#include <genetrail2/core/EntityDatabase.h>
 #include <genetrail2/core/Exception.h>
 #include <genetrail2/core/GeneSet.h>
 #include <genetrail2/core/GeneSetReader.h>
@@ -69,7 +70,7 @@ int main(int argc, char* argv[])
 
 	auto enrichmentAlgorithm = createEnrichmentAlgorithm<Ora>(p.pValueMode, reference_set.toCategory("reference"), test_set.toCategory("test"));
 
-	Scores scores(test_set);
+	Scores scores(test_set, EntityDatabase::global);
 	run(scores, cat_list, enrichmentAlgorithm, p, true);
 
 	return 0;

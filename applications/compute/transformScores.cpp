@@ -8,6 +8,7 @@
 
 #include <boost/program_options.hpp>
 
+#include <genetrail2/core/EntityDatabase.h>
 #include <genetrail2/core/GeneSet.h>
 #include <genetrail2/core/GeneSetReader.h>
 #include <genetrail2/core/GeneSetWriter.h>
@@ -61,8 +62,10 @@ int main(int argc, char* argv[])
 	GeneSetReader reader;
 	auto gene_set = reader.readScoringFile(scores);
 	apply[method](gene_set);
+
+	auto db = std::make_shared<EntityDatabase>();
 	GeneSetWriter writer;
-	writer.writeScoringFile(Scores(gene_set), output);
+	writer.writeScoringFile(Scores(gene_set, db), output);
 
 	return 0;
 }

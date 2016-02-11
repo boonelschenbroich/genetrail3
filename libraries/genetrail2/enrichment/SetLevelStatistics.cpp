@@ -24,7 +24,7 @@ namespace GeneTrail
 {
 	StatisticsEnrichment::StatisticsEnrichment(const Statistics& test,
 	                                           const Scores& scores)
-	    : test_(test), cached_(0.0)
+	    : test_(test), scores_(scores.db()), cached_(0.0)
 	{
 		setInputScores(scores);
 	}

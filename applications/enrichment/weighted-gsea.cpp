@@ -1,9 +1,10 @@
-#include <genetrail2/core/GeneSet.h>
-
 #include <genetrail2/enrichment/common.h>
 #include <genetrail2/enrichment/CommandLineInterface.h>
 #include <genetrail2/enrichment/EnrichmentAlgorithm.h>
 #include <genetrail2/enrichment/Parameters.h>
+
+#include <genetrail2/core/EntityDatabase.h>
+#include <genetrail2/core/GeneSet.h>
 
 #include <iostream>
 
@@ -57,7 +58,7 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	Scores scores(test_set);
+	Scores scores(test_set, EntityDatabase::global);
 
 	auto order = increasing ? Order::Increasing : Order::Decreasing;
 

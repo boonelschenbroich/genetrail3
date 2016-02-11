@@ -20,6 +20,7 @@
 #include <gtest/gtest.h>
 
 #include <genetrail2/core/Category.h>
+#include <genetrail2/core/EntityDatabase.h>
 #include <genetrail2/core/Scores.h>
 
 using namespace GeneTrail;
@@ -34,7 +35,8 @@ class ScoresTest : public ::testing::Test
 
 TEST_F(ScoresTest, Constructor)
 {
-	Scores scores;
+	auto db = std::make_shared<EntityDatabase>();
+	Scores scores(db);
 
 	EXPECT_EQ(size_t(0), scores.size());
 }

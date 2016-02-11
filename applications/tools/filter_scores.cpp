@@ -1,4 +1,5 @@
 #include <genetrail2/core/compat.h>
+#include <genetrail2/core/EntityDatabase.h>
 #include <genetrail2/core/GeneSet.h>
 #include <genetrail2/core/GeneSetFilters.h>
 #include <genetrail2/core/GeneSetReader.h>
@@ -130,8 +131,9 @@ int main(int argc, char* argv[])
 			gene_set.filter(filter.get());
 		}
 
+		auto db = std::make_shared<EntityDatabase>();
 		GeneSetWriter writer;
-		writer.writeScoringFile(Scores(gene_set), outfile);
+		writer.writeScoringFile(Scores(gene_set, db), outfile);
 	} catch(InvalidFilterSyntax& e) {
 		std::cerr << e.what() << std::endl;
 		return -2;
