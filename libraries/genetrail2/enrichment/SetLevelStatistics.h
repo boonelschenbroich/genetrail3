@@ -156,7 +156,9 @@ namespace GeneTrail
 	class HTestEnrichmentBase : public SetLevelStatistics<StatTags::Direct>
 	{
 		public:
-		HTestEnrichmentBase(const Scores& scores) : scores_(scores) {}
+		HTestEnrichmentBase(const Scores& scores) : scores_(scores) {
+		    this->scores_.sortByIndex();
+		}
 
 		double computeRowWisePValue(Test& test, EnrichmentResult* result)
 		{
@@ -177,7 +179,11 @@ namespace GeneTrail
 		public:
 		using HTestEnrichmentBase<Test>::HTestEnrichmentBase;
 
-		void setInputScores(const Scores& scores) { this->scores_ = scores; }
+		void setInputScores(const Scores& scores)
+		{
+			this->scores_ = scores;
+			this->scores_.sortByIndex();
+		}
 
 		bool canUseCategory(const Category&, size_t hits) const
 		{
@@ -194,27 +200,21 @@ namespace GeneTrail
 		{
 			using namespace boost;
 
-			auto filter_pos =
-			    [&c](const Score& s) { return c.contains(s.index()); };
-			auto filter_neg =
-			    [&c](const Score& s) { return !c.contains(s.index()); };
+			auto which = this->scores_.subset(c);
 
-			auto it_tmp_beg = make_filter_iterator(
-			    filter_pos, this->scores_.begin(), this->scores_.end());
-			auto it_tmp_end = make_filter_iterator(
-			    filter_pos, this->scores_.end(), this->scores_.end());
+			auto filter_neg =
+			    [&which](const Score& s) { return !which.contains(s); };
+
 			auto jt_tmp_beg = make_filter_iterator(
 			    filter_neg, this->scores_.begin(), this->scores_.end());
 			auto jt_tmp_end = make_filter_iterator(
 			    filter_neg, this->scores_.end(), this->scores_.end());
 
 			auto project_to_score = [](const Score& s) { return s.score(); };
-			auto it_beg = make_transform_iterator(it_tmp_beg, project_to_score);
-			auto it_end = make_transform_iterator(it_tmp_end, project_to_score);
 			auto jt_beg = make_transform_iterator(jt_tmp_beg, project_to_score);
 			auto jt_end = make_transform_iterator(jt_tmp_end, project_to_score);
 
-			auto score = HTest::test(test_, it_beg, it_end, jt_beg, jt_end);
+			auto score = HTest::test(test_, which.scores().begin(), which.scores().end(), jt_beg, jt_end);
 
 			return std::make_tuple(score, 0.0);
 		}
@@ -255,19 +255,8 @@ namespace GeneTrail
 		{
 			using namespace boost;
 
-			auto filter_pos =
-			    [&c](const Score& s) { return c.contains(s.index()); };
-
-			auto it_tmp_beg = make_filter_iterator(
-			    filter_pos, this->scores_.begin(), this->scores_.end());
-			auto it_tmp_end = make_filter_iterator(
-			    filter_pos, this->scores_.end(), this->scores_.end());
-
-			auto project_to_score = [](const Score& s) { return s.score(); };
-			auto it_beg = make_transform_iterator(it_tmp_beg, project_to_score);
-			auto it_end = make_transform_iterator(it_tmp_end, project_to_score);
-
-			auto score = HTest::test(this->test_, it_beg, it_end);
+			auto which = this->scores_.subset(c);
+			auto score = HTest::test(this->test_, which.scores().begin(), which.scores().end());
 
 			return std::make_tuple(score, 0.0);
 		}
