@@ -19,6 +19,13 @@ namespace GeneTrail
 			IsDependent::Independent,
 			SupportsVectors::Vectorized};
 
+		// This is currently a dummy and might need to be adjusted
+		// in the future.
+		MethodDescriptor dependent_shrinkage_t_test_descriptor{
+			MatrixHTests::DependentShrinkageTTest,
+			IsDependent::Dependent,
+			SupportsVectors::Vectorized};
+
 		MethodDescriptor f_test_descriptor{
 			MatrixHTests::FTest,
 			IsDependent::Independent,
@@ -106,7 +113,7 @@ namespace GeneTrail
 			independent_t_test_descriptor,
 			dependent_t_test_descriptor,
 			independent_shrinkage_t_test_descriptor,
-			independent_shrinkage_t_test_descriptor,
+			dependent_shrinkage_t_test_descriptor,
 			independent_wilcoxon_descriptor,
 			dependent_wilcoxon_descriptor,
 			f_test_descriptor,
