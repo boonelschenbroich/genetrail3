@@ -222,7 +222,6 @@ class ColumnPermutationBase : public internal::PermutationBase<value_type>
 	      method_(method),
 	      twister_(randomSeed)
 	{
-		assert(rowNamesStrictlySorted_(data));
 	}
 
 	void initScoring_()
@@ -233,16 +232,22 @@ class ColumnPermutationBase : public internal::PermutationBase<value_type>
 		                                  data_.rowNames().end(),
 		                                  row_db_indices.begin());
 
+		// We need to make sure, that the EntityDatabase indices of
+		// the data are sorted in strictly ascending order, as we
+		// exploit this property later to find the genes belonging to a
+		// category.
+		assert(rowIndicesStrictlySorted_(row_db_indices));
+
 		scoring.setRowDBIndices(row_db_indices);
 	}
 
   protected:
-	bool rowNamesStrictlySorted_(const DenseMatrix& data)
+	bool rowIndicesStrictlySorted_(const std::vector<size_t>& data)
 	{
 		Matrix::index_type i = 0;
 
-		for(auto j = i + 1; j < data.rows(); ++j, ++i) {
-			if(data.rowName(i) >= data.rowName(j)) {
+		for(auto j = i + 1; j < data.size(); ++j, ++i) {
+			if(data[i] >= data[j]) {
 				return false;
 			}
 		}
