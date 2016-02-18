@@ -281,9 +281,9 @@ static void removeUnusedRows(DenseMatrix& data, const Scores& scores) {
 	}
 }
 
-static void sortMatrixRows(DenseMatrix& data) {
+static void sortMatrixRows(DenseMatrix& data, const EntityDatabase* db) {
 	std::vector<size_t> matrix_indices(data.rows());
-	EntityDatabase::global->transform(data.rowNames(), matrix_indices.begin());
+	db->transform(data.rowNames(), matrix_indices.begin());
 
 	auto permutation = sort_permutation(matrix_indices.begin(), matrix_indices.end(), std::less<size_t>());
 
@@ -308,7 +308,7 @@ static void computeColumnWisePValues(const EnrichmentAlgorithmPtr& algorithm,
 
 	removeUnusedColumns(data, referenceGroup, sampleGroup);
 	removeUnusedRows(data, scores);
-	sortMatrixRows(data);
+	sortMatrixRows(data, scores.db().get());
 
 	if(p.adjustment && p.adjustment == MultipleTestingCorrection::GSEA) {
 		KSColumnPermutationTest<double> test(data, p.numPermutations,
