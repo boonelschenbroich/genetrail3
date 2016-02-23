@@ -14,5 +14,5 @@
 		"blabla": true,
 		"nested":[1,2,3]
 	},
-	"categories": [{"name": "CatA", "url":"http://doe.net/CatA", "members":["A", "B", "C"], "concentration": 0.4}]
+	"categories": [{"name": "CatA", "reference":"http://doe.net/CatA", "members":["A", "B", "C"], "concentration": 0.4}]
 }

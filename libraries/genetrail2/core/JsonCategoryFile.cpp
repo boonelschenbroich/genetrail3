@@ -158,16 +158,16 @@ static void readCategoryFields(const rapidjson::Value& category, Category& cat)
 		throw IOError("Found category without name.");
 	}
 
-	if(!category.HasMember("url")) {
-		throw IOError("Found category without URL.");
+	if(!category.HasMember("reference")) {
+		throw IOError("Found category without reference.");
 	}
 
 	for(auto it = category.MemberBegin(); it != category.MemberEnd(); ++it) {
 		const char* name = it->name.GetString();
 		if(std::strcmp(name, "name") == 0) {
 			cat.setName(getString(it->value, "name"));
-		} else if(std::strcmp(name, "url") == 0) {
-			cat.setReference(getString(it->value, "url"));
+		} else if(std::strcmp(name, "reference") == 0) {
+			cat.setReference(getString(it->value, "reference"));
 		} else if(std::strcmp(name, "members") != 0) {
 			cat.metadata().add(name, toMetadata(it->value));
 		}
@@ -332,7 +332,7 @@ static void writeCategory(Writer& writer, const Category& cat)
 	writer.StartObject();
 	writer.Key("name", 4);
 	writeString(writer, cat.name());
-	writer.Key("url", 3);
+	writer.Key("reference", 9);
 	writeString(writer, cat.reference());
 
 	writer.Key("members", 7);
