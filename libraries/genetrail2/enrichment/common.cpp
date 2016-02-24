@@ -272,6 +272,7 @@ static void removeUnusedRows(DenseMatrix& data, const Scores& scores) {
 		if(!scores.contains(rowName)) {
 			rowsToRemove.push_back(i);
 		}
+		++i;
 	}
 
 	data.removeRows(rowsToRemove);
