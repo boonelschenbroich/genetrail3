@@ -104,6 +104,8 @@ namespace GeneTrail
 			// perform a lookup in the scores vector to get an approximate
 			// location
 			if(*categoryIt < n) {
+				// Look up the score index that can be found at the
+				// current index in the category.
 				auto cat_lookup = begin() + *categoryIt;
 				auto scores_index = cat_lookup->index();
 
@@ -130,7 +132,8 @@ namespace GeneTrail
 			Score dummy(*categoryIt, 0.0);
 			scoresIt = std::lower_bound(scoresIt, search_end, dummy, predicate);
 
-			if(scoresIt->index() == *categoryIt) {
+			// Check that we found the index we searched for
+			if(scoresIt != search_end) {
 				result.emplace_back(*scoresIt);
 				++scoresIt;
 			}
