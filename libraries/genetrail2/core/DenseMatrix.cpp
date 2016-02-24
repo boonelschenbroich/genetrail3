@@ -141,8 +141,8 @@ namespace GeneTrail
 		for(size_t read_idx = indices[0] + 1; read_idx < index_to_name.size(); ++read_idx)
 		{
 			// If we reached another column that should be deleted, just advance the read pointer
-			// the next index
-			if((size_t)next_idx < indices.size() && read_idx == indices[next_idx])
+			// to the next index
+			if(next_idx < indices.size() && read_idx == indices[next_idx])
 			{
 				assert(indices[next_idx - 1] < indices[next_idx]);
 				// Update the name <-> index mapping
