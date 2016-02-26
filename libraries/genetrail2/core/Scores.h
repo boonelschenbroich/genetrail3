@@ -158,6 +158,18 @@ namespace GeneTrail
 			}
 		};
 
+		struct LessScore {
+			bool operator()(const Score& a, const Score& b) const;
+		};
+
+		struct GreaterScore {
+			bool operator()(const Score& a, const Score& b) const;
+		};
+
+		struct LessIndex {
+			bool operator()(const Score& a, const Score& b) const;
+		};
+
 		using ScoreIterator = ScoresProxy::iterator;
 		using ConstScoreIterator = ConstScoresProxy::const_iterator;
 		using ConstNameIterator = NamesProxy::const_iterator;

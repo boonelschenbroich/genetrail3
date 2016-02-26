@@ -26,6 +26,29 @@ namespace GeneTrail
 	{
 	}
 
+	bool Scores::LessScore::operator()(const Score& a, const Score& b) const
+	{
+		if(a.score() == b.score()) {
+			return a.index() < b.index();
+		}
+
+		return a.score() < b.score();
+	}
+
+	bool Scores::GreaterScore::operator()(const Score& a, const Score& b) const
+	{
+		if(a.score() == b.score()) {
+			return a.index() > b.index();
+		}
+
+		return a.score() > b.score();
+	}
+
+	bool Scores::LessIndex::operator()(const Score& a, const Score& b) const
+	{
+		return a.index() < b.index();
+	}
+
 	Scores::Scores(const std::vector<Score>& data,
 	               const std::shared_ptr<EntityDatabase>& db)
 	    : data_(data), isSortedByIndex_(false), db_(db)
@@ -91,9 +114,6 @@ namespace GeneTrail
 		auto scoresIt = begin();
 		auto categoryIt = c.begin();
 
-		auto predicate = [](const Score& a,
-		                    const Score& b) { return a.index() < b.index(); };
-
 		while(scoresIt != end() && categoryIt != c.end()) {
 			auto search_end = end();
 
@@ -130,7 +150,7 @@ namespace GeneTrail
 			// TODO: Temporary can be optimized away using C++14 heterogenous
 			//      lookup.
 			Score dummy(*categoryIt, 0.0);
-			scoresIt = std::lower_bound(scoresIt, search_end, dummy, predicate);
+			scoresIt = std::lower_bound(scoresIt, search_end, dummy, LessIndex());
 
 			// Check that we found the index we searched for
 			if(scoresIt != search_end) {
@@ -181,9 +201,7 @@ namespace GeneTrail
 
 		isSortedByIndex_ = true;
 
-		std::sort(data_.begin(), data_.end(),
-		          [](const Score& a,
-		             const Score& b) { return a.index() < b.index(); });
+		std::sort(data_.begin(), data_.end(), LessIndex());
 	}
 
 	void Scores::sortByName()
@@ -201,18 +219,12 @@ namespace GeneTrail
 		// The data is only sorted by name if there is at most one item present.
 		isSortedByIndex_ = size() <= 1;
 
-		auto inc = [](const Score& a,
-		              const Score& b) { return a.score() < b.score(); };
-
-		auto dec = [](const Score& a,
-		              const Score& b) { return a.score() > b.score(); };
-
 		switch(order) {
 			case Order::Increasing:
-				std::sort(data_.begin(), data_.end(), inc);
+				std::sort(data_.begin(), data_.end(), LessScore());
 				break;
 			case Order::Decreasing:
-				std::sort(data_.begin(), data_.end(), dec);
+				std::sort(data_.begin(), data_.end(), GreaterScore());
 				break;
 		}
 	}
@@ -227,11 +239,7 @@ namespace GeneTrail
 	bool Scores::contains(const Score& score) const
 	{
 		if(isSortedByIndex_) {
-			auto pred = [](const Score& a, const Score& s) {
-				return a.index() < s.index();
-			};
-
-			return std::binary_search(data_.begin(), data_.end(), score, pred);
+			return std::binary_search(data_.begin(), data_.end(), score, LessIndex());
 		} else {
 			auto pred = [&score](const Score& a) {
 				return a.index() == score.index();
