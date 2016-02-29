@@ -22,6 +22,7 @@
 
 
 #include "macros.h"
+#include "Scores.h"
 #include "Statistic.h"
 
 #include <boost/math/distributions/normal.hpp>
@@ -115,6 +116,68 @@ namespace GeneTrail {
 			//std::cout << "ZScore: " << score_ << std::endl;
             return score_;
         }
+
+		/**
+		 * This method implements a variant of the Wilcoxon Rank Sum Test
+		 *
+		 * It is specialised for working with a list of scores sorted by score
+		 * and a range of input iterators indicating scores belonging to one of
+		 * the groups. The indices must also be provided in to order of the
+		 * scores.
+		 *
+		 * @param scores a scores object that was sorted by score.
+		 * @param first start of the range of indices into the passed scores
+		 * object.
+		 * @param last  end of the range of indices.
+		 *
+		 * @return Z-score for the differences between the two groups
+		 *
+		 */
+		template <typename InputIterator>
+		value_type test_sorted(const Scores& scores, InputIterator first,
+		                       const InputIterator& last)
+		{
+		    auto size1 = std::distance(first, last);
+		    auto size2 = scores.size() - size1;
+		    assert(size1 <= scores.size());
+
+		    value_type rank_sum1 = 0;
+		    value_type rank_sum2 = 0;
+
+		    size_t i = 0;
+		    while(i < scores.size()) {
+			    size_t k = 0;
+			    value_type rank = i + 1;
+			    // Find ranks with same value
+			    for(size_t j = i + 1; j < scores.size(); ++j) {
+				    if(scores[j].score() != scores[i].score()) {
+					    break;
+				    } else {
+					    k += 1;
+				    }
+			    }
+
+			    // Build median rank
+			    if(k != 0) {
+				    rank = ((value_type)(rank + rank + k)) / ((value_type)2.0);
+			    }
+
+			    // Add to rank sums
+			    for(auto l = scores.begin() + i;
+			        l != scores.begin() + i + k + 1; ++l) {
+				    if(first != last && l->index() == first->index()) {
+					    rank_sum1 += rank;
+					    ++first;
+				    } else {
+					    rank_sum2 += rank;
+				    }
+			    }
+
+			    i += k + 1;
+		    }
+
+		    return score_ = computeZScore(rank_sum1, size1, size2);
+	    }
 
 		boost::math::normal distribution(){
 			boost::math::normal dist(0,1);
