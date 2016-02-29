@@ -29,6 +29,8 @@
 #include <genetrail2/core/WeightedGeneSetEnrichmentAnalysis.h>
 #include <genetrail2/core/OverRepresentationAnalysis.h>
 #include <genetrail2/core/OneSampleTTest.h>
+#include <genetrail2/core/WilcoxonRankSumTest.h>
+#include <genetrail2/core/misc_algorithms.h>
 
 #include <boost/iterator/filter_iterator.hpp>
 #include <boost/iterator/transform_iterator.hpp>
@@ -222,6 +224,75 @@ namespace GeneTrail
 		private:
 		Test test_;
 	};
+
+    template <typename T>
+    class HTestEnrichment<WilcoxonRankSumTest<T>>
+        : public HTestEnrichmentBase<WilcoxonRankSumTest<T>>
+    {
+	  public:
+		using Base = HTestEnrichmentBase<WilcoxonRankSumTest<T>>;
+
+		HTestEnrichment(const Scores& scores)
+			: Base(scores),
+			  sorted_scores_(scores)
+		{
+			updateSortedScores_();
+		}
+
+	    void setInputScores(const Scores& scores)
+	    {
+		    this->scores_ = scores;
+		    this->scores_.sortByIndex();
+		    this->sorted_scores_ = scores;
+
+			updateSortedScores_();
+	    }
+
+	    bool canUseCategory(const Category&, size_t hits) const
+	    {
+		    return hits > 1;
+	    }
+
+	    double computeRowWisePValue(EnrichmentResult* result)
+	    {
+		    return Base::computeRowWisePValue(test_, result);
+	    }
+
+	    std::tuple<double, double> computeScore(const Category& c)
+	    {
+		    using namespace boost;
+
+		    auto which = this->scores_.subset(c);
+			which.sortByScore(Order::Increasing);
+
+		    auto score = test_.test_sorted(sorted_scores_, which.begin(), which.end());
+
+		    return std::make_tuple(score, 0.0);
+	    }
+
+	  private:
+		void updateSortedScores_()
+		{
+		    score_permutation_.resize(this->scores_.size());
+		    std::iota(score_permutation_.begin(), score_permutation_.end(),
+		              static_cast<size_t>(0));
+
+		    auto comp = [this](size_t i, size_t j) {
+				return Scores::LessScore()(this->scores_[i], this->scores_[j]);
+			};
+
+		    score_permutation_ = sort_permutation(
+		        score_permutation_.begin(), score_permutation_.end(), comp);
+
+		    for(size_t i = 0; i < sorted_scores_.size(); ++i) {
+			    sorted_scores_.set(i, this->scores_[score_permutation_[i]]);
+		    }
+		}
+
+	    WilcoxonRankSumTest<T> test_;
+	    Scores sorted_scores_;
+	    std::vector<size_t> score_permutation_;
+    };
 
 	template <typename T>
 	class HTestEnrichment<OneSampleTTest<T>>
