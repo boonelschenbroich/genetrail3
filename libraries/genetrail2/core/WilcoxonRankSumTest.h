@@ -78,7 +78,8 @@ namespace GeneTrail {
 				}
 			);
 
-            for (unsigned int i = 0; i < r.size(); ++i) {
+			size_t i = 0;
+            while(i < r.size()) {
                 unsigned int k = 0;
 				value_type rank = i + 1;
 				// Find ranks with same value
@@ -103,6 +104,8 @@ namespace GeneTrail {
                     	rank_sum2 += rank;
                 	}
 				}
+
+				i += k + 1;
             }
 
 			//std::cout << "R1: " << rank_sum1 << " n1: " << size1 << " R2: " << rank_sum2 << " n2: " << size2 << std::endl;
