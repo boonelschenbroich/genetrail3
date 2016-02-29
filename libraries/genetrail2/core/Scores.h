@@ -230,6 +230,12 @@ namespace GeneTrail
 		Scores subset(const Category& c) const;
 		std::vector<size_t> subsetIndices(const Category& c) const;
 
+		const Score& set(size_t i, const Score& s) {
+			isSortedByIndex_ = false;
+			data_[i] = s;
+			return data_[i];
+		}
+
 		const Score& operator[](size_t i) const { return data_[i]; }
 
 		void sortByName();
