@@ -44,7 +44,7 @@ class GT2_EXPORT Metadata
 	// We use a boost variant to store the metadata
 	using ValueBase = boost::variant<
 	    std::string, int64_t, double, boost::recursive_wrapper<Object>,
-	    boost::recursive_wrapper<Array>, bool, nullptr_t>;
+	    boost::recursive_wrapper<Array>, bool, std::nullptr_t>;
 
   public:
 	/**
