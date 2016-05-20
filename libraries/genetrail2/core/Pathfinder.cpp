@@ -261,18 +261,18 @@ std::vector<Path> Pathfinder::computeDeregulatedPath(const GraphType& graph, con
 		p.setRunningSum(running_sums[l-1][bestk]);
         // Save path
 		p.addVertex(path[0]);
-        for (int i = 0; i < (signed)path.size() - 1; ++i) {
-            p.addVertex(path[i+1]);
-            vertex_descriptor vd1 = nodes[name2rank[path[i]]];
-            vertex_descriptor vd2 = nodes[name2rank[path[i + 1]]];
+        for (size_t i = 1; i < path.size(); ++i) {
+            p.addVertex(path[i]);
+            vertex_descriptor vd1 = nodes[name2rank[path[i - 1]]];
+            vertex_descriptor vd2 = nodes[name2rank[path[i]]];
 
             edge_descriptor ed;
             bool exists;
             boost::tie(ed, exists) = boost::edge(vd1, vd2, graph);
             if (exists) {
-                p.addRegulation(path[i], path[i+1], boost::get(edge_regulation_type, graph, ed));
+                p.addRegulation(path[i - 1], path[i], boost::get(edge_regulation_type, graph, ed));
             } else {
-                std::cout << "ERROR: No edge between " << path[i] << " " << boost::get(vertex_identifier, graph, vd1) << " and " << path[i + 1] << " " << boost::get(vertex_identifier, graph, vd2) << std::endl;
+                std::cout << "ERROR: No edge between " << path[i - 1] << " " << boost::get(vertex_identifier, graph, vd1) << " and " << path[i] << " " << boost::get(vertex_identifier, graph, vd2) << std::endl;
             }
         }
 
