@@ -196,7 +196,7 @@ std::vector<Path> Pathfinder::computeDeregulatedPath(const GraphType& graph, con
             fillNextLayer(best_pred_k, k);
 
             // Compute the running sum for the current path
-            int max_runnig_sum_k;
+            int max_runnig_sum_k = 0;
             computeRunningSum(k, l, max_runnig_sum_k);
 
             // Save the best running sum
