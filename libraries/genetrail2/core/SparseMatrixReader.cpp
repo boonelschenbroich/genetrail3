@@ -78,8 +78,8 @@ namespace GeneTrail
 
 	void SparseMatrixReader::readChunkHeader_(std::istream& input, uint8_t& chunk_type, uint64_t& size) const
 	{
-		input.read((char*)&chunk_type, 1);
-		input.read((char*)&size, 8);
+		input.read(reinterpret_cast<char*>(&chunk_type), 1);
+		input.read(reinterpret_cast<char*>(&size), 8);
 	}
 	
 	SparseMatrix SparseMatrixReader::readHeader_(std::istream& input, uint8_t& storage_order) const
@@ -87,9 +87,9 @@ namespace GeneTrail
 		uint32_t row_count;
 		uint32_t col_count;
 
-		input.read((char*)&row_count, 4);
-		input.read((char*)&col_count, 4);
-		input.read((char*)&storage_order, 1);
+		input.read(reinterpret_cast<char*>(&row_count), 4);
+		input.read(reinterpret_cast<char*>(&col_count), 4);
+		input.read(reinterpret_cast<char*>(&storage_order), 1);
 
 		return SparseMatrix(row_count, col_count);
 	}
@@ -146,7 +146,7 @@ namespace GeneTrail
 		result.matrix().resizeNonZeros(chunk_size / sizeof(SparseMatrix::SMatrix::Index));
 
 		// As the internal storage format of matrix is column major this is quite efficient...
-		input.read((char*)result.matrix().innerIndexPtr(), chunk_size);
+		input.read(reinterpret_cast<char*>(result.matrix().innerIndexPtr()), chunk_size);
 		bytes_read += input.gcount();
 
 		checkByteMismatch(chunk_size, bytes_read);
@@ -157,7 +157,7 @@ namespace GeneTrail
 		uint64_t bytes_read = 0;
 
 		// As the internal storage format of matrix is column major this is quite efficient...
-		input.read((char*)result.matrix().outerIndexPtr(), chunk_size);
+		input.read(reinterpret_cast<char*>(result.matrix().outerIndexPtr()), chunk_size);
 		bytes_read += input.gcount();
 
 		checkByteMismatch(chunk_size, bytes_read);
@@ -169,7 +169,7 @@ namespace GeneTrail
 		result.matrix().resizeNonZeros(chunk_size / sizeof(SparseMatrix::value_type));
 
 		// As the internal storage format of matrix is column major this is quite efficient...
-		input.read((char*)result.matrix().valuePtr(), chunk_size);
+		input.read(reinterpret_cast<char*>(result.matrix().valuePtr()), chunk_size);
 		bytes_read += input.gcount();
 
 		checkByteMismatch(chunk_size, bytes_read);

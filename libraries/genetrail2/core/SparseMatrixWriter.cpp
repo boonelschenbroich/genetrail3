@@ -66,19 +66,19 @@ namespace GeneTrail
 		// Write data
 		uint64_t n = matrix.matrix().nonZeros() * sizeof(SparseMatrix::value_type);
 		total += writeChunkHeader_(output, 0x5, n);
-		output.write((const char*)matrix.matrix().valuePtr(), n);
+		output.write(reinterpret_cast<const char*>(matrix.matrix().valuePtr()), n);
 		total += n;
 
 		// Write outer indices
 		n = (matrix.matrix().outerSize() + 1) * sizeof(SparseMatrix::SMatrix::Index);
 		total += writeChunkHeader_(output, 0x3, n);
-		output.write((const char*)matrix.matrix().outerIndexPtr(), n);
+		output.write(reinterpret_cast<const char*>(matrix.matrix().outerIndexPtr()), n);
 		total += n;
 
 		// Write inner indices
 		n = matrix.matrix().nonZeros() * sizeof(SparseMatrix::SMatrix::Index);
 		writeChunkHeader_(output, 0x4, n);
-		output.write((const char*)matrix.matrix().innerIndexPtr(), n);
+		output.write(reinterpret_cast<const char*>(matrix.matrix().innerIndexPtr()), n);
 		total += n;
 
 		return total;
