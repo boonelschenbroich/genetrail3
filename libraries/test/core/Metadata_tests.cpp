@@ -29,8 +29,8 @@ TEST(MetadataTest, addNull)
 
 	metadata.add("Value", nullptr);
 
-	nullptr_t tmp;
-	ASSERT_NO_THROW(tmp = get<nullptr_t>(metadata.get("Value")));
+	std::nullptr_t tmp;
+	ASSERT_NO_THROW(tmp = get<std::nullptr_t>(metadata.get("Value")));
 	EXPECT_EQ(nullptr, tmp);
 }
 
