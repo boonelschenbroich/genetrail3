@@ -2,6 +2,8 @@
 
 #include <gtest/gtest.h>
 
+#include <random>
+
 using namespace GeneTrail;
 
 class MiscAlgorithmsTest : public ::testing::Test

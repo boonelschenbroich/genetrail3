@@ -23,6 +23,7 @@
 #include "macros.h"
 
 #include <algorithm>
+#include <numeric>
 #include <vector>
 
 namespace GeneTrail

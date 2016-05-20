@@ -1,10 +1,11 @@
 #include <gtest/gtest.h>
 
-#include <vector>
 #include <algorithm>
-#include <stdlib.h>
+#include <cmath>
+#include <cstdlib>
 #include <iostream>
 #include <utility>
+#include <vector>
 
 #include <genetrail2/core/GeneSet.h>
 #include <genetrail2/core/GeneSetReader.h>

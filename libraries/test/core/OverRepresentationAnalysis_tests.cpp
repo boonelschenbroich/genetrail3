@@ -1,8 +1,6 @@
 #include <gtest/gtest.h>
 
 #include <boost/lexical_cast.hpp>
-#include <boost/multiprecision/cpp_int.hpp>
-#include <boost/multiprecision/cpp_dec_float.hpp>
 
 #include <genetrail2/core/Category.h>
 #include <genetrail2/core/EntityDatabase.h>

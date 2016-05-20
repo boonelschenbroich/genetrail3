@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <numeric>
 #include <tuple>
 #include <vector>
 
