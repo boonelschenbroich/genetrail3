@@ -58,22 +58,11 @@ namespace GeneTrail {
             return score_;
         }
 
-		boost::math::fisher_f distribution(){
-			boost::math::normal dist(0,1);
-			return dist;
-		}
-
 		value_type score(){
 			score_;
 		}
 
-		std::pair<value_type, value_type> confidenceInterval(const value_type& alpha) {
-			value_type conf = boost::math::quantile(boost::math::complement(distribution(), (1 - alpha) / 2.0));
-			return std::make_pair(score_ / conf, score_ * conf);
-		}
-
     protected:
-
         value_type tolerance_;
 		value_type score_;
     };
