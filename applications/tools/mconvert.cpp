@@ -78,7 +78,7 @@ int writeMatrix(std::ostream& ostrm, std::string out_format, const Mat& inmat)
 // TODO: Maybe move this to an auxillary header.
 class Outstream {
 	public:
-		Outstream(const std::string& strm)
+		explicit Outstream(const std::string& strm)
 			: deconstruct_(false), strm_(nullptr)
 		{
 			if(strm == "stdout") {

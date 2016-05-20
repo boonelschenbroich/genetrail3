@@ -24,9 +24,9 @@ using GSFPointer = std::unique_ptr<GeneSetFilter::GeneSetFilter>;
 class InvalidFilterSyntax : public std::exception
 {
 	public:
-	InvalidFilterSyntax(const std::string& msg) noexcept : message_(msg) {}
+	explicit InvalidFilterSyntax(const std::string& msg) noexcept : message_(msg) {}
 
-	const char* what() const noexcept { return message_.c_str(); }
+	const char* what() const noexcept override { return message_.c_str(); }
 
 	private:
 	std::string message_;
