@@ -200,9 +200,7 @@ TEST(MetadataTest, iterationEmpty)
 	EXPECT_EQ(0, metadata.size());
 	EXPECT_TRUE(metadata.empty());
 
-	for(const auto& value : metadata) {
-		FAIL();
-	}
+	EXPECT_TRUE(metadata.begin() == metadata.end());
 }
 
 TEST(MetadataTest, iterationValues)
@@ -216,12 +214,7 @@ TEST(MetadataTest, iterationValues)
 	EXPECT_EQ(3, metadata.size());
 	EXPECT_FALSE(metadata.empty());
 
-	size_t counter = 0;
-	for(const auto& value : metadata) {
-		++counter;
-	}
-
-	EXPECT_EQ(3, counter);
+	EXPECT_EQ(3, std::distance(metadata.begin(), metadata.end()));
 }
 
 TEST(MetadataTest, empty)
