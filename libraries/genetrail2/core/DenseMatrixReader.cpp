@@ -99,7 +99,7 @@ namespace GeneTrail
 		// Reserve some storage
 		std::vector<std::string> names(result.rows());
 
-		readNames_(input, result, chunk_size, names);
+		readNames_(input, chunk_size, names);
 
 		result.setRowNames(names);
 	}
@@ -109,12 +109,12 @@ namespace GeneTrail
 		// Reserve some storage
 		std::vector<std::string> names(result.cols());
 
-		readNames_(input, result, chunk_size, names);
+		readNames_(input, chunk_size, names);
 
 		result.setColNames(names);
 	}
 
-	void DenseMatrixReader::readNames_(std::istream& input, DenseMatrix& result, uint64_t chunk_size, std::vector<std::string>& names) const
+	void DenseMatrixReader::readNames_(std::istream& input, uint64_t chunk_size, std::vector<std::string>& names) const
 	{
 		unsigned int i = 0;
 

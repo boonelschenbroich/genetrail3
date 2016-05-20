@@ -133,8 +133,8 @@ namespace GeneTrail
 
 			void readRowNames_(std::istream& input, DenseMatrix& result, uint64_t chunk_size) const;
 			void readColNames_(std::istream& input, DenseMatrix& result, uint64_t chunk_size) const;
-			void readNames_   (std::istream& input, DenseMatrix& result, uint64_t chunk_size, std::vector<std::string>& names) const;
 			void readData_    (std::istream& input, DenseMatrix& result, uint8_t storage_order) const;
+			void readNames_   (std::istream& input, uint64_t chunk_size, std::vector<std::string>& names) const;
 			void readChunkHeader_(std::istream& input, uint8_t& chunk_type, uint64_t& chunk_size) const;
 			DenseMatrix readHeader_(std::istream& input, uint8_t& storage_order) const;
 	};
