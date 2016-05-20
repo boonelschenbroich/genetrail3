@@ -36,8 +36,6 @@ class GT2_EXPORT Metadata
 {
   public:
 	class Value;
-	class std::vector<Value>;
-	class std::unordered_map<std::string, Value>;
 
 	using Array = std::vector<Value>;
 	using Object = std::unordered_map<std::string, Value>;
