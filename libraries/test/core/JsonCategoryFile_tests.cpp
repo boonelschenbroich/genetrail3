@@ -19,7 +19,7 @@ class JsonCategoryFileTest : public ::testing::Test
 	{
 	}
 
-	virtual void TearDown() override { fs::remove(tmp_file_name_); }
+	void TearDown() override { fs::remove(tmp_file_name_); }
 
   protected:
 	std::string tmp_file_name_;
