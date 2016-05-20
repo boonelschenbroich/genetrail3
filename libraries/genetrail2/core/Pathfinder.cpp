@@ -54,8 +54,7 @@ void Pathfinder::initializeFields(const GraphType& graph, const std::vector<std:
     }
 
     // Initialize first layer
-    std::vector < std::vector<int >> M(std::vector<std::vector<int> > (numberOfGeneIds, std::vector<int> (numberOfGeneIds, 0)));
-    M_1 = M;
+    M_1.assign(numberOfGeneIds, std::vector<int>(numberOfGeneIds, 0));
 
     // Fill the first layer
     // This is very simple as the gene list is sorted and we have a bijective mapping
@@ -92,7 +91,7 @@ void Pathfinder::findBestPredecessor(const GraphType& graph, int& best_pred_k, i
 
             // Check if k is already on the path
             // We have to avoid cycles
-            if (((kv == 0 && M_1[source_kv][kv] == 0) || (M_1[source_kv][kv - 1] == M_1[source_kv][kv])) && M_1[source_kv][kv] != -1) {
+            if (((kv == 0 && M_1[source_kv][kv] == 0) || (kv != 0 && M_1[source_kv][kv - 1] == M_1[source_kv][kv])) && M_1[source_kv][kv] != -1) {
                 best_pred_k = source_kv;
                 best_pred_k_running_sum = tmp_rs;
                 ++pred_flag;
