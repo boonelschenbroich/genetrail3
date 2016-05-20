@@ -35,7 +35,7 @@ namespace GeneTrail
 		}
 
 		uint32_t version;
-		input.read((char*)&version, 4);
+		input.read(reinterpret_cast<char*>(&version), 4);
 
 		if(version != 1) {
 			return DenseMatrix(0,0);
@@ -45,8 +45,8 @@ namespace GeneTrail
 		skipString_(input); // Skip the chiptype
 
 		uint32_t nrows, ncols;
-		input.read((char*)&ncols, 4);
-		input.read((char*)&nrows, 4);
+		input.read(reinterpret_cast<char*>(&ncols), 4);
+		input.read(reinterpret_cast<char*>(&nrows), 4);
 
 		std::vector<std::string> colnames(ncols);
 		std::vector<std::string> rownames(nrows);
@@ -56,7 +56,7 @@ namespace GeneTrail
 
 		DenseMatrix result(std::move(rownames), std::move(colnames));
 
-		input.read((char*)result.matrix().data(), nrows * ncols * sizeof(double));
+		input.read(reinterpret_cast<char*>(result.matrix().data()), nrows * ncols * sizeof(double));
 
 		return result;
 	}
@@ -71,7 +71,7 @@ namespace GeneTrail
 	void RMAExpressMatrixReader::skipString_(std::istream& input) const
 	{
 		uint32_t size;
-		input.read((char*)&size, 4);
+		input.read(reinterpret_cast<char*>(&size), 4);
 
 		input.seekg(size, std::ios::cur);
 	}
@@ -79,7 +79,7 @@ namespace GeneTrail
 	std::string RMAExpressMatrixReader::readString_(std::istream& input) const
 	{
 		uint32_t size;
-		input.read((char*)&size, 4);
+		input.read(reinterpret_cast<char*>(&size), 4);
 
 		std::string result(size, '\0');
 		input.read(&result[0], size);
