@@ -94,7 +94,7 @@ TEST_F(JsonCategoryFileTest, readMetadata)
 	EXPECT_EQ(4, get<int64_t>(array[3]));
 	EXPECT_EQ(true, get<bool>(array[4]));
 	EXPECT_EQ("", get<std::string>(array[5]));
-	EXPECT_EQ(nullptr, get<nullptr_t>(array[6]));
+	EXPECT_EQ(nullptr, get<std::nullptr_t>(array[6]));
 
 	const auto& obj = get<Metadata::Object>(md.get("objTest"));
 	EXPECT_EQ(3, obj.size());
