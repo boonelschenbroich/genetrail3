@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
 	std::vector<std::pair<std::string, double>> genes = gene_set.getScores();
 	std::vector<double> scores;
 	scores.resize(gene_set.size());
-	for(int i = 0; i < gene_set.size(); ++i) {
+	for(size_t i = 0; i < gene_set.size(); ++i) {
 		scores[i] = genes[i].second;
 	}
 
