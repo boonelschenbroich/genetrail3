@@ -94,6 +94,16 @@ TEST(Statistic, Median)
 	EXPECT_DOUBLE_EQ(4.0, median3); // Odd length vectors should be exact
 }
 
+TEST(Statistic, Middle)
+{
+	double median1 = statistic::middle<double>(a.begin(),a.end());
+	EXPECT_EQ(median1, 27.7);
+	double median2 = statistic::middle<double>(b.begin(),b.end());
+	EXPECT_EQ(median2, 28.8);
+	double median3 = statistic::middle<double>(c.begin(),c.end());
+	EXPECT_EQ(4, median3);
+}
+
 TEST(Statistic, Var)
 {
 	double var1 = statistic::var<double, std::vector<double>::iterator>(a.begin(),a.end());

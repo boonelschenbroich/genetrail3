@@ -25,6 +25,7 @@
 #include <numeric>
 #include <tuple>
 #include <vector>
+#include <iostream>
 
 namespace GeneTrail
 {
@@ -244,6 +245,31 @@ value_type median(InputIterator begin, InputIterator end)
 	} else {
 		return *median_position;
 	}
+}
+
+/**
+ * This method returns the middle value of a given range.
+ *
+ * @param begin InputIterator
+ * @param end InputIterator
+ * @return Middel value of the given range
+ */
+template <typename value_type, typename InputIterator>
+value_type middle(InputIterator begin, InputIterator end)
+{
+	std::vector<value_type> tmp(begin, end);
+
+	const auto dist = std::distance(tmp.begin(), tmp.end());
+
+	if(dist == 0) {
+		return value_type();
+	}
+
+	const auto dist2 = dist / 2;
+	auto median_position = tmp.begin() + dist2;
+	std::nth_element(tmp.begin(), median_position, tmp.end());
+	
+	return *median_position;
 }
 
 /**
