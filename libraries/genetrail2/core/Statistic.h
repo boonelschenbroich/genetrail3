@@ -295,7 +295,6 @@ value_type middle(InputIterator begin, InputIterator end)
 	const auto dist2 = dist / 2;
 	auto median_position = tmp.begin() + dist2;
 	std::nth_element(tmp.begin(), median_position, tmp.end());
-
 	return *median_position;
 }
 
