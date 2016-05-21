@@ -24,6 +24,7 @@ add_enrichment(gsea)
 add_enrichment(weighted-gsea)
 add_enrichment(ora)
 add_enrichment(htests)
+add_enrichment(wilcoxon)
 add_enrichment(enrichment enrichment.cpp)
 
 ####################################################################################################

@@ -26,6 +26,7 @@
 #include <genetrail2/core/HTest.h>
 #include <genetrail2/core/Scores.h>
 #include <genetrail2/core/GeneSetEnrichmentAnalysis.h>
+#include <genetrail2/core/WilcoxonRankSumTest.h>
 #include <genetrail2/core/WeightedGeneSetEnrichmentAnalysis.h>
 #include <genetrail2/core/OverRepresentationAnalysis.h>
 #include <genetrail2/core/OneSampleTTest.h>
@@ -188,7 +189,7 @@ namespace GeneTrail
 
 		bool canUseCategory(const Category&, size_t hits) const
 		{
-			return hits > 1;
+			return hits >= 1;
 		}
 
 		double computeRowWisePValue(EnrichmentResult* result)
@@ -367,6 +368,54 @@ namespace GeneTrail
 		private:
 		OverRepresentationAnalysis test_;
 	};
+	
+	class WilcoxonRSTest : public SetLevelStatistics<StatTags::Direct, StatTags::DoesNotSupportIndices>
+	{
+		public:
+		template <typename Iterator>
+		WilcoxonRSTest(const Iterator& beginIds, const Iterator& endIds, Order order)
+		    : order_(order), ids_(beginIds, endIds)
+		{
+		}
+
+		Order getOrder() const {
+			return order_;
+		}
+
+		void setInputScores(Scores scores)
+		{
+			scores.sortByScore(order_);
+			ids_.assign(scores.indices().begin(), scores.indices().end());
+		}
+
+		bool canUseCategory(const Category&, size_t) const { return true; }
+
+		std::tuple<double, double> computeScore(const Category& category)
+		{
+			auto score = test_.computeZScore(category, ids_.begin(), ids_.end());
+			return std::make_tuple(score, 0.0);
+		}
+
+		double computeRowWisePValue(EnrichmentResult* result)
+		{
+			result->hits = test_.intersectionSize(*result->category, ids_.begin(), ids_.end());
+
+			double p_value = 1.0;	
+
+			if(result->score > 0.0) {
+				p_value = HTest::upperTailedPValue(test_, result->score);
+			} else {
+				p_value = HTest::lowerTailedPValue(test_, result->score);
+			}
+	
+			return p_value;
+		}
+
+		private:
+		Order order_;
+		std::vector<size_t> ids_;
+		WilcoxonRankSumTest<double> test_;
+	};
 
 	class KolmogorovSmirnov : public SetLevelStatistics<StatTags::Direct, StatTags::SupportsIndices>
 	{
@@ -408,15 +457,22 @@ namespace GeneTrail
 			auto intersection_size = test_.intersectionSize(
 			    *result->category, ids_.begin(), ids_.end());
 
+			double p_value = 1.0;	
+
 			if(result->score > 0.0) {
-				return test_.computeRightPValue(ids_.size(), intersection_size,
+				p_value = test_.computeRightPValue(ids_.size(), intersection_size,
 				                                result->score)
 				    .convert_to<double>();
 			} else {
-				return test_.computeLeftPValue(ids_.size(), intersection_size,
+				p_value = test_.computeLeftPValue(ids_.size(), intersection_size,
 				                               result->score)
 				    .convert_to<double>();
 			}
+
+			// This is needed to compute the normalized score
+			result->score = test_.computeScore(ids_.size(), intersection_size, result->score).convert_to<double>();
+						
+			return p_value;
 		}
 
 		private:
@@ -429,8 +485,9 @@ namespace GeneTrail
 	    : public SetLevelStatistics<StatTags::Indirect, StatTags::SupportsIndices>
 	{
 		public:
-		WeightedKolmogorovSmirnov(const Scores& scores, Order order)
-		    : order_(order), test_(scores, order)
+		//Hack should not be committed	
+		WeightedKolmogorovSmirnov(const Scores& scores, Order order, bool keepOrder)
+		    : order_(order), test_(scores, order, keepOrder)
 		{
 		}
 
