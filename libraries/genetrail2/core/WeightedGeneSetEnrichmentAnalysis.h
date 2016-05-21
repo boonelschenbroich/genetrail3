@@ -52,10 +52,12 @@ namespace GeneTrail
 		/**
 		 * Constructor
 		 */
-		WeightedGeneSetEnrichmentAnalysis(const Scores& scores, Order order)
+		WeightedGeneSetEnrichmentAnalysis(const Scores& scores, Order order, bool keepOrder)
 			: scores_(scores)
 		{
-			scores_.sortByScore(order);
+			if(!keepOrder){
+				scores_.sortByScore(order);
+			}
 		}
 
 		void setScores(Scores&& scores) {
@@ -148,7 +150,7 @@ namespace GeneTrail
 			const float_type missv = 1.0 / (scores_.size() - category_size);
 
 			float_type maxRS = 0.0;
-
+			
 			float_type RS = -(*begin * missv);
 			float_type minRS = RS;
 			RS += NR_inv * std::abs(scores_[*begin].score());
