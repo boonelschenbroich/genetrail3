@@ -281,6 +281,12 @@ class GT2_EXPORT GeneSet
 	 */
 	Element& operator[](size_t i) { return container_[i]; }
 
+	/**
+	 * This function converts the container into a Category
+	 *
+	 * @param name Name of the created category
+	 */
+	Category toCategory(const std::string& name, EntityDatabase* db) const;
 
 	/**
 	 * Apply a filter to the gene set in order to remove unwanted
