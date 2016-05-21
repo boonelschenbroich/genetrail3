@@ -54,7 +54,7 @@ namespace GeneTrail {
 
 			OverRepresentationAnalysis() = default;
 
-			OverRepresentationAnalysis(const Category& reference_set,const Category& test_set);
+			OverRepresentationAnalysis(const Category& reference_set, const Category& test_set);
 
 			/**
 			 * This method computes a one-sided p-value.
@@ -64,6 +64,10 @@ namespace GeneTrail {
 			 * @return P-value
 			 */
 			double computePValue(const Category& category) const;
+			
+			double computeUpperTailedPValue(const Category& category) const;
+			
+			double computeLowerTailedPValue(const Category& category) const;
 
 			double computeScore(const Category& category) const;
 
@@ -71,6 +75,8 @@ namespace GeneTrail {
 
 			double expectedNumberOfHits(const Category& category) const;
 		private:
+
+			double computePValue_(size_t l, size_t k, bool enriched) const;
 
 			Category reference_set_;
 			//Size of reference set

@@ -53,17 +53,7 @@ double OverRepresentationAnalysis::expectedNumberOfHits(const Category& category
 	return (l * n_) / static_cast<double>(m_);
 }
 
-double OverRepresentationAnalysis::computePValue(const Category& category) const
-{
-	// GeneTrail 1
-	// size_t l = category.size();
-
-	size_t k = Category::intersect("null", category, test_set_).size();
-	size_t l = Category::intersect("null", category, reference_set_).size();
-
-	auto expected_k = ((double)l * n_) / ((double)m_);
-	bool enriched = expected_k < k;
-
+double OverRepresentationAnalysis::computePValue_(size_t l, size_t k, bool enriched) const {
 	big_float p;
 
 	if(useHypergeometricTest_) {
@@ -81,6 +71,45 @@ double OverRepresentationAnalysis::computePValue(const Category& category) const
 	}
 
 	return p.convert_to<double>();
+}
+
+
+double OverRepresentationAnalysis::computePValue(const Category& category) const
+{
+	// GeneTrail 1
+	// size_t l = category.size();
+
+	size_t k = Category::intersect("null", category, test_set_).size();
+	size_t l = Category::intersect("null", category, reference_set_).size();
+
+	auto expected_k = ((double)l * n_) / ((double)m_);
+	bool enriched = expected_k < k;
+
+	return computePValue_(l, k, enriched);
+}
+
+
+double OverRepresentationAnalysis::computeUpperTailedPValue(const Category& category) const
+{
+	// GeneTrail 1
+	// size_t l = category.size();
+
+	size_t k = Category::intersect("null", category, test_set_).size();
+	size_t l = Category::intersect("null", category, reference_set_).size();
+
+	return computePValue_(l, k, true);
+}
+
+
+double OverRepresentationAnalysis::computeLowerTailedPValue(const Category& category) const
+{
+	// GeneTrail 1
+	// size_t l = category.size();
+
+	size_t k = Category::intersect("null", category, test_set_).size();
+	size_t l = Category::intersect("null", category, reference_set_).size();
+
+	return computePValue_(l, k, false);
 }
 
 double OverRepresentationAnalysis::computeScore(const Category& category) const
