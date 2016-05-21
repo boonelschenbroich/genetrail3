@@ -24,6 +24,8 @@
 
 #include <boost/math/special_functions/binomial.hpp>
 
+#include <iostream>
+
 namespace GeneTrail
 {
 
@@ -74,7 +76,9 @@ namespace GeneTrail
 		                              const unsigned_integer_type& k) const
 		{
 			return_type p = 0;
-			for(unsigned_integer_type i = 0; i <= k; ++i) {
+			// Make sure we do not compute undefined binomial coefficients
+			unsigned_integer_type i = (l + k > m) ? (l + k) - m : 0; // Brackets are here to avoid underrun
+			for(; i <= k; ++i) {
 				p += boost::math::binomial_coefficient<return_type>(n, i) *
 				     boost::math::binomial_coefficient<return_type>(m, l + k - i);
 			}
@@ -98,7 +102,7 @@ namespace GeneTrail
 		                              const unsigned_integer_type& l,
 		                              const unsigned_integer_type& n,
 		                              const unsigned_integer_type& k) const
-		{
+		{	
 			return_type p = 0;
 			unsigned_integer_type d = std::min(n, l + k);
 			for(unsigned_integer_type i = k; i <= d; ++i) {
