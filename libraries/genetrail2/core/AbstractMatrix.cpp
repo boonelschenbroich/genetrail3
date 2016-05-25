@@ -1,5 +1,5 @@
 /*
- * GeneTrail2 - An efficent library for interpreting genetic data
+ * GeneTrail2 - An efficient library for interpreting genetic data
  * Copyright (C) 2013 Daniel Stöckel <daniel@bioinf.uni-sb.de>
  *
  * This program is free software: you can redistribute it and/or modify

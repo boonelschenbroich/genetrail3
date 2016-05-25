@@ -1,5 +1,5 @@
 /*
- * GeneTrail2 - An efficent library for interpreting genetic data
+ * GeneTrail2 - An efficient library for interpreting genetic data
  * Copyright (C) 2013 Daniel Stöckel <dstoeckel@bioinf.uni-sb.de>
  * Copyright (C) 2013 Tobias Frisch <tfrisch@bioinf.uni-sb.de>
  *
