@@ -44,8 +44,8 @@ std::set<std::string> checkFile(std::string file) {
 
 TEST(FiDePaRunner, length_5) {
     //Execute FiDePa
-    FiDePaRunner* f = new FiDePaRunner();
-    f->computeDeregulatedPaths(TEST_DATA_PATH("FiDePaRunner_test.sif"), TEST_DATA_PATH("FiDePaRunner_test_scores.txt"), 5, true, true);
+    FiDePaRunner f;
+    f.computeDeregulatedPaths(TEST_DATA_PATH("FiDePaRunner_test.sif"), TEST_DATA_PATH("FiDePaRunner_test_scores.txt"), 5, true, true);
 
     //K2
     std::set<std::string> dups = checkFile(TEST_DATA_PATH("FiDePaRunner_test_scores.k2.sif"));
@@ -82,14 +82,12 @@ TEST(FiDePaRunner, length_5) {
     EXPECT_TRUE(it != dups.end());
     it = dups.find("DppE");
     EXPECT_TRUE(it != dups.end());
-
-    delete f;
 }
 
 TEST(FiDePaRunner, pathLengthToHigh) {
     //Execute FiDePa
-    FiDePaRunner* f = new FiDePaRunner();
-    f->computeDeregulatedPaths(TEST_DATA_PATH("FiDePaRunner_test_pathLengthToHigh.sif"), TEST_DATA_PATH("FiDePaRunner_test_pathLengthToHigh_scores.txt"), 10, true, true);
+    FiDePaRunner f;
+    f.computeDeregulatedPaths(TEST_DATA_PATH("FiDePaRunner_test_pathLengthToHigh.sif"), TEST_DATA_PATH("FiDePaRunner_test_pathLengthToHigh_scores.txt"), 10, true, true);
 
     //K2
     std::set<std::string> dups = checkFile(TEST_DATA_PATH("FiDePaRunner_test_pathLengthToHigh_scores.k2.sif"));
@@ -126,13 +124,11 @@ TEST(FiDePaRunner, pathLengthToHigh) {
     EXPECT_TRUE(it != dups.end());
     it = dups.find("DppE");
     EXPECT_TRUE(it != dups.end());
-
-    delete f;
 }
 
 TEST(FiDePaRunner, circle) {
-    FiDePaRunner* f = new FiDePaRunner();
-    f->computeDeregulatedPaths(TEST_DATA_PATH("FiDePaRunner_test_circle.sif"), TEST_DATA_PATH("FiDePaRunner_test_circle_scores.txt"), 10, true, true);
+    FiDePaRunner f;
+    f.computeDeregulatedPaths(TEST_DATA_PATH("FiDePaRunner_test_circle.sif"), TEST_DATA_PATH("FiDePaRunner_test_circle_scores.txt"), 10, true, true);
     
     //K2
     std::set<std::string> dups = checkFile(TEST_DATA_PATH("FiDePaRunner_test_circle_scores.k2.sif"));
@@ -157,6 +153,4 @@ TEST(FiDePaRunner, circle) {
     EXPECT_TRUE(it != dups.end());
     it = dups.find("DppA");
     EXPECT_TRUE(it != dups.end());
-    
-    delete f;
 }
