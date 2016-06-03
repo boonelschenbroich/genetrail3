@@ -36,6 +36,7 @@ namespace GeneTrail
 	{
 		public:
 		EnrichmentAlgorithm(PValueMode mode);
+		virtual ~EnrichmentAlgorithm() = default;
 
 		PValueMode pValueMode() const { return mode_; }
 		bool pValuesComputed() const;
