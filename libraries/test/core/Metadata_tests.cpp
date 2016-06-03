@@ -29,7 +29,7 @@ TEST(MetadataTest, addNull)
 
 	metadata.add("Value", nullptr);
 
-	std::nullptr_t tmp;
+	std::nullptr_t tmp = nullptr;
 	ASSERT_NO_THROW(tmp = get<std::nullptr_t>(metadata.get("Value")));
 	EXPECT_EQ(nullptr, tmp);
 }
@@ -61,7 +61,7 @@ TEST(MetadataTest, addInt)
 	metadata.add("Value4", static_cast<uint64_t>(112232312335813));
 	metadata.add("Value", 11235813);
 
-	int64_t tmp;
+	int64_t tmp = 0;
 	ASSERT_NO_THROW(tmp = get<int64_t>(metadata.get("Value")));
 	EXPECT_EQ(11235813, tmp);
 }
@@ -71,7 +71,7 @@ TEST(MetadataTest, addBool)
 	Metadata metadata;
 
 	metadata.add("Value", true);
-	bool tmp;
+	bool tmp = false;
 	ASSERT_NO_THROW(tmp = get<bool>(metadata.get("Value")));
 	EXPECT_TRUE(tmp);
 
@@ -108,7 +108,7 @@ TEST(MetadataTest, addArray)
 	Metadata::Array tmp;
 	ASSERT_NO_THROW(tmp = get<Metadata::Array>(metadata.get("Value")));
 
-	ASSERT_EQ(3, tmp.size());
+	ASSERT_EQ(3u, tmp.size());
 
 	std::string tmp_string;
 	ASSERT_NO_THROW(tmp_string = get<std::string>(tmp[0]));
@@ -137,7 +137,7 @@ TEST(MetadataTest, addObject)
 	Metadata::Object tmp;
 	ASSERT_NO_THROW(tmp = get<Metadata::Object>(metadata.get("Value")));
 
-	ASSERT_EQ(3, tmp.size());
+	ASSERT_EQ(3u, tmp.size());
 
 	{
 	std::string tmp_string;
@@ -173,7 +173,7 @@ TEST(MetadataTest, remove)
 	metadata.add("Value3", nullptr);
 	metadata.add("Value4", "Hiho");
 
-	EXPECT_EQ(4, metadata.size());
+	EXPECT_EQ(4u, metadata.size());
 
 	EXPECT_TRUE(metadata.has("Value1"));
 	EXPECT_TRUE(metadata.has("Value2"));
@@ -182,10 +182,10 @@ TEST(MetadataTest, remove)
 
 	EXPECT_FALSE(metadata.remove("adsdf"));
 
-	EXPECT_EQ(4, metadata.size());
+	EXPECT_EQ(4u, metadata.size());
 
 	EXPECT_TRUE(metadata.remove("Value1"));
-	EXPECT_EQ(3, metadata.size());
+	EXPECT_EQ(3u, metadata.size());
 	EXPECT_FALSE(metadata.has("Value1"));
 	EXPECT_TRUE(metadata.has("Value2"));
 	EXPECT_TRUE(metadata.has("Value2"));
@@ -197,7 +197,7 @@ TEST(MetadataTest, iterationEmpty)
 {
 	const Metadata metadata;
 
-	EXPECT_EQ(0, metadata.size());
+	EXPECT_EQ(0u, metadata.size());
 	EXPECT_TRUE(metadata.empty());
 
 	EXPECT_TRUE(metadata.begin() == metadata.end());
@@ -211,7 +211,7 @@ TEST(MetadataTest, iterationValues)
 	metadata.add("Value2", 1);
 	metadata.add("Value3", false);
 
-	EXPECT_EQ(3, metadata.size());
+	EXPECT_EQ(3u, metadata.size());
 	EXPECT_FALSE(metadata.empty());
 
 	EXPECT_EQ(3, std::distance(metadata.begin(), metadata.end()));
@@ -233,9 +233,9 @@ TEST(MetadataTest, indexOperator)
 	Metadata metadata;
 	EXPECT_TRUE(metadata.empty());
 	metadata["Bla"] = "Test";
-	EXPECT_EQ(1, metadata.size());
+	EXPECT_EQ(1u, metadata.size());
 	metadata["Hiho"] = 1;
-	EXPECT_EQ(2, metadata.size());
+	EXPECT_EQ(2u, metadata.size());
 	metadata["Hiho"] = true;
-	EXPECT_EQ(2, metadata.size());
+	EXPECT_EQ(2u, metadata.size());
 }
