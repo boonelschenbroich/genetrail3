@@ -39,7 +39,6 @@ namespace GeneTrail
 {
 	class Category;
 	class DenseMatrix;
-	class DenseMatrixSubset;
 
 	using Indices = std::vector<size_t>;
 	using IndexIterator = Indices::const_iterator;
