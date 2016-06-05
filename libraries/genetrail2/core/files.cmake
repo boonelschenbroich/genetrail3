@@ -1,15 +1,16 @@
-####################################################################################################
+#############################################################
 # Path to all files in this directory
-####################################################################################################
+#############################################################
 
 SET(DIR ${PROJECT_SOURCE_DIR})
 SET(LIBNAME "CORE")
 
-####################################################################################################
+#############################################################
 # All files of this directory
-####################################################################################################
+#############################################################
 
-# We list all files separatly to be able to leave some out, if we do not want to compile them.
+# We list all files separately to be able to leave some out,
+# if we do not want to compile them.
 
 # Headers
 add_header_to_library(BoostGraph.h)
@@ -68,4 +69,3 @@ add_to_library(SparseMatrixReader)
 add_to_library(SparseMatrixWriter)
 add_to_library(OverRepresentationAnalysis)
 add_to_library(TextFile)
-
