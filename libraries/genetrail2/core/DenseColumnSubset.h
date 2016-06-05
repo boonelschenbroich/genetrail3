@@ -68,6 +68,23 @@ namespace GeneTrail
 				return mat_->matrix()(i, col_subset_[j]);
 			}
 
+			/**
+			 * Direct access to the Eigen expression template representing the
+			 * respective column. This allows leveraging Eigen's vectorization
+			 * features.
+			 */
+			DMatrix::ColXpr col(index_type j) {
+				return mat_->matrix().col(col_subset_[j]);
+			}
+
+			/**
+			 * Direct access to the Eigen expression template representing the
+			 * respective column. This allows leveraging Eigen's vectorization
+			 * features.
+			 */
+			DMatrix::ConstColXpr col(index_type j) const {
+				return static_cast<const DenseMatrix*>(mat_)->matrix().col(col_subset_[j]);
+			}
 
 			const std::string& colName(index_type j) const override;
 			const std::string& rowName(index_type i) const override;

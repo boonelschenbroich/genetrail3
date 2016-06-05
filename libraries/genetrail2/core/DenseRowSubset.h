@@ -64,6 +64,24 @@ namespace GeneTrail
 				return (*mat_)(row_subset_[i], j);
 			}
 
+			/**
+			 * Direct access to the Eigen expression template representing the
+			 * respective row. This allows leveraging Eigen's vectorization
+			 * features.
+			 */
+			DMatrix::RowXpr row(index_type i) {
+				return mat_->matrix().row(row_subset_[i]);
+			}
+
+			/**
+			 * Direct access to the Eigen expression template representing the
+			 * respective row. This allows leveraging Eigen's vectorization
+			 * features.
+			 */
+			DMatrix::ConstRowXpr row(index_type i) const {
+				return static_cast<const DenseMatrix*>(mat_)->matrix().row(row_subset_[i]);
+			}
+
 			const std::string& colName(index_type j) const override;
 			const std::string& rowName(index_type i) const override;
 
