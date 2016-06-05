@@ -34,13 +34,12 @@ namespace GeneTrail
 	 */
 	namespace statistic
 	{
-
 		/**
 		 * This method calculates the absolute value for each entry of a given
-		 * range.
+		 * range. The results are updated in place.
 		 *
-		 * @param begin InputIterator
-		 * @param end InputIterator
+		 * @param begin InputIterator corresponding to the start of the samples.
+		 * @param end   InputIterator corresponding to the end of the samples.
 		 */
 		template <typename value_type, typename InputIterator>
 		void abs(InputIterator begin, InputIterator end)
@@ -51,10 +50,10 @@ namespace GeneTrail
 
 		/**
 		 * This method calculates the square root for each entry of a given
-		 * range.
+		 * range. The results are updated in place.
 		 *
-		 * @param begin InputIterator
-		 * @param end InputIterator
+		 * @param begin InputIterator corresponding to the start of the samples.
+		 * @param end   InputIterator corresponding to the end of the samples.
 		 */
 		template <typename value_type, typename InputIterator>
 		void sqrt(InputIterator begin, InputIterator end)
@@ -65,10 +64,10 @@ namespace GeneTrail
 
 		/**
 		 * This method calculates the natural logarithm for each entry of a
-		 * given range.
+		 * given range. The results are updated in place.
 		 *
-		 * @param begin InputIterator
-		 * @param end InputIterator
+		 * @param begin InputIterator corresponding to the start of the samples.
+		 * @param end   InputIterator corresponding to the end of the samples.
 		 */
 		template <typename value_type, typename InputIterator>
 		void log(InputIterator begin, InputIterator end)
@@ -79,10 +78,10 @@ namespace GeneTrail
 
 		/**
 		 * This method calculates the logarithm (base 10) for each entry of a
-		 * given range.
+		 * given range. The results are updated in place.
 		 *
-		 * @param begin InputIterator
-		 * @param end InputIterator
+		 * @param begin InputIterator corresponding to the start of the samples.
+		 * @param end   InputIterator corresponding to the end of the samples.
 		 */
 		template <typename value_type, typename InputIterator>
 		void log10(InputIterator begin, InputIterator end)
@@ -93,10 +92,10 @@ namespace GeneTrail
 
 		/**
 		 * This method calculates the logarithm (base 2) for each entry of a
-		 * given range.
+		 * given range. The results are updated in place.
 		 *
-		 * @param begin InputIterator
-		 * @param end InputIterator
+		 * @param begin InputIterator corresponding to the start of the samples.
+		 * @param end   InputIterator corresponding to the end of the samples.
 		 */
 		template <typename value_type, typename InputIterator>
 		void log2(InputIterator begin, InputIterator end)
@@ -107,9 +106,9 @@ namespace GeneTrail
 
 		/**
 		 * This method calculates the n-th power for each entry of a given
-		 * range.
-		 * @param begin InputIterator
-		 * @param end InputIterator
+		 * range. The results are updated in place.
+		 * @param begin InputIterator corresponding to the start of the samples.
+		 * @param end   InputIterator corresponding to the end of the samples.
 		 */
 		template <typename value_type, typename InputIterator>
 		void pow(InputIterator begin, InputIterator end, int n)
@@ -121,8 +120,9 @@ namespace GeneTrail
 		/**
 		 * This method calculates the maximal value of a given range.
 		 *
-		 * @param begin InputIterator
-		 * @param end InputIterator
+		 * @param begin InputIterator corresponding to the start of the samples.
+		 * @param end   InputIterator corresponding to the end of the samples.
+		 *
 		 * @return Maximum of the given range
 		 */
 		template <typename value_type, typename InputIterator>
@@ -134,8 +134,9 @@ namespace GeneTrail
 		/**
 		 * This method calculates the minimal value of a given range.
 		 *
-		 * @param begin InputIterator
-		 * @param end InputIterator
+		 * @param begin InputIterator corresponding to the start of the samples.
+		 * @param end   InputIterator corresponding to the end of the samples.
+		 *
 		 * @return Minimum of the given range
 		 */
 		template <typename value_type, typename InputIterator>
@@ -147,8 +148,9 @@ namespace GeneTrail
 		/**
 		 * This method calculates the sum of a given range.
 		 *
-		 * @param begin InputIterator
-		 * @param end InputIterator
+		 * @param begin InputIterator corresponding to the start of the samples.
+		 * @param end   InputIterator corresponding to the end of the samples.
+		 *
 		 * @return Sum of the given range
 		 */
 		template <typename value_type, typename InputIterator>
@@ -160,8 +162,9 @@ namespace GeneTrail
 		/**
 		 * This method calculates the mean of a given range.
 		 *
-		 * @param begin InputIterator
-		 * @param end InputIterator
+		 * @param begin InputIterator corresponding to the start of the samples.
+		 * @param end   InputIterator corresponding to the end of the samples.
+		 *
 		 * @return Mean of the given range
 		 */
 		template <typename value_type, typename InputIterator>
@@ -178,8 +181,9 @@ namespace GeneTrail
 		/**
 		 * This method calculates the max-mean statistic of a given range.
 		 *
-		 * @param begin InputIterator
-		 * @param end InputIterator
+		 * @param begin InputIterator corresponding to the start of the samples.
+		 * @param end   InputIterator corresponding to the end of the samples.
+		 *
 		 * @return Max-mean statistic of the given range
 		 */
 		template <typename value_type, typename InputIterator>
@@ -214,8 +218,9 @@ namespace GeneTrail
 		/**
 		 * This method calculates the median of a given range.
 		 *
-		 * @param begin InputIterator
-		 * @param end InputIterator
+		 * @param begin InputIterator corresponding to the start of the samples.
+		 * @param end   InputIterator corresponding to the end of the samples.
+		 *
 		 * @return Median of the given range
 		 */
 		template <typename value_type, typename InputIterator>
@@ -244,8 +249,9 @@ namespace GeneTrail
 		/**
 		 * This method calculates the pooled variance of a given range.
 		 *
-		 * @param begin InputIterator
-		 * @param end InputIterator
+		 * @param begin InputIterator corresponding to the start of the samples.
+		 * @param end   InputIterator corresponding to the end of the samples.
+		 *
 		 * @return Variance of the given range
 		 */
 		template <typename value_type, typename InputIterator>
@@ -269,8 +275,8 @@ namespace GeneTrail
 		/**
 		 * This method calculates the pooled variance of a given range.
 		 *
-		 * @param begin InputIterator
-		 * @param end InputIterator
+		 * @param begin InputIterator corresponding to the start of the samples
+		 * @param end   InputIterator corresponding to the end of the samples
 		 * @return Variance of the given range
 		 */
 		template <typename value_type, typename InputIterator>
@@ -323,8 +329,8 @@ namespace GeneTrail
 		/**
 		 * This method calculates the standard deviation of a given range.
 		 *
-		 * @param begin InputIterator
-		 * @param end InputIterator
+		 * @param begin InputIterator corresponding to the start of the samples
+		 * @param end   InputIterator corresponding to the end of the samples
 		 * @return Standard deviation of the given range
 		 */
 		template <typename value_type, typename InputIterator>
@@ -335,12 +341,13 @@ namespace GeneTrail
 
 		/**
 		 * This method calculates the sample covariance between two ranges of
-		 *values.
+		 * values.
 		 *
-		 * @param first_begin InputIterator
-		 * @param first_end InputIterator
-		 * @param second_begin InputIterator
-		 * @param second_begin InputIterator
+		 * @param first_begin  InputIterator corresponding to the start of the first group.
+		 * @param first_end    InputIterator corresponding to the end of the first group.
+		 * @param second_begin InputIterator corresponding to the start of the second group.
+		 * @param second_end   InputIterator corresponding to the end of the second group.
+		 *
 		 * @return Covariance of the given range
 		 */
 		template <typename value_type, typename InputIterator>
@@ -365,10 +372,11 @@ namespace GeneTrail
 		/**
 		 * This methods implements Pearson's correlation coefficient.
 		 *
-		 * @param first_begin InputIterator
-		 * @param first_end InputIterator
-		 * @param second_begin InputIterator
-		 * @param second_begin InputIterator
+		 * @param first_begin  InputIterator corresponding to the start of the first group.
+		 * @param first_end    InputIterator corresponding to the end of the first group.
+		 * @param second_begin InputIterator corresponding to the start of the second group.
+		 * @param second_end   InputIterator corresponding to the end of the second group.
+		 *
 		 * @return Correlation coefficient
 		 */
 		template <typename value_type, typename InputIterator>
@@ -409,10 +417,11 @@ namespace GeneTrail
 		/**
 		 * This methods implements Spearman's correlation coefficient.
 		 *
-		 * @param first_begin InputIterator
-		 * @param first_end InputIterator
-		 * @param second_begin InputIterator
-		 * @param second_begin InputIterator
+		 * @param first_begin  InputIterator corresponding to the start of the first group.
+		 * @param first_end    InputIterator corresponding to the end of the first group.
+		 * @param second_begin InputIterator corresponding to the start of the second group.
+		 * @param second_end   InputIterator corresponding to the end of the second group.
+		 *
 		 * @return Correlation coefficient
 		 */
 		template <typename value_type, typename InputIterator>
@@ -434,10 +443,11 @@ namespace GeneTrail
 		 * This function calculates log(mean(a)) -  log(mean(b)).
 		 * Log-Mean-Fold-Quotient
 		 *
-		 * @param begin1
-		 * @param end1
-		 * @param begin2
-		 * @param end2
+		 * @param begin1 InputIterator corresponding to the start of the first group.
+		 * @param end1   InputIterator corresponding to the end of the first group.
+		 * @param begin2 InputIterator corresponding to the start of the second group.
+		 * @param end2   InputIterator corresponding to the end of the second group.
+		 *
 		 * @return log(mean(a)) -  log(mean(b))
 		 */
 		template <typename value_type, typename InputIterator1,
@@ -454,10 +464,11 @@ namespace GeneTrail
 		 * Log-Median-Fold-Quotient
 		 * This function calculates log(median(a)) -  log(median(b)).
 		 *
-		 * @param begin1
-		 * @param end1
-		 * @param begin2
-		 * @param end2
+		 * @param begin1 InputIterator corresponding to the start of the first group.
+		 * @param end1   InputIterator corresponding to the end of the first group.
+		 * @param begin2 InputIterator corresponding to the start of the second group.
+		 * @param end2   InputIterator corresponding to the end of the second group.
+		 *
 		 * @return log(median(a)) -  log(median(b))
 		 */
 		template <typename value_type, typename InputIterator1,
@@ -474,10 +485,11 @@ namespace GeneTrail
 		 * This function calculates mean(a) /  mean(b).
 		 * Mean-Fold-Quotient
 		 *
-		 * @param begin1
-		 * @param end1
-		 * @param begin2
-		 * @param end2
+		 * @param begin1 InputIterator corresponding to the start of the first group.
+		 * @param end1   InputIterator corresponding to the end of the first group.
+		 * @param begin2 InputIterator corresponding to the start of the second group.
+		 * @param end2   InputIterator corresponding to the end of the second group.
+		 *
 		 * @return mean(a) /  mean(b)
 		 */
 		template <typename value_type, typename InputIterator1,
@@ -494,10 +506,11 @@ namespace GeneTrail
 		* This function calculates mean(a) -  mean(b).
 		* Mean-Fold-Difference
 		*
-		* @param begin1
-		* @param end1
-		* @param begin2
-		* @param end2
+		 * @param begin1 InputIterator corresponding to the start of the first group.
+		 * @param end1   InputIterator corresponding to the end of the first group.
+		 * @param begin2 InputIterator corresponding to the start of the second group.
+		 * @param end2   InputIterator corresponding to the end of the second group.
+		 *
 		* @return mean(a) -  mean(b)
 		*/
 		template <typename value_type, typename InputIterator1,
@@ -514,10 +527,11 @@ namespace GeneTrail
 		 * Median-Fold-Quotient
 		 * This function calculates median(a) /  median(b).
 		 *
-		 * @param begin1
-		 * @param end1
-		 * @param begin2
-		 * @param end2
+		 * @param begin1 InputIterator corresponding to the start of the first group.
+		 * @param end1   InputIterator corresponding to the end of the first group.
+		 * @param begin2 InputIterator corresponding to the start of the second group.
+		 * @param end2   InputIterator corresponding to the end of the second group.
+		 *
 		 * @return median(a) /  median(b)
 		 */
 		template <typename value_type, typename InputIterator1,
@@ -534,10 +548,11 @@ namespace GeneTrail
 		 * Mean-Fold-Difference
 		 * This function calculates median(a) -  median(b).
 		 *
-		 * @param begin1
-		 * @param end1
-		 * @param begin2
-		 * @param end2
+		 * @param begin1 InputIterator corresponding to the start of the first group.
+		 * @param end1   InputIterator corresponding to the end of the first group.
+		 * @param begin2 InputIterator corresponding to the start of the second group.
+		 * @param end2   InputIterator corresponding to the end of the second group.
+		 *
 		 * @return median(a) -  median(b)
 		 */
 		template <typename value_type, typename InputIterator1,
@@ -553,9 +568,10 @@ namespace GeneTrail
 		/**
 		 * This function calculates the z-score.
 		 *
-		 * @param x
-		 * @param begin
-		 * @param end
+		 * @param x Input for which the z-score is requested
+		 * @param begin InputIterator corresponding to the start of the samples
+		 * @param end   InputIterator corresponding to the end of the samples
+		 *
 		 * @return Z-score
 		 */
 		template <typename value_type, typename InputIterator1>
@@ -569,4 +585,3 @@ namespace GeneTrail
 }
 
 #endif // GT2_CORE_STATISTIC_H
-
