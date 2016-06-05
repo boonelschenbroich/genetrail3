@@ -1,6 +1,6 @@
 /*
  * GeneTrail2 - An efficient library for interpreting genetic data
- * Copyright (C) 2013-2015 Daniel Stöckel <dstoeckel@bioinf.uni-sb.de>
+ * Copyright (C) 2016 Daniel Stöckel <dstoeckel@bioinf.uni-sb.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Lesser GNU General Public License as
@@ -18,14 +18,12 @@
  *
  */
 
-#ifndef GT2_DENSE_MATRIX_SUBSET_H
-#define GT2_DENSE_MATRIX_SUBSET_H
+#ifndef GT2_DENSE_ROW_SUBSET_H
+#define GT2_DENSE_ROW_SUBSET_H
 
 #include "DenseMatrix.h"
 
 #include "macros.h"
-
-#include <boost/range/irange.hpp>
 
 namespace GeneTrail
 {
@@ -33,48 +31,43 @@ namespace GeneTrail
 	 * This class represents a subset of a DenseMatrix.
 	 *
 	 * The reason we derive from DenseMatrix is that we
-	 * want to be able to use DenseMatrix and DenseMatrixSubset
+	 * want to be able to use DenseMatrix and DenseRowSubset
 	 * interchangably.
 	 *
 	 * Lets see if this works...
 	 */
-	class GT2_EXPORT DenseMatrixSubset : public Matrix
+	class GT2_EXPORT DenseRowSubset : public Matrix
 	{
 		public:
+			using DMatrix = DenseMatrix::DMatrix;
 			typedef std::vector<DenseMatrix::index_type> ISubset;
 			typedef std::vector<std::string> SSubset;
 
-			static DenseMatrixSubset createRowSubset(DenseMatrix* mat, ISubset rows);
-			static DenseMatrixSubset createRowSubset(DenseMatrix* mat, const SSubset& rows);
-			static DenseMatrixSubset createColSubset(DenseMatrix* mat, ISubset cols);
-			static DenseMatrixSubset createColSubset(DenseMatrix* mat, const SSubset& cols);
-			static DenseMatrixSubset createSubset   (DenseMatrix* mat, const SSubset& rows, const SSubset& cols);
+			static DenseRowSubset createRowSubset(DenseMatrix* mat, ISubset rows);
+			static DenseRowSubset createRowSubset(DenseMatrix* mat, const SSubset& rows);
 
 			template<typename Iterator>
-			static DenseMatrixSubset createColSubset(DenseMatrix* mat, Iterator begin, Iterator end);
+			static DenseRowSubset createRowSubset(DenseMatrix* mat, Iterator begin, Iterator end);
 
-			template<typename Iterator>
-			static DenseMatrixSubset createRowSubset(DenseMatrix* mat, Iterator begin, Iterator end);
+			DenseRowSubset(DenseMatrix* mat, ISubset rows);
 
-			DenseMatrixSubset(DenseMatrix* mat, ISubset  rows, ISubset  cols);
+			template<typename RowIterator>
+			DenseRowSubset(DenseMatrix* mat, RowIterator beginRow, RowIterator endRow);
 
-			template<typename RowIterator, typename ColIterator>
-			DenseMatrixSubset(DenseMatrix* mat, RowIterator beginRow, RowIterator endRow, ColIterator beginCol, ColIterator endCol);
+			DenseRowSubset(const DenseRowSubset& subs) = default;
+			DenseRowSubset(DenseRowSubset&& subs);
 
-			DenseMatrixSubset(const DenseMatrixSubset& subs) = default;
-			DenseMatrixSubset(DenseMatrixSubset&& subs);
-
-			DenseMatrixSubset& operator=(const DenseMatrixSubset& subs) = default;
-			DenseMatrixSubset& operator=(DenseMatrixSubset&& subs);
+			DenseRowSubset& operator=(const DenseRowSubset& subs) = default;
+			DenseRowSubset& operator=(DenseRowSubset&& subs);
 
 			value_type& operator()(index_type i, index_type j) override
 			{
-				return (*mat_)(row_subset_[i], col_subset_[j]);
+				return (*mat_)(row_subset_[i], j);
 			}
 
 			value_type operator()(index_type i, index_type j) const override
 			{
-				return (*mat_)(row_subset_[i], col_subset_[j]);
+				return (*mat_)(row_subset_[i], j);
 			}
 
 			virtual const std::string& colName(index_type j) const override;
@@ -108,34 +101,23 @@ namespace GeneTrail
 		private:
 			DenseMatrix* mat_;
 			ISubset row_subset_;
-			ISubset col_subset_;
 
 			// TODO: Think of something smart to fix the hack below
 			mutable SSubset row_names_cache_;
-			mutable SSubset col_names_cache_;
 
 			void remove_(const std::vector<Matrix::index_type>& indices, ISubset& subset);
 	};
 
 	template<typename Iterator>
-	DenseMatrixSubset DenseMatrixSubset::createColSubset(DenseMatrix* mat, Iterator begin, Iterator end)
+	DenseRowSubset DenseRowSubset::createRowSubset(DenseMatrix* mat, Iterator begin, Iterator end)
 	{
-		auto rowIndices = boost::irange(static_cast<DenseMatrix::index_type>(0), mat->rows());
-		return DenseMatrixSubset(mat, boost::begin(rowIndices), boost::end(rowIndices), begin, end);
+		return DenseRowSubset(mat, begin, end);
 	}
 
 	template<typename Iterator>
-	DenseMatrixSubset DenseMatrixSubset::createRowSubset(DenseMatrix* mat, Iterator begin, Iterator end)
-	{
-		auto colIndices = boost::irange(static_cast<DenseMatrix::index_type>(0), mat->cols());
-		return DenseMatrixSubset(mat, begin, end, boost::begin(colIndices), boost::end(colIndices));
-	}
-
-	template<typename RowIterator, typename ColIterator>
-	DenseMatrixSubset::DenseMatrixSubset(DenseMatrix* mat, RowIterator beginRow, RowIterator endRow, ColIterator beginCol, ColIterator endCol)
+	DenseRowSubset::DenseRowSubset(DenseMatrix* mat, Iterator begin, Iterator end)
 		: mat_(mat),
-		  row_subset_(beginRow, endRow),
-		  col_subset_(beginCol, endCol)
+		  row_subset_(begin, end)
 	{
 	}
 }

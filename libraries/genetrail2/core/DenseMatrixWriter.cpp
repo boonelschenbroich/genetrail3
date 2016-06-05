@@ -21,7 +21,8 @@
 #include "DenseMatrixWriter.h"
 
 #include "DenseMatrix.h"
-#include "DenseMatrixSubset.h"
+#include "DenseColumnSubset.h"
+#include "DenseRowSubset.h"
 
 #include <iterator>
 
@@ -38,7 +39,7 @@ namespace GeneTrail
 		return total;
 	}
 
-	uint64_t DenseMatrixWriter::writeBinary(std::ostream& output, const DenseMatrixSubset& matrix) const
+	uint64_t DenseMatrixWriter::writeBinary(std::ostream& output, const Matrix& matrix) const
 	{
 		uint64_t
 		total  = writeBinary_(output, matrix);
@@ -47,27 +48,14 @@ namespace GeneTrail
 		return total;
 	}
 
-	void DenseMatrixWriter::writeText(std::ostream& output, const DenseMatrix& matrix) const
+	void DenseMatrixWriter::writeText(std::ostream& output, const Matrix& matrix) const
 	{
 		writeText_(output, matrix);
 
-		for(DenseMatrix::index_type i = 0; i < matrix.rows(); ++i) {
+		for(Matrix::index_type i = 0; i < matrix.rows(); ++i) {
 			output << "\n" << matrix.rowName(i);
 
-			for(DenseMatrix::index_type j = 0; j < matrix.cols(); ++j) {
-				output << "\t" << matrix(i,j);
-			}
-		}
-	}
-
-	void DenseMatrixWriter::writeText(std::ostream& output, const DenseMatrixSubset& matrix) const
-	{
-		writeText_(output, matrix);
-
-		for(DenseMatrix::index_type i = 0; i < matrix.rows(); ++i) {
-			output << "\n" << matrix.rowName(i);
-
-			for(DenseMatrix::index_type j = 0; j < matrix.cols(); ++j) {
+			for(Matrix::index_type j = 0; j < matrix.cols(); ++j) {
 				output << "\t" << matrix(i,j);
 			}
 		}
@@ -85,7 +73,7 @@ namespace GeneTrail
 		return total + n;
 	}
 
-	uint64_t DenseMatrixWriter::writeData_(std::ostream& output, const DenseMatrixSubset& matrix) const
+	uint64_t DenseMatrixWriter::writeData_(std::ostream& output, const Matrix& matrix) const
 	{
 		const uint64_t n = matrix.rows() * matrix.cols() * sizeof(Matrix::value_type);
 		uint64_t total = writeChunkHeader_(output, 0x3, n);

@@ -31,13 +31,11 @@ namespace GeneTrail
 {
 	class Matrix;
 	class DenseMatrix;
-	class DenseMatrixSubset;
 
 	class GT2_EXPORT DenseMatrixWriter : public MatrixWriter
 	{
 		public:
-			void writeText(std::ostream& output, const DenseMatrix& matrix) const;
-			void writeText(std::ostream& output, const DenseMatrixSubset& matrix) const;
+			void writeText(std::ostream& output, const Matrix& matrix) const;
 
 			/**
 			 * Reads a matrix from a binary file.
@@ -45,11 +43,11 @@ namespace GeneTrail
 			 * \see DenseMatrixReader::binaryRead_
 			 */
 			uint64_t writeBinary(std::ostream& output, const DenseMatrix& matrix) const;
-			uint64_t writeBinary(std::ostream& output, const DenseMatrixSubset& matrix) const;
+			uint64_t writeBinary(std::ostream& output, const Matrix& matrix) const;
 
 		private:
 			uint64_t writeData_(std::ostream& output, const DenseMatrix& matrix) const;
-			uint64_t writeData_(std::ostream& output, const DenseMatrixSubset& matrix) const;
+			uint64_t writeData_(std::ostream& output, const Matrix& matrix) const;
 	};
 }
 

@@ -31,14 +31,14 @@ namespace GeneTrail
 		return indices;
 	}
 
-	std::tuple<DenseMatrixSubset, DenseMatrixSubset>
+	std::tuple<DenseColumnSubset, DenseColumnSubset>
 	splitMatrix(DenseMatrix& matrix, const std::vector<std::string>& reference,
 	            const std::vector<std::string>& test)
 	{
 		return std::make_tuple(
-		    DenseMatrixSubset::createColSubset(
+		    DenseColumnSubset(
 		        &matrix, getIndices(matrix, reference, "reference")),
-		    DenseMatrixSubset::createColSubset(
+		    DenseColumnSubset(
 		        &matrix, getIndices(matrix, test, "test")));
 	}
 

@@ -9,7 +9,6 @@
 #include <genetrail2/core/GeneSetWriter.h>
 #include <genetrail2/core/DenseMatrixReader.h>
 #include <genetrail2/core/DenseMatrix.h>
-#include <genetrail2/core/DenseMatrixSubset.h>
 #include <genetrail2/core/TextFile.h>
 
 #include "../matrixTools.h"

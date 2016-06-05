@@ -25,8 +25,8 @@
 
 #include <genetrail2/core/macros.h>
 #include <genetrail2/core/misc_algorithms.h>
+#include <genetrail2/core/DenseColumnSubset.h>
 #include <genetrail2/core/DenseMatrix.h>
-#include <genetrail2/core/DenseMatrixSubset.h>
 #include <genetrail2/core/MatrixHTest.h>
 
 #include <boost/iterator/counting_iterator.hpp>
@@ -281,8 +281,8 @@ class ColumnPermutationBase : public internal::PermutationBase<value_type>
 
 		auto mid = begin + reference_size_;
 
-		auto ref = DenseMatrixSubset::createColSubset(&data_, begin, mid);
-		auto sam = DenseMatrixSubset::createColSubset(&data_, mid, end);
+		auto ref = DenseColumnSubset(&data_, begin, mid);
+		auto sam = DenseColumnSubset(&data_, mid, end);
 
 		return Scores(scoring.test(method_, ref, sam));
 	}

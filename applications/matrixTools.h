@@ -1,7 +1,7 @@
 #ifndef MATRIX_TOOLS_H
 #define MATRIX_TOOLS_H
 
-#include <genetrail2/core/DenseMatrixSubset.h>
+#include <genetrail2/core/DenseColumnSubset.h>
 
 #include <genetrail2/core/macros.h>
 
@@ -34,7 +34,7 @@ namespace GeneTrail
 		std::string groupname_;
 	};
 
-	GT2_EXPORT std::tuple<DenseMatrixSubset, DenseMatrixSubset>
+	GT2_EXPORT std::tuple<DenseColumnSubset, DenseColumnSubset>
 	splitMatrix(DenseMatrix& matrix, const std::vector<std::string>& reference,
 	            const std::vector<std::string>& test);
 	GT2_EXPORT DenseMatrix buildDenseMatrix(const std::string& expr1,

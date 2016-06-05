@@ -22,7 +22,8 @@
 #include <genetrail2/core/DenseMatrixReader.h>
 #include <genetrail2/core/RMAExpressMatrixReader.h>
 #include <genetrail2/core/DenseMatrixWriter.h>
-#include <genetrail2/core/DenseMatrixSubset.h>
+#include <genetrail2/core/DenseRowSubset.h>
+#include <genetrail2/core/DenseColumnSubset.h>
 
 #include <fstream>
 #include <iostream>
@@ -169,35 +170,34 @@ int main(int argc, char** argv)
 		opts |= DenseMatrixReader::ADDITIONAL_COL_NAME;
 	}
 
+	if(!vm["col-subset"].empty() && !vm["row-subset"].empty()) {
+		std::cerr << "Currently it is not supported to subset both: columns and rows\n";
+		return -2;
+	}
+
 	auto reader = rmaexpress ? std::make_shared<RMAExpressMatrixReader>()
 	                         : std::make_shared<DenseMatrixReader>();
 
 	DenseMatrix inmat = reader->read(istrm, opts);
 
-	if(!vm["col-subset"].empty() || !vm["row-subset"].empty()) {
-
+	if(!vm["col-subset"].empty()) {
 		std::vector<std::string> cs;
-		if(vm["col-subset"].empty()) {
-			cs = inmat.colNames();
-		} else {
-			if(!readSubset(col_subset, cs)) {
-				return -1;
-			}
+		if(!readSubset(col_subset, cs)) {
+			return -1;
 		}
+
+		return writeMatrix(ostrm(), out_format, DenseColumnSubset::createColSubset(&inmat, cs));
+	}
+
+	if(!vm["row-subset"].empty()) {
 		std::vector<std::string> rs;
-		if(vm["row-subset"].empty()) {
-			rs = inmat.rowNames();
-		} else {
-			if(!readSubset(row_subset, rs)) {
-				return -1;
-			}
+
+		if(!readSubset(row_subset, rs)) {
+			return -1;
 		}
 
-		DenseMatrixSubset ds = DenseMatrixSubset::createSubset(&inmat, rs, cs);
-
-		return writeMatrix(ostrm(), out_format, ds);
+		return writeMatrix(ostrm(), out_format, DenseRowSubset::createRowSubset(&inmat, rs));
 	}
 
 	return writeMatrix(ostrm(), out_format, inmat);
 }
-

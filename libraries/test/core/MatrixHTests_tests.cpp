@@ -2,7 +2,6 @@
 
 #include <genetrail2/core/MatrixHTest.h>
 #include <genetrail2/core/DenseMatrix.h>
-#include <genetrail2/core/DenseMatrixSubset.h>
 
 #include <config.h>
 
