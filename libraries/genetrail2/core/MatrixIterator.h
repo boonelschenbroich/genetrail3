@@ -20,6 +20,7 @@
 #ifndef GT2_MATRIX_ITERATOR_H
 #define GT2_MATRIX_ITERATOR_H
 
+#include <cstddef>
 #include <iterator>
 
 namespace GeneTrail
@@ -83,16 +84,16 @@ namespace GeneTrail
 
 		template <typename T>
 		friend ColumnIterator<T> operator+(const ColumnIterator<T>& a,
-		                                   ptrdiff_t n);
+		                                   std::ptrdiff_t n);
 		template <typename T>
-		friend ColumnIterator<T> operator+(ptrdiff_t n,
+		friend ColumnIterator<T> operator+(std::ptrdiff_t n,
 		                                   const ColumnIterator<T>& a);
 		template <typename T>
 		friend ColumnIterator<T> operator-(const ColumnIterator<T>& a,
-		                                   ptrdiff_t n);
+		                                   std::ptrdiff_t n);
 		template <typename T>
-		friend ptrdiff_t operator-(const ColumnIterator<T>& a,
-		                           const ColumnIterator<T>& b);
+		friend std::ptrdiff_t operator-(const ColumnIterator<T>& a,
+		                                const ColumnIterator<T>& b);
 
 		bool operator<(const ColumnIterator& it) const
 		{
@@ -114,11 +115,11 @@ namespace GeneTrail
 			return col_ >= it.col_;
 		}
 
-		void operator+=(ptrdiff_t n) { col_ += n; }
+		void operator+=(std::ptrdiff_t n) { col_ += n; }
 
-		void operator-=(ptrdiff_t n) { col_ -= n; }
+		void operator-=(std::ptrdiff_t n) { col_ -= n; }
 
-		value_type operator[](ptrdiff_t n) const
+		value_type operator[](std::ptrdiff_t n) const
 		{
 			return (*matrix_)(row_, col_ + n);
 		}
