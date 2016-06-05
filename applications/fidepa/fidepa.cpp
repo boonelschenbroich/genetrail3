@@ -1,12 +1,11 @@
 #include <genetrail2/core/BoostGraphParser.h>
 #include <genetrail2/core/BoostGraphProcessor.h>
 #include <genetrail2/core/Pathfinder.h>
-#include <genetrail2/core/CommandLineParser.h>
 #include <genetrail2/core/FiDePaRunner.h>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string.hpp>
+#include <boost/program_options.hpp>
 
 #include <string>
 #include <cstring>
@@ -20,33 +19,44 @@
 #include <algorithm>
 
 using namespace GeneTrail;
+namespace bpo = boost::program_options;
 
 int main(int argc, char* argv[])
 {
 	int pathlength = 0;
 	std::string kegg = "";
 	std::string scores = "";
+	bool up_regulated = false, down_regulated = false, absolute = false;
 
+	bpo::variables_map vm;
+	bpo::options_description desc("\nFiDePa - Finding Deregulated Paths (Keller et al. 2009)\n\nhttp://bioinformatics.oxfordjournals.org/content/25/21/2787.full\n\nUSAGE");
 
-	CommandLineParser p("\nFiDePa - Finding Deregulated Paths (Keller et al. 2009) \n\nhttp://bioinformatics.oxfordjournals.org/content/25/21/2787.full \n\nUSAGE");
-	p.addOption("help,h", "Display this message");
-	p.addTypedOption<int>("path_length,l", "Maximal length of the deregulated paths");
-	p.addTypedOption<std::string>("kegg,k", "[.sif] file containing the network information");
-	p.addTypedOption<std::string>("scores,s", "[.txt] file containing gene scores");
-	p.addOption("up_regulated,up","Specify to compute up regulated paths");
-	p.addOption("down_regulated,down","Specify to compute down regulated paths");
-	p.addOption("absolute,abs","Specify to use absolute scores");
+	desc.add_options()
+		("help,h", "Display this message")
+		("path_length,l", bpo::value(&pathlength), "Maximal length of the deregulated paths")
+		("kegg,k", bpo::value(&kegg), "[.sif] file containing the network information")
+		("scores,s", bpo::value(&scores), "[.txt] file containing gene scores")
+		("up_regulated,up", bpo::value(&up_regulated)->zero_tokens(), "Specify to compute up regulated paths")
+		("down_regulated,down", bpo::value(&down_regulated)->zero_tokens(), "Specify to compute down regulated paths")
+		("absolute,abs", bpo::value(&absolute)->zero_tokens(), "Specify to use absolute scores")
+	;
 
-	p.parse(argc, argv);
+	try {
+		bpo::store(bpo::command_line_parser(argc, argv).options(desc).run(),
+		           vm);
+		bpo::notify(vm);
+	} catch(bpo::error& e) {
+		std::cerr << "ERROR: " << e.what() << "\n";
+		desc.print(std::cerr);
+		return -1;
+	}
 
-	p.getParameter("path_length",pathlength);
-	p.getParameter("kegg",kegg);
-	p.getParameter("scores",scores);
-	bool up_regulated = p.checkParameter("up_regulated");
-	bool down_regulated = p.checkParameter("down_regulated");
-	bool absolute = p.checkParameter("absolute");
+	if(!vm["help"].empty()) {
+		desc.print(std::cout);
+		return 0;
+	}
 
-	if(pathlength > 0 && (up_regulated || down_regulated || absolute) && kegg != "" && scores != "" && !p.checkParameter("help"))
+	if(pathlength > 0 && (up_regulated || down_regulated || absolute) && kegg != "" && scores != "")
 	{
 		bool increasing = down_regulated ? false : true;
 		FiDePaRunner f;
@@ -54,7 +64,8 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		p.printHelp();
+		desc.print(std::cerr);
+		return -2;
 	}
 
 	return 0;
