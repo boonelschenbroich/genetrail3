@@ -195,7 +195,7 @@ TEST(MetadataTest, remove)
 
 TEST(MetadataTest, iterationEmpty)
 {
-	const Metadata metadata;
+	Metadata metadata;
 
 	EXPECT_EQ(0u, metadata.size());
 	EXPECT_TRUE(metadata.empty());
