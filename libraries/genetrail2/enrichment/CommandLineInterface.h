@@ -18,6 +18,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
+#ifndef GT2_ENRICHMENT_COMMANDLINEINTERFACE_H
+#define GT2_ENRICHMENT_COMMANDLINEINTERFACE_H
+
 #include "PermutationTest.h"
 
 #include <genetrail2/core/macros.h>
@@ -65,3 +69,5 @@ namespace GeneTrail {
 	GT2_EXPORT void validate(boost::any&, const std::vector<std::string>&, DirectoryPath*,
 	              int);
 }
+
+#endif // GT2_ENRICHMENT_COMMANDLINEINTERFACE_H
