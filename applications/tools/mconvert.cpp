@@ -196,7 +196,7 @@ int main(int argc, char** argv)
 			return -1;
 		}
 
-		return writeMatrix(ostrm(), out_format, DenseRowSubset::createRowSubset(&inmat, rs));
+		return writeMatrix(ostrm(), out_format, DenseRowSubset(&inmat, rs));
 	}
 
 	return writeMatrix(ostrm(), out_format, inmat);

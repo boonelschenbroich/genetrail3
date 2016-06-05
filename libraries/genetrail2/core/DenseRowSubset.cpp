@@ -22,32 +22,28 @@
 
 #include "Exception.h"
 
+#include <algorithm>
+
 namespace GeneTrail
 {
 	/*
-	 * Static members
-	 */
-	DenseRowSubset DenseRowSubset::createRowSubset(DenseMatrix* mat, ISubset rows)
-	{
-		return DenseRowSubset(mat, std::move(rows));
-	}
-
-	DenseRowSubset DenseRowSubset::createRowSubset(DenseMatrix* mat, const SSubset& rows)
-	{
-		ISubset subs(rows.size());
-
-		int i = 0;
-		for(const auto& s : rows) {
-			subs[i] = mat->rowIndex(s);
-			++i;
-		}
-
-		return createRowSubset(mat, subs);
-	}
-
-	/*
 	 * Constructors
 	 */
+	DenseRowSubset::DenseRowSubset(DenseMatrix* mat, const SSubset& rows)
+		: mat_(mat),
+		  row_subset_(rows.size())
+	{
+		std::transform(rows.begin(), rows.end(), row_subset_.begin(), [mat](const std::string& s) {
+			index_type i = mat->rowIndex(s);
+
+			if(i == std::numeric_limits<index_type>::max()) {
+				throw InvalidKey(s);
+			}
+
+			return i;
+		});
+	}
+
 	DenseRowSubset::DenseRowSubset(DenseMatrix* mat, ISubset rows)
 		: mat_(mat),
 		  row_subset_(std::move(rows))
