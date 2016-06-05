@@ -1,6 +1,6 @@
 #include <genetrail2/core/DenseMatrix.h>
 #include <genetrail2/core/DenseMatrixReader.h>
-#include <genetrail2/core/DenseMatrixSubset.h>
+#include <genetrail2/core/DenseRowSubset.h>
 #include <genetrail2/core/DenseMatrixWriter.h>
 #include <genetrail2/core/SparseMatrix.h>
 #include <genetrail2/core/SparseMatrixReader.h>
@@ -75,7 +75,7 @@ void writeGrouping(std::ostream& out, const DenseMatrix& mat, const std::vector<
 
 void writePartitions(const std::string& partfile, DenseMatrix& mat, const std::vector<int>& grouping, int num_cluster)
 {
-	DenseMatrixSubset::ISubset subset;
+	DenseRowSubset::ISubset subset;
 	subset.reserve(mat.rows() / num_cluster);
 
 	int npad = 0;
@@ -98,10 +98,8 @@ void writePartitions(const std::string& partfile, DenseMatrix& mat, const std::v
 
 		std::ofstream outfile(boost::replace_first_copy(partfile, "%", ss.str()));
 
-		DenseMatrixSubset sub = DenseMatrixSubset::createRowSubset(&mat, subset);
-
 		DenseMatrixWriter writer;
-		writer.writeBinary(outfile, sub);
+		writer.writeBinary(outfile, DenseRowSubset(&mat, subset));
 	}
 }
 

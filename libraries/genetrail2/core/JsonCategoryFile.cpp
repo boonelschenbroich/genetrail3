@@ -282,7 +282,7 @@ public:
 		writer_.String(value.c_str(), value.length());
 	}
 
-	void operator()(nullptr_t) const {
+	void operator()(std::nullptr_t) const {
 		writer_.Null();
 	}
 
