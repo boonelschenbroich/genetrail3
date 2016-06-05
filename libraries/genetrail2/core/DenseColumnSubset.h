@@ -58,41 +58,44 @@ namespace GeneTrail
 
 			value_type& operator()(index_type i, index_type j) override
 			{
-				return (*mat_)(i, col_subset_[j]);
+				// Directly access the underlying matrix to avoid a virtual function call
+				return mat_->matrix()(i, col_subset_[j]);
 			}
 
 			value_type operator()(index_type i, index_type j) const override
 			{
-				return (*mat_)(i, col_subset_[j]);
+				// Directly access the underlying matrix to avoid a virtual function call
+				return mat_->matrix()(i, col_subset_[j]);
 			}
 
-			virtual const std::string& colName(index_type j) const override;
-			virtual const std::string& rowName(index_type i) const override;
 
-			virtual index_type colIndex(const std::string& col) const override;
-			virtual index_type rowIndex(const std::string& row) const override;
+			const std::string& colName(index_type j) const override;
+			const std::string& rowName(index_type i) const override;
 
-			virtual index_type cols() const override;
-			virtual index_type rows() const override;
+			index_type colIndex(const std::string& col) const override;
+			index_type rowIndex(const std::string& row) const override;
 
-			virtual bool hasCol(const std::string& name) const override;
-			virtual bool hasRow(const std::string& name) const override;
+			index_type cols() const override;
+			index_type rows() const override;
 
-			virtual void setColName(index_type j, const std::string& new_name) override;
-			virtual void setColName(const std::string& old_name, const std::string& new_name) override;
-			virtual void setColNames(const std::vector< std::string >& col_names) override;
-			virtual void setRowName(index_type i, const std::string& new_name) override;
-			virtual void setRowName(const std::string& old_name, const std::string& new_name) override;
-			virtual void setRowNames(const std::vector< std::string >& row_names) override;
+			bool hasCol(const std::string& name) const override;
+			bool hasRow(const std::string& name) const override;
 
-			virtual void removeCols(const std::vector< index_type >& indices) override;
-			virtual void removeRows(const std::vector< index_type >& indices) override;
-			virtual void shuffleCols(const std::vector< index_type >& perm) override;
-			virtual void shuffleRows(const std::vector< index_type >& perm) override;
-			virtual void transpose() override;
+			void setColName(index_type j, const std::string& new_name) override;
+			void setColName(const std::string& old_name, const std::string& new_name) override;
+			void setColNames(const std::vector< std::string >& col_names) override;
+			void setRowName(index_type i, const std::string& new_name) override;
+			void setRowName(const std::string& old_name, const std::string& new_name) override;
+			void setRowNames(const std::vector< std::string >& row_names) override;
 
-			virtual const std::vector< std::string >& colNames() const override;
-			virtual const std::vector< std::string >& rowNames() const override;
+			void removeCols(const std::vector< index_type >& indices) override;
+			void removeRows(const std::vector< index_type >& indices) override;
+			void shuffleCols(const std::vector< index_type >& perm) override;
+			void shuffleRows(const std::vector< index_type >& perm) override;
+			void transpose() override;
+
+			const std::vector< std::string >& colNames() const override;
+			const std::vector< std::string >& rowNames() const override;
 
 		private:
 			DenseMatrix* mat_;
