@@ -39,15 +39,16 @@ namespace GeneTrail {
         FTest(value_type tol = 1e-4) : tolerance_(tol),size1_(0),size2_(0),score_(0) {
         }
 
-        /**
-         * This method implements the standerd F-Test.
-         *
-         * @param Iterator
-         * @param Iterator
-		 * @param Iterator
-		 * @param Iterator
-         * @return F-score for the differences between the two groups
-         */
+		/**
+		 * This method implements the standard F-Test.
+		 *
+		 * @param first_begin InputIterator corresponding to the start of the first group.
+		 * @param first_end InputIterator corresponding to the end of the first group.
+		 * @param second_begin InputIterator corresponding to the start of the second group.
+		 * @param second_end InputIterator corresponding to the end of the second group.
+		 *
+		 * @return F-score for the differences between the two groups
+		 */
 		template<typename InputIterator1, typename InputIterator2>
         value_type test(const InputIterator1& first_begin, const InputIterator1& first_end, const InputIterator2& second_begin, const InputIterator2& second_end) {
 			this->size1_ = std::distance(first_begin,first_end);
