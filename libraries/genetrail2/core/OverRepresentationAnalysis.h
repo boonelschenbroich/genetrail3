@@ -56,12 +56,11 @@ namespace GeneTrail {
 
 			OverRepresentationAnalysis(const Category& reference_set,const Category& test_set);
 
-		    /**
+			/**
 			 * This method computes a one-sided p-value.
 			 *
 			 * @param category The category for which a p-value should be computed.
-			 * @param reference_set Reference set
-			 * @param test_set Test set
+			 *
 			 * @return P-value
 			 */
 			double computePValue(const Category& category) const;
