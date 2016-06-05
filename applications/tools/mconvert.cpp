@@ -186,7 +186,7 @@ int main(int argc, char** argv)
 			return -1;
 		}
 
-		return writeMatrix(ostrm(), out_format, DenseColumnSubset::createColSubset(&inmat, cs));
+		return writeMatrix(ostrm(), out_format, DenseColumnSubset(&inmat, cs));
 	}
 
 	if(!vm["row-subset"].empty()) {

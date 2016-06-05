@@ -45,16 +45,10 @@ namespace GeneTrail
 			typedef std::vector<DenseMatrix::index_type> ISubset;
 			typedef std::vector<std::string> SSubset;
 
-			static DenseColumnSubset createColSubset(DenseMatrix* mat, ISubset cols);
-			static DenseColumnSubset createColSubset(DenseMatrix* mat, const SSubset& cols);
-
 			template<typename Iterator>
-			static DenseColumnSubset createColSubset(DenseMatrix* mat, Iterator begin, Iterator end);
-
-			DenseColumnSubset(DenseMatrix* mat, ISubset  cols);
-
-			template<typename ColIterator>
-			DenseColumnSubset(DenseMatrix* mat, ColIterator beginCol, ColIterator endCol);
+			DenseColumnSubset(DenseMatrix* mat, Iterator first, Iterator last);
+			DenseColumnSubset(DenseMatrix* mat, ISubset cols);
+			DenseColumnSubset(DenseMatrix* mat, const SSubset& cols);
 
 			DenseColumnSubset(const DenseColumnSubset& subs) = default;
 			DenseColumnSubset(DenseColumnSubset&& subs);
@@ -110,12 +104,6 @@ namespace GeneTrail
 
 			void remove_(const std::vector<Matrix::index_type>& indices, ISubset& subset);
 	};
-
-	template<typename Iterator>
-	DenseColumnSubset DenseColumnSubset::createColSubset(DenseMatrix* mat, Iterator begin, Iterator end)
-	{
-		return DenseColumnSubset(mat, begin, end);
-	}
 
 	template<typename Iterator>
 	DenseColumnSubset::DenseColumnSubset(DenseMatrix* mat, Iterator begin, Iterator end)
