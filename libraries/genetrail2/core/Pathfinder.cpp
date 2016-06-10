@@ -100,7 +100,7 @@ void Pathfinder::initializeFields(const GraphType& graph, const std::vector<std:
     std::cout << "Layer 1" << std::endl;
 }
 
-void Pathfinder::findBestPredecessor(const GraphType& graph, int& best_pred_k, int& best_pred_k_running_sum, int& pred_flag, int l, vertex_descriptor& vd) {
+void Pathfinder::findBestPredecessor(const GraphType& graph, int& best_pred_k, int& best_pred_k_running_sum, int& pred_flag, int l, const vertex_descriptor& vd) {
     for (; iei != iei_end; iei++) {
         vertex_descriptor vd_source = source(*iei, graph);
         int source_kv = vertex_map[vd_source];
