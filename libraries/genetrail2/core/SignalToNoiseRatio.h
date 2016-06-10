@@ -26,48 +26,47 @@
 
 #include <boost/math/distributions.hpp>
 
-namespace GeneTrail {
+namespace GeneTrail
+{
 
-    /**
-     * SignalToNoiseRatio
-     */
-    template <typename ValueType>
-    class GT2_EXPORT SignalToNoiseRatio {
-    public:
-		using value_type = ValueType;
+/**
+ * SignalToNoiseRatio
+ */
+template <typename ValueType> class GT2_EXPORT SignalToNoiseRatio
+{
+  public:
+	using value_type = ValueType;
 
-        SignalToNoiseRatio(value_type tol = 1e-4) : tolerance_(tol),score_(0) {
-        }
+	SignalToNoiseRatio(value_type tol = 1e-4) : tolerance_(tol), score_(0) {}
 
-        /**
-         * This method implements the standerd F-Test.
-         *
-         * @param Iterator
-         * @param Iterator
-		 * @param Iterator
-		 * @param Iterator
-         * @return Signal to noise ratio between the two groups
-         */
-        template<typename InputIterator1, typename InputIterator2>
-        value_type test(const InputIterator1& first_begin, const InputIterator1& first_end, const InputIterator2& second_begin, const InputIterator2& second_end) {
-			auto mean1 = statistic::mean<value_type>(first_begin, first_end);
-			auto mean2 = statistic::mean<value_type>(first_begin, first_end);
-			auto sd1 = statistic::sd<value_type>(first_begin,first_end);
-            auto sd2 = statistic::sd<value_type>(second_begin,second_end);
-            score_ = (mean1 - mean2) / (sd1 + sd2);
-            return score_;
-        }
+	/**
+	 * This method implements the standerd F-Test.
+	 *
+	 * @param Iterator
+	 * @param Iterator
+	 * @param Iterator
+	 * @param Iterator
+	 * @return Signal to noise ratio between the two groups
+	 */
+	template <typename InputIterator1, typename InputIterator2>
+	value_type
+	test(const InputIterator1& first_begin, const InputIterator1& first_end,
+	     const InputIterator2& second_begin, const InputIterator2& second_end)
+	{
+		auto mean1 = statistic::mean<value_type>(first_begin, first_end);
+		auto mean2 = statistic::mean<value_type>(first_begin, first_end);
+		auto sd1 = statistic::sd<value_type>(first_begin, first_end);
+		auto sd2 = statistic::sd<value_type>(second_begin, second_end);
+		score_ = (mean1 - mean2) / (sd1 + sd2);
+		return score_;
+	}
 
-		value_type score(){
-			score_;
-		}
+	value_type score() { score_; }
 
-    protected:
-        value_type tolerance_;
-		value_type score_;
-    };
-
+  protected:
+	value_type tolerance_;
+	value_type score_;
+};
 }
 
 #endif // GT2_CORE_SIGNAL_TO_NOISE_RATIO_H
-
