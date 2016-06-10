@@ -236,8 +236,8 @@ TYPED_TEST(MatrixTest, setRowName_index_)
 	EXPECT_EQ("row0", mat->rowName(0));
 	EXPECT_EQ("row1", mat->rowName(1));
 
-	EXPECT_EQ(0, mat->rowIndex("row0"));
-	EXPECT_EQ(1, mat->rowIndex("row1"));
+	EXPECT_EQ(0u, mat->rowIndex("row0"));
+	EXPECT_EQ(1u, mat->rowIndex("row1"));
 }
 
 TYPED_TEST(MatrixTest, setColName_string_)
@@ -264,8 +264,8 @@ TYPED_TEST(MatrixTest, setColName_index_)
 	EXPECT_EQ("col0", mat->colName(0));
 	EXPECT_EQ("col1", mat->colName(1));
 
-	EXPECT_EQ(0, mat->colIndex("col0"));
-	EXPECT_EQ(1, mat->colIndex("col1"));
+	EXPECT_EQ(0u, mat->colIndex("col0"));
+	EXPECT_EQ(1u, mat->colIndex("col1"));
 }
 
 TYPED_TEST(MatrixTest, rowIndex)
@@ -278,14 +278,14 @@ TYPED_TEST(MatrixTest, rowIndex)
 	mat->setRowName(0, "row0");
 	mat->setRowName(1, "row1");
 
-	EXPECT_EQ(0, mat->rowIndex("row0"));
-	EXPECT_EQ(1, mat->rowIndex("row1"));
+	EXPECT_EQ(0u, mat->rowIndex("row0"));
+	EXPECT_EQ(1u, mat->rowIndex("row1"));
 
 	mat->setRowName(0, "row1");
 	mat->setRowName(1, "row0");
 
-	EXPECT_EQ(0, mat->rowIndex("row1"));
-	EXPECT_EQ(1, mat->rowIndex("row0"));
+	EXPECT_EQ(0u, mat->rowIndex("row1"));
+	EXPECT_EQ(1u, mat->rowIndex("row0"));
 }
 
 TYPED_TEST(MatrixTest, colIndex)
@@ -301,8 +301,8 @@ TYPED_TEST(MatrixTest, colIndex)
 	ASSERT_EQ("col0", mat->colName(0));
 	ASSERT_EQ("col1", mat->colName(1));
 
-	EXPECT_EQ(0, mat->colIndex("col0"));
-	EXPECT_EQ(1, mat->colIndex("col1"));
+	EXPECT_EQ(0u, mat->colIndex("col0"));
+	EXPECT_EQ(1u, mat->colIndex("col1"));
 
 	mat->setColName(0, "col1");
 	mat->setColName(1, "col0");
@@ -310,8 +310,8 @@ TYPED_TEST(MatrixTest, colIndex)
 	ASSERT_EQ("col1", mat->colName(0));
 	ASSERT_EQ("col0", mat->colName(1));
 
-	EXPECT_EQ(0, mat->colIndex("col1"));
-	EXPECT_EQ(1, mat->colIndex("col0"));
+	EXPECT_EQ(0u, mat->colIndex("col1"));
+	EXPECT_EQ(1u, mat->colIndex("col0"));
 }
 
 TYPED_TEST(MatrixTest, hasRow)
@@ -338,14 +338,14 @@ TYPED_TEST(MatrixTest, cols)
 {
 	auto mat = buildTestMatrix<TypeParam>(7, 2);
 
-	EXPECT_EQ(2, mat->cols());
+	EXPECT_EQ(2u, mat->cols());
 }
 
 TYPED_TEST(MatrixTest, rows)
 {
 	auto mat = buildTestMatrix<TypeParam>(7, 2);
 
-	EXPECT_EQ(7, mat->rows());
+	EXPECT_EQ(7u, mat->rows());
 }
 
 TYPED_TEST(MatrixTest, transpose)
@@ -382,8 +382,8 @@ TYPED_TEST(MatrixTest, shuffleRows)
 	auto mat      = buildTestMatrix<TypeParam>();
 	auto mat_orig = buildTestMatrix<TypeParam>();
 
-	ASSERT_EQ(5, mat->rows());
-	ASSERT_EQ(3, mat->cols());
+	ASSERT_EQ(5u, mat->rows());
+	ASSERT_EQ(3u, mat->cols());
 
 	std::vector<Matrix::index_type> perm = {
 		2, 1, 3, 4, 0
@@ -395,8 +395,8 @@ TYPED_TEST(MatrixTest, shuffleRows)
 		return;
 	}
 
-	ASSERT_EQ(5, mat->rows());
-	ASSERT_EQ(3, mat->cols());
+	ASSERT_EQ(5u, mat->rows());
+	ASSERT_EQ(3u, mat->cols());
 
 	for(unsigned int i = 0; i < mat_orig->rows(); ++i) {
 		EXPECT_EQ(mat_orig->rowName(perm[i]), mat->rowName(i));
@@ -412,8 +412,8 @@ TYPED_TEST(MatrixTest, shuffleCols)
 	auto mat      = buildTestMatrix<TypeParam>();
 	auto mat_orig = buildTestMatrix<TypeParam>();
 
-	ASSERT_EQ(5, mat->rows());
-	ASSERT_EQ(3, mat->cols());
+	ASSERT_EQ(5u, mat->rows());
+	ASSERT_EQ(3u, mat->cols());
 
 	std::vector<Matrix::index_type> perm = {
 		2, 0, 1
@@ -425,13 +425,13 @@ TYPED_TEST(MatrixTest, shuffleCols)
 		return;
 	}
 
-	ASSERT_EQ(5, mat->rows());
-	ASSERT_EQ(3, mat->cols());
+	ASSERT_EQ(5u, mat->rows());
+	ASSERT_EQ(3u, mat->cols());
 
-	for(unsigned int j = 0; j < mat_orig->cols(); ++j) {
+	for(Matrix::index_type j = 0; j < mat_orig->cols(); ++j) {
 		EXPECT_EQ(mat_orig->colName(perm[j]), mat->colName(j));
 
-		for(unsigned int i = 0; i < mat_orig->rows(); ++i) {
+		for(Matrix::index_type i = 0; i < mat_orig->rows(); ++i) {
 			EXPECT_EQ((*mat_orig)(i, perm[j]), (*mat)(i, j));
 		}
 	}
@@ -442,14 +442,14 @@ TYPED_TEST(MatrixTest, removeRows)
 	auto matrix      = buildTestMatrix<TypeParam>();
 	auto matrix_copy = buildTestMatrix<TypeParam>();
 
-	ASSERT_EQ(5, matrix->rows());
-	ASSERT_EQ(3, matrix->cols());
+	ASSERT_EQ(5u, matrix->rows());
+	ASSERT_EQ(3u, matrix->cols());
 
-	ASSERT_EQ(0, matrix->rowIndex("row0"));
-	ASSERT_EQ(1, matrix->rowIndex("row1"));
-	ASSERT_EQ(2, matrix->rowIndex("row2"));
-	ASSERT_EQ(3, matrix->rowIndex("row3"));
-	ASSERT_EQ(4, matrix->rowIndex("row4"));
+	ASSERT_EQ(0u, matrix->rowIndex("row0"));
+	ASSERT_EQ(1u, matrix->rowIndex("row1"));
+	ASSERT_EQ(2u, matrix->rowIndex("row2"));
+	ASSERT_EQ(3u, matrix->rowIndex("row3"));
+	ASSERT_EQ(4u, matrix->rowIndex("row4"));
 
 	std::vector<Matrix::index_type> indices = {1, 2, 4};
 	try {
@@ -458,16 +458,16 @@ TYPED_TEST(MatrixTest, removeRows)
 		return;
 	}
 
-	EXPECT_EQ(2, matrix->rows());
-	EXPECT_EQ(3, matrix->cols());
+	EXPECT_EQ(2u, matrix->rows());
+	EXPECT_EQ(3u, matrix->cols());
 
-	for(unsigned int i = 0; i < matrix->cols(); ++i) {
+	for(Matrix::index_type i = 0; i < matrix->cols(); ++i) {
 		EXPECT_EQ((*matrix_copy)(0, i), (*matrix)(0, i));
 		EXPECT_EQ((*matrix_copy)(3, i), (*matrix)(1, i));
 	}
 
-	EXPECT_EQ(0, matrix->rowIndex("row0"));
-	EXPECT_EQ(1, matrix->rowIndex("row3"));
+	EXPECT_EQ(0u, matrix->rowIndex("row0"));
+	EXPECT_EQ(1u, matrix->rowIndex("row3"));
 	EXPECT_EQ("row0", matrix->rowName(0));
 	EXPECT_EQ("row3", matrix->rowName(1));
 }
@@ -490,15 +490,15 @@ TYPED_TEST(MatrixTest, removeCols)
 		}
 	}
 
-	ASSERT_EQ(5, matrix->cols());
-	ASSERT_EQ(3, matrix->rows());
+	ASSERT_EQ(5u, matrix->cols());
+	ASSERT_EQ(3u, matrix->rows());
 
 	// The names should be row0 - row4 as we transposed the matrix
-	ASSERT_EQ(0, matrix->colIndex("col0"));
-	ASSERT_EQ(1, matrix->colIndex("col1"));
-	ASSERT_EQ(2, matrix->colIndex("col2"));
-	ASSERT_EQ(3, matrix->colIndex("col3"));
-	ASSERT_EQ(4, matrix->colIndex("col4"));
+	ASSERT_EQ(0u, matrix->colIndex("col0"));
+	ASSERT_EQ(1u, matrix->colIndex("col1"));
+	ASSERT_EQ(2u, matrix->colIndex("col2"));
+	ASSERT_EQ(3u, matrix->colIndex("col3"));
+	ASSERT_EQ(4u, matrix->colIndex("col4"));
 
 	std::vector<Matrix::index_type> indices = {1, 2, 4};
 	try {
@@ -507,16 +507,16 @@ TYPED_TEST(MatrixTest, removeCols)
 		return;
 	}
 
-	EXPECT_EQ(2, matrix->cols());
-	EXPECT_EQ(3, matrix->rows());
+	EXPECT_EQ(2u, matrix->cols());
+	EXPECT_EQ(3u, matrix->rows());
 
-	for(unsigned int i = 0; i < matrix->rows(); ++i) {
+	for(Matrix::index_type i = 0; i < matrix->rows(); ++i) {
 		EXPECT_EQ((*matrix_copy)(i, 0), (*matrix)(i, 0));
 		EXPECT_EQ((*matrix_copy)(i, 3), (*matrix)(i, 1));
 	}
 
-	EXPECT_EQ(0, matrix->colIndex("col0"));
-	EXPECT_EQ(1, matrix->colIndex("col3"));
+	EXPECT_EQ(0u, matrix->colIndex("col0"));
+	EXPECT_EQ(1u, matrix->colIndex("col3"));
 	EXPECT_EQ("col0", matrix->colName(0));
 	EXPECT_EQ("col3", matrix->colName(1));
 }
@@ -563,7 +563,7 @@ TYPED_TEST(MatrixTest, setRowNames)
 		"row0", "row1", "row2", "row3", "row4"
 	};
 
-	ASSERT_EQ(5, matrix->rows());
+	ASSERT_EQ(5u, matrix->rows());
 	EXPECT_EQ("", matrix->rowName(0));
 	EXPECT_EQ("", matrix->rowName(1));
 	EXPECT_EQ("", matrix->rowName(2));
@@ -578,11 +578,11 @@ TYPED_TEST(MatrixTest, setRowNames)
 	EXPECT_EQ("row3", matrix->rowName(3));
 	EXPECT_EQ("row4", matrix->rowName(4));
 
-	EXPECT_EQ(0, matrix->rowIndex("row0"));
-	EXPECT_EQ(1, matrix->rowIndex("row1"));
-	EXPECT_EQ(2, matrix->rowIndex("row2"));
-	EXPECT_EQ(3, matrix->rowIndex("row3"));
-	EXPECT_EQ(4, matrix->rowIndex("row4"));
+	EXPECT_EQ(0u, matrix->rowIndex("row0"));
+	EXPECT_EQ(1u, matrix->rowIndex("row1"));
+	EXPECT_EQ(2u, matrix->rowIndex("row2"));
+	EXPECT_EQ(3u, matrix->rowIndex("row3"));
+	EXPECT_EQ(4u, matrix->rowIndex("row4"));
 }
 
 TYPED_TEST(MatrixTest, setColNames)
@@ -593,7 +593,7 @@ TYPED_TEST(MatrixTest, setColNames)
 		"col0", "col1", "col2", "col3", "col4"
 	};
 
-	ASSERT_EQ(5, matrix->cols());
+	ASSERT_EQ(5u, matrix->cols());
 	EXPECT_EQ("", matrix->colName(0));
 	EXPECT_EQ("", matrix->colName(1));
 	EXPECT_EQ("", matrix->colName(2));
@@ -608,9 +608,9 @@ TYPED_TEST(MatrixTest, setColNames)
 	EXPECT_EQ("col3", matrix->colName(3));
 	EXPECT_EQ("col4", matrix->colName(4));
 
-	EXPECT_EQ(0, matrix->colIndex("col0"));
-	EXPECT_EQ(1, matrix->colIndex("col1"));
-	EXPECT_EQ(2, matrix->colIndex("col2"));
-	EXPECT_EQ(3, matrix->colIndex("col3"));
-	EXPECT_EQ(4, matrix->colIndex("col4"));
+	EXPECT_EQ(0u, matrix->colIndex("col0"));
+	EXPECT_EQ(1u, matrix->colIndex("col1"));
+	EXPECT_EQ(2u, matrix->colIndex("col2"));
+	EXPECT_EQ(3u, matrix->colIndex("col3"));
+	EXPECT_EQ(4u, matrix->colIndex("col4"));
 }
