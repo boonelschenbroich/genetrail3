@@ -12,6 +12,12 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 	if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.8.0")
 		message(FATAL_ERROR "GeneTrail 2 requires a GCC version >= 4.8.0")
 	endif()
+
+	# This "fixes" some annoying warnings with Eigen3. We can probably
+	# Remove this when newer Eigen versions are available.
+	if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER "6.0.0")
+		LIST(APPEND CXX_FLAGS "-Wno-ignored-attributes")
+	endif()
 endif()
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
