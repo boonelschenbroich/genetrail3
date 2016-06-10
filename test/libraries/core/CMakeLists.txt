@@ -8,6 +8,7 @@ create_test_config_file()
 
 add_gtest(BoostGraphParser_tests            LIBRARIES gtcore)
 add_gtest(BoostGraphProcessor_tests         LIBRARIES gtcore)
+add_gtest(Category_tests                    LIBRARIES gtcore)
 add_gtest(DenseMatrixIterator_tests         LIBRARIES gtcore)
 add_gtest(DenseMatrixReader_tests           LIBRARIES gtcore)
 add_gtest(DenseMatrixWriter_tests           LIBRARIES gtcore)

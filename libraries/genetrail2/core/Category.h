@@ -95,7 +95,7 @@ namespace GeneTrail
 			    first, last, std::inserter(container_, std::end(container_)));
 		}
 
-		explicit Category(EntityDatabase*, const std::string& name);
+		Category(EntityDatabase*, const std::string& name);
 		explicit Category(EntityDatabase* database);
 
 		Category(const Category&) = default;

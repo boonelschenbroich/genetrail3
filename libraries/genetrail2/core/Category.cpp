@@ -20,6 +20,7 @@
 #include "Category.h"
 
 #include <algorithm>
+#include <exception>
 
 namespace GeneTrail
 {
@@ -100,7 +101,7 @@ namespace GeneTrail
 		result.setName(name);
 
 		if(a.database_ != b.database_) {
-			throw "";
+			throw std::invalid_argument("EntityDatabases not compatible.");
 		}
 
 		std::set_intersection(
@@ -118,7 +119,7 @@ namespace GeneTrail
 		result.setName(name);
 
 		if(a.database_ != b.database_) {
-			throw "";
+			throw std::invalid_argument("EntityDatabases not compatible.");
 		}
 
 		result.container_.reserve(std::max(a.size(), b.size()));
