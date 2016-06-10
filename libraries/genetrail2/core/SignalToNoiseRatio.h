@@ -40,12 +40,13 @@ template <typename ValueType> class GT2_EXPORT SignalToNoiseRatio
 	SignalToNoiseRatio(value_type tol = 1e-4) : tolerance_(tol), score_(0) {}
 
 	/**
-	 * This method implements the standerd F-Test.
+	 * This method implements the signal-to-noise ratio.
 	 *
-	 * @param Iterator
-	 * @param Iterator
-	 * @param Iterator
-	 * @param Iterator
+	 * @param first_begin  Iterator pointing to the start of the first group.
+	 * @param first_end    Iterator pointing to the end of the first group.
+	 * @param second_begin Iterator pointing to the start of the second group.
+	 * @param second_end   Iterator pointing to the end of the second group.
+	 *
 	 * @return Signal to noise ratio between the two groups
 	 */
 	template <typename InputIterator1, typename InputIterator2>
