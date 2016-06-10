@@ -64,12 +64,14 @@ namespace GeneTrail
 
 		/**
 		 * This method computes the running sum statistic, based on the given
-		 *categories.
+		 * categories.
 		 *
 		 * @param category Category for which the RSc should be computed.
-		 * @param testSet Sorted list of genes, based on which the RSc should be
-		 *computed.
-		 * @return The RSc for the given categories.
+		 * @param begin Iterator pointing to the beginning of a sorted list of genes,
+		 *              based on which the RSc should be computed.
+		 * @param end   Iterator pointing to the end of the gene list.
+		 *
+		 * @return The maximum value of the running sum for the given category.
 		 */
 		template<typename Iterator>
 		big_int_type computeRunningSum(const Category& category,
@@ -128,11 +130,12 @@ namespace GeneTrail
 
 		/**
 		 * This method computes the running sum statistic and the corresponding
-		 *p-value, based on the given categories.
+		 * p-value, based on the given categories.
 		 *
 		 * @param category Category for which the p-value should be computed.
 		 * @param testSet Sorted list of genes, based on which the p-value
-		 *should be computed.
+		 *                should be computed.
+		 *
 		 * @return The p-value for the given categories.
 		 */
 		float_type
@@ -146,10 +149,10 @@ namespace GeneTrail
 
 		/**
 		 * This method computes a two-sided p-value for the given running sum
-		 *statistic via dynamic programming.
+		 * statistic via dynamic programming.
 		 *
 		 * @param n The number of genes in the test set
-		 * @param j The number of genes in the category
+		 * @param l The number of genes in the category
 		 * @param RSc The running sum statistic
 		 * @return p-value
 		 */
@@ -163,10 +166,10 @@ namespace GeneTrail
 
 		/**
 		 * This method computes a lower-tailed p-value for the given running sum
-		 *statistic via dynamic programming.
+		 * statistic via dynamic programming.
 		 *
 		 * @param n The number of genes in the test set
-		 * @param j The number of genes in the category
+		 * @param l The number of genes in the category
 		 * @param RSc The running sum statistic
 		 * @return p-value
 		 */
@@ -180,13 +183,13 @@ namespace GeneTrail
 		}
 
 		/**
-		 *  This method computes a upper-tailed p-value for the given running
-		 *  sum statistic via dynamic programming.
+		 * This method computes a upper-tailed p-value for the given running
+		 * sum statistic via dynamic programming.
 		 *
-		 *  @param n The number of genes in the test set
-		 *  @param j The number of genes in the category
-		 *  @param RSc The running sum statistic
-		 *  @return p-value
+		 * @param n The number of genes in the test set
+		 * @param l The number of genes in the category
+		 * @param RSc The running sum statistic
+		 * @return p-value
 		 */
 		float_type computeRightPValue(const size_t& n, const size_t& l,
 		                              const big_int_type& RSc)
@@ -317,7 +320,7 @@ namespace GeneTrail
 		 *statistic.
 		 * (This is not the original implementation of the Paper)
 		 *
-		 * @param m The number of genes in the test set
+		 * @param n The number of genes in the test set
 		 * @param l The number of genes in the category
 		 * @param RSc The running sum statistic
 		 * @return p-value
@@ -371,7 +374,7 @@ namespace GeneTrail
 		 *matrix
 		 * @param i The index of the current layer
 		 * @param RSc The value of the running sum statistic
-		 * @param m The number of genes in the test set
+		 * @param n The number of genes in the test set
 		 * @param l The number of genes in the category
 		 * @param enriched Boolean flag indicating if we consider a enriched or
 		 *depleted
