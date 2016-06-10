@@ -22,15 +22,21 @@ function(add_gtest TEST_NAME)
     add_executable(${TEST_NAME} "${TEST_NAME}.cpp" ${MY_ARGS_SOURCE_FILES})
     target_link_libraries(${TEST_NAME} gtest gtest_main test_driver ${MY_ARGS_LIBRARIES})
 
+    target_include_directories(${TEST_NAME} PRIVATE
+        ${EIGEN3_INCLUDE_DIR}
+        ${RapidJSON_INCLUDE_DIR}
+        ${Boost_INCLUDE_DIRS}
+    )
+
     GT2_COMPILE_FLAGS(${TEST_NAME})
 
     # Add the test to CTest
-    add_test(NAME ${TEST_NAME} WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/libraries/test" COMMAND ${TEST_NAME})
+    add_test(NAME ${TEST_NAME} WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/test/libraries" COMMAND ${TEST_NAME})
 endfunction()
 
 function(create_test_config_file)
 	set(TEST_DATA_PATH "${PROJECT_SOURCE_DIR}/data/")
-	configure_file(${CMAKE_SOURCE_DIR}/libraries/test/cmake/config.h.in "${PROJECT_BINARY_DIR}/config.h")
+	configure_file(${CMAKE_SOURCE_DIR}/test/libraries/cmake/config.h.in "${PROJECT_BINARY_DIR}/config.h")
 	include_directories(${PROJECT_BINARY_DIR})
 endfunction()
 

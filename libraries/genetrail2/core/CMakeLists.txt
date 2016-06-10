@@ -10,8 +10,7 @@ if(NOT Boost_FOUND)
 endif()
 
 if(NOT RapidJSON_INCLUDE_DIR)
-	message(STATUS "RapidJSON_INCLUDE_DIR not specfied, cannot build GeneTrail2 core library.")
-	return()
+	message(FATAL_ERROR "RapidJSON_INCLUDE_DIR not specfied, cannot build GeneTrail2 core library.")
 endif()
 
 SET(GT2_CORE_DEP_LIBRARIES

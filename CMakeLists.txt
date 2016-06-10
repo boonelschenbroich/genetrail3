@@ -33,8 +33,9 @@ if(NOT GTEST_SRC_DIR)
     message(STATUS "GTEST_SRC_DIR not set, disabling unit tests")
 	SET(GT2_ENABLE_TESTING FALSE)
 else()
-	enable_testing()
 	SET(GT2_ENABLE_TESTING TRUE)
+	enable_testing()
+	add_subdirectory(test)
 endif()
 
 ####################################################################################################
