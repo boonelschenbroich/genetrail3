@@ -177,9 +177,8 @@ namespace GeneTrail {
 		/**
 		 * Computes all pooled variances.
 		 *
-		 * @param genes Vector of genes
-		 * @param var_median Median of all empirical variances
-		 * @return Vector of pooled variances
+		 * @param[in,out] genes Vector of genes
+		 * @param[in] var_median Median of all empirical variances
 		 */
 		void computePooledVariances(std::vector<Gene<value_type>>& genes, value_type var_median){
 			value_type lambda = estimatePoolingFactor(genes,var_median);
