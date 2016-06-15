@@ -23,7 +23,6 @@
 #include <genetrail2/core/macros.h>
 
 #include <genetrail2/core/SparseMatrix.h>
-#include "SparseClusterer.h"
 
 #include <vector>
 
@@ -34,7 +33,7 @@ namespace GeneTrail
 	 *
 	 * This class uses the METIS library for computing the graph partition.
 	 */
-	class GT2_EXPORT METISClusterer : public SparseClusterer
+	class GT2_EXPORT METISClusterer
 	{
 		public:
 			/**

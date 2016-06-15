@@ -14,5 +14,4 @@ SET(LIBNAME "CLUSTER")
 
 add_to_library(METISClusterer)
 add_to_library(NeighborhoodBuilder)
-add_to_library(SparseClusterer)
 
