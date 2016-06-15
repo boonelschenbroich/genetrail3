@@ -78,7 +78,7 @@ std::unique_ptr<Matrix> buildTestMatrix<DenseMatrix>()
 	const unsigned int num_rows = 5;
 	const unsigned int num_cols = 3;
 
-	auto mat = std::make_unique<DenseMatrix>(num_rows, num_cols);
+	std::unique_ptr<Matrix> mat = std::make_unique<DenseMatrix>(num_rows, num_cols);
 
 	fillTestMatrix(*mat.get());
 
@@ -115,7 +115,7 @@ std::unique_ptr<Matrix> buildTestMatrix<SparseMatrix>()
 	const unsigned int num_rows = 5;
 	const unsigned int num_cols = 3;
 
-	auto mat = std::make_unique<SparseMatrix>(num_rows, num_cols);
+	std::unique_ptr<Matrix> mat = std::make_unique<SparseMatrix>(num_rows, num_cols);
 
 	typedef Eigen::Triplet<GeneTrail::SparseMatrix::value_type> T;
 
@@ -138,7 +138,7 @@ std::unique_ptr<Matrix> buildTestMatrix<SparseMatrix>()
 	};
 
 	// Fill the matrix
-	mat->matrix().setFromTriplets(tmp.begin(), tmp.end());
+	dynamic_cast<SparseMatrix*>(mat.get())->matrix().setFromTriplets(tmp.begin(), tmp.end());
 
 	mat->setRowName(0, "row0");
 	mat->setRowName(1, "row1");
