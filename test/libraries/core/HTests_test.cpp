@@ -4,7 +4,6 @@
 #include <genetrail2/core/FTest.h>
 #include <genetrail2/core/IndependentTTest.h>
 #include <genetrail2/core/DependentTTest.h>
-#include <genetrail2/core/OneSampleWilcoxonSignedRankTest.h>
 #include <genetrail2/core/IndependentShrinkageTTest.h>
 
 #include <config.h>
