@@ -20,195 +20,273 @@
 #ifndef GT2_CORE_WILCOXON_RANK_SUM_TEST_H
 #define GT2_CORE_WILCOXON_RANK_SUM_TEST_H
 
-
 #include "macros.h"
 #include "Category.h"
 #include "Statistic.h"
+#include "Scores.h"
 #include "multiprecision.h"
 
 #include <boost/math/distributions/normal.hpp>
 
 #include <iostream>
 
-namespace GeneTrail {
+namespace GeneTrail
+{
 
-    /**
-     * Wilcoxon Rank Sum Test
-     */
-    template <typename ValueType>
-    class GT2_EXPORT WilcoxonRankSumTest {
-    public:
-		using value_type = ValueType;
+/**
+ * Wilcoxon Rank Sum Test
+ */
+template <typename ValueType> class GT2_EXPORT WilcoxonRankSumTest
+{
+  public:
+	using value_type = ValueType;
 
-        WilcoxonRankSumTest(value_type tol = 1e-4) : tolerance_(tol) {
-        }
-		
-		template<typename Iterator>
-		size_t intersectionSize(const Category& category, Iterator begin, const Iterator& end)
-		{
-			size_t n = 0;
-			for(; begin != end; ++begin) {
-				if(category.contains(*begin)) {
-					++n;
-				}
+	WilcoxonRankSumTest(value_type tol = 1e-4) : tolerance_(tol) {}
+
+	template <typename Iterator>
+	size_t intersectionSize(const Category& category, Iterator begin,
+	                        const Iterator& end)
+	{
+		size_t n = 0;
+		for(; begin != end; ++begin) {
+			if(category.contains(*begin)) {
+				++n;
 			}
-			return n;
 		}
+		return n;
+	}
 
-		value_type computeZScore_(value_type rank_sum, value_type size1, value_type size2){
-			value_type mu = (size1 * (size1 + size2 + 1) / ((value_type)2.0));
-			value_type sd = std::sqrt((size1 * size2 * (size1 + size2 + 1)) / ((value_type)12.0));
-			enriched_ = rank_sum > mu;
-			return (rank_sum - mu) / sd;
-		}
-		
-		value_type computeZScore(std::vector< std::pair< value_type, unsigned int>>& r, size_t size1, size_t size2){
-            value_type rank_sum1 = 0;
-            value_type rank_sum2 = 0;
+	value_type computeZScore_(value_type rank_sum, value_type size1,
+	                          value_type size2)
+	{
+		value_type mu = (size1 * (size1 + size2 + 1) / ((value_type)2.0));
+		value_type sd = std::sqrt((size1 * size2 * (size1 + size2 + 1)) /
+		                          ((value_type)12.0));
+		enriched_ = rank_sum > mu;
+		return (rank_sum - mu) / sd;
+	}
 
-            for (unsigned int i = 0; i < r.size(); ++i) {
-                unsigned int k = 0;
-				value_type rank = i + 1;
-				// Find ranks with same value
-				for(unsigned int j = i+1; j < r.size(); ++j){
-					if(r[j].first != r[i].first){
-						break;
-					}else{
-						k += 1;
-					}
-				}
+	value_type
+	computeZScore(std::vector<std::pair<value_type, unsigned int>>& r,
+	              size_t size1, size_t size2)
+	{
+		value_type rank_sum1 = 0;
+		value_type rank_sum2 = 0;
 
-				// Build median rank
-				if(k != 0){
-					rank = ((value_type)(rank + rank + k)) / ((value_type) 2.0);
-				}
-
-				// Add to rank sums
-				for(unsigned int l=i; l <= i+k; ++l){
-					if (r[l].second == 0) {
-                   		rank_sum1 += rank;
-                	}
-					//Not needed as we are only intersted in the test set.
-					/* else {
-                    	rank_sum2 += rank;
-                	}*/
-				}
-            }
-
-			score_ = computeZScore_(rank_sum1, size1, size2);
-            return score_;
-		}
-		
-		/**
-		 * This method implements a variant of the Wilcoxon Rank Sum Test
-		 * List L is assumed to be sorted decreasingly.
-		 *
-		 * @param category Category for which the Z-score should be computed.
-		 * @param begin Iterator (begin) of entries (ids of EntityDatabase) of list L
-		 * @param end Iterator (end) of entries (ids of EntityDatabase) of list L
-		 * @return The Z-score for the given category.
-		 */
-		template<typename Iterator>
-		value_type computeZScore(const Category& category, const Iterator& begin, const Iterator& end)
-		{
-			std::vector< std::pair< value_type, unsigned int> > r;
-
-			size_t size1 = 0;
-			size_t size2 = 0;
-			
-			//The counter is to ensure that we do not have ties.
-			size_t counter = 0;
-			for(auto iit = end; iit != begin; ) {
-				--iit;
-				if(category.contains(*iit)) {
-					++size1;
-					r.emplace_back(counter++, 0);
+		size_t i = 0;
+		while(i < r.size()) {
+			unsigned int k = 0;
+			value_type rank = i + 1;
+			// Find ranks with same value
+			for(unsigned int j = i + 1; j < r.size(); ++j) {
+				if(r[j].first != r[i].first) {
+					break;
 				} else {
-					++size2;
-					r.emplace_back(counter++, 1);
+					k += 1;
 				}
-            }
-			
-			return computeZScore(r, size1, size2);
-		}
-		
-		/**
-		 * This method implements a variant of the Wilcoxon Rank Sum Test.
-		 * List L is assumed to be sorted decreasingly and indices start by 0.
-		 *
-		 * @param n Length of the analysed list L.
-		 * @param begin Iterator (begin) of indices of list L that belong to the test set. 
-		 * @param end Iterator (end) of indices of list L that belong to the test set. 
-		 * @return The Z-score for the given category.
-		 */
-		template<typename Iterator>
-		value_type computeZScore(size_t n, const Iterator& begin, const Iterator& end)
-		{
-			size_t rank_sum = 0;
-			
-			for(auto it = begin; it != end; ++it){
-				rank_sum += n - *it;
 			}
-			
-			size_t size = std::distance(begin, end);
-			return computeZScore_(rank_sum, size, n - size);
-		}
 
-        /**
-         * This method implements a variant of the Wilcoxon Rank Sum Test
-		 * Test set and reference set are assumed to contain scores that 
-		 * indicate importance (bigger values are more important).
-         *
-         * @param first_begin Iterator (begin) of test set
-         * @param first_end Iterator (end) of test set
-		 * @param second_begin Iterator  (begin) of reference set
-		 * @param second_end Iterator  (end) of reference set
-         * @return Z-score for the differences between the two groups
-         */
-        template<typename InputIterator1, typename InputIterator2>
-        value_type test(const InputIterator1& first_begin, const InputIterator1& first_end, const InputIterator2& second_begin, const InputIterator2& second_end) {
-            std::vector< std::pair< value_type, unsigned int> > r;
+			// Build median rank
+			if(k != 0) {
+				rank = ((value_type)(rank + rank + k)) / ((value_type)2.0);
+			}
 
-			size_t size1 = 0;
-			for(auto iit = first_begin; iit != first_end; ++iit, ++size1) {
-				r.emplace_back(*iit, 0);
-            }
-
-			size_t size2 = 0;
-			for(auto iit = second_begin; iit != second_end; ++iit, ++size2) {
-				r.emplace_back(*iit, 1);
-            }
-			
-			sort(r.begin(), r.end(),
-				[](const std::pair< value_type, int>& a, const std::pair< value_type, int>& b) {
-					return a.first < b.first;
+			// Add to rank sums
+			for(unsigned int l = i; l <= i + k; ++l) {
+				if(r[l].second == 0) {
+					rank_sum1 += rank;
 				}
-			);
-			
-			return computeZScore(r, size1, size2);
-        }
-
-		boost::math::normal distribution(){
-			boost::math::normal dist(0,1);
-			return dist;
+				// Not needed as we are only intersted in the test set.
+				/* else {
+				    rank_sum2 += rank;
+				}*/
+			}
+			i += k + 1;
 		}
 
-		std::pair<value_type, value_type> confidenceInterval(const value_type& alpha) {
-			value_type conf = boost::math::quantile(boost::math::complement(distribution(), (1 - alpha) / 2.0));
-			return std::make_pair(score_ / conf, score_ * conf);
+		score_ = computeZScore_(rank_sum1, size1, size2);
+		return score_;
+	}
+
+	/**
+	 * This method implements a variant of the Wilcoxon Rank Sum Test
+	 * List L is assumed to be sorted decreasingly.
+	 *
+	 * @param category Category for which the Z-score should be computed.
+	 * @param begin Iterator (begin) of entries (ids of EntityDatabase) of list
+	 *L
+	 * @param end Iterator (end) of entries (ids of EntityDatabase) of list L
+	 * @return The Z-score for the given category.
+	 */
+	template <typename Iterator>
+	value_type computeZScore(const Category& category, const Iterator& begin,
+	                         const Iterator& end)
+	{
+		std::vector<std::pair<value_type, unsigned int>> r;
+
+		size_t size1 = 0;
+		size_t size2 = 0;
+
+		// The counter is to ensure that we do not have ties.
+		size_t counter = 0;
+		for(auto iit = end; iit != begin;) {
+			--iit;
+			if(category.contains(*iit)) {
+				++size1;
+				r.emplace_back(counter++, 0);
+			} else {
+				++size2;
+				r.emplace_back(counter++, 1);
+			}
 		}
 
-		bool enriched(){
-			return enriched_;
+		return computeZScore(r, size1, size2);
+	}
+
+	/**
+	 * This method implements a variant of the Wilcoxon Rank Sum Test.
+	 * List L is assumed to be sorted decreasingly and indices start by 0.
+	 *
+	 * @param n Length of the analysed list L.
+	 * @param begin Iterator (begin) of indices of list L that belong to the
+	 *test set.
+	 * @param end Iterator (end) of indices of list L that belong to the test
+	 *set.
+	 * @return The Z-score for the given category.
+	 */
+	template <typename Iterator>
+	value_type computeZScore(size_t n, const Iterator& begin,
+	                         const Iterator& end)
+	{
+		size_t rank_sum = 0;
+
+		for(auto it = begin; it != end; ++it) {
+			rank_sum += n - *it;
 		}
 
-    protected:
+		size_t size = std::distance(begin, end);
+		return computeZScore_(rank_sum, size, n - size);
+	}
 
-        value_type tolerance_;
-		value_type score_;
-		bool enriched_;
-    };
+	/**
+	 * This method implements a variant of the Wilcoxon Rank Sum Test
+	 * Test set and reference set are assumed to contain scores that
+	 * indicate importance (bigger values are more important).
+	 *
+	 * @param first_begin Iterator (begin) of test set
+	 * @param first_end Iterator (end) of test set
+	 * @param second_begin Iterator  (begin) of reference set
+	 * @param second_end Iterator  (end) of reference set
+	 * @return Z-score for the differences between the two groups
+	 */
+	template <typename InputIterator1, typename InputIterator2>
+	value_type
+	test(const InputIterator1& first_begin, const InputIterator1& first_end,
+	     const InputIterator2& second_begin, const InputIterator2& second_end)
+	{
+		std::vector<std::pair<value_type, unsigned int>> r;
+
+		size_t size1 = 0;
+		for(auto iit = first_begin; iit != first_end; ++iit, ++size1) {
+			r.emplace_back(*iit, 0);
+		}
+
+		size_t size2 = 0;
+		for(auto iit = second_begin; iit != second_end; ++iit, ++size2) {
+			r.emplace_back(*iit, 1);
+		}
+
+		sort(r.begin(), r.end(), [](const std::pair<value_type, int>& a,
+		                            const std::pair<value_type, int>& b) {
+			return a.first < b.first;
+		});
+
+		return computeZScore(r, size1, size2);
+	}
+
+	/**
+	 * This method implements a variant of the Wilcoxon Rank Sum Test
+	 *
+	 * It is specialised for working with a list of scores sorted by score
+	 * and a range of input iterators indicating scores belonging to one of
+	 * the groups. The indices must also be provided in to order of the
+	 * scores.
+	 *
+	 * @param scores a scores object that was sorted by score.
+	 * @param first start of the range of indices into the passed scores
+	 * object.
+	 * @param last  end of the range of indices.
+	 *
+	 * @return Z-score for the differences between the two groups
+	 *
+	 */
+	template <typename InputIterator>
+	value_type test_sorted(const Scores& scores, InputIterator first,
+	                       const InputIterator& last)
+	{
+		auto size1 = std::distance(first, last);
+		auto size2 = scores.size() - size1;
+		assert(size1 <= scores.size());
+
+		value_type rank_sum1 = 0;
+		value_type rank_sum2 = 0;
+
+		size_t i = 0;
+		while(i < scores.size()) {
+			size_t k = 0;
+			value_type rank = i + 1;
+			// Find ranks with same value
+			for(size_t j = i + 1; j < scores.size(); ++j) {
+				if(scores[j].score() != scores[i].score()) {
+					break;
+				} else {
+					k += 1;
+				}
+			}
+
+			// Build median rank
+			if(k != 0) {
+				rank = ((value_type)(rank + rank + k)) / ((value_type)2.0);
+			}
+
+			// Add to rank sums
+			for(auto l = scores.begin() + i; l != scores.begin() + i + k + 1;
+			    ++l) {
+				if(first != last && l->index() == first->index()) {
+					rank_sum1 += rank;
+					++first;
+				} else {
+					rank_sum2 += rank;
+				}
+			}
+
+			i += k + 1;
+		}
+
+		return score_ = computeZScore_(rank_sum1, size1, size2);
+	}
+
+	boost::math::normal distribution()
+	{
+		boost::math::normal dist(0, 1);
+		return dist;
+	}
+
+	std::pair<value_type, value_type>
+	confidenceInterval(const value_type& alpha)
+	{
+		value_type conf = boost::math::quantile(
+		    boost::math::complement(distribution(), (1 - alpha) / 2.0));
+		return std::make_pair(score_ / conf, score_ * conf);
+	}
+
+	bool enriched() { return enriched_; }
+
+  protected:
+	value_type tolerance_;
+	value_type score_;
+	bool enriched_;
+};
 }
 
 #endif // GT2_CORE_WILCOXON_RANK_SUM_TEST_H
-
