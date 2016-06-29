@@ -51,8 +51,13 @@ TEST(GeneSetEnrichmentAnalysis, littleExample1) {
 
 TEST(GeneSetEnrichmentAnalysis, littleExample2) {
 	GeneSetEnrichmentAnalysis<double, int> gsea;
-	EXPECT_NEAR(gsea.computeRightPValue(8,4,-16), 0.01428, TOLERANCE);
-	EXPECT_NEAR(gsea.computeOneSidedPValueD(8,4,-16), gsea.computeRightPValue(8,4,-16), TOLERANCE);
+	EXPECT_NEAR(gsea.computeLeftPValue(8,4,-16), 0.01428, TOLERANCE);
+	EXPECT_NEAR(gsea.computeOneSidedPValueD(8,4,-16), gsea.computeLeftPValue(8,4,-16), TOLERANCE);
+}
+
+TEST(GeneSetEnrichmentAnalysis, littleExample3) {
+        GeneSetEnrichmentAnalysis<double, int> gsea;
+        EXPECT_NEAR(gsea.computeRightPValueD(8,4,-16), gsea.computeRightPValue(8,4,-16), TOLERANCE);
 }
 
 TEST(GeneSetEnrichmentAnalysis, smallExampleIndices) {
@@ -92,4 +97,3 @@ TEST(GeneSetEnrichmentAnalysis, smallExampleIndices2) {
 
 	EXPECT_EQ(-30, max_RSc);
 }
-

@@ -138,7 +138,7 @@ namespace GeneTrail
 		}
 		
 		float_type computeScore(size_t n, size_t l, big_int_type RSc)
-		{
+		{ 
 			return boost::numeric_cast<float_type>(RSc) / boost::numeric_cast<float_type>(boost::numeric_cast<big_int_type>(n-l)*boost::numeric_cast<big_int_type>(l));
 		}
 
@@ -191,8 +191,8 @@ namespace GeneTrail
 		{
 			assert(n >= l);
 			return computePValue_(
-			    n, l, abs(RSc),
-			    [](big_int_type v, big_int_type RSc) { return -RSc < v; });
+			    n, l, RSc,
+			    [](big_int_type v, big_int_type RSc) { return RSc < v; });
 		}
 
 		/**
@@ -209,7 +209,7 @@ namespace GeneTrail
 		{
 			assert(n >= l);
 			return computePValue_(
-			    n, l, abs(RSc),
+			    n, l, RSc,
 			    [](big_int_type v, big_int_type RSc) { return v < RSc; });
 		}
 
@@ -346,6 +346,70 @@ namespace GeneTrail
 			pathways[0] = 1;
 
 			bool enriched = RSc >= 0;
+			for(size_t i = 0; i < n; i++) {
+				iterate(pathways, i, RSc, n, l, enriched);
+			}
+
+			auto iter = pathways.find(0);
+
+			if(iter != pathways.end()) {
+				float_type binom =
+				    boost::math::binomial_coefficient<float_type>(n, l);
+				return 1.0 - iter->second / binom;
+			}
+			return 1.0;
+		}
+		
+		/**
+		 * DEPRECATED - Please use the new implementation
+		 * This method computes a lower-tailed p-value for the given running sum
+		 * statistic.
+		 * (This is not the original implementation of the Paper)
+		 *
+		 * @param m The number of genes in the test set
+		 * @param l The number of genes in the category
+		 * @param RSc The running sum statistic
+		 * @return p-value
+		 */
+		float_type computeLeftPValueD(const size_t& n, const size_t& l,
+		                                  const big_int_type& RSc)
+		{
+			std::map<big_int_type, float_type> pathways;
+			pathways[0] = 1;
+
+			bool enriched = false;
+			for(size_t i = 0; i < n; i++) {
+				iterate(pathways, i, RSc, n, l, enriched);
+			}
+
+			auto iter = pathways.find(0);
+
+			if(iter != pathways.end()) {
+				float_type binom =
+				    boost::math::binomial_coefficient<float_type>(n, l);
+				return 1.0 - iter->second / binom;
+			}
+			return 1.0;
+		}
+		
+		/**
+		 * DEPRECATED - Please use the new implementation
+		 * This method computes a one-sided p-value for the given running sum
+		 * statistic.
+		 * (This is not the original implementation of the Paper)
+		 *
+		 * @param m The number of genes in the test set
+		 * @param l The number of genes in the category
+		 * @param RSc The running sum statistic
+		 * @return p-value
+		 */
+		float_type computeRightPValueD(const size_t& n, const size_t& l,
+		                                  const big_int_type& RSc)
+		{
+			std::map<big_int_type, float_type> pathways;
+			pathways[0] = 1;
+
+			bool enriched = true;
 			for(size_t i = 0; i < n; i++) {
 				iterate(pathways, i, RSc, n, l, enriched);
 			}
