@@ -1,16 +1,17 @@
-project(GENETRAIL2_CORE_LIBRARY)
+project(GENETRAIL2_REGULATION_LIBRARY)
 
 ####################################################################################################
 # Check if the needed libraries are available
 ####################################################################################################
 
 if(NOT Boost_FOUND)
-	message(STATUS "Boost not found, cannot build GeneTrail2 core library.")
+	message(STATUS "Boost not found, cannot build GeneTrail2 regulation library.")
 	return()
 endif()
 
 if(NOT RapidJSON_INCLUDE_DIR)
-	message(FATAL_ERROR "RapidJSON_INCLUDE_DIR not specfied, cannot build GeneTrail2 core library.")
+	message(STATUS "RapidJSON_INCLUDE_DIR not specfied, cannot build GeneTrail2 core library.")
+	return()
 endif()
 
 SET(GT2_CORE_DEP_LIBRARIES
@@ -31,26 +32,32 @@ endif()
 
 include(files.cmake)
 
-add_library(gtcore SHARED
-	${CORE_SOURCES}
-	${CORE_HEADERS}
+include_directories(
+	"${CMAKE_SOURCE_DIR}/libraries/"
+	"${CMAKE_BINARY_DIR}/libraries/"
+	"${RapidJSON_INCLUDE_DIR}"
 )
 
-GT2_COMPILE_FLAGS(gtcore)
+add_library(gtregulation SHARED
+	${REGULATION_SOURCES}
+	${REGULATION_HEADERS}
+)
 
-target_include_directories(gtcore PUBLIC "${CMAKE_BINARY_DIR}/libraries/" "${RapidJSON_INCLUDE_DIR}")
+set_target_properties(gtregulation PROPERTIES LINKER_LANGUAGE CXX)
 
-target_link_libraries(gtcore ${GT2_CORE_DEP_LIBRARIES})
+GT2_COMPILE_FLAGS(gtregulation)
+
+target_link_libraries(gtregulation gtcore ${GT2_CORE_DEP_LIBRARIES})
 
 ####################################################################################################
 # Install the library
 ####################################################################################################
 
 INSTALL(FILES ${CORE_HEADERS}
-	DESTINATION include/genetrail2/core/
+	DESTINATION include/genetrail2/regulation/
 )
 
-INSTALL(TARGETS gtcore
+INSTALL(TARGETS gtregulation
 	EXPORT GeneTrail2Targets
 	RUNTIME DESTINATION bin COMPONENT libraries
 	LIBRARY DESTINATION lib COMPONENT libraries
