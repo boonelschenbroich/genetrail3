@@ -23,14 +23,12 @@
 #include <genetrail2/core/EntityDatabase.h>
 #include <genetrail2/core/Scores.h>
 
+#include <memory>
+
 using namespace GeneTrail;
 
 class ScoresTest : public ::testing::Test
 {
-	public:
-	void TearDown() override {
-		EntityDatabase::global->clear();
-	}
 };
 
 TEST_F(ScoresTest, Constructor)
