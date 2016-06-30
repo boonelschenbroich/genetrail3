@@ -26,25 +26,28 @@
 #include <boost/multiprecision/mpfr.hpp>
 namespace GeneTrail
 {
-	template <int N>
-	using big_float_tpl =
-	    boost::multiprecision::number<boost::multiprecision::mpfr_float_backend<N>>;
+namespace bmp = boost::multiprecision;
+template <int N> using big_float_tpl = bmp::number<bmp::mpfr_float_backend<N>>;
+
+using rational = bmp::mpq_rational;
 }
 #elif defined GENETRAIL2_HAS_GMP
 #include <boost/multiprecision/gmp.hpp>
 namespace GeneTrail
 {
-	template <int N>
-	using big_float_tpl =
-	    boost::multiprecision::number<boost::multiprecision::gmp_float<N>>;
+namespace bmp = boost::multiprecision;
+template <int N> using big_float_tpl = bmp::number<bmp::gmp_float<N>>;
+
+using rational = bmp::mpq_rational;
 }
 #else
 #include <boost/multiprecision/cpp_dec_float.hpp>
 namespace GeneTrail
 {
-	template <int N>
-	using big_float_tpl =
-	    boost::multiprecision::number<boost::multiprecision::cpp_dec_float<N>>;
+namespace bmp = boost::multiprecision;
+template <int N> using big_float_tpl = bmp::number<bmp::cpp_dec_float<N>>;
+
+using rational = bmp::cpp_rational;
 }
 #endif
 
