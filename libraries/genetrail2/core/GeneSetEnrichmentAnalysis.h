@@ -24,9 +24,9 @@
 #include "Category.h"
 
 #include "macros.h"
+#include "multiprecision.h"
 
 #include <boost/math/special_functions/binomial.hpp>
-#include <boost/numeric/conversion/cast.hpp>
 
 #include <functional>
 #include <map>
@@ -139,7 +139,8 @@ namespace GeneTrail
 		
 		float_type computeScore(size_t n, size_t l, big_int_type RSc)
 		{ 
-			return boost::numeric_cast<float_type>(RSc) / boost::numeric_cast<float_type>(boost::numeric_cast<big_int_type>(n-l)*boost::numeric_cast<big_int_type>(l));
+			rational r(RSc, boost::numeric_cast<big_int_type>(n-l)*boost::numeric_cast<big_int_type>(l));
+			return r.convert_to<float_type>();
 		}
 
 		/**
