@@ -21,10 +21,9 @@
 #ifndef GT2_CORE_GENE_SET_ENRICHMENT_ANALYSIS_H
 #define GT2_CORE_GENE_SET_ENRICHMENT_ANALYSIS_H
 
-#include "macros.h"
-#include "multiprecision.h"
-
 #include "Category.h"
+
+#include "macros.h"
 
 #include <boost/math/special_functions/binomial.hpp>
 #include <boost/numeric/conversion/cast.hpp>
@@ -61,7 +60,7 @@ namespace GeneTrail
 
 		big_int_type absMax(big_int_type a, big_int_type b)
 		{
-			return std::abs(a) < std::abs(b) ? b : a;
+			return abs(a) < abs(b) ? b : a;
 		}
 
 		/**
@@ -76,8 +75,7 @@ namespace GeneTrail
 		 * @return The maximum value of the running sum for the given category.
 		 */
 		template<typename Iterator>
-		big_int_type computeRunningSum(const Category& category,
-									   Iterator begin, const Iterator& end)
+		big_int_type computeRunningSum(const Category& category, Iterator begin, const Iterator& end)
 		{
 			size_t n = std::distance(begin, end);
 			size_t l = intersectionSize(category, begin, end);
@@ -97,7 +95,16 @@ namespace GeneTrail
 
 			return RSc;
 		}
-
+		
+		/**
+		 * This method computes the running sum statistic, based on the given
+		 * categories.
+		 *
+		 * @param n Size of the analyzed category.
+		 * @param testSet Sorted list of genes, based on which the RSc should be
+		 * computed.
+		 * @return The RSc for the given category.
+		 */
 		template<typename Iterator>
 		big_int_type computeRunningSum(size_t n, Iterator begin, const Iterator& end)
 		{
@@ -141,8 +148,7 @@ namespace GeneTrail
 		 *
 		 * @param category Category for which the p-value should be computed.
 		 * @param testSet Sorted list of genes, based on which the p-value
-		 *                should be computed.
-		 *
+		 * should be computed.
 		 * @return The p-value for the given categories.
 		 */
 		float_type
@@ -185,7 +191,7 @@ namespace GeneTrail
 		{
 			assert(n >= l);
 			return computePValue_(
-			    n, l, std::abs(RSc),
+			    n, l, abs(RSc),
 			    [](big_int_type v, big_int_type RSc) { return -RSc < v; });
 		}
 
@@ -203,7 +209,7 @@ namespace GeneTrail
 		{
 			assert(n >= l);
 			return computePValue_(
-			    n, l, std::abs(RSc),
+			    n, l, abs(RSc),
 			    [](big_int_type v, big_int_type RSc) { return v < RSc; });
 		}
 
@@ -234,7 +240,7 @@ namespace GeneTrail
 			if(debug) {
 				std::cout << M[0] << " ";
 			}
-
+			
 			// Initialize
 			for(size_t k = 1; k <= nl; ++k) {
 				if(comp(-k * l, RSc)) {
@@ -276,16 +282,17 @@ namespace GeneTrail
 			if(M[nl] >= binom) {
 				return 0.0;
 			}
+			
 			return 1.0 - M[nl] / binom;
 		}
 
 		/**
 		 * This method computes the running sum statistic and the corresponding
-		 *p-value, based on the given categories.
+		 * p-value, based on the given categories.
 		 *
 		 * @param category Category for which the p-value should be computed.
 		 * @param testSet Sorted list of genes, based on which the p-value
-		 *should be computed.
+		 * should be computed.
 		 * @return The p-value for the given categories.
 		 */
 		float_type
@@ -305,11 +312,11 @@ namespace GeneTrail
 		/**
 		 * DEPRECATED - Please use the new implementation
 		 * This method computes the running sum statistic and the corresponding
-		 *p-value, based on the given categories.
+		 * p-value, based on the given categories.
 		 *
 		 * @param category Category for which the p-value should be computed.
 		 * @param testSet Sorted list of genes, based on which the p-value
-		 *should be computed.
+		 * should be computed.
 		 * @return The p-value for the given categories.
 		 */
 		float_type
@@ -324,7 +331,7 @@ namespace GeneTrail
 		/**
 		 * DEPRECATED - Please use the new implementation
 		 * This method computes a one-sided p-value for the given running sum
-		 *statistic.
+		 * statistic.
 		 * (This is not the original implementation of the Paper)
 		 *
 		 * @param n The number of genes in the test set
@@ -355,12 +362,12 @@ namespace GeneTrail
 
 		/**
 		 * This method is needed to fill the map with the number of possible
-		 *paths.
+		 * paths.
 		 *
 		 * @param newpathway Temporary copy of the pathway map
 		 * @param value The number of possible paths at this position.
 		 * @param newpos The new position in the thought dynamic programming
-		 *matrix
+		 * matrix
 		 */
 		void fillNewPathway(std::map<big_int_type, float_type>& newpathway,
 		                    float_type value, const big_int_type& newpos)
@@ -375,16 +382,16 @@ namespace GeneTrail
 
 		/**
 		 * This method iterates over the previous layer of the thought dynamic
-		 *programming matrix and fills the current one.
+		 * programming matrix and fills the current one.
 		 *
 		 * @param pathway The previous layer of the thought dynamic programming
-		 *matrix
+		 * matrix
 		 * @param i The index of the current layer
 		 * @param RSc The value of the running sum statistic
 		 * @param n The number of genes in the test set
 		 * @param l The number of genes in the category
 		 * @param enriched Boolean flag indicating if we consider a enriched or
-		 *depleted
+		 * depleted
 		 */
 		void iterate(std::map<big_int_type, float_type>& pathway,
 		             const big_int_type& i, const big_int_type& RSc,
