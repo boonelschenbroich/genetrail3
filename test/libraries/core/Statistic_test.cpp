@@ -120,6 +120,36 @@ TEST(Statistic, Sd)
 	EXPECT_NEAR(sd2, 39.60982, TOLERANCE);
 }
 
+TEST(Statistic, skewness)
+{
+	double skew1 = statistic::skewness<double, std::vector<double>::iterator>(a.begin(), a.end());
+	EXPECT_NEAR(skew1, -0.4829496, TOLERANCE);
+	double skew2 = statistic::skewness<double, std::vector<double>::iterator>(b.begin(), b.end());
+	EXPECT_NEAR(skew2, 0.0301191, TOLERANCE);
+	double skew3 = statistic::skewness<double, std::vector<double>::iterator>(c.begin(), c.end());
+	EXPECT_NEAR(skew3, -0.5220547, TOLERANCE);
+}
+
+TEST(Statistic, MeanAbsoluteDeviation)
+{
+	double mad1 = statistic::mean_absolute_deviation<double, std::vector<double>::iterator>(a.begin(), a.end());
+	EXPECT_NEAR(mad1, 28.44, TOLERANCE);
+	double mad2 = statistic::mean_absolute_deviation<double, std::vector<double>::iterator>(b.begin(), b.end());
+	EXPECT_NEAR(mad2, 37.2, TOLERANCE);
+	double mad3 = statistic::mean_absolute_deviation<double, std::vector<double>::iterator>(c.begin(), c.end());
+	EXPECT_NEAR(mad3, 9.533333, TOLERANCE);
+}
+
+TEST(Statistic, MedianAbsoluteDeviation)
+{
+	double mad1 = statistic::median_absolute_deviation<double, std::vector<double>::iterator>(a.begin(), a.end());
+	EXPECT_NEAR(mad1, 9.15, TOLERANCE);
+	double mad2 = statistic::median_absolute_deviation<double, std::vector<double>::iterator>(b.begin(), b.end());
+	EXPECT_NEAR(mad2, 33.7, TOLERANCE);
+	double mad3 = statistic::median_absolute_deviation<double, std::vector<double>::iterator>(c.begin(), c.end());
+	EXPECT_NEAR(mad3, 6, TOLERANCE);
+}
+
 TEST(Statistic, Log){
 	auto tmp = a;
 	statistic::abs<double, std::vector<double>::iterator>(tmp.begin(),tmp.end());
@@ -227,4 +257,21 @@ TEST(Statistic, Spearman)
 	auto tmp2 = b;
 	auto covar = statistic::spearman_correlation<double, std::vector<double>::iterator>(tmp.begin(), tmp.end(), tmp2.begin(), tmp2.end());
 	EXPECT_NEAR(covar, -0.06666667, TOLERANCE);
+}
+
+TEST(Statistic, Kendall)
+{
+	std::initializer_list<double> a = {9.694027318, 9.597726177, 9.179537375, 9.027478569, 8.792238023, 7.40578791, 7.104261273, 8.594364081, 7.302828273, 7.288458962};
+	std::initializer_list<double> b1 = {5.747209717, 5.819584082, 5.616658389, 5.577300854, 5.559250186, 5.516019286, 5.41052816, 5.561140502, 5.567504767, 5.545473661};
+	std::initializer_list<double> b2 = {7.793992658, 7.518006447, 7.41210759, 7.260149192, 7.511888682, 7.749760069, 7.502800333, 7.672162745, 7.971909606, 7.621752909};
+	
+	std::vector<double> a_v(a);
+	std::vector<double> b1_v(b1);
+	std::vector<double> b2_v(b2);
+	
+	auto kendall1 = statistic::kendall_tau_correlation<double, std::vector<double>::iterator>(a_v.begin(), a_v.end(), b1_v.begin(), b1_v.end());
+	EXPECT_NEAR(kendall1, 0.73333, TOLERANCE);
+	
+	auto kendall2 = statistic::kendall_tau_correlation<double, std::vector<double>::iterator>(a_v.begin(), a_v.end(), b2_v.begin(), b2_v.end());
+	EXPECT_NEAR(kendall2, -0.06666, TOLERANCE);
 }

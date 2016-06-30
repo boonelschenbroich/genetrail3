@@ -26,6 +26,7 @@
 #include <tuple>
 #include <vector>
 #include <iostream>
+#include <map>
 
 namespace GeneTrail
 {
@@ -268,7 +269,7 @@ value_type middle(InputIterator begin, InputIterator end)
 	const auto dist2 = dist / 2;
 	auto median_position = tmp.begin() + dist2;
 	std::nth_element(tmp.begin(), median_position, tmp.end());
-	
+
 	return *median_position;
 }
 
@@ -354,6 +355,82 @@ std::tuple<value_type, value_type, size_t> mean_var_size(InputIterator begin,
 }
 
 /**
+ * This method calculates the skewness of a given range.
+ *
+ * @param begin InputIterator
+ * @param end InputIterator
+ * @return Skewness of the given range
+ */
+template <typename value_type, typename InputIterator>
+value_type skewness(InputIterator begin, InputIterator end)
+{
+	value_type mean = 0.0, var = 0.0;
+	size_t size = 0u;
+	std::tie(mean, var, size) = mean_var_size<value_type>(begin, end);
+	value_type sd = std::sqrt(var);
+	value_type skewness = 0;
+	if(sd == 0) {
+		return value_type();
+	}
+
+	for(; begin != end; ++begin) {
+		skewness += std::pow((*begin - mean) / sd, 3);
+	}
+
+	return (skewness * size) / ((size - 1) * (size - 2));
+}
+
+/**
+ * This method calculates the average absolute deviation of a given range.
+ *
+ * @param begin InputIterator corresponding to the start of the samples
+ * @param end   InputIterator corresponding to the end of the samples
+ * @param ave Average of the given range
+ * @return Standard deviation of the given range
+ */
+template <typename value_type, typename InputIterator>
+std::vector<value_type> absolute_deviations(InputIterator begin,
+                                            InputIterator end, value_type ave)
+{
+	std::vector<value_type> ads;
+	ads.reserve(std::distance(begin, end));
+
+	for(auto it = begin; it != end; ++it) {
+		ads.emplace_back(std::abs(*it - ave));
+	}
+
+	return ads;
+}
+
+/**
+ * This method calculates the average absolute deviation of a given range.
+ *
+ * @param begin InputIterator corresponding to the start of the samples
+ * @param end   InputIterator corresponding to the end of the samples
+ * @return Standard deviation of the given range
+ */
+template <typename value_type, typename InputIterator>
+value_type mean_absolute_deviation(InputIterator begin, InputIterator end)
+{
+	auto ads = absolute_deviations(begin, end, mean<value_type>(begin, end));
+	return mean<value_type>(ads.begin(), ads.end());
+}
+
+/**
+ * This method calculates the average absolute deviation of a given range.
+ *
+ * @param begin InputIterator corresponding to the start of the samples
+ * @param end   InputIterator corresponding to the end of the samples
+ * @return Standard deviation of the given range
+ */
+template <typename value_type, typename InputIterator>
+value_type median_absolute_deviation(InputIterator begin, InputIterator end)
+{
+	auto ads = absolute_deviations(begin, end, median<value_type>(begin, end));
+	return median<value_type>(ads.begin(), ads.end());
+}
+
+/**
  * This method calculates the standard deviation of a given range.
  *
  * @param begin InputIterator corresponding to the start of the samples
@@ -383,6 +460,33 @@ value_type sd(InputIterator begin, InputIterator end)
  */
 template <typename value_type, typename InputIterator>
 value_type cov(InputIterator first_begin, InputIterator first_end,
+               InputIterator second_begin, InputIterator second_end,
+               value_type mean1, value_type mean2)
+{
+	assert(std::distance(first_begin, first_end) ==
+	       std::distance(second_begin, second_end));
+	value_type cov = 0.0;
+
+	const size_t n = std::distance(first_begin, first_end);
+	for(; first_begin != first_end; ++first_begin, ++second_begin) {
+		cov += (*first_begin - mean1) * (*second_begin - mean2);
+	}
+
+	return cov / (n - 1);
+}
+
+/**
+ * This method calculates the sample covariance between two ranges of
+ *values.
+ *
+ * @param first_begin InputIterator
+ * @param first_end InputIterator
+ * @param second_begin InputIterator
+ * @param second_begin InputIterator
+ * @return Covariance of the given range
+ */
+template <typename value_type, typename InputIterator>
+value_type cov(InputIterator first_begin, InputIterator first_end,
                InputIterator second_begin, InputIterator second_end)
 {
 	assert(std::distance(first_begin, first_end) ==
@@ -390,12 +494,8 @@ value_type cov(InputIterator first_begin, InputIterator first_end,
 	value_type mean1 = mean<value_type, InputIterator>(first_begin, first_end);
 	value_type mean2 =
 	    mean<value_type, InputIterator>(second_begin, second_end);
-	value_type cov = 0.0;
-	size_t n = std::distance(first_begin, first_end);
-	for(size_t i = 0; i < n; ++i) {
-		cov += (*(first_begin + i) - mean1) * (*(second_begin + i) - mean2);
-	}
-	return cov / (n - 1);
+
+	return cov(first_begin, first_end, second_begin, second_end, mean1, mean2);
 }
 
 /**
@@ -419,11 +519,15 @@ pearson_correlation(InputIterator first_begin, InputIterator first_end,
 {
 	assert(std::distance(first_begin, first_end) ==
 	       std::distance(second_begin, second_end));
-	value_type covar = cov<value_type, InputIterator>(first_begin, first_end,
-	                                                  second_begin, second_end);
-	value_type sd1 = sd<value_type, InputIterator>(first_begin, first_end);
-	value_type sd2 = sd<value_type, InputIterator>(second_begin, second_end);
-	return covar / (sd1 * sd2);
+
+	auto mvs1 = mean_var_size<value_type>(first_begin, first_end);
+	auto mvs2 = mean_var_size<value_type>(second_begin, second_end);
+
+	value_type covar = cov(first_begin, first_end, second_begin, second_end,
+	                       std::get<0>(mvs1), std::get<0>(mvs2));
+
+	return covar /
+	       (std::sqrt(std::get<1>(mvs1)) * std::sqrt(std::get<1>(mvs2)));
 }
 
 /**
@@ -470,6 +574,73 @@ spearman_correlation(InputIterator first_begin, InputIterator first_end,
 	return pearson_correlation<value_type, std::vector<int>::iterator>(
 	    first_ranks.begin(), first_ranks.end(), second_ranks.begin(),
 	    second_ranks.end());
+}
+
+/**
+ * This method implements the Kendall Tau correlation coefficient.
+ *
+ * @param first_begin InputIterator
+ * @param first_end InputIterator
+ * @param second_begin InputIterator
+ * @param second_begin InputIterator
+ * @return correlation coefficient
+ */
+template <typename value_type, typename InputIterator>
+value_type
+kendall_tau_correlation(InputIterator first_begin, InputIterator first_end,
+                        InputIterator second_begin, InputIterator second_end)
+{
+	int dist_second = std::distance(second_begin, second_end);
+
+	assert(std::distance(first_begin, first_end) == dist_second);
+
+	std::vector<int> first_ranks =
+	    ranks<value_type, InputIterator>(first_begin, first_end);
+
+	std::map<int, int> rank_map;
+
+	int counter = 0;
+	for(int rank : first_ranks) {
+		rank_map[rank] = counter++;
+	}
+
+	int greater_count = 0, less_count = 0, x_equal_count = 0, y_equal_count = 0;
+
+	for(int i = 0; i < dist_second; i++) {
+		for(int j = i + 1; j < dist_second; j++) {
+			auto x_i = *(first_begin + rank_map[i]);
+			auto x_j = *(first_begin + rank_map[j]);
+			auto y_i = *(second_begin + rank_map[i]);
+			auto y_j = *(second_begin + rank_map[j]);
+
+			if(x_i == x_j) {
+				if(y_i != y_j) {
+					++x_equal_count;
+				}
+				continue;
+			}
+
+			if(y_i == y_j) {
+				++y_equal_count;
+				continue;
+			}
+
+			if(y_i < y_j) {
+				++less_count;
+				continue;
+			}
+
+			++greater_count;
+		}
+	}
+
+	value_type denominator =
+	    std::sqrt((greater_count + less_count + x_equal_count) *
+	              (greater_count + less_count + y_equal_count));
+
+	assert(denominator != 0);
+
+	return (less_count - greater_count) / denominator;
 }
 
 /**
