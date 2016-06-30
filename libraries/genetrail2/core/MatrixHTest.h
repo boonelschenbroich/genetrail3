@@ -568,7 +568,8 @@ namespace GeneTrail
 		             const Matrix& ref, const Matrix& sam, RemoveNaN, Dependent,
 		             Scalar) const
 		{
-			Scores scores(ref.rows(), EntityDatabase::global);
+			auto db = std::make_shared<EntityDatabase>();
+			Scores scores(ref.rows(), db);
 
 			RowMajorMatrixIterator<Matrix> ref_it(&ref, 0), sam_it(&sam, 0);
 
@@ -628,7 +629,8 @@ namespace GeneTrail
 		             const Matrix& ref, const Matrix& sam, RemoveNaN,
 		             Independent, Scalar) const
 		{
-			Scores scores(ref.rows(), EntityDatabase::global);
+			auto db = std::make_shared<EntityDatabase>();
+			Scores scores(ref.rows(), db);
 
 			RowMajorMatrixIterator<Matrix> ref_it(&ref, 0), sam_it(&sam, 0);
 
@@ -669,7 +671,8 @@ namespace GeneTrail
 		             const Matrix& ref, const Matrix& sam, RemoveNaN,
 		             Dep, Vectorized) const
 		{
-			Scores scores(ref.rows(), EntityDatabase::global);
+			auto db = std::make_shared<EntityDatabase>();
+			Scores scores(ref.rows(), db);
 
 			RowMajorMatrixIterator<Matrix> ref_begin(&ref, 0),
 			    ref_end(&ref, ref.rows()), sam_begin(&sam, 0),
@@ -694,7 +697,8 @@ namespace GeneTrail
 		             const Matrix& ref, const Matrix& sam, IgnoreNaN, Dep,
 		             Scalar) const
 		{
-			Scores scores(ref.rows(), EntityDatabase::global);
+			auto db = std::make_shared<EntityDatabase>();
+			Scores scores(ref.rows(), db);
 
 			RowMajorMatrixIterator<Matrix> ref_it(&ref, 0), sam_it(&sam, 0);
 
@@ -722,7 +726,8 @@ namespace GeneTrail
 		             const Matrix& ref, const Matrix& sam, IgnoreNaN, Dep,
 		             Vectorized) const
 		{
-			Scores scores(ref.rows(), EntityDatabase::global);
+			auto db = std::make_shared<EntityDatabase>();
+			Scores scores(ref.rows(), db);
 
 			RowMajorMatrixIterator<Matrix> ref_begin(&ref, 0),
 			    ref_end(&ref, ref.rows()), sam_begin(&sam, 0),
