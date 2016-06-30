@@ -22,10 +22,12 @@
 #define GT2_CORE_GENE_SET_ENRICHMENT_ANALYSIS_H
 
 #include "macros.h"
+#include "multiprecision.h"
 
 #include "Category.h"
 
 #include <boost/math/special_functions/binomial.hpp>
+#include <boost/numeric/conversion/cast.hpp>
 
 #include <functional>
 #include <map>
@@ -126,6 +128,11 @@ namespace GeneTrail
 			RSc = absMax(RSc, rs);
 
 			return RSc;
+		}
+		
+		float_type computeScore(size_t n, size_t l, big_int_type RSc)
+		{
+			return boost::numeric_cast<float_type>(RSc) / boost::numeric_cast<float_type>(boost::numeric_cast<big_int_type>(n-l)*boost::numeric_cast<big_int_type>(l));
 		}
 
 		/**
