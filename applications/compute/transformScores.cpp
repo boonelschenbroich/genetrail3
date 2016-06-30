@@ -20,12 +20,12 @@ namespace bpo = boost::program_options;
 std::string scores = "", output = "", method = "";
 
 std::map<std::string, std::function<void(GeneSet&)>> apply{
-    {"abs", GeneTrail::abs},
-    {"sqrt", GeneTrail::sqrt},
-    {"log", GeneTrail::log},
-    {"log2", GeneTrail::log2},
-    {"log10", GeneTrail::log10},
-    {"pow2", GeneTrail::pow2}};
+    {"abs", GeneTrail::Overloads::abs},
+    {"sqrt", GeneTrail::Overloads::sqrt},
+    {"log", GeneTrail::Overloads::log},
+    {"log2", GeneTrail::Overloads::log2},
+    {"log10", GeneTrail::Overloads::log10},
+    {"pow2", GeneTrail::Overloads::pow2}};
 
 bool parseArguments(int argc, char* argv[])
 {

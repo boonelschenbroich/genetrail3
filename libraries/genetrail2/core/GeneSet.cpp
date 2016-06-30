@@ -196,32 +196,32 @@ namespace GeneTrail
 		return *this;
 	}
 
-	void abs(GeneSet& gene_set)
+	void Overloads::abs(GeneSet& gene_set)
 	{
 		transform(gene_set, [](double d) { return std::abs(d); });
 	}
 
-	void sqrt(GeneSet& gene_set)
+	void Overloads::sqrt(GeneSet& gene_set)
 	{
 		transform(gene_set, [](double d) { return std::sqrt(d); });
 	}
 
-	void log(GeneSet& gene_set)
+	void Overloads::log(GeneSet& gene_set)
 	{
 		transform(gene_set, [](double d) { return std::log(d); });
 	}
 
-	void log2(GeneSet& gene_set)
+	void Overloads::log2(GeneSet& gene_set)
 	{
 		transform(gene_set, [](double d) { return std::log2(d); });
 	}
 
-	void log10(GeneSet& gene_set)
+	void Overloads::log10(GeneSet& gene_set)
 	{
 		transform(gene_set, [](double d) { return std::log10(d); });
 	}
 
-	void pow(GeneSet& gene_set, int n)
+	void Overloads::pow(GeneSet& gene_set, int n)
 	{
 		std::transform(gene_set.begin(), gene_set.end(), gene_set.begin(),
 		               [n](GeneSet::Element& e) {
@@ -230,6 +230,6 @@ namespace GeneTrail
 		});
 	}
 
-	void pow2(GeneSet& gene_set) { pow(gene_set, 2); }
+	void Overloads::pow2(GeneSet& gene_set) { pow(gene_set, 2); }
 }
 
