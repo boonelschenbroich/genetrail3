@@ -56,6 +56,9 @@ namespace GeneTrail
 			DenseColumnSubset& operator=(const DenseColumnSubset& subs) = default;
 			DenseColumnSubset& operator=(DenseColumnSubset&& subs);
 
+			template<typename InputIterator>
+			void assign(InputIterator first, InputIterator last);
+
 			value_type& operator()(index_type i, index_type j) override
 			{
 				// Directly access the underlying matrix to avoid a virtual function call
@@ -131,6 +134,13 @@ namespace GeneTrail
 		  col_subset_(begin, end)
 	{
 	}
+
+	template<typename InputIterator>
+	void DenseColumnSubset::assign(InputIterator first, InputIterator last)
+	{
+		col_subset_.assign(first, last);
+	}
+
 }
 
 #endif // GT2_DENSE_COLUMN_SUBSET_H

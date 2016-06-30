@@ -54,6 +54,9 @@ namespace GeneTrail
 			DenseRowSubset& operator=(const DenseRowSubset& subs) = default;
 			DenseRowSubset& operator=(DenseRowSubset&& subs);
 
+			template<typename InputIterator>
+			void assign(InputIterator first, InputIterator last);
+
 			value_type& operator()(index_type i, index_type j) override
 			{
 				return (*mat_)(row_subset_[i], j);
@@ -126,6 +129,13 @@ namespace GeneTrail
 		  row_subset_(begin, end)
 	{
 	}
+
+	template<typename InputIterator>
+	void DenseRowSubset::assign(InputIterator first, InputIterator last)
+	{
+		row_subset_.assign(first, last);
+	}
+
 }
 
 #endif // GT2_DENSE_MATRIX_SUBSET_H
