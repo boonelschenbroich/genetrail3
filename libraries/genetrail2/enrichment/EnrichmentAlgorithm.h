@@ -22,7 +22,6 @@
 
 #include "SetLevelStatistics.h"
 
-#include <genetrail2/core/compat.h>
 #include <genetrail2/core/Exception.h>
 #include <genetrail2/core/macros.h>
 

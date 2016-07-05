@@ -20,7 +20,7 @@
 #include "Metadata.h"
 #include "Exception.h"
 
-#include "compat.h"
+#include <memory>
 
 namespace GeneTrail
 {

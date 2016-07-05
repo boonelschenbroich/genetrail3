@@ -44,6 +44,7 @@
 #include <utility>
 #include <iterator>
 #include <map>
+#include <memory>
 #include <set>
 #include <functional>
 #include <tuple>
@@ -51,7 +52,6 @@
 #include <cassert>
 #include <cmath>
 
-#include "compat.h"
 #include "Exception.h"
 
 namespace GeneTrail

@@ -25,7 +25,6 @@
 #include <genetrail2/core/DenseRowSubset.h>
 #include <genetrail2/core/DenseColumnSubset.h>
 #include <genetrail2/core/SparseMatrix.h>
-#include <genetrail2/core/compat.h>
 #include <config.h>
 #include <Eigen/src/SparseCore/SparseMatrix.h>
 

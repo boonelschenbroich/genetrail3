@@ -1,4 +1,3 @@
-#include <genetrail2/core/compat.h>
 #include <genetrail2/core/EntityDatabase.h>
 #include <genetrail2/core/GeneSet.h>
 #include <genetrail2/core/GeneSetFilters.h>
