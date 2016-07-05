@@ -236,7 +236,7 @@ static AllResults compute(Scores& test_set, CategoryList& cat_list,
 static void adjustCombined(AllResults& all_results, MultipleTestingCorrection correction)
 {
 	auto results = resultVector(all_results);
-	results = pvalue<double>::adjustPValues(results, correction);
+	results = pvalue::adjustPValues(results, pvalue::get_second(), correction);
 	updatePValues(all_results, results);
 }
 
@@ -244,7 +244,7 @@ static void adjustSeparately(AllResults& all_results, MultipleTestingCorrection 
 {
 	for(auto& results_it : all_results) {
 		auto results = resultVector(results_it.second);
-		results = pvalue<double>::adjustPValues(results, correction);
+		results = pvalue::adjustPValues(results, pvalue::get_second(), correction);
 		updatePValues(results_it.second, results);
 	}
 }

@@ -23,11 +23,11 @@ std::vector<std::pair<std::string,double> > pvalues4(il4);
 // This test just should not crash
 TEST(PValue, StepUp_empty){
 	std::vector<std::pair<std::string,double>> empty;
-	EXPECT_TRUE(pvalue<double>::stepUp(empty).empty());
+	EXPECT_TRUE(pvalue::stepUp(empty, pvalue::get_second()).empty());
 }
 
 TEST(PValue, StepUp){
-	std::vector<std::pair<std::string,double> > adj(pvalue<double>::stepUp(pvalues3));
+	auto adj = pvalue::stepUp(pvalues3, pvalue::get_second());
 	EXPECT_NEAR(adj[0].second, 1.0, TOLERANCE);
 	EXPECT_NEAR(adj[1].second, 1.0, TOLERANCE);
 	EXPECT_NEAR(adj[2].second, 1.0, TOLERANCE);
@@ -36,7 +36,7 @@ TEST(PValue, StepUp){
 }
 
 TEST(PValue, StepDown){
-	std::vector<std::pair<std::string,double> > adj(pvalue<double>::stepDown(pvalues3));
+	auto adj = pvalue::stepDown(pvalues3, pvalue::get_second());
 	EXPECT_NEAR(adj[0].second, 1.0, TOLERANCE);
 	EXPECT_NEAR(adj[1].second, 1.0, TOLERANCE);
 	EXPECT_NEAR(adj[2].second, 1.0, TOLERANCE);
@@ -45,7 +45,7 @@ TEST(PValue, StepDown){
 }
 
 TEST(PValue, StepUp2){
-	std::vector<std::pair<std::string,double> > adj(pvalue<double>::stepUp(pvalues4));
+	auto adj = pvalue::stepUp(pvalues4, pvalue::get_second());
 	EXPECT_NEAR(adj[0].second, 0.0, TOLERANCE);
 	EXPECT_NEAR(adj[1].second, 0.0, TOLERANCE);
 	EXPECT_NEAR(adj[2].second, 0.0, TOLERANCE);
@@ -54,7 +54,7 @@ TEST(PValue, StepUp2){
 }
 
 TEST(PValue, StepDown2){
-	std::vector<std::pair<std::string,double> > adj(pvalue<double>::stepDown(pvalues4));
+	auto adj = pvalue::stepDown(pvalues4, pvalue::get_second());
 	EXPECT_NEAR(adj[0].second, 0.0, TOLERANCE);
 	EXPECT_NEAR(adj[1].second, 0.0, TOLERANCE);
 	EXPECT_NEAR(adj[2].second, 0.0, TOLERANCE);
@@ -63,7 +63,7 @@ TEST(PValue, StepDown2){
 }
 
 TEST(PValue, StepUp3){
-	std::vector<std::pair<std::string,double> > adj(pvalue<double>::stepUp(pvalues));
+	auto adj = pvalue::stepUp(pvalues, pvalue::get_second());
 	EXPECT_NEAR(adj[0].second, 0.01, TOLERANCE);
 	EXPECT_NEAR(adj[1].second, 0.01, TOLERANCE);
 	EXPECT_NEAR(adj[2].second, 0.03, TOLERANCE);
@@ -72,7 +72,7 @@ TEST(PValue, StepUp3){
 }
 
 TEST(PValue, StepDown3){
-	std::vector<std::pair<std::string,double> > adj(pvalue<double>::stepDown(pvalues));
+	auto adj = pvalue::stepDown(pvalues, pvalue::get_second());
 	EXPECT_NEAR(adj[0].second, 0.05, TOLERANCE);
 	EXPECT_NEAR(adj[1].second, 0.05, TOLERANCE);
 	EXPECT_NEAR(adj[2].second, 0.07, TOLERANCE);
@@ -84,7 +84,7 @@ TEST(PValue, StepDown3){
  * p.adjust(c(0.05,0.01,0.07,0.03,0.1),method="bonferroni")
  */
 TEST(PValue, Bonferroni){
-	std::vector<std::pair<std::string,double> > adj(pvalue<double>::bonferroni(pvalues));
+	auto adj = pvalue::bonferroni(pvalues, pvalue::get_second());
 	EXPECT_NEAR(adj[0].second, 0.25, TOLERANCE);
 	EXPECT_NEAR(adj[1].second, 0.05, TOLERANCE);
 	EXPECT_NEAR(adj[2].second, 0.35, TOLERANCE);
@@ -96,7 +96,7 @@ TEST(PValue, Bonferroni){
  * p.adjust(c(0.05,0.01,0.07,0.03,0.1),method="fdrBH")
  */
 TEST(PValue, FDR){
-	std::vector<std::pair<std::string,double> > adj(pvalue<double>::benjamini_hochberg(pvalues));
+	auto adj = pvalue::benjamini_hochberg(pvalues, pvalue::get_second());
 	EXPECT_NEAR(adj[0].second, 0.05000000, TOLERANCE);
 	EXPECT_NEAR(adj[1].second, 0.07500000, TOLERANCE);
 	EXPECT_NEAR(adj[2].second, 0.08333333, TOLERANCE);
@@ -108,7 +108,7 @@ TEST(PValue, FDR){
  * p.adjust(c(0.01,0.01,0.01,0.05,0.05),method="fdrBH")
  */
 TEST(PValue, FDR2){
-	std::vector<std::pair<std::string,double> > adj(pvalue<double>::benjamini_hochberg(pvalues2));
+	auto adj = pvalue::benjamini_hochberg(pvalues2, pvalue::get_second());
 	EXPECT_NEAR(adj[0].second, 0.01666667, TOLERANCE);
 	EXPECT_NEAR(adj[1].second, 0.01666667, TOLERANCE);
 	EXPECT_NEAR(adj[2].second, 0.01666667, TOLERANCE);
@@ -120,7 +120,7 @@ TEST(PValue, FDR2){
  * p.adjust(c(0.05,0.01,0.07,0.03,0.1),method="hochberg")
  */
 TEST(PValue, Hochberg){
-	std::vector<std::pair<std::string,double> > adj(pvalue<double>::hochberg(pvalues));
+	auto adj = pvalue::hochberg(pvalues, pvalue::get_second());
 	EXPECT_NEAR(adj[0].second, 0.05, TOLERANCE);
 	EXPECT_NEAR(adj[1].second, 0.1, TOLERANCE);
 	EXPECT_NEAR(adj[2].second, 0.1, TOLERANCE);
@@ -132,7 +132,7 @@ TEST(PValue, Hochberg){
  * p.adjust(c(0.05,0.01,0.07,0.03,0.1),method="holm")
  */
 TEST(PValue, Holm){
-	std::vector<std::pair<std::string,double> > adj(pvalue<double>::holm(pvalues));
+	auto adj = pvalue::holm(pvalues, pvalue::get_second());
 	EXPECT_NEAR(adj[0].second, 0.05, TOLERANCE);
 	EXPECT_NEAR(adj[1].second, 0.12, TOLERANCE);
 	EXPECT_NEAR(adj[2].second, 0.15, TOLERANCE);
@@ -144,7 +144,7 @@ TEST(PValue, Holm){
  * p.adjust(c(0.05,0.01,0.07,0.03,0.1),method="fdrBY")
  */
 TEST(PValue, BenjaminiYekutieli){
-	std::vector<std::pair<std::string,double> > adj(pvalue<double>::benjamini_yekutieli(pvalues));
+	auto adj = pvalue::benjamini_yekutieli(pvalues, pvalue::get_second());
 	EXPECT_NEAR(adj[0].second, 0.1141667, TOLERANCE);
 	EXPECT_NEAR(adj[1].second, 0.1712500, TOLERANCE);
 	EXPECT_NEAR(adj[2].second, 0.1902778, TOLERANCE);
@@ -156,7 +156,7 @@ TEST(PValue, BenjaminiYekutieli){
  * p.adjust(c(0.01,0.01,0.01,0.05,0.05),method="fdrBY")
  */
 TEST(PValue, BenjaminiYekutieli2){
-	std::vector<std::pair<std::string,double> > adj(pvalue<double>::benjamini_yekutieli(pvalues2));
+	auto adj = pvalue::benjamini_yekutieli(pvalues2, pvalue::get_second());
 	EXPECT_NEAR(adj[0].second, 0.03805556, TOLERANCE);
 	EXPECT_NEAR(adj[1].second, 0.03805556, TOLERANCE);
 	EXPECT_NEAR(adj[2].second, 0.03805556, TOLERANCE);
@@ -168,7 +168,7 @@ TEST(PValue, BenjaminiYekutieli2){
  * sapply(c(1:5),function(i)1-((1-p[i])^5))
  */
 TEST(PValue, Sidak){
-	std::vector<std::pair<std::string,double> > adj(pvalue<double>::sidak(pvalues));
+	auto adj = pvalue::sidak(pvalues, pvalue::get_second());
 	EXPECT_NEAR(adj[0].second, 0.22621906, TOLERANCE);
 	EXPECT_NEAR(adj[1].second, 0.04900995, TOLERANCE);
 	EXPECT_NEAR(adj[2].second, 0.30431163, TOLERANCE);
@@ -180,7 +180,7 @@ TEST(PValue, Sidak){
  * cummin(sapply(c(1:5),function(i)1-((1-sp[i])^(5-i+1))))
  */
 TEST(PValue, HolmSidak){
-	std::vector<std::pair<std::string,double> > adj(pvalue<double>::holm_sidak(pvalues));
+	auto adj = pvalue::holm_sidak(pvalues, pvalue::get_second());
 	EXPECT_NEAR(adj[0].second, 0.04900995, TOLERANCE);
 	EXPECT_NEAR(adj[1].second, 0.11470719, TOLERANCE);
 	EXPECT_NEAR(adj[2].second, 0.14262500, TOLERANCE);
@@ -192,7 +192,7 @@ TEST(PValue, HolmSidak){
  * cummax(sapply(c(1:5),function(i)1-((1-sp[i])^(5/i))))
  */
 TEST(PValue, Finner){
-	std::vector<std::pair<std::string,double> > adj(pvalue<double>::finner(pvalues));
+	auto adj = pvalue::finner(pvalues, pvalue::get_second());
 	EXPECT_NEAR(adj[0].second, 0.04900995, TOLERANCE);
 	EXPECT_NEAR(adj[1].second, 0.07332097, TOLERANCE);
 	EXPECT_NEAR(adj[2].second, 0.08193660, TOLERANCE);
@@ -201,12 +201,13 @@ TEST(PValue, Finner){
 }
 
 TEST(PValue, Fisher){
-	double f = pvalue<double>::fisher(pvalues);
+	double f = pvalue::fisher(pvalues, pvalue::get_second());
 	EXPECT_NEAR(f, 3.796847e-04, TOLERANCE);
 }
 
 TEST(PValue, Stouffer){
-	std::vector<double> weights(5,0.2);
-	double f = pvalue<double>::stouffer(pvalues, weights);
+	std::vector<double> weights(5, 0.2);
+	double f = pvalue::stouffer(pvalues, weights, pvalue::get_second());
 	EXPECT_NEAR(f, 0.0, 0.0001);
 }
+

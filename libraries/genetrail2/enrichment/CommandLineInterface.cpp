@@ -116,7 +116,7 @@ namespace GeneTrail {
 			return;
 		}
 
-		auto method = pvalue<double>::getCorrectionMethod(param);
+		auto method = pvalue::getCorrectionMethod(param);
 
 		if(!method) {
 			throw bpo::validation_error(

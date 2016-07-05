@@ -1,6 +1,6 @@
 /*
  * GeneTrail2 - An efficient library for interpreting genetic data
- * Copyright (C) 2014-2015 Daniel Stöckel <dstoeckel@bioinf.uni-sb.de>
+ * Copyright (C) 2014-2016 Daniel Stöckel <dstoeckel@bioinf.uni-sb.de>
  *               2014 Tim Kehl <tkehl@bioinf.uni-sb.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,11 +22,13 @@
 #define GT2_CORE_PVALUE_H
 
 #include "Exception.h"
+#include "macros.h"
 
 #include <algorithm>
 #include <cmath>
-#include <map>
-#include <functional>
+#include <utility>
+#include <tuple>
+#include <type_traits>
 
 #include <boost/math/distributions/chi_squared.hpp>
 #include <boost/math/distributions/normal.hpp>
@@ -34,400 +36,507 @@
 
 namespace GeneTrail
 {
-	enum class MultipleTestingCorrection {
-		Bonferroni,
-		Sidak,
-		Holm,
-		HolmSidak,
-		Finner,
-		BenjaminiHochberg,
-		BenjaminiYekutieli,
-		Hochberg,
-		Simes,
-		GSEA
-	};
 
-	template <typename float_type> using pValue = typename std::pair<std::string, float_type>;
-	template <typename float_type = double>
-	class pvalue
+/**
+ * An enum for specifying a method for multiple testing correction.
+ */
+enum class MultipleTestingCorrection {
+	Bonferroni,
+	Sidak,
+	Holm,
+	HolmSidak,
+	Finner,
+	BenjaminiHochberg,
+	BenjaminiYekutieli,
+	Hochberg,
+	Simes,
+	GSEA
+};
+
+/**
+ * This namespace contains methods that implement algorithms for multiple
+ * testing correction and p-value aggregation.
+ *
+ * All algorithms are implemented as template functions that require two
+ * arguments. The first argument is a container (such as std::vector)
+ * containing p-values. These p-values can be stored in arbitrarly complex
+ * objects. Due to this, the second argument is a callable that extracts a
+ * (mutable) reference to the p-value. The adjusted p-values are returned by
+ * the methods. Due to the use of move semantics no uncessessary copies are
+ * being made.
+ */
+namespace pvalue
+{
+
+/**
+ * This helper template is needed to ensure, that we return and create
+ * copies of the object containing the p-values.
+ */
+template <typename T>
+using rcref = std::remove_const_t<std::remove_reference_t<T>>;
+
+/**
+ * A helper functor that projects the second value out of a tuple.
+ * We use this throughout GeneTrail2 to extract the p-values from
+ * a std::pair<string, double>.
+ */
+struct get_second
+{
+	template <typename Tuple> double operator()(const Tuple& t) const
 	{
-		public:
-		/**
-		 * Cummulative min function.
-		 *
-		 * @param pvalues P-values
-		 * @return Adjusted p-values
-		 */
-		static std::vector<pValue<float_type>>
-		stepUp(const std::vector<pValue<float_type>>& pvalues)
-		{
-			std::vector<pValue<float_type>> adjustedPValues(pvalues);
+		return std::get<1>(t);
+	}
 
-			if(adjustedPValues.empty()) {
-				return adjustedPValues;
-			}
+	// Important: the method needs to return a mutable reference!
+	template <typename Tuple> double& operator()(Tuple& t) const
+	{
+		return std::get<1>(t);
+	}
+};
 
-			adjustedPValues.back().second = std::min(adjustedPValues.back().second, 1.0);
-			for(int i = adjustedPValues.size() - 2; i >= 0; --i) {
-				adjustedPValues[i].second =
-				    std::min(std::min(adjustedPValues[i + 1].second,
-				                      adjustedPValues[i].second),
-				             1.0);
-			}
-			return adjustedPValues;
-		}
+/**
+ * Cumulative min function. This is used as a building block for other
+ * adjustment methods.
+ *
+ * @param pvalues A container of p-values
+ * @param pvalue A callable that extracts a reference to the p-value
+ *               from an object in the container.
+ *
+ * @return Adjusted p-values
+ */
+template <typename PValues, typename Access>
+rcref<PValues> stepUp(PValues&& pvalues, Access&& pvalue)
+{
+	if(pvalues.empty()) {
+		return pvalues;
+	}
 
-		/**
-		 * Cummulative max function.
-		 *
-		 * @param pvalues P-values
-		 * @return Adjusted p-values
-		 */
-		static std::vector<pValue<float_type>>
-		stepDown(const std::vector<pValue<float_type>>& pvalues)
-		{
-			std::vector<pValue<float_type>> adjustedPValues(pvalues);
-			adjustedPValues[0].second = std::min(adjustedPValues[0].second, 1.0);
-			for(size_t i = 1; i < adjustedPValues.size(); ++i) {
-				adjustedPValues[i].second =
-				    std::min(std::max(adjustedPValues[i - 1].second,
-				                      adjustedPValues[i].second),
-				             1.0);
-			}
-			return adjustedPValues;
-		}
+	rcref<PValues> adjusted(std::forward<PValues>(pvalues));
 
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-		// One step adjustments
-		////////////////////////////////////////////////////////////////////////////////////////////////////
+	pvalue(adjusted.back()) = std::min(pvalue(adjusted.back()), 1.0);
+	for(int64_t i = adjusted.size() - 2; i >= 0; --i) {
+		pvalue(adjusted[i]) = std::min(
+		    std::min(pvalue(adjusted[i + 1]), pvalue(adjusted[i])), 1.0);
+	}
 
-		template <typename func>
-		static std::vector<pValue<float_type>> adjustBySize(const std::vector<pValue<float_type>>& pvalues,
-		                                   func f)
-		{
-			std::vector<pValue<float_type>> adjustedPValues(pvalues);
-			size_t n = pvalues.size();
-			for(unsigned int i = 0; i < adjustedPValues.size(); ++i) {
-				adjustedPValues[i].second =
-				    std::min(f(adjustedPValues[i], n), 1.0);
-			}
-			return adjustedPValues;
-		}
-
-		static float_type bonferroni_func(pValue<float_type> p, int n)
-		{
-			return p.second * n;
-		}
-
-		/**
-		 * Bonferroni p-value adjustment.
-		 *
-		 * Reference:
-		 *
-		 * @param pvalues P-values
-		 * @return Adjusted p-values
-		 */
-		static std::vector<pValue<float_type>>
-		bonferroni(const std::vector<pValue<float_type>>& pvalues)
-		{
-			return adjustBySize(pvalues, bonferroni_func);
-		}
-
-		static float_type sidak_func(pValue<float_type> p, int n)
-		{
-			return 1.0 - std::pow((1.0 - p.second), n);
-		}
-
-		/**
-		 * Sidak p-value adjustment.
-		 *
-		 * Reference: Zbyněk Šidák (1967). Rectangular confidence regions for
-		 *the means of multivariate normal distributions
-		 *
-		 * @param pvalues P-values
-		 * @return Adjusted p-values
-		 */
-		static std::vector<pValue<float_type>> sidak(const std::vector<pValue<float_type>>& pvalues)
-		{
-			return adjustBySize(pvalues, sidak_func);
-		}
-
-		template <typename func>
-		static std::vector<pValue<float_type>>
-		adjustByOrder(const std::vector<pValue<float_type>>& pvalues, func f)
-		{
-			std::vector<pValue<float_type>> adjustedPValues(pvalues);
-			std::sort(
-			    adjustedPValues.begin(), adjustedPValues.end(),
-			    [](const pValue<float_type>& a, const pValue<float_type>& b) {
-				    return a.second < b.second;
-				});
-			size_t n = adjustedPValues.size();
-			for(unsigned int i = 0; i < n; ++i) {
-				adjustedPValues[i].second = f(adjustedPValues[i], n, i + 1);
-			}
-			return adjustedPValues;
-		}
-
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-		// Step-down adjustments
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		static float_type hochberg_func(pValue<float_type> p, int n, int i)
-		{
-			return p.second * (n - i + 1);
-		}
-
-		/**
-		 * Holm p-value adjustment.
-		 *
-		 * Reference: Holm, S. (1979).  A simple sequentially rejective multiple
-		 *test procedure.
-		 *
-		 * @param pvalues P-values
-		 * @return Adjusted p-values
-		 */
-		static std::vector<pValue<float_type>> holm(const std::vector<pValue<float_type>>& pvalues)
-		{
-			return stepDown(adjustByOrder(pvalues, hochberg_func));
-		}
-
-		static float_type holm_sidak_func(pValue<float_type> p, int n, int i)
-		{
-			return 1.0 - std::pow((1.0 - p.second), n - i + 1);
-		}
-
-		/**
-		 * Holm-Sidak p-value adjustment.
-		 *
-		 * Reference:
-		 *
-		 * @param pvalues P-values
-		 * @return Adjusted p-values
-		 */
-		static std::vector<pValue<float_type>>
-		holm_sidak(const std::vector<pValue<float_type>>& pvalues)
-		{
-			return stepDown(
-			    adjustByOrder(pvalues, holm_sidak_func));
-		}
-
-		static float_type finner_func(pValue<float_type> p, int n, int i)
-		{
-			return 1.0 - std::pow((1.0 - p.second),
-			                      ((float_type)n) / ((float_type)i));
-		}
-
-		/**
-		 *  Finner p-value adjustment.
-		 *
-		 *  Reference:
-		 *
-		 *  @param pvalues P-values
-		 *  @return Adjusted p-values
-		 */
-		static std::vector<pValue<float_type>>
-		finner(const std::vector<pValue<float_type>>& pvalues)
-		{
-			return stepDown(adjustByOrder(pvalues, finner_func));
-		}
-
-		static float_type fdr_func(pValue<float_type> p, int n, int i)
-		{
-			return p.second * ((float_type)n) / ((float_type)i);
-		}
-
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-		// Step-up adjustments
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-		/**
-		 * Benjamini-Hochberg p-value adjustment.
-		 *
-		 * Reference: 	Benjamini, Y., and Hochberg, Y. (1995).  Controlling the
-		 *false discovery rate: a practical and powerful approach to multiple
-		 *testing.
-		 *
-		 * @param pvalues P-values
-		 * @return Adjusted p-values
-		 */
-		static std::vector<pValue<float_type>>
-		benjamini_hochberg(const std::vector<pValue<float_type>>& pvalues)
-		{
-			return stepUp(adjustByOrder(pvalues, fdr_func));
-		}
-
-		/**
-		 * Benjamini-Yekutieli p-value adjustment.
-		 *
-		 * Reference:	Benjamini, Y., and Yekutieli, D. (2001).  The control of
-		 *the false discovery rate in multiple testing under dependency.
-		 *
-		 * @param pvalues P-values
-		 * @return Adjusted p-values
-		 */
-		static std::vector<pValue<float_type>>
-		benjamini_yekutieli(const std::vector<pValue<float_type>>& pvalues)
-		{
-			std::vector<pValue<float_type>> adj =
-			    adjustByOrder(pvalues, fdr_func);
-			float_type q = 0.0;
-			for(size_t i = 0; i < adj.size(); ++i) {
-				q += 1 / ((float_type)i + 1.0);
-			}
-			for(size_t i = 0; i < adj.size(); ++i) {
-				adj[i].second *= q;
-			}
-			return stepUp(adj);
-		}
-
-		/**
-		 * Hochberg p-value adjustment.
-		 *
-		 * Reference: Hochberg, Y. (1988).  A sharper Bonferroni procedure for
-		 *multiple tests of significance.
-		 *
-		 * @param pvalues P-values
-		 * @return Adjusted p-values
-		 */
-		static std::vector<pValue<float_type>>
-		hochberg(const std::vector<pValue<float_type>>& pvalues)
-		{
-			return stepUp(adjustByOrder(pvalues, hochberg_func));
-		}
-
-		/**
-		 * Simes p-value adjustment.
-		 *
-		 * Reference: Simes RJ (1986) "An improved Bonferroni procedure for
-		 *multiple tests of significance"
-		 *
-		 * @param pvalues P-values
-		 * @return Adjusted p-values
-		 */
-		static std::vector<pValue<float_type>> simes(const std::vector<pValue<float_type>>& pvalues)
-		{
-			return stepUp(adjustByOrder(pvalues, fdr_func));
-		}
-
-		static std::vector<pValue<float_type>> noop(const std::vector<pValue<float_type>>& pvalues)
-		{
-			return pvalues;
-		}
-
-		using CorrectionMethod = std::vector<pValue<float_type>>(*)(const std::vector<pValue<float_type>>&);
-
-		static boost::optional<MultipleTestingCorrection> getCorrectionMethod(const std::string& method) {
-			if(method == "bonferroni") {
-				return boost::make_optional(MultipleTestingCorrection::Bonferroni);
-			}
-
-			if(method == "sidak") {
-				return boost::make_optional(MultipleTestingCorrection::Sidak);
-			}
-
-			if(method == "holm") {
-				return boost::make_optional(MultipleTestingCorrection::Holm);
-			}
-
-			if(method == "holm_sidak" || method == "holm-sidak") {
-				return boost::make_optional(MultipleTestingCorrection::HolmSidak);
-			}
-
-			if(method == "finner") {
-				return boost::make_optional(MultipleTestingCorrection::Finner);
-			}
-
-			if(method == "benjamini_hochberg" || method == "benjamini-hochberg") {
-				return boost::make_optional(MultipleTestingCorrection::BenjaminiHochberg);
-			}
-
-			if(method == "benjamini_yekutieli" || method == "benjamini-yekutieli") {
-				return boost::make_optional(MultipleTestingCorrection::BenjaminiYekutieli);
-			}
-
-			if(method == "hochberg") {
-				return boost::make_optional(MultipleTestingCorrection::Hochberg);
-			}
-
-			if(method == "simes") {
-				return boost::make_optional(MultipleTestingCorrection::Simes);
-			}
-
-			if(method == "gsea" || method == "GSEA") {
-				return boost::make_optional(MultipleTestingCorrection::GSEA);
-			}
-
-			return boost::none;
-		}
-
-		static CorrectionMethod getCorrectionMethod(MultipleTestingCorrection method) {
-			switch(method) {
-				case MultipleTestingCorrection::Bonferroni: return bonferroni;
-				case MultipleTestingCorrection::Sidak: return sidak;
-				case MultipleTestingCorrection::Holm: return holm;
-				case MultipleTestingCorrection::HolmSidak: return holm_sidak;
-				case MultipleTestingCorrection::Finner: return finner;
-				case MultipleTestingCorrection::BenjaminiHochberg: return benjamini_hochberg;
-				case MultipleTestingCorrection::BenjaminiYekutieli: return benjamini_yekutieli;
-				case MultipleTestingCorrection::Hochberg: return hochberg;
-				case MultipleTestingCorrection::Simes: return simes;
-				case MultipleTestingCorrection::GSEA: return noop;
-				default:
-					throw NotImplemented(__FILE__, __LINE__, "The requested correction method has not yet been implemented.");
-			}
-		}
-
-		static std::vector<pValue<float_type>>
-		adjustPValues(const std::vector<pValue<float_type>>& pvalues, MultipleTestingCorrection method)
-		{
-			return getCorrectionMethod(method)(pvalues);
-		}
-
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-		// P-value aggregation
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		/**
-		 * Fisher method to aggregate p-values.
-		 *
-		 * @param pvalues P-values
-		 * @return Aggregated p-value
-		 */
-		static float_type fisher(const std::vector<pValue<float_type>>& pvalues)
-		{
-			std::vector<pValue<float_type>> pvals(pvalues);
-			float_type x = 0.0;
-			for(const auto& pval : pvals) {
-				x += std::log(pval.second);
-			}
-			boost::math::chi_squared dist(2 * pvalues.size());
-			return boost::math::cdf(boost::math::complement(dist, -2.0 * x));
-		}
-
-		/**
-		 * Stouffer method to aggregate p-values.
-		 *
-		 * @param pvalues P-values
-		 * @return Aggregated p-value
-		 */
-		static float_type stouffer(const std::vector<pValue<float_type>>& pvalues,
-		                           const std::vector<float_type>& weights)
-		{
-			std::vector<pValue<float_type>> pvals(pvalues);
-			boost::math::normal dist(0.0, 1.0);
-			float_type zi = 0.0;
-			float_type ws = 0.0;
-			for(size_t i = 0; i < pvalues.size(); ++i) {
-				ws += weights[i] * weights[i];
-				zi +=
-				    quantile(complement(dist, pvalues[i].second)) * weights[i];
-			}
-			float_type z = zi / std::sqrt(ws);
-			return boost::math::cdf(boost::math::complement(dist, z));
-		}
-	};
+	return adjusted;
 }
+
+/**
+ * Cumulative max function. This is used as a building block for other
+ * adjustment methods.
+ *
+ * @param pvalues A container of p-values
+ * @param pvalue A callable that extracts a reference to the p-value
+ *               from an object in the container.
+ *
+ * @return Adjusted p-values
+ */
+template <typename PValues, typename Access>
+rcref<PValues> stepDown(PValues&& pvalues, Access&& pvalue)
+{
+	rcref<PValues> adjusted(std::forward<PValues>(pvalues));
+
+	pvalue(adjusted[0]) = std::min(pvalue(adjusted[0]), 1.0);
+
+	for(size_t i = 1; i < adjusted.size(); ++i) {
+		pvalue(adjusted[i]) = std::min(
+		    std::max(pvalue(adjusted[i - 1]), pvalue(adjusted[i])), 1.0);
+	}
+
+	return adjusted;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// One step adjustments
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename PValues, typename Access, typename func>
+rcref<PValues> adjustBySize(PValues&& pvalues, Access&& pvalue, func f)
+{
+	rcref<PValues> adjustedPValues(std::forward<PValues>(pvalues));
+
+	size_t n = pvalues.size();
+	for(auto& p : adjustedPValues) {
+		pvalue(p) = std::min(f(pvalue(p), n), 1.0);
+	}
+
+	return adjustedPValues;
+}
+
+inline double bonferroni_func(double p, size_t n) { return p * n; }
+
+/**
+ * Bonferroni p-value adjustment.
+ *
+ * Reference:
+ *
+ * @todo citation
+ *
+ * @param pvalues A container of p-values
+ * @param access A callable that extracts a reference to the p-value from an
+ *               object in the container.
+ *
+ * @return Adjusted p-values
+ */
+template <typename PValues, typename Access>
+rcref<PValues> bonferroni(PValues&& pvalues, Access&& access)
+{
+	return adjustBySize(std::forward<PValues>(pvalues),
+	                    std::forward<Access>(access), bonferroni_func);
+}
+
+inline double sidak_func(double p, size_t n)
+{
+	return 1.0 - std::pow((1.0 - p), n);
+}
+
+/**
+ * Sidak p-value adjustment.
+ *
+ * Reference: Zbyněk Šidák (1967). Rectangular confidence regions for
+ * the means of multivariate normal distributions
+ *
+ * @todo citation
+ *
+ * @param pvalues A container of p-values
+ * @param access A callable that extracts a reference to the p-value
+ *               from an object in the container.
+ *
+ * @return Adjusted p-values
+ */
+template <typename PValues, typename Access>
+rcref<PValues> sidak(PValues&& pvalues, Access&& access)
+{
+	return adjustBySize(std::forward<PValues>(pvalues),
+	                    std::forward<Access>(access), sidak_func);
+}
+
+template <typename PValues, typename Access, typename Func>
+rcref<PValues> adjustByOrder(PValues&& pvalues, Access&& pvalue, Func&& f)
+{
+	rcref<PValues> adjusted(std::forward<PValues>(pvalues));
+
+	auto pval_less =
+	    [pvalue](auto&& a, auto&& b) { return pvalue(a) < pvalue(b); };
+
+	std::sort(adjusted.begin(), adjusted.end(), pval_less);
+
+	size_t n = adjusted.size();
+	for(unsigned int i = 0; i < n; ++i) {
+		pvalue(adjusted[i]) = f(pvalue(adjusted[i]), n, i + 1);
+	}
+
+	return adjusted;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Step-down adjustments
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+inline double hochberg_func(double p, int n, int i) { return p * (n - i + 1); }
+
+/**
+ * Holm p-value adjustment.
+ *
+ * Reference: Holm, S. (1979).  A simple sequentially rejective multiple
+ * test procedure.
+ *
+ * @todo citation
+ *
+ * @param pvalues A container of p-values
+ * @param access A callable that extracts a reference to the p-value
+ *               from an object in the container.
+ *
+ * @return Adjusted p-values
+ */
+template <typename PValues, typename Access>
+rcref<PValues> holm(PValues&& pvalues, Access&& access)
+{
+	return stepDown(
+	    adjustByOrder(std::forward<PValues>(pvalues), access, hochberg_func),
+	    access);
+}
+
+inline double holm_sidak_func(double p, int n, int i)
+{
+	return 1.0 - std::pow(1.0 - p, n - i + 1);
+}
+
+/**
+ * Holm-Sidak p-value adjustment.
+ *
+ * Reference:
+ *
+ * @todo citation
+ *
+ * @param pvalues A container of p-values
+ * @param access A callable that extracts a reference to the p-value
+ *               from an object in the container.
+ *
+ * @return Adjusted p-values
+ */
+template <typename PValues, typename Access>
+rcref<PValues> holm_sidak(PValues&& pvalues, Access&& access)
+{
+	return stepDown(
+	    adjustByOrder(std::forward<PValues>(pvalues), access, holm_sidak_func),
+	    std::forward<Access>(access));
+}
+
+inline double finner_func(double p, int n, int i)
+{
+	return 1.0 - std::pow(1.0 - p, static_cast<double>(n) / i);
+}
+
+/**
+ *  Finner p-value adjustment.
+ *
+ *  Reference:
+ *
+ * @todo citation
+ *
+ * @param pvalues A container of p-values
+ * @param access A callable that extracts a reference to the p-value
+ *               from an object in the container.
+ *
+ * @return Adjusted p-values
+ */
+template <typename PValues, typename Access>
+rcref<PValues> finner(PValues&& pvalues, Access&& access)
+{
+	return stepDown(
+	    adjustByOrder(std::forward<PValues>(pvalues), access, finner_func),
+	    std::forward<Access>(access));
+}
+
+inline double fdr_func(double p, int n, int i)
+{
+	// The parenthesis are important due to double <-> int conversions
+	return (n * p) / i;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Step-up adjustments
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Benjamini-Hochberg p-value adjustment.
+ *
+ * Reference: Benjamini, Y., and Hochberg, Y. (1995).  Controlling the
+ * false discovery rate: a practical and powerful approach to multiple
+ * testing.
+ *
+ * Benjamini, Y., and Yekutieli, D. (1999). Resampling-based false
+ * discovery rate controlling multiple test procedures for correlated
+ * test statistics
+ *
+ * @param pvalues A container of p-values
+ * @param access A callable that extracts a reference to the p-value
+ *               from an object in the container.
+ *
+ * @return Adjusted p-values
+ */
+template <typename PValues, typename Access>
+rcref<PValues> benjamini_hochberg(PValues&& pvalues, Access&& access)
+{
+	return stepUp(
+	    adjustByOrder(std::forward<PValues>(pvalues), access, fdr_func),
+	    std::forward<Access>(access));
+}
+
+/**
+ * Benjamini-Yekutieli p-value adjustment.
+ *
+ * Reference: Benjamini, Y., and Yekutieli, D. (2001).  The control of
+ * the false discovery rate in multiple testing under dependency.
+ *
+ * @param pvalues A container of p-values
+ * @param pvalue A callable that extracts a reference to the p-value
+ *               from an object in the container.
+ *
+ * @return Adjusted p-values
+ */
+template <typename PValues, typename Access>
+rcref<PValues> benjamini_yekutieli(PValues&& pvalues, Access&& pvalue)
+{
+	auto adj = adjustByOrder(std::forward<PValues>(pvalues), pvalue, fdr_func);
+
+	double q = 0.0;
+	for(size_t i = 0; i < adj.size(); ++i) {
+		q += 1 / (i + 1.0);
+	}
+
+	for(auto& p : adj) {
+		pvalue(p) *= q;
+	}
+
+	return stepUp(std::move(adj), std::forward<Access>(pvalue));
+}
+
+/**
+ * Hochberg p-value adjustment.
+ *
+ * Reference: Hochberg, Y. (1988).  A sharper Bonferroni procedure for
+ * multiple tests of significance.
+ *
+ * @param pvalues A container of p-values
+ * @param access A callable that extracts a reference to the p-value
+ *               from an object in the container.
+ *
+ * @return Adjusted p-values
+ */
+template <typename PValues, typename Access>
+rcref<PValues> hochberg(PValues&& pvalues, Access&& access)
+{
+	return stepUp(
+	    adjustByOrder(std::forward<PValues>(pvalues), access, hochberg_func),
+	    std::forward<Access>(access));
+}
+
+/**
+ * Simes p-value adjustment.
+ *
+ * Reference: Simes RJ (1986) "An improved Bonferroni procedure for
+ * multiple tests of significance"
+ *
+ * @param pvalues A container of p-values
+ * @param access A callable that extracts a reference to the p-value
+ *               from an object in the container.
+ *
+ * @return Adjusted p-values
+ */
+template <typename PValues, typename Access>
+rcref<PValues> simes(PValues&& pvalues, Access&& access)
+{
+	return stepUp(
+	    adjustByOrder(std::forward<PValues>(pvalues), access, fdr_func),
+	    std::forward<Access>(access));
+}
+
+/**
+ * Takes an input string and returns a matching multiple testing correction
+ * method. If the requested method is unknown an empty option is returned.
+ *
+ * @param method A string specifying an input method.
+ *
+ * @return An optional containing the enum belonging to the requested
+ * correction method. boost::none if the string could not be matched.
+ */
+GT2_EXPORT
+boost::optional<MultipleTestingCorrection>
+getCorrectionMethod(const std::string& method);
+
+/**
+ * Adjust a vector of p-values.
+ *
+ * @param pvalues The vector of pvalues that should be adjusted.
+ * @param method The method for multiple testing correction.
+ *
+ * @return A copy of the input vector containing the adjusted p-values.
+ */
+template <typename PValues, typename Access>
+rcref<PValues> adjustPValues(PValues&& pvalues, Access&& access,
+                             MultipleTestingCorrection method)
+{
+	switch(method) {
+		case MultipleTestingCorrection::Bonferroni:
+			return bonferroni(std::forward<PValues>(pvalues),
+			                  std::forward<Access>(access));
+		case MultipleTestingCorrection::Sidak:
+			return sidak(std::forward<PValues>(pvalues),
+			             std::forward<Access>(access));
+		case MultipleTestingCorrection::Holm:
+			return holm(std::forward<PValues>(pvalues),
+			            std::forward<Access>(access));
+		case MultipleTestingCorrection::HolmSidak:
+			return holm_sidak(std::forward<PValues>(pvalues),
+			                  std::forward<Access>(access));
+		case MultipleTestingCorrection::Finner:
+			return finner(std::forward<PValues>(pvalues),
+			              std::forward<Access>(access));
+		case MultipleTestingCorrection::BenjaminiHochberg:
+			return benjamini_hochberg(std::forward<PValues>(pvalues),
+			                          std::forward<Access>(access));
+		case MultipleTestingCorrection::BenjaminiYekutieli:
+			return benjamini_yekutieli(std::forward<PValues>(pvalues),
+			                           std::forward<Access>(access));
+		case MultipleTestingCorrection::Hochberg:
+			return hochberg(std::forward<PValues>(pvalues),
+			                std::forward<Access>(access));
+		case MultipleTestingCorrection::Simes:
+			return simes(std::forward<PValues>(pvalues),
+			             std::forward<Access>(access));
+		case MultipleTestingCorrection::GSEA:
+			return pvalues;
+		default:
+			throw NotImplemented(__FILE__, __LINE__, "The requested correction "
+			                                         "method has not yet been "
+			                                         "implemented.");
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// P-value aggregation
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Fisher method to aggregate p-values.
+ *
+ * This method creates a new p-value for a set of _independent_ p-values.
+ *
+ * @todo citation
+ *
+ * @param pvalues The vector of pvalues that should be aggregated.
+ * @param pvalue A callable that extracts the pvalue from each object
+ *               stored in pvalues. The returned pvalue does not need to be
+ *               a mutable reference.
+ *
+ * @return Aggregated p-value
+ */
+template <typename PValues, typename Access>
+double fisher(const PValues& pvalues, Access&& pvalue)
+{
+	double x = 0.0;
+	for(const auto& p : pvalues) {
+		x += std::log(pvalue(p));
+	}
+
+	boost::math::chi_squared dist(2 * pvalues.size());
+	return boost::math::cdf(boost::math::complement(dist, -2.0 * x));
+}
+
+/**
+ * Stouffer method to aggregate p-values.
+ *
+ * @todo citation
+ *
+ * @param pvalues The vector of pvalues that should be aggregated.
+ * @param weights A container of weights that determine the influence of each
+ *                p-value. If unsure use uniform weights.
+ * @param pvalue A callable that extracts the pvalue from each object
+ *               stored in pvalues. The returned pvalue does not need to be
+ *               a mutable reference.
+ *
+ * @return Aggregated p-value
+ */
+template <typename PValues, typename Weights, typename Access>
+double stouffer(const PValues& pvalues, const Weights& weights, Access&& pvalue)
+{
+	boost::math::normal dist(0.0, 1.0);
+	double zi = 0.0;
+	double ws = 0.0;
+
+	for(size_t i = 0; i < pvalues.size(); ++i) {
+		ws += weights[i] * weights[i];
+		zi += quantile(complement(dist, pvalue(pvalues[i]))) * weights[i];
+	}
+
+	double z = zi / std::sqrt(ws);
+	return boost::math::cdf(boost::math::complement(dist, z));
+}
+
+} // namespace pvalue
+} // namespace GeneTrail
 
 #endif // GT2_CORE_PVALUE_H
