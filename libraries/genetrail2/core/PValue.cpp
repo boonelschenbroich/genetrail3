@@ -24,6 +24,53 @@ namespace GeneTrail
 namespace pvalue
 {
 
+pValueVec bonferroni_v(const pValueVec& pvalues)
+{
+	return bonferroni(pvalues, get_second());
+}
+
+pValueVec sidak_v(const pValueVec& pvalues)
+{
+	return sidak(pvalues, get_second());
+}
+
+pValueVec holm_v(const pValueVec& pvalues)
+{
+	return holm(pvalues, get_second());
+}
+
+pValueVec holm_sidak_v(const pValueVec& pvalues)
+{
+	return holm_sidak(pvalues, get_second());
+}
+
+pValueVec finner_v(const pValueVec& pvalues)
+{
+	return finner(pvalues, get_second());
+}
+
+pValueVec benjamini_hochberg_v(const pValueVec& pvalues)
+{
+	return benjamini_hochberg(pvalues, get_second());
+}
+
+pValueVec benjamini_yekutieli_v(const pValueVec& pvalues)
+{
+	return benjamini_yekutieli(pvalues, get_second());
+}
+
+pValueVec hochberg_v(const pValueVec& pvalues)
+{
+	return hochberg(pvalues, get_second());
+}
+
+pValueVec simes_v(const pValueVec& pvalues)
+{
+	return simes(pvalues, get_second());
+}
+
+pValueVec noop(const pValueVec& pvalues) { return pvalues; }
+
 boost::optional<MultipleTestingCorrection>
 getCorrectionMethod(const std::string& method)
 {
@@ -70,6 +117,44 @@ getCorrectionMethod(const std::string& method)
 	}
 
 	return boost::none;
+}
+
+using CorrectionMethod = pValueVec (*)(const pValueVec&);
+
+CorrectionMethod getCorrectionMethod(MultipleTestingCorrection method)
+{
+	switch(method) {
+		case MultipleTestingCorrection::Bonferroni:
+			return bonferroni_v;
+		case MultipleTestingCorrection::Sidak:
+			return sidak_v;
+		case MultipleTestingCorrection::Holm:
+			return holm_v;
+		case MultipleTestingCorrection::HolmSidak:
+			return holm_sidak_v;
+		case MultipleTestingCorrection::Finner:
+			return finner_v;
+		case MultipleTestingCorrection::BenjaminiHochberg:
+			return benjamini_hochberg_v;
+		case MultipleTestingCorrection::BenjaminiYekutieli:
+			return benjamini_yekutieli_v;
+		case MultipleTestingCorrection::Hochberg:
+			return hochberg_v;
+		case MultipleTestingCorrection::Simes:
+			return simes_v;
+		case MultipleTestingCorrection::GSEA:
+			return noop;
+		default:
+			throw NotImplemented(__FILE__, __LINE__, "The requested correction "
+			                                         "method has not yet been "
+			                                         "implemented.");
+	}
+}
+
+pValueVec adjustPValues(const pValueVec& pvalues,
+                        MultipleTestingCorrection method)
+{
+	return getCorrectionMethod(method)(pvalues);
 }
 
 } // namespace pvalue

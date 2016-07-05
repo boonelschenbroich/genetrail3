@@ -171,10 +171,9 @@ inline double bonferroni_func(double p, size_t n) { return p * n; }
  *
  * Reference:
  *
- * @todo citation
- *
+ * @TODO citation
  * @param pvalues A container of p-values
- * @param access A callable that extracts a reference to the p-value from an
+ * @param pvalue A callable that extracts a reference to the p-value from an
  *               object in the container.
  *
  * @return Adjusted p-values
@@ -197,10 +196,9 @@ inline double sidak_func(double p, size_t n)
  * Reference: Zbyněk Šidák (1967). Rectangular confidence regions for
  * the means of multivariate normal distributions
  *
- * @todo citation
- *
+ * @TODO citation
  * @param pvalues A container of p-values
- * @param access A callable that extracts a reference to the p-value
+ * @param pvalue A callable that extracts a reference to the p-value
  *               from an object in the container.
  *
  * @return Adjusted p-values
@@ -242,10 +240,9 @@ inline double hochberg_func(double p, int n, int i) { return p * (n - i + 1); }
  * Reference: Holm, S. (1979).  A simple sequentially rejective multiple
  * test procedure.
  *
- * @todo citation
- *
+ * @TODO citation
  * @param pvalues A container of p-values
- * @param access A callable that extracts a reference to the p-value
+ * @param pvalue A callable that extracts a reference to the p-value
  *               from an object in the container.
  *
  * @return Adjusted p-values
@@ -268,10 +265,9 @@ inline double holm_sidak_func(double p, int n, int i)
  *
  * Reference:
  *
- * @todo citation
- *
+ * @TODO citation
  * @param pvalues A container of p-values
- * @param access A callable that extracts a reference to the p-value
+ * @param pvalue A callable that extracts a reference to the p-value
  *               from an object in the container.
  *
  * @return Adjusted p-values
@@ -294,10 +290,9 @@ inline double finner_func(double p, int n, int i)
  *
  *  Reference:
  *
- * @todo citation
- *
+ * @TODO citation
  * @param pvalues A container of p-values
- * @param access A callable that extracts a reference to the p-value
+ * @param pvalue A callable that extracts a reference to the p-value
  *               from an object in the container.
  *
  * @return Adjusted p-values
@@ -331,10 +326,7 @@ inline double fdr_func(double p, int n, int i)
  * discovery rate controlling multiple test procedures for correlated
  * test statistics
  *
- * @param pvalues A container of p-values
- * @param access A callable that extracts a reference to the p-value
- *               from an object in the container.
- *
+ * @param pvalues P-values
  * @return Adjusted p-values
  */
 template <typename PValues, typename Access>
@@ -351,10 +343,7 @@ rcref<PValues> benjamini_hochberg(PValues&& pvalues, Access&& access)
  * Reference: Benjamini, Y., and Yekutieli, D. (2001).  The control of
  * the false discovery rate in multiple testing under dependency.
  *
- * @param pvalues A container of p-values
- * @param pvalue A callable that extracts a reference to the p-value
- *               from an object in the container.
- *
+ * @param pvalues P-values
  * @return Adjusted p-values
  */
 template <typename PValues, typename Access>
@@ -380,10 +369,7 @@ rcref<PValues> benjamini_yekutieli(PValues&& pvalues, Access&& pvalue)
  * Reference: Hochberg, Y. (1988).  A sharper Bonferroni procedure for
  * multiple tests of significance.
  *
- * @param pvalues A container of p-values
- * @param access A callable that extracts a reference to the p-value
- *               from an object in the container.
- *
+ * @param pvalues P-values
  * @return Adjusted p-values
  */
 template <typename PValues, typename Access>
@@ -400,10 +386,7 @@ rcref<PValues> hochberg(PValues&& pvalues, Access&& access)
  * Reference: Simes RJ (1986) "An improved Bonferroni procedure for
  * multiple tests of significance"
  *
- * @param pvalues A container of p-values
- * @param access A callable that extracts a reference to the p-value
- *               from an object in the container.
- *
+ * @param pvalues P-values
  * @return Adjusted p-values
  */
 template <typename PValues, typename Access>
@@ -413,6 +396,13 @@ rcref<PValues> simes(PValues&& pvalues, Access&& access)
 	    adjustByOrder(std::forward<PValues>(pvalues), access, fdr_func),
 	    std::forward<Access>(access));
 }
+
+/*
+ * Methods for adjusting vectors of pairs. Those are mainly for
+ * compatiblity reasons.
+ */
+using pValue = std::pair<std::string, double>;
+using pValueVec = std::vector<pValue>;
 
 /**
  * Takes an input string and returns a matching multiple testing correction
@@ -435,46 +425,9 @@ getCorrectionMethod(const std::string& method);
  *
  * @return A copy of the input vector containing the adjusted p-values.
  */
-template <typename PValues, typename Access>
-rcref<PValues> adjustPValues(PValues&& pvalues, Access&& access,
-                             MultipleTestingCorrection method)
-{
-	switch(method) {
-		case MultipleTestingCorrection::Bonferroni:
-			return bonferroni(std::forward<PValues>(pvalues),
-			                  std::forward<Access>(access));
-		case MultipleTestingCorrection::Sidak:
-			return sidak(std::forward<PValues>(pvalues),
-			             std::forward<Access>(access));
-		case MultipleTestingCorrection::Holm:
-			return holm(std::forward<PValues>(pvalues),
-			            std::forward<Access>(access));
-		case MultipleTestingCorrection::HolmSidak:
-			return holm_sidak(std::forward<PValues>(pvalues),
-			                  std::forward<Access>(access));
-		case MultipleTestingCorrection::Finner:
-			return finner(std::forward<PValues>(pvalues),
-			              std::forward<Access>(access));
-		case MultipleTestingCorrection::BenjaminiHochberg:
-			return benjamini_hochberg(std::forward<PValues>(pvalues),
-			                          std::forward<Access>(access));
-		case MultipleTestingCorrection::BenjaminiYekutieli:
-			return benjamini_yekutieli(std::forward<PValues>(pvalues),
-			                           std::forward<Access>(access));
-		case MultipleTestingCorrection::Hochberg:
-			return hochberg(std::forward<PValues>(pvalues),
-			                std::forward<Access>(access));
-		case MultipleTestingCorrection::Simes:
-			return simes(std::forward<PValues>(pvalues),
-			             std::forward<Access>(access));
-		case MultipleTestingCorrection::GSEA:
-			return pvalues;
-		default:
-			throw NotImplemented(__FILE__, __LINE__, "The requested correction "
-			                                         "method has not yet been "
-			                                         "implemented.");
-	}
-}
+GT2_EXPORT
+pValueVec adjustPValues(const pValueVec& pvalues,
+                        MultipleTestingCorrection method);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // P-value aggregation
@@ -482,16 +435,9 @@ rcref<PValues> adjustPValues(PValues&& pvalues, Access&& access,
 
 /**
  * Fisher method to aggregate p-values.
+ * @TODO citation
  *
- * This method creates a new p-value for a set of _independent_ p-values.
- *
- * @todo citation
- *
- * @param pvalues The vector of pvalues that should be aggregated.
- * @param pvalue A callable that extracts the pvalue from each object
- *               stored in pvalues. The returned pvalue does not need to be
- *               a mutable reference.
- *
+ * @param pvalues P-values
  * @return Aggregated p-value
  */
 template <typename PValues, typename Access>

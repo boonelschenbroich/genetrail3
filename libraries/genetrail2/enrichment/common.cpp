@@ -188,7 +188,7 @@ static AllResults compute(Scores& test_set, CategoryList& cat_list,
 	AllResults name_to_cat_results;
 	for(const auto& cat : cat_list) {
 		try {
-			GMTFile input(test_set.db(), cat.second);
+			GMTFile input(EntityDatabase::global, cat.second);
 
 			if(!input) {
 				std::cerr << "WARNING: Could not open database " + cat.first +
@@ -244,7 +244,15 @@ static void adjustSeparately(AllResults& all_results, MultipleTestingCorrection 
 {
 	for(auto& results_it : all_results) {
 		auto results = resultVector(results_it.second);
-		results = pvalue::adjustPValues(results, pvalue::get_second(), correction);
+		results = pvalue::adjustPValues(results, correction);
+		updatePValues(results_it.second, results);
+	}
+}
+
+static void computeRowWisePValues(const EnrichmentAlgorithmPtr& algorithm,
+=======
+		results = pvalue::adjustPValues(results, correction);
+>>>>>>> [core] Make pvalue adjustment methods more flexible.
 		updatePValues(results_it.second, results);
 	}
 }
@@ -391,15 +399,3 @@ void run(Scores& test_set, CategoryList& cat_list,
 	if(computePValue && !algorithm->pValuesComputed()) {
 		computePValues(algorithm, name_to_cat_results, test_set, p);
 	}
-
-	if(p.adjustment && boost::get(p.adjustment) != MultipleTestingCorrection::GSEA) {
-		// Checks how they should be adjusted
-		if(p.adjustSeparately) {
-			adjustSeparately(name_to_cat_results, p.adjustment.get());
-		} else {
-			adjustCombined(name_to_cat_results, p.adjustment.get());
-		}
-	}
-
-	writeFiles(p.out(), name_to_cat_results);
-}
