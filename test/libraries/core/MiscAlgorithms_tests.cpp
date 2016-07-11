@@ -10,6 +10,31 @@ class MiscAlgorithmsTest : public ::testing::Test
 {
 };
 
+TEST_F(MiscAlgorithmsTest, testPartialShuffle)
+{
+	std::mt19937_64 rng(std::random_device{}());
+
+	std::vector<int> data{1, 2, 3, 4, 5, 6};
+
+	// Stress test the algorithm to make sure, that no entries get lost.
+	for(int i = 0; i < 1000; ++i) {
+		// Determine a random split point
+		auto until = rng() % data.size();
+
+		// Shuffle the range between begin and until
+		partial_shuffle(data.begin(), data.begin() + until, data.end(), rng);
+
+		// Make sure nothing was lost
+		std::sort(data.begin(), data.end());
+		ASSERT_EQ(1, data[0]);
+		ASSERT_EQ(2, data[1]);
+		ASSERT_EQ(3, data[2]);
+		ASSERT_EQ(4, data[3]);
+		ASSERT_EQ(5, data[4]);
+		ASSERT_EQ(6, data[5]);
+	}
+}
+
 TEST_F(MiscAlgorithmsTest, testSortPermutation)
 {
 	std::vector<unsigned int> data { 3, 2, 5, 1, 8, 7};

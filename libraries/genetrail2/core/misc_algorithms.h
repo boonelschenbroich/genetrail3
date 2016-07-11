@@ -28,6 +28,45 @@
 
 namespace GeneTrail
 {
+
+/**
+ * This method is the same as std::shuffle, however it only shuffles a part of
+ * the input range. This is useful for e.g. computing permutation tests or
+ * sampling a fixed where only a small portion of the input range needs to be
+ * returned.
+ *
+ * Note that although the range [until, last) gets modified, it is not
+ * guaranteed to be fully shuffled. This only holds for [first, until).
+ *
+ * @param first Start of the range that should be shuffled
+ * @param until End of the range that should be shuffled and start of the range
+ *              from which elements can be taken.
+ * @param last  End of the range from which elements can be taken.
+ */
+template <typename RandomAccessIterator, typename RandomNumberGenerator>
+void partial_shuffle(RandomAccessIterator first, RandomAccessIterator until,
+                     RandomAccessIterator last, RandomNumberGenerator&& gen)
+{
+	if(first == until) {
+		return;
+	}
+
+	if(until == last) {
+		std::shuffle(first, last, std::forward<RandomNumberGenerator>(gen));
+		return;
+	}
+
+	using uid = std::uniform_int_distribution<size_t>;
+	using pt = uid::param_type;
+
+	uid dist;
+	auto d = (last - first) - 1;
+	for(RandomAccessIterator i = first; i != until; ++i, --d) {
+		// Generate a random index in the range [0, remaining_size - 1]
+		std::iter_swap(i, i + dist(gen, pt(0, d)));
+	}
+}
+
 	GT2_EXPORT void invert_permutation(const std::vector<size_t>& perm,
 	                        std::vector<size_t>& inv_perm);
 
