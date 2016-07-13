@@ -244,7 +244,7 @@ static void adjustSeparately(AllResults& all_results, MultipleTestingCorrection 
 {
 	for(auto& results_it : all_results) {
 		auto results = resultVector(results_it.second);
-		results = pvalue::adjustPValues(results, correction);
+		results = pvalue::adjustPValues(results, pvalue::get_second(), correction);
 		updatePValues(results_it.second, results);
 	}
 }

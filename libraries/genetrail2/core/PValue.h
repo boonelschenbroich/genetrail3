@@ -397,13 +397,6 @@ rcref<PValues> simes(PValues&& pvalues, Access&& access)
 	    std::forward<Access>(access));
 }
 
-/*
- * Methods for adjusting vectors of pairs. Those are mainly for
- * compatiblity reasons.
- */
-using pValue = std::pair<std::string, double>;
-using pValueVec = std::vector<pValue>;
-
 /**
  * Takes an input string and returns a matching multiple testing correction
  * method. If the requested method is unknown an empty option is returned.
@@ -425,9 +418,36 @@ getCorrectionMethod(const std::string& method);
  *
  * @return A copy of the input vector containing the adjusted p-values.
  */
-GT2_EXPORT
-pValueVec adjustPValues(const pValueVec& pvalues,
-                        MultipleTestingCorrection method);
+template <typename PValues, typename Access>
+rcref<PValues> adjustPValues(PValues&& pvalues, Access&& access, MultipleTestingCorrection method)
+{
+	switch(method) {
+		case MultipleTestingCorrection::Bonferroni:
+			return bonferroni(std::forward<PValues>(pvalues), std::forward<Access>(access));
+		case MultipleTestingCorrection::Sidak:
+			return sidak(std::forward<PValues>(pvalues), std::forward<Access>(access));
+		case MultipleTestingCorrection::Holm:
+			return holm(std::forward<PValues>(pvalues), std::forward<Access>(access));
+		case MultipleTestingCorrection::HolmSidak:
+			return holm_sidak(std::forward<PValues>(pvalues), std::forward<Access>(access));
+		case MultipleTestingCorrection::Finner:
+			return finner(std::forward<PValues>(pvalues),std::forward<Access>(access));
+		case MultipleTestingCorrection::BenjaminiHochberg:
+			return benjamini_hochberg(std::forward<PValues>(pvalues), std::forward<Access>(access));
+		case MultipleTestingCorrection::BenjaminiYekutieli:
+			return benjamini_yekutieli(std::forward<PValues>(pvalues), std::forward<Access>(access));
+		case MultipleTestingCorrection::Hochberg:
+			return hochberg(std::forward<PValues>(pvalues), std::forward<Access>(access));
+		case MultipleTestingCorrection::Simes:
+			return simes(std::forward<PValues>(pvalues), std::forward<Access>(access));
+		case MultipleTestingCorrection::GSEA:
+			return pvalues;
+		default:
+			throw NotImplemented(__FILE__, __LINE__, "The requested correction "
+			                                         "method has not yet been "
+			                                         "implemented.");
+	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // P-value aggregation
