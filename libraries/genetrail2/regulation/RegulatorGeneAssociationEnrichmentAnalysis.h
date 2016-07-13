@@ -196,9 +196,10 @@ template <typename ValueType> class GT2_EXPORT RegulatorEnrichmentAnalysis
 		}
 
 		// Adjust p-values
-		p_values = pvalue<size_t, double>::adjustPValues(
+		p_values = pvalue::adjustPValues(
 		    p_values,
-		    pvalue<size_t, double>::getCorrectionMethod(method).get());
+		    pvalue::get_second(),
+		    pvalue::getCorrectionMethod(method).get());
 
 		// Update p-values
 		for(const auto& pair : p_values) {
