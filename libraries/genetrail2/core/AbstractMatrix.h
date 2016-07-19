@@ -33,12 +33,6 @@ namespace GeneTrail
 	class GT2_EXPORT AbstractMatrix : public Matrix
 	{
 		public:
-			/// The precision used in the matrix
-			typedef double       value_type;
-
-			/// The index type used in the matrix
-			typedef unsigned int index_type;
-
 			///\ingroup Constructors
 			///@{
 			/**
