@@ -63,7 +63,7 @@ TEST(Statistic, Median_Length_0)
 {
 	std::vector<double> values;
 	double median = statistic::median<double>(values.begin(), values.end());
-	EXPECT_FLOAT_EQ(0.0, median);
+	EXPECT_DOUBLE_EQ(0.0, median);
 }
 
 
@@ -71,17 +71,17 @@ TEST(Statistic, Median_Length_1)
 {
 	std::vector<double> values { 1.0 };
 	double median = statistic::median<double>(values.begin(), values.end());
-	EXPECT_FLOAT_EQ(1.0, median);
+	EXPECT_DOUBLE_EQ(1.0, median);
 }
 
 TEST(Statistic, Median_Length_2)
 {
 	std::vector<double> values { -1.0, 1.0 };
 	double median = statistic::median<double>(values.begin(), values.end());
-	EXPECT_FLOAT_EQ(0.0, median);
+	EXPECT_DOUBLE_EQ(0.0, median);
 	std::vector<double> values2 { 1.0, 3.0 };
 	double median2 = statistic::median<double>(values2.begin(), values2.end());
-	EXPECT_FLOAT_EQ(2.0, median2);
+	EXPECT_DOUBLE_EQ(2.0, median2);
 }
 
 TEST(Statistic, Median)
@@ -91,7 +91,7 @@ TEST(Statistic, Median)
 	double median2 = statistic::median<double>(b.begin(),b.end());
 	EXPECT_NEAR(median2, -2.35, TOLERANCE);
 	double median3 = statistic::median<double>(c.begin(),c.end());
-	EXPECT_EQ(4, median3); // Odd length vectors should be exact
+	EXPECT_DOUBLE_EQ(4.0, median3); // Odd length vectors should be exact
 }
 
 TEST(Statistic, Var)

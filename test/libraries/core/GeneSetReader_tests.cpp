@@ -20,21 +20,21 @@ TEST(Parsing, readScoreFileSimple) {
 
 	auto it = file.begin();
 	ASSERT_NE(file.end(), it);
-	EXPECT_EQ("90123", it->first); EXPECT_FLOAT_EQ(4.7813, it->second);
+	EXPECT_EQ("90123", it->first); EXPECT_DOUBLE_EQ(4.7813, it->second);
 	ASSERT_NE(file.end(), ++it);
-	EXPECT_EQ("01234", it->first); EXPECT_FLOAT_EQ(3.6381, it->second);
+	EXPECT_EQ("01234", it->first); EXPECT_DOUBLE_EQ(3.6381, it->second);
 	ASSERT_NE(file.end(), ++it);
-	EXPECT_EQ("12345", it->first); EXPECT_FLOAT_EQ(-6.42397, it->second);
+	EXPECT_EQ("12345", it->first); EXPECT_DOUBLE_EQ(-6.42397, it->second);
 	ASSERT_NE(file.end(), ++it);
-	EXPECT_EQ("23456", it->first); EXPECT_FLOAT_EQ(8.81721, it->second);
+	EXPECT_EQ("23456", it->first); EXPECT_DOUBLE_EQ(8.81721, it->second);
 	ASSERT_NE(file.end(), ++it);
-	EXPECT_EQ("34567", it->first); EXPECT_FLOAT_EQ(-5.91418, it->second);
+	EXPECT_EQ("34567", it->first); EXPECT_DOUBLE_EQ(-5.91418, it->second);
 	ASSERT_NE(file.end(), ++it);
-	EXPECT_EQ("45678", it->first); EXPECT_FLOAT_EQ(-2.71999, it->second);
+	EXPECT_EQ("45678", it->first); EXPECT_DOUBLE_EQ(-2.71999, it->second);
 	ASSERT_NE(file.end(), ++it);
-	EXPECT_EQ("56789", it->first); EXPECT_FLOAT_EQ(3.01346, it->second);
+	EXPECT_EQ("56789", it->first); EXPECT_DOUBLE_EQ(3.01346, it->second);
 	ASSERT_NE(file.end(), ++it);
-	EXPECT_EQ("67890", it->first); EXPECT_FLOAT_EQ(-1.74416, it->second);
+	EXPECT_EQ("67890", it->first); EXPECT_DOUBLE_EQ(-1.74416, it->second);
 	ASSERT_EQ(file.end(), ++it);
 }
 
@@ -102,17 +102,17 @@ TEST(Parsing, readNAFileSimple) {
 
 	auto it = file.begin();
 	ASSERT_NE(file.end(), it);
-	EXPECT_EQ("a", it->first);  EXPECT_FLOAT_EQ(1.0, it->second);
+	EXPECT_EQ("a", it->first);  EXPECT_DOUBLE_EQ(1.0, it->second);
 	ASSERT_NE(file.end(), ++it);
-	EXPECT_EQ("desf", it->first);  EXPECT_FLOAT_EQ(2.9, it->second);
+	EXPECT_EQ("desf", it->first);  EXPECT_DOUBLE_EQ(2.9, it->second);
 	ASSERT_NE(file.end(), ++it);
-	EXPECT_EQ("sgr", it->first);  EXPECT_FLOAT_EQ(-1.5, it->second);
+	EXPECT_EQ("sgr", it->first);  EXPECT_DOUBLE_EQ(-1.5, it->second);
 	ASSERT_NE(file.end(), ++it);
-	EXPECT_EQ("weffe", it->first);  EXPECT_FLOAT_EQ(3212312.1, it->second);
+	EXPECT_EQ("weffe", it->first);  EXPECT_DOUBLE_EQ(3212312.1, it->second);
 	ASSERT_NE(file.end(), ++it);
-	EXPECT_EQ("frewf", it->first);  EXPECT_FLOAT_EQ(213, it->second);
+	EXPECT_EQ("frewf", it->first);  EXPECT_DOUBLE_EQ(213, it->second);
 	ASSERT_NE(file.end(), ++it);
-	EXPECT_EQ("dsfr", it->first);  EXPECT_FLOAT_EQ(123, it->second);
+	EXPECT_EQ("dsfr", it->first);  EXPECT_DOUBLE_EQ(123, it->second);
 	EXPECT_EQ(file.end(), ++it);
 }
 
@@ -122,17 +122,17 @@ TEST(Parsing, readNAFileNasty) {
 
 	auto it = file.begin();
 	ASSERT_NE(file.end(), it);
-	EXPECT_EQ("sdf",       it->first);  EXPECT_FLOAT_EQ(3.2, it->second);
+	EXPECT_EQ("sdf",       it->first);  EXPECT_DOUBLE_EQ(3.2, it->second);
 	ASSERT_NE(file.end(), ++it);
-	EXPECT_EQ("dsdf",      it->first);  EXPECT_FLOAT_EQ(-1.24, it->second);
+	EXPECT_EQ("dsdf",      it->first);  EXPECT_DOUBLE_EQ(-1.24, it->second);
 	ASSERT_NE(file.end(), ++it);
-	EXPECT_EQ("1",         it->first);  EXPECT_FLOAT_EQ(1.0, it->second);
+	EXPECT_EQ("1",         it->first);  EXPECT_DOUBLE_EQ(1.0, it->second);
 	ASSERT_NE(file.end(), ++it);
-	EXPECT_EQ("dfsf",      it->first);  EXPECT_FLOAT_EQ(132213.2, it->second);
+	EXPECT_EQ("dfsf",      it->first);  EXPECT_DOUBLE_EQ(132213.2, it->second);
 	ASSERT_NE(file.end(), ++it);
-	EXPECT_EQ("fvju.dsf",  it->first);  EXPECT_FLOAT_EQ(21321.0, it->second);
+	EXPECT_EQ("fvju.dsf",  it->first);  EXPECT_DOUBLE_EQ(21321.0, it->second);
 	ASSERT_NE(file.end(), ++it);
-	EXPECT_EQ("()§%$%\"§", it->first);  EXPECT_FLOAT_EQ(234234.0, it->second);
+	EXPECT_EQ("()§%$%\"§", it->first);  EXPECT_DOUBLE_EQ(234234.0, it->second);
 	EXPECT_EQ(file.end(), ++it);
 }
 
