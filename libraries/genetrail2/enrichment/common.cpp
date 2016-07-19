@@ -316,7 +316,9 @@ static void sortMatrixRows(DenseMatrix& data, const EntityDatabase* db) {
 }
 
 static void computeColumnWisePValues(const EnrichmentAlgorithmPtr& algorithm,
-                              EnrichmentResults& results, const Scores& scores, const Params& p)
+                                     EnrichmentResults& results,
+                                     const Scores& scores, const Params& p,
+                                     const EntityDatabase* db)
 {
 	std::ifstream input(p.dataMatrixPath());
 	DenseMatrixReader matrixReader;
@@ -332,12 +334,14 @@ static void computeColumnWisePValues(const EnrichmentAlgorithmPtr& algorithm,
 	sortMatrixRows(data, scores.db().get());
 
 	if(p.adjustment && p.adjustment == MultipleTestingCorrection::GSEA) {
-		KSColumnPermutationTest<double> test(data, p.numPermutations,
-		                                     referenceGroup.size(), p.scoringMethod.get(), p.randomSeed);
+		KSColumnPermutationTest<double> test(
+		    data, p.numPermutations, referenceGroup.size(),
+		    p.scoringMethod.get(), p.randomSeed, db);
 		test.computePValue(algorithm, results);
 	} else {
-		ColumnPermutationTest<double> test(data, p.numPermutations,
-	                                       referenceGroup.size(), p.scoringMethod.get(), p.randomSeed);
+		ColumnPermutationTest<double> test(
+		    data, p.numPermutations, referenceGroup.size(),
+		    p.scoringMethod.get(), p.randomSeed, db);
 		test.computePValue(algorithm, results);
 	}
 }
@@ -370,7 +374,7 @@ static void computePValues(EnrichmentAlgorithmPtr& algorithm,
 			computeRowWisePValues(algorithm, results, scores, p);
 			break;
 		case PValueMode::ColumnWise:
-			computeColumnWisePValues(algorithm, results, scores, p);
+			computeColumnWisePValues(algorithm, results, scores, p, scores.db().get());
 			break;
 		case PValueMode::Restandardize:
 			computeRestandardizationPValues(algorithm);

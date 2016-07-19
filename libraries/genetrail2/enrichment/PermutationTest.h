@@ -234,12 +234,13 @@ class ColumnPermutationBase : public internal::PermutationBase<value_type>
   public:
 	ColumnPermutationBase(const DenseMatrix& data, size_t permutations,
 	                      size_t reference_size, MatrixHTests method,
-	                      uint64_t randomSeed)
+	                      uint64_t randomSeed, const EntityDatabase* db)
 	    : permutations_(permutations),
 	      data_(data),
 	      reference_size_(reference_size),
 	      method_(method),
-	      twister_(randomSeed)
+	      twister_(randomSeed),
+	      db_(db)
 	{
 	}
 
@@ -247,9 +248,8 @@ class ColumnPermutationBase : public internal::PermutationBase<value_type>
 	{
 		std::vector<size_t> row_db_indices(data_.rows());
 
-		EntityDatabase::global->transform(data_.rowNames().begin(),
-		                                  data_.rowNames().end(),
-		                                  row_db_indices.begin());
+		db_->transform(data_.rowNames().begin(), data_.rowNames().end(),
+		               row_db_indices.begin());
 
 		// We need to make sure, that the EntityDatabase indices of
 		// the data are sorted in strictly ascending order, as we
@@ -359,6 +359,7 @@ class ColumnPermutationBase : public internal::PermutationBase<value_type>
 	std::vector<size_t> inv_permutation_;
 	std::vector<size_t> intersection_;
 	std::vector<std::vector<size_t>> positions_;
+	const EntityDatabase* db_;
 };
 
 template <typename value_type>
@@ -367,9 +368,9 @@ class ColumnPermutationTest : public ColumnPermutationBase<value_type>
   public:
 	ColumnPermutationTest(const DenseMatrix& data, size_t permutations,
 	                      size_t reference_size, MatrixHTests method,
-	                      uint64_t randomSeed)
+	                      uint64_t randomSeed, const EntityDatabase* db)
 	    : ColumnPermutationBase<value_type>(data, permutations, reference_size,
-	                                        method, randomSeed)
+	                                        method, randomSeed, db)
 	{
 	}
 
@@ -448,9 +449,9 @@ class KSColumnPermutationTest : public ColumnPermutationBase<value_type>
   public:
 	KSColumnPermutationTest(const DenseMatrix& data, size_t permutations,
 	                        size_t reference_size, MatrixHTests method,
-	                        uint64_t randomSeed)
+	                        uint64_t randomSeed, const EntityDatabase* db)
 	    : ColumnPermutationBase<value_type>(data, permutations, reference_size,
-	                                        method, randomSeed)
+	                                        method, randomSeed, db)
 	{
 	}
 
