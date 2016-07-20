@@ -96,7 +96,7 @@ struct RegulatorEnrichmentResult
 		writer.String(name.c_str());
 
 		writer.String("score");
-		writer.Int(score);
+		writer.Double(score);
 
 		writer.String("hits");
 		writer.Double(hits);
