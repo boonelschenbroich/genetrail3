@@ -188,7 +188,7 @@ static AllResults compute(Scores& test_set, CategoryList& cat_list,
 	AllResults name_to_cat_results;
 	for(const auto& cat : cat_list) {
 		try {
-			GMTFile input(EntityDatabase::global, cat.second);
+			GMTFile input(test_set.db(), cat.second);
 
 			if(!input) {
 				std::cerr << "WARNING: Could not open database " + cat.first +
