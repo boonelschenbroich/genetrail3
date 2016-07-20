@@ -7,6 +7,7 @@
 #include <genetrail2/core/GeneSet.h>
 
 #include <iostream>
+#include <memory>
 
 using namespace GeneTrail;
 namespace bpo = boost::program_options;
@@ -58,7 +59,8 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	Scores scores(test_set, EntityDatabase::global);
+	auto db = std::make_shared<EntityDatabase>();
+	Scores scores(test_set, db);
 
 	auto order = increasing ? Order::Increasing : Order::Decreasing;
 

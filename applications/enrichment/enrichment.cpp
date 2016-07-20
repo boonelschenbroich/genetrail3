@@ -7,7 +7,10 @@
 #include <genetrail2/core/EntityDatabase.h>
 
 #include <boost/program_options.hpp>
+
 #include <iostream>
+#include <memory>
+#include <string>
 
 namespace bpo = boost::program_options;
 
@@ -68,7 +71,8 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	Scores scores(test_set, EntityDatabase::global);
+	auto db = std::make_shared<EntityDatabase>();
+	Scores scores(test_set, db);
 
 	auto algorithm = getAlgorithm(p.pValueMode, method, scores);
 

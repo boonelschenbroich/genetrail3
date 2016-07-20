@@ -163,7 +163,8 @@ int main(int argc, char* argv[])
 	std::vector<std::pair<std::string, double>> results;
 
 	// Compute the enrichment
-	GMTFile input(EntityDatabase::global, categories);
+	auto db = std::make_shared<EntityDatabase>();
+	GMTFile input(db, categories);
 	auto category_db = input.read();
 	for(const auto& c : category_db) {
 		double enr = computeEnrichment(cdata, sdata, cm - sm, c);
