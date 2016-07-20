@@ -31,14 +31,15 @@
 
 namespace GeneTrail
 {
-class EntityDatabase;
-class Category;
 
 // Forward declaration of GeneSetFilter.
 namespace GeneSetFilter
 {
-class GeneSetFilter;
+	class GeneSetFilter;
 }
+
+class Category;
+class EntityDatabase;
 
 class GT2_EXPORT GeneSet
 {
