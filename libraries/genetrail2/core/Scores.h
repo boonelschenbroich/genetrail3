@@ -25,6 +25,7 @@
 
 #include <boost/iterator/transform_iterator.hpp>
 
+#include <memory>
 #include <string>
 #include <vector>
 
