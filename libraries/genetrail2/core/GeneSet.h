@@ -37,8 +37,11 @@ class Category;
 // Forward declaration of GeneSetFilter.
 namespace GeneSetFilter
 {
-class GeneSetFilter;
+	class GeneSetFilter;
 }
+
+class Category;
+class EntityDatabase;
 
 class GT2_EXPORT GeneSet
 {
@@ -292,7 +295,7 @@ class GT2_EXPORT GeneSet
 	 *
 	 * @param name Name of the created category
 	 */
-	Category toCategory(const std::string& name, EntityDatabase* db) const;
+	Category toCategory(const std::shared_ptr<EntityDatabase>& db, const std::string& name = "") const;
 
 	/**
 	 * Apply a filter to the gene set in order to remove unwanted
