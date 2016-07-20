@@ -23,7 +23,6 @@
 
 #include <algorithm>
 #include <functional>
-#include <memory>
 #include <unordered_map>
 #include <vector>
 
@@ -33,16 +32,16 @@ namespace GeneTrail
 {
 	/**
 	 * This class implements the flyweight pattern for entity names
-	 * (e.g. gene names, protein names, ...). It provides a global
-	 * instance that can be shared amongst objects.
+	 * (e.g. gene names, protein names, ...).
+	 *
+	 * It also provides facilities for converting a range of input strings to
+	 * the respective handles.
+	 *
+	 * @warning Note that the class is currently not thread-safe.
 	 */
 	class GT2_EXPORT EntityDatabase
 	{
 		public:
-		/// A global instance on the database, that can be shared amongst
-		/// clients.
-		static std::shared_ptr<EntityDatabase> global;
-
 		EntityDatabase() = default;
 		EntityDatabase(const EntityDatabase&) = default;
 		EntityDatabase(EntityDatabase&&) = default;
@@ -120,8 +119,8 @@ namespace GeneTrail
 		 * @param b The end of the input range.
 		 * @param c The start of the output range.
 		 *
-		 * @throw UnkownEntry if [a,b) contains std::string instances and an
-		 *                    unknown instance has been found.
+		 * @throw UnkownEntry if [a,b) contains std::string instances that
+		 *                    cannot be found in the database.
 		 */
 		template <typename InputIterator, typename OutputIterator>
 		void transform(InputIterator a, InputIterator b, OutputIterator c) const
@@ -149,8 +148,8 @@ namespace GeneTrail
 		 * @param container The container with the input data.
 		 * @param out The start of the output range.
 		 *
-		 * @throw UnkownEntry if [a,b) contains std::string instances and an
-		 *                    unknown instance has been found.
+		 * @throw UnkownEntry if the container contains std::string instances
+		 *                    that cannot be found in the database.
 		 */
 		template <typename Container, typename OutputIterator>
 		void transform(const Container& container, OutputIterator out) const

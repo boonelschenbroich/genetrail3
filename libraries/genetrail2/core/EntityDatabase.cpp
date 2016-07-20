@@ -23,9 +23,6 @@
 
 namespace GeneTrail
 {
-	GT2_EXPORT std::shared_ptr<EntityDatabase> EntityDatabase::global =
-	    std::make_shared<EntityDatabase>();
-
 	void EntityDatabase::clear()
 	{
 		name_to_index_.clear();
