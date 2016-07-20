@@ -68,9 +68,11 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	auto enrichmentAlgorithm = createEnrichmentAlgorithm<Ora>(p.pValueMode, reference_set.toCategory("reference"), test_set.toCategory("test"));
+	auto db = std::make_shared<EntityDatabase>();
 
-	Scores scores(test_set, EntityDatabase::global);
+	auto enrichmentAlgorithm = createEnrichmentAlgorithm<Ora>(p.pValueMode, reference_set.toCategory(db, "reference"), test_set.toCategory(db, "test"));
+
+	Scores scores(test_set, db);
 	run(scores, cat_list, enrichmentAlgorithm, p, true);
 
 	return 0;

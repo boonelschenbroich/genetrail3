@@ -22,6 +22,7 @@
 
 #include "macros.h"
 
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -30,6 +31,7 @@
 namespace GeneTrail
 {
 	class Category;
+	class EntityDatabase;
 
 	// Forward declaration of GeneSetFilter.
 	namespace GeneSetFilter {
@@ -281,7 +283,7 @@ namespace GeneTrail
 		 *
 		 * @param name Name of the created category
 		 */
-		Category toCategory(const std::string& name = "") const;
+		Category toCategory(const std::shared_ptr<EntityDatabase>& db, const std::string& name = "") const;
 
 		/**
 		 * Apply a filter to the gene set in order to remove unwanted

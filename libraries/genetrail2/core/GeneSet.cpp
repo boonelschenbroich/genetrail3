@@ -167,9 +167,9 @@ namespace GeneTrail
 		return getIdentifier(getAbsoluteSortedScores());
 	}
 
-	Category GeneSet::toCategory(const std::string& name) const
+	Category GeneSet::toCategory(const std::shared_ptr<EntityDatabase>& db, const std::string& name) const
 	{
-		Category res(EntityDatabase::global.get());
+		Category res(db.get());
 		res.setName(name);
 		for(const auto& it : container_) {
 			res.insert(it.first);
