@@ -124,12 +124,6 @@ namespace GeneTrail
 		return intersect(getSortedScores(decreasing), set);
 	}
 
-	GeneSet::Container GeneSet::getFirstK(const std::vector<Element>& scores,
-	                                      int k) const
-	{
-		return GeneSet::Container{scores.begin(), scores.begin() + k};
-	}
-
 	std::vector<std::string>
 	GeneSet::getIdentifier(const std::vector<GeneSet::Element>& scores) const
 	{

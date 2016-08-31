@@ -197,11 +197,17 @@ class GT2_EXPORT GeneSet
 	                           bool decreasing) const;
 
 	/**
-	 * Returns the first k identifier of the given vector.
+	 * Returns the first k element of the sorted gene set.
 	 *
+	 * @param k The number of elements that should be selected.
+	 * @param decreasing flag indication how to sort the scores (true = decreasing).
 	 * @return Vector of identifier.
 	 */
-	Container getFirstK(const std::vector<Element>& scores, int k) const;
+	template<typename Comparator>
+	void selectFirstK(size_t k, Comparator comp) {
+		std::nth_element(container_.begin(), container_.begin() + k, container_.end(), comp);
+		container_ = std::vector<Element>(container_.begin(), container_.begin() + k);
+	}
 
 	/**
 	 * Returns the identifier of the given vector of Elements.
