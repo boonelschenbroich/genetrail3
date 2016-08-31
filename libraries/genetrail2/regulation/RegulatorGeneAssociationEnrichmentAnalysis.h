@@ -129,8 +129,11 @@ template <typename ValueType> class GT2_EXPORT RegulatorEnrichmentAnalysis
 		out.open(out_);
 		if(out.is_open()) {
 			out << results_[0].header();
+			size_t rank = 1;
 			for(RegulatorEnrichmentResult result : results) {
+				result.rank = rank;
 				result.serialize(out, confidence_, method);
+				++rank;
 			}
 		} else {
 			std::cerr << "Could not open file: " << out_ << "\n";
@@ -163,9 +166,12 @@ template <typename ValueType> class GT2_EXPORT RegulatorEnrichmentAnalysis
 		rapidjson::StringBuffer sb;
     	rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
 
+		size_t rank = 1;
     	writer.StartArray();
     	for(RegulatorEnrichmentResult& res : results){
+			res.rank = rank;
 			res.serializeJSON(writer, confidence_, method);
+			++rank;
 		}
     	writer.EndArray();
 		

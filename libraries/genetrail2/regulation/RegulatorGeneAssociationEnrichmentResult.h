@@ -1,6 +1,6 @@
 /*
  * GeneTrail2 - An efficent library for interpreting genetic data
- * Copyright (C) 2015 Tim Kehl <tkehl@bioinf.uni-sb.de>
+ * Copyright (C) 2016 Tim Kehl <tkehl@bioinf.uni-sb.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Lesser GNU General Public License as
@@ -23,6 +23,7 @@
 
 #include <string>
 #include <vector>
+#include <tuple>
 
 #include <genetrail2/core/ConfidenceInterval.h>
 #include <genetrail2/core/Statistic.h>
@@ -33,6 +34,10 @@ struct RegulatorEnrichmentResult
 {
 	std::string name = "";
 	size_t hits = 0;
+	size_t rank = 0;
+	std::tuple<double, double> ci;
+	double sd = 0.0;
+	double mad = 0.0;
 	std::vector<double> scores;
 	double score = 0.0;
 	double mean_correlation = 0.0;
@@ -46,6 +51,7 @@ struct RegulatorEnrichmentResult
 	{
 		std::string header = "#";
 		header += "Name\t";
+		header += "Rank\t";
 		header += "Hits\t";
 		header += "Score\t";
 		header += "CI\t";
@@ -68,32 +74,37 @@ struct RegulatorEnrichmentResult
 	void serialize(std::ostream& strm, double alpha,
 	               const std::string& ci_method)
 	{
-		auto sd = statistic::sd<double>(scores.begin(), scores.end());
-		auto mad = statistic::mean_absolute_deviation<double>(scores.begin(),
-		                                                      scores.end());
-		auto ci =
+		sd = statistic::sd<double>(scores.begin(), scores.end());
+		mad = statistic::mean_absolute_deviation<double>(scores.begin(),
+		                                                 scores.end());
+		ci =
 		    confidence_interval<double, std::vector<double>::iterator>::compute(
 		        ci_method, scores.begin(), scores.end(), score, alpha);
-		strm << name << '\t' << hits << '\t' << score << '\t' << "["
-		     << std::get<0>(ci) << ',' << std::get<1>(ci) << "]\t" << sd << '\t'
-		     << mad << '\t' << corrected_p_value << '\t' << mean_correlation
-		     << '\n';
+		strm << name << '\t' << rank << '\t' << hits << '\t' << score << '\t'
+		     << "[" << std::get<0>(ci) << ','
+		     << std::get<1>(ci) << "]\t" << sd << '\t' << mad
+		     << '\t' << corrected_p_value << '\t' << mean_correlation << '\n';
 	}
 
 	template <typename Writer>
 	void serializeJSON(Writer& writer, double alpha,
 	                   const std::string& ci_method)
 	{
-		auto sd = statistic::sd<double>(scores.begin(), scores.end());
-		auto mad = statistic::mean_absolute_deviation<double>(scores.begin(),
-		                                                      scores.end());
-		auto ci =
-		    confidence_interval<double, std::vector<double>::iterator>::compute(
+		sd = statistic::sd<double>(scores.begin(), scores.end());
+		mad = statistic::mean_absolute_deviation<double>(scores.begin(),
+		                                                 scores.end());
+		ci = confidence_interval<double, std::vector<double>::iterator>::compute(
 		        ci_method, scores.begin(), scores.end(), score, alpha);
 		writer.StartObject();
 
 		writer.String("regulator");
 		writer.String(name.c_str());
+
+		writer.String("rank");
+		writer.Int(rank);
+
+		writer.String("hits");
+		writer.Int(hits);
 
 		writer.String("score");
 		writer.Double(score);
