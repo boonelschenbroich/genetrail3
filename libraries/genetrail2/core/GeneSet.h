@@ -320,6 +320,39 @@ class GT2_EXPORT GeneSet
 };
 
 /**
+ * This struct is used as comparator for sorting
+ */
+struct increasing_compare
+{
+	bool operator()(const GeneSet::Element& a, const GeneSet::Element& b)
+	{
+		return a.second < b.second;
+	}
+};
+
+/**
+ * This struct is used as comparator for sorting
+ */
+struct decreasing_compare
+{
+	bool operator()(const GeneSet::Element& a, const GeneSet::Element& b)
+	{
+		return a.second > b.second;
+	}
+};
+
+/**
+ * This struct is used as comparator for sorting
+ */
+struct absolute_compare
+{
+	bool operator()(const GeneSet::Element& a, const GeneSet::Element& b)
+	{
+		return std::abs(a.second) > std::abs(b.second);
+	}
+};
+
+/**
  * This function applies a given function to all values of the GeneSet.
  *
  * @param gene_set The GeneSet to which the function should be applied.

@@ -27,39 +27,6 @@
 
 namespace GeneTrail
 {
-	/**
-	 * This struct is used as comparator for sorting
-	 */
-	struct increasing_compare
-	{
-		bool operator()(const GeneSet::Element& a, const GeneSet::Element& b)
-		{
-			return a.second < b.second;
-		}
-	};
-
-	/**
-	 * This struct is used as comparator for sorting
-	 */
-	struct decreasing_compare
-	{
-		bool operator()(const GeneSet::Element& a, const GeneSet::Element& b)
-		{
-			return a.second > b.second;
-		}
-	};
-
-	/**
-	 * This struct is used as comparator for sorting
-	 */
-	struct absolute_compare
-	{
-		bool operator()(const GeneSet::Element& a, const GeneSet::Element& b)
-		{
-			return std::abs(a.second) > std::abs(b.second);
-		}
-	};
-
 	GeneSet::Container GeneSet::getSortedScores(bool decreasing) const
 	{
 		if(decreasing) {
