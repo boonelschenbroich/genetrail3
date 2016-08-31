@@ -135,6 +135,69 @@ struct RegulatorEnrichmentResult
 
 		writer.EndObject();
 	}
+
+	template <typename Value> void deserializeJSON(const Value& result)
+	{
+		if(!result.IsObject()) {
+			throw IOError("Entry " + std::to_string(result) +
+			              " is not an object.");
+		}
+
+		if(!result.HasMember("regulator")) {
+			throw IOError("Found result without name.");
+		}
+
+		name = result["regulator"].GetString();
+
+		if(!result.HasMember("rank")) {
+			throw IOError("Found result without rank.");
+		}
+
+		rank = result["rank"].GetInt();
+
+		if(!result.HasMember("hits")) {
+			throw IOError("Found result without number of hits.");
+		}
+
+		hits = result["hits"].GetInt();
+
+		if(!result.HasMember("confidenceInterval")) {
+			throw IOError("Found result without confidence interval.");
+		}
+
+		auto& a = result["confidenceInterval"].GetArray();
+		ci = std::make_tuple(a[0].GetDouble(), a[1].GetDouble());
+
+		if(!result.HasMember("stDev")) {
+			throw IOError("Found result without number of stDev.");
+		}
+
+		sd = result["stDev"].GetDouble();
+
+		if(!result.HasMember("mad")) {
+			throw IOError("Found result without number of mad.");
+		}
+
+		mad = result["mad"].GetDouble();
+
+		if(!result.HasMember("pValue")) {
+			throw IOError("Found result without number of pValue.");
+		}
+
+		p_value = result["pValue"].GetDouble();
+
+		if(!result.HasMember("correctedPValue")) {
+			throw IOError("Found result without number of correctedPValue.");
+		}
+
+		corrected_p_value = result["correctedPValue"].GetDouble();
+
+		if(!result.HasMember("meanCorrelation")) {
+			throw IOError("Found result without number of meanCorrelation.");
+		}
+
+		mean_correlation = result["meanCorrelation"].GetDouble();
+	}
 };
 }
 
