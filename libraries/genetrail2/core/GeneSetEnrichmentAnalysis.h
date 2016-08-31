@@ -175,7 +175,7 @@ namespace GeneTrail
 		{
 			return computePValue_(
 			    n, l, abs(RSc),
-			    [](big_int_type v, big_int_type RSc) { return abs(v) < RSc; });
+			    [](big_int_type v, big_int_type RSc) { return abs(v) < abs(RSc); });
 		}
 
 		/**
