@@ -98,6 +98,8 @@ int main(int argc, char* argv[])
 	bpo::options_description desc;
 
 	std::string infile, outfile;
+	size_t selector;
+	std::string comperator;
 	std::vector<std::string> filters;
 
 	desc.add_options()
@@ -107,13 +109,26 @@ int main(int argc, char* argv[])
 			"scores.")
 		("output,o", bpo::value<std::string>(&outfile)->required(),
 			"The filtered scores.")
-		("filter,f", bpo::value<std::vector<std::string>>(&filters)->required(),
-			"The filters that should be applied.");
+		("filter,f", bpo::value<std::vector<std::string>>(&filters),
+			"The filters that should be applied.")
+		("selector,s", bpo::value<size_t>(&selector)->default_value(0),
+			"The selector that should be applied.")
+		("comperator,c", bpo::value<std::string>(&comperator)->default_value("decreasingly"),
+			"The comperator that should be used to sort the gene set.");
 
 	try {
-		bpo::store(bpo::command_line_parser(argc, argv).options(desc).run(),
-		           vm);
+		bpo::store(bpo::command_line_parser(argc, argv).options(desc).run(), vm);
 		bpo::notify(vm);
+		
+		if (filters.size() == 0 and selector == 0) {
+			std::cerr << "Error: You need to specify at least one filter or selector.\n";
+			desc.print(std::cerr);
+			return -1;
+		} else if (filters.size() != 0 and selector != 0) {
+			std::cerr << "Error: You need to specify either several filters or one selector.\n";
+			desc.print(std::cerr);
+			return -1;	
+		}
 	} catch(bpo::error& e) {
 		std::cerr << "Error: " << e.what() << "\n";
 		desc.print(std::cerr);
@@ -126,8 +141,18 @@ int main(int argc, char* argv[])
 		GeneSetReader reader;
 		auto gene_set = reader.readScoringFile(infile);
 
-		for(const auto& filter : geneSetFilters) {
-			gene_set.filter(filter.get());
+		if (filters.size() > 0) {
+			for(const auto& filter : geneSetFilters) {
+				gene_set.filter(filter.get());
+			}
+		} else {
+			if (comperator == "increasingly") {
+				gene_set.selectFirstK(selector, increasing_compare());
+			} else if (comperator == "absolute") {
+				gene_set.selectFirstK(selector, absolute_compare());
+			} else {
+				gene_set.selectFirstK(selector, decreasing_compare());
+			}
 		}
 
 		auto db = std::make_shared<EntityDatabase>();
