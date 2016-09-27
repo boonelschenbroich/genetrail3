@@ -76,6 +76,23 @@ template <typename T>
 using rcref = std::remove_const_t<std::remove_reference_t<T>>;
 
 /**
+ * A helper functor that projects value to itself.
+ */
+struct identity
+{
+	template <typename T> double operator()(const T& t) const
+	{
+		return t;
+	}
+
+	// Important: the method needs to return a mutable reference!
+	template <typename T> double& operator()(T& t) const
+	{
+		return t;
+	}
+};
+
+/**
  * A helper functor that projects the second value out of a tuple.
  * We use this throughout GeneTrail2 to extract the p-values from
  * a std::pair<string, double>.

@@ -12,11 +12,19 @@ set_target_properties(reggae PROPERTIES
 
 GT2_COMPILE_FLAGS(reggae)
 
+add_executable(reggae_result_aggregator reggae_result_aggregator.cpp)
+target_link_libraries(reggae_result_aggregator applicationCommon gtcore gtregulation)
+set_target_properties(reggae_result_aggregator PROPERTIES
+    INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
+)
+
+GT2_COMPILE_FLAGS(reggae_result_aggregator)
+
 ####################################################################################################
 # Build executable
 ####################################################################################################
 
-install(TARGETS reggae
+install(TARGETS reggae reggae_result_aggregator
     RUNTIME DESTINATION bin 
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
