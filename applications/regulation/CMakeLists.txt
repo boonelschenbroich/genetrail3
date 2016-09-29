@@ -20,11 +20,27 @@ set_target_properties(reggae_result_aggregator PROPERTIES
 
 GT2_COMPILE_FLAGS(reggae_result_aggregator)
 
+add_executable(regulator_ora regulator_ora.cpp)
+target_link_libraries(regulator_ora applicationCommon gtcore gtregulation)
+set_target_properties(regulator_ora PROPERTIES
+    INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
+)
+
+GT2_COMPILE_FLAGS(regulator_ora)
+
+add_executable(regulator_permutation_test regulator_permutation_test.cpp)
+target_link_libraries(regulator_permutation_test applicationCommon gtcore gtregulation)
+set_target_properties(regulator_permutation_test PROPERTIES
+    INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
+)
+
+GT2_COMPILE_FLAGS(regulator_permutation_test)
+
 ####################################################################################################
 # Build executable
 ####################################################################################################
 
-install(TARGETS reggae reggae_result_aggregator
+install(TARGETS reggae reggae_result_aggregator regulator_ora regulator_permutation_test
     RUNTIME DESTINATION bin 
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
