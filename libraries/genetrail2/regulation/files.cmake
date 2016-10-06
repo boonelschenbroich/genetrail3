@@ -13,6 +13,8 @@ SET(LIBNAME "REGULATION")
 
 # Headers
 add_header_to_library(RegulationFileParser.h)
+add_header_to_library(Regulator.h)
+add_header_to_library(RegulationScoreFileReader.h)
 add_header_to_library(RegulationBootstrapper.h)
 add_header_to_library(RegulatorGeneAssociationEnrichmentResult.h)
 add_header_to_library(RegulatorGeneAssociationEnrichmentAnalysis.h)
@@ -22,3 +24,4 @@ add_header_to_library(RegulatorImpactScore.h)
 # Sources
 
 add_to_library(RegulatorEnrichmentResultAggregator)
+add_to_library(RegulatorCategoryFileReader)
