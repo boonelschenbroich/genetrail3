@@ -1,6 +1,6 @@
 #include <boost/program_options.hpp>
 
-#include <genetrail2/regulation/RegulatorEnrichmentResultAggregator.h>
+#include <genetrail2/regulation/RegulatorEffectResultAggregator.h>
 #include <genetrail2/core/macros.h>
 
 using namespace GeneTrail;
@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 	
-	RegulatorEnrichmentResultAggregator aggregator;
+	RegulatorEffectResultAggregator aggregator;
 	aggregator.read_results(in_);
 	std::string rank_aggregator = "sum";
 	aggregator.aggregateRanks(rank_aggregator);

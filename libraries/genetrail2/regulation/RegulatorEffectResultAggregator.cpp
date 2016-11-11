@@ -1,8 +1,8 @@
-#include "RegulatorEnrichmentResultAggregator.h"
+#include "RegulatorEffectResultAggregator.h"
 
 namespace GeneTrail
 {
-void RegulatorEnrichmentResultAggregator::read_results(const std::string& fname)
+void RegulatorEffectResultAggregator::read_results(const std::string& fname)
 {
 	std::ifstream infile(fname);
 	std::string line;
@@ -14,7 +14,7 @@ void RegulatorEnrichmentResultAggregator::read_results(const std::string& fname)
 }
 
 void
-RegulatorEnrichmentResultAggregator::adjustPValues(const std::string& method)
+RegulatorEffectResultAggregator::adjustPValues(const std::string& method)
 {
 	std::vector<std::pair<std::string, double>> p_values;
 	p_values.reserve(aggregated_results_.size());
@@ -34,7 +34,7 @@ RegulatorEnrichmentResultAggregator::adjustPValues(const std::string& method)
 }
 
 void
-RegulatorEnrichmentResultAggregator::aggregatePValues(const std::string& method)
+RegulatorEffectResultAggregator::aggregatePValues(const std::string& method)
 {
 	/**
 	 * This needs to be done since not every regulator might be detected by 
@@ -47,15 +47,15 @@ RegulatorEnrichmentResultAggregator::aggregatePValues(const std::string& method)
 	}
 	
 	if(method == "max") {
-		RegulatorEnrichmentResultAggregator::aggregatePValues(max_pvalue_aggregator());
+		RegulatorEffectResultAggregator::aggregatePValues(max_pvalue_aggregator());
 	} else if(method == "second-order") {
-		RegulatorEnrichmentResultAggregator::aggregatePValues(
+		RegulatorEffectResultAggregator::aggregatePValues(
 		    second_order_pvalue_aggregator());
 	} else if(method == "fisher") {
-		RegulatorEnrichmentResultAggregator::aggregatePValues(
+		RegulatorEffectResultAggregator::aggregatePValues(
 		    fisher_pvalue_aggregator());
 	} else if(method == "stouffer") {
-		RegulatorEnrichmentResultAggregator::aggregatePValues(
+		RegulatorEffectResultAggregator::aggregatePValues(
 		    stouffer_pvalue_aggregator());
 	} else {
 		throw NotImplemented(
@@ -65,7 +65,7 @@ RegulatorEnrichmentResultAggregator::aggregatePValues(const std::string& method)
 }
 
 void
-RegulatorEnrichmentResultAggregator::aggregateRanks(const std::string& method)
+RegulatorEffectResultAggregator::aggregateRanks(const std::string& method)
 {
 	if(method == "sum") {
 		
@@ -79,7 +79,7 @@ RegulatorEnrichmentResultAggregator::aggregateRanks(const std::string& method)
 			}
 		}
 		
-		RegulatorEnrichmentResultAggregator::aggregateRanks(sum_rank_aggregator());
+		RegulatorEffectResultAggregator::aggregateRanks(sum_rank_aggregator());
 	} else {
 		throw NotImplemented(
 		    __FILE__, __LINE__,
@@ -87,7 +87,7 @@ RegulatorEnrichmentResultAggregator::aggregateRanks(const std::string& method)
 	}
 }
 
-void RegulatorEnrichmentResultAggregator::parse_results(const std::string& line)
+void RegulatorEffectResultAggregator::parse_results(const std::string& line)
 {
 	std::ifstream f(line.c_str());
 	if(!f.good()) {
@@ -104,22 +104,22 @@ void RegulatorEnrichmentResultAggregator::parse_results(const std::string& line)
 	}
 }
 
-void RegulatorEnrichmentResultAggregator::write(const std::string& fname)
+void RegulatorEffectResultAggregator::write(const std::string& fname)
 {
-	std::vector<AggregatedRegulatorEnrichmentResult> results;
+	std::vector<AggregatedRegulatorEffectResult> results;
 	for(auto& r : aggregated_results_) {
 		results.emplace_back(r.second);
 	}
 	std::sort(results.begin(), results.end(),
-	          [](const AggregatedRegulatorEnrichmentResult& lhs,
-	             const AggregatedRegulatorEnrichmentResult& rhs) {
+	          [](const AggregatedRegulatorEffectResult& lhs,
+	             const AggregatedRegulatorEffectResult& rhs) {
 		return lhs.rank_sum < rhs.rank_sum;
 	});
 	rapidjson::StringBuffer sb;
 	rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
 
 	writer.StartArray();
-	for(AggregatedRegulatorEnrichmentResult& res : results) {
+	for(AggregatedRegulatorEffectResult& res : results) {
 		serializeJSON(writer, res);
 	}
 	writer.EndArray();

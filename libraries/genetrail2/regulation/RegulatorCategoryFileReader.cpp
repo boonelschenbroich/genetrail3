@@ -13,7 +13,7 @@ namespace GeneTrail
 		for(std::string line; getline(input, line);) {
 			std::vector<std::string> sline(2);
 			boost::split(sline, line, boost::is_any_of(" \t"));
-			if(sline.size() == 3) {
+			if(sline.size() >= 2) {
 				boost::trim(sline[0]);
 				boost::trim(sline[1]);
 				auto it = categories_.find(sline[0]);

@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef GT2_REGULATION_REGULATOR_ENRICHMENT_RESULT_AGGREGATOR_H
-#define GT2_REGULATION_REGULATOR_ENRICHMENT_RESULT_AGGREGATOR_H
+#ifndef GT2_REGULATION_REGULATOR_EFFECT_RESULT_AGGREGATOR_H
+#define GT2_REGULATION_REGULATOR_EFFECT_RESULT_AGGREGATOR_H
 
 #include <string>
 #include <vector>
@@ -34,7 +34,7 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/prettywriter.h>
 
-#include "RegulatorGeneAssociationEnrichmentResult.h"
+#include "RegulatorEffectResult.h"
 
 #include <genetrail2/core/Exception.h>
 #include <genetrail2/core/PValue.h>
@@ -43,7 +43,7 @@
 namespace GeneTrail
 {
 
-struct GT2_EXPORT AggregatedRegulatorEnrichmentResult
+struct GT2_EXPORT AggregatedRegulatorEffectResult
 {
 	std::string name = "";
 	std::vector<size_t> ranks;
@@ -97,10 +97,10 @@ struct GT2_EXPORT stouffer_pvalue_aggregator
 	}
 };
 
-class GT2_EXPORT RegulatorEnrichmentResultAggregator
+class GT2_EXPORT RegulatorEffectResultAggregator
 {
   public:
-	RegulatorEnrichmentResultAggregator() {}
+	RegulatorEffectResultAggregator() {}
 
 	/**
 	 *
@@ -132,7 +132,7 @@ class GT2_EXPORT RegulatorEnrichmentResultAggregator
   protected:
 	template <typename Writer>
 	void serializeJSON(Writer& writer,
-	                   AggregatedRegulatorEnrichmentResult result)
+	                   AggregatedRegulatorEffectResult result)
 	{
 		writer.StartObject();
 
@@ -161,14 +161,6 @@ class GT2_EXPORT RegulatorEnrichmentResultAggregator
 			writer.Double(p);
 		}
 		writer.EndArray();
-		
-		writer.String("meanCorrelations");
-		writer.StartArray();
-		for(const auto& p : result.mean_correlations) {
-			writer.Double(p);
-		}
-		writer.EndArray();
-
 		writer.EndObject();
 	}
 
@@ -185,7 +177,7 @@ class GT2_EXPORT RegulatorEnrichmentResultAggregator
 
 		auto it = aggregated_results_.find(name);
 		if(it == aggregated_results_.end()) {
-			AggregatedRegulatorEnrichmentResult result;
+			AggregatedRegulatorEffectResult result;
 			result.name = name;
 			it = aggregated_results_.emplace(name,result).first;
 		}
@@ -202,12 +194,6 @@ class GT2_EXPORT RegulatorEnrichmentResultAggregator
 		}
 
 		it->second.p_values.emplace_back(v["pValue"].GetDouble());
-		
-		if(!v.HasMember("meanCorrelation")) {
-			throw IOError("Found result without number of meanCorrelation.");
-		}
-
-		it->second.mean_correlations.emplace_back(v["meanCorrelation"].GetDouble());
 	}
 
 	/**
@@ -217,7 +203,7 @@ class GT2_EXPORT RegulatorEnrichmentResultAggregator
 
 	private:
 	size_t numberOfResults;
-	std::map<std::string, AggregatedRegulatorEnrichmentResult> aggregated_results_;
+	std::map<std::string, AggregatedRegulatorEffectResult> aggregated_results_;
 };
 }
 

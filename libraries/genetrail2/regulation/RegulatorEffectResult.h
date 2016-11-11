@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef GT2_REGULATION_REGULATOR_ENRICHMENT_RESULT_H
-#define GT2_REGULATION_REGULATOR_ENRICHMENT_RESULT_H
+#ifndef GT2_REGULATION_REGULATOR_EFFECT_RESULT_H
+#define GT2_REGULATION_REGULATOR_EFFECT_RESULT_H
 
 #include <string>
 #include <vector>
@@ -30,10 +30,11 @@
 
 namespace GeneTrail
 {
-struct RegulatorEnrichmentResult
+struct RegulatorEffectResult
 {
 	std::string name = "";
 	size_t hits = 0;
+	double expected_hits = 0;
 	size_t rank = 0;
 	std::tuple<double, double> ci;
 	double sd = 0.0;
@@ -95,6 +96,12 @@ struct RegulatorEnrichmentResult
 		                                                 scores.end());
 		ci = confidence_interval<double, std::vector<double>::iterator>::compute(
 		        ci_method, scores.begin(), scores.end(), score, alpha);
+		serializeJSON(writer, false);
+	}
+	
+	template <typename Writer>
+	void serializeJSON(Writer& writer, bool skip)
+	{
 		writer.StartObject();
 
 		writer.String("regulator");
@@ -109,20 +116,22 @@ struct RegulatorEnrichmentResult
 		writer.String("score");
 		writer.Double(score);
 
-		writer.String("hits");
-		writer.Double(hits);
+		writer.String("expected_hits");
+		writer.Double(expected_hits);
 
-		writer.String("confidenceInterval");
-		writer.StartArray();
-		writer.Double(std::get<0>(ci));
-		writer.Double(std::get<1>(ci));
-		writer.EndArray();
+		if(!skip){
+			writer.String("confidenceInterval");
+			writer.StartArray();
+			writer.Double(std::get<0>(ci));
+			writer.Double(std::get<1>(ci));
+			writer.EndArray();
+			
+			writer.String("stDev");
+			writer.Double(sd);
 
-		writer.String("stDev");
-		writer.Double(sd);
-
-		writer.String("mad");
-		writer.Double(mad);
+			writer.String("mad");
+			writer.Double(mad);
+		}
 
 		writer.String("pValue");
 		writer.Double(p_value);
@@ -130,9 +139,11 @@ struct RegulatorEnrichmentResult
 		writer.String("correctedPValue");
 		writer.Double(corrected_p_value);
 
-		writer.String("meanCorrelation");
-		writer.Double(mean_correlation);
-
+		if(!skip){
+			writer.String("meanCorrelation");
+			writer.Double(mean_correlation);
+		}
+		
 		writer.EndObject();
 	}
 
@@ -201,4 +212,4 @@ struct RegulatorEnrichmentResult
 };
 }
 
-#endif // GT2_REGULATION_REGULATOR_ENRICHMENT_RESULT_H
+#endif // GT2_REGULATION_REGULATOR_EFFECT_RESULT_H

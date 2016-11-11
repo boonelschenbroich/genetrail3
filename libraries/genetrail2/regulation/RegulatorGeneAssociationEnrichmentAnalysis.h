@@ -18,8 +18,8 @@
 *
 */
 
-#ifndef GT2_REGULATOR_ENRICHMENT_ANALYSIS_H
-#define GT2_REGULATOR_ENRICHMENT_ANALYSIS_H
+#ifndef GT2_REGULATION_REGULATOR_GENE_ASSOCIATION_ENRICHMENT_ANALYSIS_H
+#define GT2_REGULATION_REGULATOR_GENE_ASSOCIATION_ENRICHMENT_ANALYSIS_H
 
 #include <genetrail2/core/DenseMatrix.h>
 #include <genetrail2/core/Exception.h>
@@ -34,6 +34,7 @@
 #include <tuple>
 #include <utility>
 #include <vector>
+#include <fstream>
 
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/math/distributions.hpp>
@@ -43,26 +44,27 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/prettywriter.h>
 
-#include "RegulatorGeneAssociationEnrichmentResult.h"
-#include "RegulationFileParser.h"
-#include "RegulationBootstrapper.h"
+#include "RegulatorEffectResult.h"
+#include "RegulationFile.h"
+//#include "RegulationBootstrapper.h"
 
 namespace GeneTrail
 {
-template <typename ValueType> class GT2_EXPORT RegulatorEnrichmentAnalysis
+template <typename Bootstrapper, typename NameDatabase, typename ValueType> class GT2_EXPORT RegulatorGeneAssociationEnrichmentAnalysis
 {
   public:
 	using value_type = ValueType;
 	using Regulation = std::tuple<size_t, size_t, value_type>;
 
-	RegulatorEnrichmentAnalysis(std::vector<size_t>& sorted_targets,
-	                            RegulationFileParser<value_type>& parser,
-	                            DenseMatrix* matrix, unsigned seed,
+	RegulatorGeneAssociationEnrichmentAnalysis(std::vector<size_t>& sorted_targets,
+	                            RegulationFile<value_type>& regulationFile,
+								Bootstrapper bootstraper,
+                                NameDatabase name_database,
 	                            bool use_absolute_value, size_t runs)
 	    : sorted_targets_(sorted_targets),
-	      parser_(parser),
-	      matrix_(matrix),
-	      bootstrapper_(matrix, seed),
+	      regulationFile_(regulationFile),
+		  bootstrapper_(bootstraper),
+	      name_database_(name_database),
 	      use_absolute_value_(use_absolute_value),
 	      runs_(runs)
 	{
@@ -72,13 +74,13 @@ template <typename ValueType> class GT2_EXPORT RegulatorEnrichmentAnalysis
 
 	
 	/**
-	 * Performs the entire RegulatorEnrichmentAnalysis.
+	 * Performs the entire RegulatorGeneAssociationEnrichmentAnalysis.
 	 *
 	 * @param algorithm RegulatorEnrichmentAlgorithm that should be performed.
-	 * @return A vector of RegulatorEnrichmentResults.
+	 * @return A vector of RegulatorEffectResults.
 	 */
 	template <typename Algorithm, typename RegulatorImpactScore>
-	std::vector<RegulatorEnrichmentResult>
+	std::vector<RegulatorEffectResult>
 	run(Algorithm algorithm, RegulatorImpactScore impactScore)
 	{
 		// Perform algorithm without bootstrapping
@@ -104,14 +106,14 @@ template <typename ValueType> class GT2_EXPORT RegulatorEnrichmentAnalysis
 	}
 
 	/**
-	 * Saves all RegulatorEnrichmentResults to the given file.
+	 * Saves all RegulatorEffectResults to the given file.
 	 *
 	 * @param out_ File to which the results should be written.
 	 * @param confidence_ Confidence level for the bootstrap confidence intervals.
 	 */		
 	void writeResults(const std::string& out_, double confidence_, const std::string& method)
 	{
-		std::vector<RegulatorEnrichmentResult> results;
+		std::vector<RegulatorEffectResult> results;
 		for(size_t i = 0; i < results_.size(); ++i) {
 			if(results_[i].name == "") {
 				continue;
@@ -119,8 +121,8 @@ template <typename ValueType> class GT2_EXPORT RegulatorEnrichmentAnalysis
 			results.emplace_back(results_[i]);
 		}
 		std::sort(results.begin(), results.end(),
-		          [](const RegulatorEnrichmentResult& lhs,
-		             const RegulatorEnrichmentResult& rhs) {
+		          [](const RegulatorEffectResult& lhs,
+		             const RegulatorEffectResult& rhs) {
 			return lhs.p_value == rhs.p_value ? lhs.score > rhs.score
 			                                  : lhs.p_value < rhs.p_value;
 		});
@@ -130,7 +132,7 @@ template <typename ValueType> class GT2_EXPORT RegulatorEnrichmentAnalysis
 		if(out.is_open()) {
 			out << results_[0].header();
 			size_t rank = 1;
-			for(RegulatorEnrichmentResult result : results) {
+			for(RegulatorEffectResult result : results) {
 				result.rank = rank;
 				result.serialize(out, confidence_, method);
 				++rank;
@@ -142,14 +144,14 @@ template <typename ValueType> class GT2_EXPORT RegulatorEnrichmentAnalysis
 	}
 	
 	/**
-	 * Saves all RegulatorEnrichmentResults to the given file.
+	 * Saves all RegulatorEffectResults to the given file.
 	 *
 	 * @param out_ File to which the results should be written.
 	 * @param confidence_ Confidence level for the bootstrap confidence intervals.
 	 */		
 	void writeJSONResults(const std::string& out_, double confidence_, const std::string& method)
 	{
-		std::vector<RegulatorEnrichmentResult> results;
+		std::vector<RegulatorEffectResult> results;
 		for(size_t i = 0; i < results_.size(); ++i) {
 			if(results_[i].name == "") {
 				continue;
@@ -157,8 +159,8 @@ template <typename ValueType> class GT2_EXPORT RegulatorEnrichmentAnalysis
 			results.emplace_back(results_[i]);
 		}
 		std::sort(results.begin(), results.end(),
-		          [](const RegulatorEnrichmentResult& lhs,
-		             const RegulatorEnrichmentResult& rhs) {
+		          [](const RegulatorEffectResult& lhs,
+		             const RegulatorEffectResult& rhs) {
 			return lhs.p_value == rhs.p_value ? lhs.score > rhs.score
 			                                  : lhs.p_value < rhs.p_value;
 		});
@@ -168,7 +170,7 @@ template <typename ValueType> class GT2_EXPORT RegulatorEnrichmentAnalysis
 
 		size_t rank = 1;
     	writer.StartArray();
-    	for(RegulatorEnrichmentResult& res : results){
+    	for(RegulatorEffectResult& res : results){
 			res.rank = rank;
 			res.serializeJSON(writer, confidence_, method);
 			++rank;
@@ -223,12 +225,14 @@ template <typename ValueType> class GT2_EXPORT RegulatorEnrichmentAnalysis
 		std::vector<size_t> tf_list_tmp;
 		size_t size_of_tf_list = 0;
 		for(size_t targetname : sorted_targets_) {
+			
+			//std::cout << targetname << std::endl;
 			// Check if gene is targetted by any Regulator
-			if(!parser_.checkTarget(targetname)) {
+			if(!regulationFile_.checkTarget(targetname)) {
 				continue;
 			}
 
-			auto& targets = parser_.target2regulations(targetname);
+			auto& targets = regulationFile_.target2regulations(targetname);
 
 			// Get the number of regulators
 			size_of_tf_list += targets.size();
@@ -246,11 +250,11 @@ template <typename ValueType> class GT2_EXPORT RegulatorEnrichmentAnalysis
 		for(size_t i = 0; i < max_number_of_regulators; ++i) {
 			for(size_t targetname : sorted_targets_) {
 				// Check if gene is targetted by any Regulator
-				if(!parser_.checkTarget(targetname)) {
+				if(!regulationFile_.checkTarget(targetname)) {
 					continue;
 				}
 
-				std::vector<Regulation>& regulators = parser_.target2regulations(targetname);
+				std::vector<Regulation>& regulators = regulationFile_.target2regulations(targetname);
 
 				if(regulators.size() <= i) {
 					continue;
@@ -301,7 +305,7 @@ template <typename ValueType> class GT2_EXPORT RegulatorEnrichmentAnalysis
 			                                     regulator_inidces_[i].end());
 
 			if(empty) {
-				results_[i].name = matrix_->rowNames()[i];
+				results_[i].name = name_database_(i);
 				results_[i].hits = regulator_inidces_[i].size();
 				results_[i].scores.reserve(runs_);
 			}
@@ -318,11 +322,11 @@ template <typename ValueType> class GT2_EXPORT RegulatorEnrichmentAnalysis
 		regulator2correlations_.resize(biggest_regulator_idx + 1);
 		for(size_t targetname : sorted_targets_) {
 			// Check if gene is targetted by any Regulator
-			if(!parser_.checkTarget(targetname)) {
+			if(!regulationFile_.checkTarget(targetname)) {
 				continue;
 			}
 
-			for(const auto& reg : parser_.target2regulations(targetname)) {
+			for(const auto& reg : regulationFile_.target2regulations(targetname)) {
 				if(std::get<2>(reg) <= 1.0 && std::get<2>(reg) >= -1.0 &&
 				   std::get<2>(reg) != 0.0) {
 					regulator2correlations_[std::get<0>(reg)].emplace_back(
@@ -359,9 +363,9 @@ template <typename ValueType> class GT2_EXPORT RegulatorEnrichmentAnalysis
 	}
 
 	std::vector<size_t> sorted_targets_;
-	RegulationFileParser<value_type>& parser_;
-	DenseMatrix* matrix_;
-	RegulationBootstrapper<value_type> bootstrapper_;
+	RegulationFile<value_type>& regulationFile_;
+	Bootstrapper bootstrapper_;
+	NameDatabase name_database_;
 
 	bool use_absolute_value_;
 	size_t runs_;
@@ -371,9 +375,9 @@ template <typename ValueType> class GT2_EXPORT RegulatorEnrichmentAnalysis
 
 	std::vector<std::vector<value_type>> regulator2correlations_;
 	std::vector<std::vector<size_t>> regulator_inidces_;
-	std::vector<RegulatorEnrichmentResult> results_;
+	std::vector<RegulatorEffectResult> results_;
 	std::vector<size_t> tf_list;
 };
 }
 
-#endif // GT2_REGULATOR_ENRICHMENT_ANALYSIS_H
+#endif // GT2_REGULATION_REGULATOR_GENE_ASSOCIATION_ENRICHMENT_ANALYSIS_H

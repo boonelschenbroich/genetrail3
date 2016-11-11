@@ -21,7 +21,7 @@
 #ifndef GT2_REGULATION_REGULATOR_ENRICHMENT_ALGORITHMS_H
 #define GT2_REGULATION_REGULATOR_ENRICHMENT_ALGORITHMS_H
 
-#include "RegulatorGeneAssociationEnrichmentResult.h"
+#include "RegulatorEffectResult.h"
 
 #include <genetrail2/core/multiprecision.h>
 #include <genetrail2/core/HTest.h>
@@ -42,7 +42,7 @@ class WRSTest
   public:
 	WRSTest() {}
 
-	RegulatorEnrichmentResult compute_p_value(RegulatorEnrichmentResult& result, size_t )
+	RegulatorEffectResult compute_p_value(RegulatorEffectResult& result, size_t )
 	{
 		result.p_value = HTest::upperTailedPValue(test_, result.score);
 		return result;
@@ -72,7 +72,7 @@ class KSTest
   
 	KSTest() {}
 
-	RegulatorEnrichmentResult compute_p_value(RegulatorEnrichmentResult& result, size_t n)
+	RegulatorEffectResult compute_p_value(RegulatorEffectResult& result, size_t n)
 	{
 		big_float p_value;
 		p_value = test_.computeRightPValue(n, result.hits, result.score);
@@ -101,7 +101,7 @@ class EMTest
 	EMTest()
 	{}
 
-	RegulatorEnrichmentResult compute_p_value(RegulatorEnrichmentResult& result,
+	RegulatorEffectResult compute_p_value(RegulatorEffectResult& result,
 	                                          size_t n)
 	{
 		if(!initialized) {

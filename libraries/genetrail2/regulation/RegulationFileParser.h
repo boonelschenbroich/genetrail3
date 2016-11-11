@@ -26,6 +26,8 @@
 #include <genetrail2/core/Matrix.h>
 #include <genetrail2/core/DenseMatrix.h>
 
+#include "RegulationFile.h"
+
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
@@ -41,103 +43,73 @@
 
 namespace GeneTrail
 {
-template <typename ValueType> class GT2_EXPORT RegulationFileParser
+template <typename NameDatabase, typename ValueType> class GT2_EXPORT RegulationFileParser
 {
   public:
 	using value_type = ValueType;
 	using Regulation = std::tuple<size_t, size_t, value_type>;
 
-	RegulationFileParser(const DenseMatrix* matrix,
+	RegulationFileParser(NameDatabase& name_database,
 	                     const std::unordered_set<size_t> test_set,
 	                     const std::string& file, value_type default_value)
-	    : regulator_indices_(matrix->rows(), MAX_MATRIX_INDEX),
-	      target_indices_(matrix->rows(), MAX_MATRIX_INDEX)
+	    : regulation_file_(name_database.size(), MAX_MATRIX_INDEX)
 
 	{
-		read_(matrix, test_set, file, default_value);
+		read_(name_database, test_set, file, default_value);
 	}
 
-	std::vector<Regulation>& target2regulations(size_t target)
-	{
-		return target2regulations_[target_indices_[target]];
-	}
-
-	bool checkTarget(size_t target)
-	{
-		return target < target_indices_.size() &&
-		       target_indices_[target] < MAX_MATRIX_INDEX &&
-		       target2regulations_[target_indices_[target]].size() > 0;
-	}
-
-	std::vector<Regulation>& regulator2regulations(size_t regulator)
-	{
-		return regulator2regulations_[regulator_indices_[regulator]];
-	}
-
-	bool checkRegulator(size_t regulator)
-	{
-		return regulator < regulator_indices_.size() &&
-		       regulator_indices_[regulator] < MAX_MATRIX_INDEX &&
-		       regulator2regulations_[regulator_indices_[regulator]].size() > 0;
-	}
+	RegulationFile<value_type>& getRegulationFile() { return regulation_file_; }
 
   private:
-	static constexpr Matrix::index_type MAX_MATRIX_INDEX = std::numeric_limits<Matrix::index_type>::max();
-	
-	void read_(const DenseMatrix* matrix, const std::unordered_set<size_t>& test_set, const std::string& file,
-	           value_type default_value)
+	static constexpr Matrix::index_type MAX_MATRIX_INDEX =
+	    std::numeric_limits<Matrix::index_type>::max();
+
+	void read_(NameDatabase& name_database,
+	           const std::unordered_set<size_t>& test_set,
+	           const std::string& file, value_type default_value)
 	{
 		std::ifstream input(file);
 		if(!input) {
-			throw GeneTrail::IOError("File (" + file + ") is not open for reading");
+			throw GeneTrail::IOError("File (" + file +
+			                         ") is not open for reading");
 		}
 
 		std::vector<std::string> sline(2);
 		for(std::string line; getline(input, line);) {
 			boost::split(sline, line, boost::is_any_of(" \t"));
 			if(sline.size() == 2) {
-				addRegulation_(matrix, test_set, sline[0], sline[1], default_value);
+				addRegulation_(name_database, test_set, sline[0], sline[1],
+				               default_value);
+			} else if(sline.size() == 3) {
+				addRegulation_(name_database, test_set, sline[0], sline[1],
+				               boost::lexical_cast<value_type>(sline[2]));
 			} else {
 				throw GeneTrail::IOError("Wrong file format.");
 			}
 		}
 	}
 
-	void addRegulation_(const DenseMatrix* matrix, const std::unordered_set<size_t>& test_set, const std::string& regulator,
-	                    const std::string& target, value_type default_value)
+	void addRegulation_(NameDatabase& name_database,
+	                    const std::unordered_set<size_t>& test_set,
+	                    const std::string& regulator, const std::string& target,
+	                    value_type value)
 	{
+		auto regulator_idx = name_database(regulator);
+		auto target_idx = name_database(target);
 
-		auto regulator_idx = matrix->rowIndex(regulator);
-		auto target_idx = matrix->rowIndex(target);
-		
 		if(test_set.find(target_idx) == test_set.end()) {
 			return;
 		}
 
-		if(regulator_idx == MAX_MATRIX_INDEX || target_idx == MAX_MATRIX_INDEX) {
+		if(regulator_idx == MAX_MATRIX_INDEX ||
+		   target_idx == MAX_MATRIX_INDEX) {
 			return;
 		}
 
-		if(regulator_indices_[regulator_idx] == MAX_MATRIX_INDEX) {
-			regulator_indices_[regulator_idx] = regulator2regulations_.size();
-			regulator2regulations_.emplace_back();
-		}
-
-		if(target_indices_[target_idx] == MAX_MATRIX_INDEX) {
-			target_indices_[target_idx] = target2regulations_.size();
-			target2regulations_.emplace_back();
-		}
-
-		const Regulation reg = std::make_tuple(regulator_idx, target_idx, default_value);
-		regulator2regulations_[regulator_indices_[regulator_idx]].emplace_back(reg);
-		target2regulations_[target_indices_[target_idx]].emplace_back(reg);
+		regulation_file_.addRegulation(regulator_idx, target_idx, value);
 	}
 
-	std::vector<size_t> regulator_indices_;
-	std::vector<size_t> target_indices_;
-	
-	std::vector<std::vector<Regulation>> target2regulations_;
-	std::vector<std::vector<Regulation>> regulator2regulations_;
+	RegulationFile<value_type> regulation_file_;
 };
 }
 
