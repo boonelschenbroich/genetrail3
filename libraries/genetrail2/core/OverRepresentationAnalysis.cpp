@@ -31,6 +31,14 @@ OverRepresentationAnalysis::OverRepresentationAnalysis(
 	    categoryContainsAllGenes(reference_set_, test_set_);
 }
 
+OverRepresentationAnalysis::OverRepresentationAnalysis(
+    const Category& reference_set, const Category& test_set, bool useHypergeometricTest)
+    : reference_set_(reference_set), test_set_(test_set), useHypergeometricTest_(useHypergeometricTest)
+{
+	m_ = reference_set_.size();
+	n_ = test_set_.size();
+}
+
 bool
 OverRepresentationAnalysis::categoryContainsAllGenes(const Category& reference,
                                                      const Category& testSet)

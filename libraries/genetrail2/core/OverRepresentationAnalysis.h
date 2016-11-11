@@ -55,6 +55,8 @@ namespace GeneTrail {
 			OverRepresentationAnalysis() = default;
 
 			OverRepresentationAnalysis(const Category& reference_set, const Category& test_set);
+			
+			OverRepresentationAnalysis(const Category& reference_set, const Category& test_set, bool);
 
 			/**
 			 * This method computes a one-sided p-value.
