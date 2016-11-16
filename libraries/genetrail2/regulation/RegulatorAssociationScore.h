@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef GT2_REGULATOR_IMPACT_SCORE_H
-#define GT2_REGULATOR_IMPACT_SCORE_H
+#ifndef GT2_REGULATOR_ASSOCIATION_SCORE_H
+#define GT2_REGULATOR_ASSOCIATION_SCORE_H
 
 #include <genetrail2/core/Statistic.h>
 #include <genetrail2/core/Exception.h>
@@ -31,7 +31,7 @@
 namespace GeneTrail
 {
 
-class PearsonCorrelation
+class GT2_EXPORT PearsonCorrelation
 {
   public:
 	PearsonCorrelation() {}
@@ -48,7 +48,7 @@ class PearsonCorrelation
 	}
 };
 
-class SpearmanCorrelation
+class GT2_EXPORT SpearmanCorrelation
 {
   public:
 	SpearmanCorrelation() {}
@@ -65,7 +65,7 @@ class SpearmanCorrelation
 	}
 };
 
-class KendallCorrelation
+class GT2_EXPORT KendallCorrelation
 {
   public:
 	KendallCorrelation() {}
@@ -83,4 +83,4 @@ class KendallCorrelation
 };
 }
 
-#endif // GT2_REGULATOR_IMPACT_SCORE_H
+#endif // GT2_REGULATOR_ASSOCIATION_SCORE_H

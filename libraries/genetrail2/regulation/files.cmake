@@ -18,7 +18,7 @@ add_header_to_library(RegulationBootstrapper.h)
 add_header_to_library(RegulatorEffectResult.h)
 add_header_to_library(RegulatorGeneAssociationEnrichmentAnalysis.h)
 add_header_to_library(RegulatorGeneAssociationEnrichmentAlgorithms.h)
-add_header_to_library(RegulatorImpactScore.h)
+add_header_to_library(RegulatorAssociationScore.h)
 
 # Sources
 
