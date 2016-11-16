@@ -22,11 +22,40 @@
 #define GT2_CORE_HTEST_H
 
 #include <boost/math/distributions.hpp>
+#include <boost/math/distributions/normal.hpp>
 
 namespace GeneTrail
-{
+{	
 	namespace HTest
 	{
+		class ZTest{
+			public:
+			using value_type = double;
+			
+			ZTest() = default;
+			
+			ZTest(double score)
+			: score_(score)
+			{}
+			
+			boost::math::normal distribution()
+			{
+				boost::math::normal dist(0, 1);
+				return dist;
+			}
+			
+			std::pair<value_type, value_type>
+			confidenceInterval(const value_type& alpha)
+			{
+				value_type conf = boost::math::quantile(
+					boost::math::complement(distribution(), (1 - alpha) / 2.0));
+				return std::make_pair(score_ / conf, score_ * conf);
+			}
+			
+			private:
+			 value_type score_;
+		};
+		
 		template <typename Test, typename InputIterator1,
 		          typename InputIterator2>
 		typename Test::value_type test(Test& t,
