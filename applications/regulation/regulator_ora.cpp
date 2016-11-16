@@ -22,6 +22,8 @@
 #include <map>
 #include <vector>
 
+#include "common.h"
+
 using namespace GeneTrail;
 
 namespace bpo = boost::program_options;
@@ -116,40 +118,6 @@ runBinomialTest(const Category& reference, const GeneSet& test_set,
 	return std::move(results);
 }
 
-struct get_p_value
-{
-	template <typename Result> double operator()(const Result& t) const
-	{
-		return t.corrected_p_value;
-	}
-
-	// Important: the method needs to return a mutable reference!
-	template <typename Result> double& operator()(Result& t) const
-	{
-		return t.corrected_p_value;
-	}
-};
-
-void writeJSONResults(std::vector<RegulatorEffectResult> results)
-{
-	rapidjson::StringBuffer sb;
-	rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
-	writer.StartArray();
-	for(RegulatorEffectResult& res : results) {
-		res.serializeJSON(writer, true);
-	}
-	writer.EndArray();
-
-	std::ofstream out;
-	out.open(output_);
-	if(out.is_open()) {
-		out << sb.GetString();
-	} else {
-		std::cerr << "Could not open file: " << output_ << "\n";
-	}
-	out.close();
-}
-
 int main(int argc, char* argv[])
 {
 	if(!parseArguments(argc, argv)) {
@@ -159,9 +127,11 @@ int main(int argc, char* argv[])
 	RegulatorCategoryFileReader parser(regulations_, &db);
 	parser.parse();
 
+	std::cout << "INFO: Parsing regulations" << std::endl;
 	Category reference = parser.getReference();
 	std::map<std::string, Category> categories = parser.getCategories();
 
+	std::cout << "INFO: Parsing test set" << std::endl;
 	GeneSetReader reader;
 	GeneSet test_set = reader.readScoringFile(input_);
 
@@ -182,13 +152,13 @@ int main(int argc, char* argv[])
 		r.rank = ++rank;
 	}
 
+	std::cout << "INFO: Adjusting p-values" << std::endl;
 	if(correction_method_ != "no"){
-	pvalue::adjustPValues(
-	    results, get_p_value(),
-	    pvalue::getCorrectionMethod(correction_method_).get());
+		adjustPValues(results, correction_method_);
 	}
 	
-	writeJSONResults(results);
+	std::cout << "INFO: Writing results" << std::endl;
+	write(results, output_, true);
 
 	return 0;
 }

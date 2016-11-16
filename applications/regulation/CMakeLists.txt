@@ -31,8 +31,16 @@ endif()
 # Build executable
 ####################################################################################################
 
+add_library(regulationCommon STATIC common.h common.cpp)
+target_include_directories(regulationCommon PRIVATE
+	${CMAKE_SOURCE_DIR}/libraries/
+	${CMAKE_BINARY_DIR}/libraries/
+	"${RapidJSON_INCLUDE_DIR}"
+)
+GT2_COMPILE_FLAGS(regulationCommon)
+
 add_executable(reggae reggae.cpp)
-target_link_libraries(reggae applicationCommon gtcore gtregulation)
+target_link_libraries(reggae applicationCommon gtcore regulationCommon gtregulation)
 set_target_properties(reggae PROPERTIES
     INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
 )
@@ -48,7 +56,7 @@ set_target_properties(reggae_result_aggregator PROPERTIES
 GT2_COMPILE_FLAGS(reggae_result_aggregator)
 
 add_executable(regulator_ora regulator_ora.cpp)
-target_link_libraries(regulator_ora applicationCommon gtcore gtregulation)
+target_link_libraries(regulator_ora regulationCommon applicationCommon gtcore gtregulation)
 set_target_properties(regulator_ora PROPERTIES
     INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
 )

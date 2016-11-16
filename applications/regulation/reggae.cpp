@@ -11,7 +11,7 @@
 #include <genetrail2/regulation/RegulatorGeneAssociationEnrichmentAlgorithms.h>
 #include <genetrail2/regulation/RegulationFileParser.h>
 #include <genetrail2/regulation/RegulationBootstrapper.h>
-#include <genetrail2/regulation/RegulatorImpactScore.h>
+#include <genetrail2/regulation/RegulatorAssociationScore.h>
 
 #include <iostream>
 #include <fstream>
@@ -22,6 +22,7 @@
 #include <map>
 #include <unordered_set>
 
+#include "common.h"
 #include "../matrixTools.h"
 
 using namespace GeneTrail;
@@ -35,16 +36,6 @@ size_t seed_, bootstrapping_runs_;
 double alpha_;
 
 MatrixReaderOptions matrixOptions;
-
-bool checkIfFileExists(bpo::options_description& desc, std::string fname){
-	std::ifstream infile(fname);
-	if(!infile.good()){
-		std::cerr << "ERROR: File '" + fname + "' does not exist. \n";
-		desc.print(std::cerr);
-		return false;
-	}
-	return true;
-}
 
 bool parseArguments(int argc, char* argv[])
 {
@@ -97,31 +88,6 @@ bool parseArguments(int argc, char* argv[])
 
 	return true;
 }
-
-std::vector<size_t>
-translate_test_set(const DenseMatrix* matrix,
-                   const std::vector<std::string>& test_set_names)
-{
-	std::vector<size_t> test_set;
-	test_set.reserve(test_set_names.size());
-	for(const std::string name : test_set_names) {
-		test_set.emplace_back(matrix->rowIndex(name));
-	}
-	return test_set;
-}
-
-struct MatrixNameDatabase
-{
-	MatrixNameDatabase(DenseMatrix* matrix) : matrix_(matrix) {}
-
-	std::string operator()(size_t index) { return matrix_->rowNames()[index]; }
-
-	size_t operator()(std::string name) { return matrix_->rowIndex(name); }
-
-	size_t size() { return matrix_->rows(); }
-
-	DenseMatrix* matrix_;
-};
 
 struct MapNameDatabase
 {
@@ -178,43 +144,48 @@ struct DummyBootstrapper
 };
 
 template <typename REGGAEAnalysis, typename RegulatorImpactScore>
-void run(REGGAEAnalysis& analysis, RegulatorImpactScore impactScore)
+std::vector<RegulatorEffectResult> run(REGGAEAnalysis& analysis,
+                                       RegulatorImpactScore impactScore)
 {
+	std::vector<RegulatorEffectResult> results;
 	if(method_ == "ks-test") {
 		std::cout << "INFO: Performing KS-test" << std::endl;
-		analysis.run(KSTest(), impactScore);
+		results = analysis.run(KSTest(), impactScore);
 	} else if(method_ == "wrs-test") {
 		std::cout << "INFO: Performing WRS-test" << std::endl;
-		analysis.run(WRSTest(), impactScore);
+		results = analysis.run(WRSTest(), impactScore);
 	} else if(method_ == "em-test") {
 		std::cout << "INFO: Performing EM-test" << std::endl;
-		analysis.run(EMTest(), impactScore);
+		results = analysis.run(EMTest(), impactScore);
 	} else {
 		std::cerr << "ERROR: Method '" << method_ << "' not known!"
 		          << std::endl;
 	}
+	return results;
 }
 
-template <typename REGGAEAnalysis> void run(REGGAEAnalysis& analysis)
+template <typename REGGAEAnalysis>
+std::vector<RegulatorEffectResult> run(REGGAEAnalysis& analysis)
 {
+	std::vector<RegulatorEffectResult> results;
 	if(impact_score_ == "pearson_correlation") {
-		run(analysis, PearsonCorrelation());
+		results = run(analysis, PearsonCorrelation());
 	} else if(impact_score_ == "spearman_correlation") {
-		run(analysis, SpearmanCorrelation());
+		results = run(analysis, SpearmanCorrelation());
 	} else if(impact_score_ == "kendall_correlation") {
-		run(analysis, KendallCorrelation());
+		results = run(analysis, KendallCorrelation());
 	} else {
 		std::cerr << "ERROR: Impact score '" << impact_score_ << "' not known!"
 		          << std::endl;
 	}
+	return results;
 }
 
-template <typename REGGAEAnalysis> void write(REGGAEAnalysis& analysis)
+void calculate_bootstrap_parameters(std::vector<RegulatorEffectResult> results,
+                                    double alpha, const std::string& ci_method)
 {
-	if(json_) {
-		analysis.writeJSONResults(out_, alpha_, confidence_interval_);
-	} else {
-		analysis.writeResults(out_, alpha_, confidence_interval_);
+	for(auto& res : results) {
+		res.calculate_bootstrap_parameters(alpha, ci_method);
 	}
 }
 
@@ -250,13 +221,16 @@ int runGeneExpressionAnalysis()
 	                                           MatrixNameDatabase, double>
 	    analysis(sorted_targets, regulationFile, bootstrapper, name_database,
 	             useAbsoluteValues_, bootstrapping_runs_);
-	run(analysis);
+	std::vector<RegulatorEffectResult> results = run(analysis);
 
 	std::cout << "INFO: Adjusting p-values" << std::endl;
-	analysis.adjustPValues(adjustment_method_);
+	adjustPValues(results, adjustment_method_);
+	
+	std::cout << "INFO: Calculating confidence intervals" << std::endl;
+	calculate_bootstrap_parameters(results, alpha_, confidence_interval_);
 
 	std::cout << "INFO: Writing results" << std::endl;
-	write(analysis);
+	write(results, out_, json_);
 
 	return 0;
 }
@@ -285,13 +259,16 @@ int runAssociationAnalysis()
 	                                           MapNameDatabase, double>
 	    analysis(sorted_targets, regulationFile, bootstrapper, name_database,
 	             useAbsoluteValues_, bootstrapping_runs_);
-	run(analysis);
+	std::vector<RegulatorEffectResult> results = run(analysis);
 
 	std::cout << "INFO: Adjusting p-values" << std::endl;
-	analysis.adjustPValues(adjustment_method_);
+	adjustPValues(results, adjustment_method_);
+	
+	std::cout << "INFO: Calculating confidence intervals" << std::endl;
+	calculate_bootstrap_parameters(results, alpha_, confidence_interval_);
 
 	std::cout << "INFO: Writing results" << std::endl;
-	write(analysis);
+	write(results, out_, json_);
 	return 0;
 }
 
