@@ -27,10 +27,11 @@
 
 #include <genetrail2/core/ConfidenceInterval.h>
 #include <genetrail2/core/Statistic.h>
+#include <genetrail2/core/macros.h>
 
 namespace GeneTrail
 {
-struct RegulatorEffectResult
+struct GT2_EXPORT RegulatorEffectResult
 {
 	std::string name = "";
 	size_t hits = 0;
@@ -44,7 +45,7 @@ struct RegulatorEffectResult
 	double mean_correlation = 0.0;
 	double p_value = 1.0;
 	double corrected_p_value = 1.0;
-	std::string targets;
+	bool skip = true;
 
 	void addScore(double score) { scores.emplace_back(score); }
 
@@ -55,11 +56,15 @@ struct RegulatorEffectResult
 		header += "Rank\t";
 		header += "Hits\t";
 		header += "Score\t";
-		header += "CI\t";
-		header += "Sd\t";
-		header += "MAD\t";
+		if(!skip) {
+			header += "CI\t";
+			header += "Sd\t";
+			header += "MAD\t";
+		}
 		header += "P-value\t";
-		header += "Mean(correlation)\n";
+		if(!skip) {
+			header += "Mean(correlation)\n";
+		}
 		return header;
 	}
 
@@ -72,8 +77,22 @@ struct RegulatorEffectResult
 		}
 	}
 
-	void serialize(std::ostream& strm, double alpha,
-	               const std::string& ci_method)
+	void serialize(std::ostream& strm)
+	{
+		strm << name << '\t' << rank << '\t' << hits << '\t' << score << '\t';
+		if(!skip) {
+			strm << "[" << std::get<0>(ci) << ',' << std::get<1>(ci) << "]\t"
+			     << sd << '\t' << mad;
+		}
+		strm << '\t' << corrected_p_value;
+		if(!skip) {
+			strm << '\t' << mean_correlation;
+		}
+		strm << '\n';
+	}
+
+	void calculate_bootstrap_parameters(double alpha,
+	                                    const std::string& ci_method)
 	{
 		sd = statistic::sd<double>(scores.begin(), scores.end());
 		mad = statistic::mean_absolute_deviation<double>(scores.begin(),
@@ -81,26 +100,10 @@ struct RegulatorEffectResult
 		ci =
 		    confidence_interval<double, std::vector<double>::iterator>::compute(
 		        ci_method, scores.begin(), scores.end(), score, alpha);
-		strm << name << '\t' << rank << '\t' << hits << '\t' << score << '\t'
-		     << "[" << std::get<0>(ci) << ','
-		     << std::get<1>(ci) << "]\t" << sd << '\t' << mad
-		     << '\t' << corrected_p_value << '\t' << mean_correlation << '\n';
+		skip = false;
 	}
 
-	template <typename Writer>
-	void serializeJSON(Writer& writer, double alpha,
-	                   const std::string& ci_method)
-	{
-		sd = statistic::sd<double>(scores.begin(), scores.end());
-		mad = statistic::mean_absolute_deviation<double>(scores.begin(),
-		                                                 scores.end());
-		ci = confidence_interval<double, std::vector<double>::iterator>::compute(
-		        ci_method, scores.begin(), scores.end(), score, alpha);
-		serializeJSON(writer, false);
-	}
-	
-	template <typename Writer>
-	void serializeJSON(Writer& writer, bool skip)
+	template <typename Writer> void serializeJSON(Writer& writer)
 	{
 		writer.StartObject();
 
@@ -119,13 +122,13 @@ struct RegulatorEffectResult
 		writer.String("expected_hits");
 		writer.Double(expected_hits);
 
-		if(!skip){
+		if(!skip) {
 			writer.String("confidenceInterval");
 			writer.StartArray();
 			writer.Double(std::get<0>(ci));
 			writer.Double(std::get<1>(ci));
 			writer.EndArray();
-			
+
 			writer.String("stDev");
 			writer.Double(sd);
 
@@ -139,11 +142,11 @@ struct RegulatorEffectResult
 		writer.String("correctedPValue");
 		writer.Double(corrected_p_value);
 
-		if(!skip){
+		if(!skip) {
 			writer.String("meanCorrelation");
 			writer.Double(mean_correlation);
 		}
-		
+
 		writer.EndObject();
 	}
 
@@ -203,11 +206,10 @@ struct RegulatorEffectResult
 
 		corrected_p_value = result["correctedPValue"].GetDouble();
 
-		if(!result.HasMember("meanCorrelation")) {
-			throw IOError("Found result without number of meanCorrelation.");
+		if(result.HasMember("meanCorrelation")) {
+			mean_correlation = result["meanCorrelation"].GetDouble();
+			;
 		}
-
-		mean_correlation = result["meanCorrelation"].GetDouble();
 	}
 };
 }
