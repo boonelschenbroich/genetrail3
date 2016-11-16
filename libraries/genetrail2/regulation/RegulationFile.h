@@ -85,6 +85,17 @@ template <typename ValueType> class GT2_EXPORT RegulationFile
 		       regulator_indices_[regulator] < max_index_ &&
 		       regulator2regulations_[regulator_indices_[regulator]].size() > 0;
 	}
+	
+	std::vector<size_t> regulators(){
+		std::vector<size_t> regulators;
+		for(size_t i=0; i<regulator_indices_.size(); ++i){ 
+			auto r = regulator_indices_[i];
+			if(r < max_index_ && regulator2regulations_[r].size() > 0){
+				regulators.push_back(i);
+			}
+		}
+		return std::move(regulators);
+	}
 
   private:
 	size_t max_index_;
