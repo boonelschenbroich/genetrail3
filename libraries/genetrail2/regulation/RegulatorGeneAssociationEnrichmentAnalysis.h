@@ -42,7 +42,6 @@
 
 #include "RegulatorEffectResult.h"
 #include "RegulationFile.h"
-//#include "RegulationBootstrapper.h"
 
 namespace GeneTrail
 {
