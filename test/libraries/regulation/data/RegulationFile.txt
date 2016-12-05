@@ -1,0 +1,5 @@
+GeneA   GeneB   1.0 
+GeneA   GeneC   2.0 
+GeneC   GeneD   3.0 
+GeneD   GeneB   4.0 
+GeneA   GeneE   5.0
