@@ -28,6 +28,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <limits>
+#include <tuple>
 
 namespace GeneTrail
 {
