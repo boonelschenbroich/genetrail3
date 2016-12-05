@@ -6,6 +6,7 @@
 #include <genetrail2/core/GeneSetReader.h>
 #include <genetrail2/core/DenseMatrixReader.h>
 #include <genetrail2/core/DenseMatrix.h>
+#include <genetrail2/core/NameDatabases.h>
 
 #include <genetrail2/regulation/RegulatorGeneAssociationEnrichmentAnalysis.h>
 #include <genetrail2/regulation/RegulatorGeneAssociationEnrichmentAlgorithms.h>
@@ -97,9 +98,20 @@ struct DummyBootstrapper
 	void create_bootstrap_sample() {}
 
 	template <typename RegulatorImpactScore>
-	void perform_bootstrapping_run(std::vector<Regulation>&, bool,
+	void perform_bootstrapping_run(std::vector<Regulation>& regulations, bool use_absolute_values,
 	                               RegulatorImpactScore)
 	{
+		if(use_absolute_values) {
+			std::sort(regulations.begin(), regulations.end(),
+			          [](const Regulation& a, const Regulation& b) {
+				return std::abs(std::get<2>(a)) > std::abs(std::get<2>(b));
+			});
+		} else {
+			std::sort(regulations.begin(), regulations.end(),
+			          [](const Regulation& a, const Regulation& b) {
+				return std::get<2>(a) > std::get<2>(b);
+			});
+		}
 	}
 };
 
@@ -175,6 +187,7 @@ int runGeneExpressionAnalysis()
 	std::unordered_set<size_t> tset(sorted_targets.begin(),
 	                                sorted_targets.end());
 	MatrixNameDatabase name_database(&matrix);
+	
 	RegulationFileParser<MatrixNameDatabase, double> parser(name_database, tset,
 	                                                        regulations_, 0.0);
 	RegulationFile<double>& regulationFile = parser.getRegulationFile();
