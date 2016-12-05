@@ -74,9 +74,10 @@ template <typename NameDatabase, typename ValueType> class GT2_EXPORT Regulation
 			                         ") is not open for reading");
 		}
 
-		std::vector<std::string> sline(2);
+		std::vector<std::string> sline;
 		for(std::string line; getline(input, line);) {
-			boost::split(sline, line, boost::is_any_of(" \t"));
+			boost::trim_if(line, boost::is_any_of("\t "));
+			boost::split(sline, line, boost::is_any_of(" \t"), boost::token_compress_on);
 			if(sline.size() == 2) {
 				addRegulation_(name_database, test_set, sline[0], sline[1],
 				               default_value);
