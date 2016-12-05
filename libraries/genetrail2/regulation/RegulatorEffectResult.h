@@ -119,7 +119,7 @@ struct GT2_EXPORT RegulatorEffectResult
 		writer.String("score");
 		writer.Double(score);
 
-		writer.String("expected_hits");
+		writer.String("expectedHits");
 		writer.Double(expected_hits);
 
 		if(!skip) {
