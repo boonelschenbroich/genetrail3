@@ -89,46 +89,6 @@ bool parseArguments(int argc, char* argv[])
 	return true;
 }
 
-struct MapNameDatabase
-{
-	MapNameDatabase() {}
-	
-	MapNameDatabase(std::string file) { initialize(file); }
-
-	std::string operator()(size_t index) { return index2name[index]; }
-
-	size_t operator()(std::string name)
-	{
-		std::map<std::string, size_t>::iterator iter = name2index.find(name);
-		if(iter == name2index.end()) {
-			index2name.emplace_back(name);
-			name2index[name] = index2name.size() - 1;
-		}
-		return name2index[name];
-	}
-
-	size_t size() { return index2name.size(); }
-	
-	void initialize(std::string file){
-		std::cout << "INFO: Initializing name database" << std::endl;
-		std::ifstream input(file);
-		if(!input) {
-			throw GeneTrail::IOError("File (" + file +
-			                         ") is not open for reading");
-		}
-
-		std::vector<std::string> sline(2);
-		for(std::string line; getline(input, line);) {
-			boost::split(sline, line, boost::is_any_of(" \t"));
-			(*this)(sline[0]);
-			(*this)(sline[1]);
-		}
-	}
-
-	std::map<std::string, size_t> name2index;
-	std::vector<std::string> index2name;
-};
-
 struct DummyBootstrapper
 {
 	using Regulation = std::tuple<size_t, size_t, double>;

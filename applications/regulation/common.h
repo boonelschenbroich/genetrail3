@@ -5,6 +5,7 @@
 
 #include <genetrail2/core/DenseMatrix.h>
 #include <genetrail2/core/PValue.h>
+#include <genetrail2/core/NameDatabases.h>
 #include <genetrail2/regulation/RegulatorEffectResult.h>
 
 #include <rapidjson/writer.h>
@@ -19,19 +20,6 @@
 
 namespace bpo = boost::program_options;
 using namespace GeneTrail;
-
-struct MatrixNameDatabase
-{
-	MatrixNameDatabase(DenseMatrix* matrix) : matrix_(matrix) {}
-
-	std::string operator()(size_t index) { return matrix_->rowNames()[index]; }
-
-	size_t operator()(std::string name) { return matrix_->rowIndex(name); }
-
-	size_t size() { return matrix_->rows(); }
-
-	DenseMatrix* matrix_;
-};
 
 bool checkIfFileExists(bpo::options_description& desc, std::string fname);
 
