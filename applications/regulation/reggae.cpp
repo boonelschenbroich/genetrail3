@@ -181,11 +181,13 @@ std::vector<RegulatorEffectResult> run(REGGAEAnalysis& analysis)
 	return results;
 }
 
-void calculate_bootstrap_parameters(std::vector<RegulatorEffectResult> results,
+void calculate_bootstrap_parameters(std::vector<RegulatorEffectResult>& results,
                                     double alpha, const std::string& ci_method)
 {
 	for(auto& res : results) {
-		res.calculate_bootstrap_parameters(alpha, ci_method);
+		if(res.name != ""){
+			res.calculate_bootstrap_parameters(alpha, ci_method);
+		}
 	}
 }
 
