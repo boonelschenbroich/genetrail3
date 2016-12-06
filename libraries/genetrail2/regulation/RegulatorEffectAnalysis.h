@@ -34,7 +34,7 @@
 
 #include <genetrail2/regulation/RegulationFile.h>
 #include <genetrail2/regulation/RegulatorEffectResult.h>
-#include <genetrail2/regulation/RegulatoryImpactFactors.h<
+#include <genetrail2/regulation/RegulatoryImpactFactors.h>
 
 #include <algorithm>
 #include <cmath>
