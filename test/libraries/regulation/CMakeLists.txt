@@ -7,3 +7,4 @@ create_test_config_file()
 ####################################################################################################
 
 add_gtest(RegulationFile_tests                      LIBRARIES gtcore)
+add_gtest(RegulatoryImpactFactors_tests             LIBRARIES gtcore)
