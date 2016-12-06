@@ -34,6 +34,7 @@
 
 #include <genetrail2/regulation/RegulationFile.h>
 #include <genetrail2/regulation/RegulatorEffectResult.h>
+#include <genetrail2/regulation/RegulatoryImpactFactors.h<
 
 #include <algorithm>
 #include <cmath>
@@ -43,64 +44,6 @@
 
 namespace GeneTrail
 {
-
-struct GT2_EXPORT RIF1
-{
-	template <typename Iterator>
-	double compute(Iterator reference_regulator_it,
-	               Iterator reference_target_it, Iterator sample_regulator_it,
-	               Iterator sample_target_it)
-	{
-		size_t ref_size = std::distance(reference_target_it->begin(),
-		                                reference_target_it->end());
-		size_t sample_size =
-		    std::distance(sample_target_it->begin(), sample_target_it->end());
-		double ref_target_sum = std::accumulate(
-		    reference_target_it->begin(), reference_target_it->end(), 0.0);
-		double sample_target_sum = std::accumulate(
-		    sample_target_it->begin(), sample_target_it->end(), 0.0);
-		double a = (ref_target_sum + sample_target_sum) /
-		           boost::numeric_cast<double>(ref_size + sample_size);
-		double d =
-		    (ref_target_sum / boost::numeric_cast<double>(ref_size)) -
-		    (sample_target_sum / boost::numeric_cast<double>(sample_size));
-		double r1 = statistic::pearson_correlation<double>(
-		    reference_regulator_it->begin(), reference_regulator_it->end(),
-		    sample_regulator_it->begin(), sample_regulator_it->end());
-		double r2 = statistic::pearson_correlation<double>(
-		    reference_target_it->begin(), reference_target_it->end(),
-		    sample_target_it->begin(), sample_target_it->end());
-		return a * d * (r1 + r2);
-	}
-};
-
-struct GT2_EXPORT RIF2
-{
-	template <typename Iterator>
-	double compute(Iterator reference_regulator_it, Iterator reference_target_it,
-	            Iterator sample_regulator_it, Iterator sample_target_it)
-	{
-		size_t ref_size = std::distance(reference_target_it->begin(),
-		                                reference_target_it->end());
-		size_t sample_size =
-		    std::distance(sample_target_it->begin(), sample_target_it->end());
-		double ref_target_sum = std::accumulate(
-		    reference_target_it->begin(), reference_target_it->end(), 0.0);
-		double sample_target_sum = std::accumulate(
-		    sample_target_it->begin(), sample_target_it->end(), 0.0);
-		double ex1 = (ref_target_sum / boost::numeric_cast<double>(ref_size));
-		double ex2 =
-		    (sample_target_sum / boost::numeric_cast<double>(sample_size));
-		double r1 = statistic::pearson_correlation<double>(
-		    reference_regulator_it->begin(), reference_regulator_it->end(),
-		    sample_regulator_it->begin(), sample_regulator_it->end());
-		double r2 = statistic::pearson_correlation<double>(
-		    reference_target_it->begin(), reference_target_it->end(),
-		    sample_target_it->begin(), sample_target_it->end());
-		return pow((ex1 * r1), 2) - pow((ex2 * r2), 2);
-	}
-};
-
 class GT2_EXPORT RegulatorEffectAnalysis
 {
 	using Regulation = std::tuple<size_t, size_t, double>;
