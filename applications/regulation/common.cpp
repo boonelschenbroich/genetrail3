@@ -70,7 +70,7 @@ void writeJSONResults(std::vector<RegulatorEffectResult>& results_,
 	std::sort(
 	    results.begin(), results.end(),
 	    [](const RegulatorEffectResult& lhs, const RegulatorEffectResult& rhs) {
-		    return lhs.p_value == rhs.p_value ? lhs.score > rhs.score
+		    return lhs.p_value == rhs.p_value ? abs(lhs.score) > abs(rhs.score)
 		                                      : lhs.p_value < rhs.p_value;
 		});
 
