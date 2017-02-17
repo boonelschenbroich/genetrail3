@@ -28,7 +28,7 @@ using namespace GeneTrail;
 
 namespace bpo = boost::program_options;
 
-std::string input_, regulations_, output_, method_, correction_method_;
+std::string genelist_="", scorelist_="", regulations_, output_, method_, correction_method_;
 
 EntityDatabase db;
 
@@ -37,17 +37,13 @@ bool parseArguments(int argc, char* argv[])
 	bpo::variables_map vm;
 	bpo::options_description desc;
 
-	desc.add_options()("help,h", "Display this message")(
-	    "testset,t", bpo::value(&input_)->required(),
-	    "A list of deregulated targets.")(
-	    "regulations,r", bpo::value(&regulations_)->required(),
-	    "A whitespace separated file containing regulator, target and scores.")(
-	    "output,o", bpo::value(&output_)->required(),
-	    "Output prefix for text files.")("method,m",
-	                                     bpo::value(&method_)->required(),
-	                                     "Method (ora, binomial-test).")(
-	    "adjust,a", bpo::value(&correction_method_)->required(),
-	    "P-value adjustment method.");
+	desc.add_options()("help,h", "Display this message")
+	("genelist,g", bpo::value(&genelist_), "A list of deregulated targets.")
+	("scorelist,s", bpo::value(&scorelist_), "A list of deregulated targets.")
+	("regulations,r", bpo::value(&regulations_)->required(), "A whitespace separated file containing regulator, target and scores.")
+	("output,o", bpo::value(&output_)->required(), "Output prefix for text files.")
+	("method,m", bpo::value(&method_)->required(), "Method (ora, binomial-test).")
+	("adjust,a", bpo::value(&correction_method_)->required(), "P-value adjustment method.");
 
 	try {
 		bpo::store(bpo::command_line_parser(argc, argv).options(desc).run(),
@@ -56,6 +52,11 @@ bool parseArguments(int argc, char* argv[])
 	} catch(bpo::error& e) {
 		std::cerr << "Error: " << e.what() << "\n";
 		desc.print(std::cerr);
+		return false;
+	}
+	
+	if (genelist_ == "" && scorelist_ ==""){
+		std::cerr << "ERROR: No input specified." << "\n";
 		return false;
 	}
 
@@ -133,8 +134,12 @@ int main(int argc, char* argv[])
 
 	std::cout << "INFO: Parsing test set" << std::endl;
 	GeneSetReader reader;
-	GeneSet test_set = reader.readScoringFile(input_);
-
+	GeneSet test_set;
+	if(genelist_ != ""){
+		test_set = reader.readGeneList(genelist_);
+	} else {
+		test_set = reader.readScoringFile(scorelist_);
+	}
 	std::vector<RegulatorEffectResult> results;
 	if(method_ == "ora" || method_ == "hyper" || method_ == "fisher") {
 		results = runORA(reference, test_set, categories);
