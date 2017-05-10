@@ -35,6 +35,8 @@ add_header_to_library(WeightedGeneSetEnrichmentAnalysis.h)
 add_header_to_library(ConfidenceInterval.h)
 add_header_to_library(BinomialTest.h)
 add_header_to_library(NameDatabases.h)
+add_header_to_library(MatrixNormalization.h)
+add_header_to_library(MatrixTransformation.h)
 
 # Sources
 add_to_library(AbstractMatrix)
