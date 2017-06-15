@@ -98,6 +98,28 @@ template <typename ValueType> class GT2_EXPORT RegulationFile
 		return std::move(regulators);
 	}
 
+	size_t maxNumberOfTargets(){
+		size_t max = 0;
+		for(size_t i=0; i<regulator_indices_.size(); ++i){ 
+			auto r = regulator_indices_[i];
+			if(r < max_index_){
+				max = std::max(regulator2regulations_[r].size(), max);
+			}
+		}
+		return max;
+	}
+
+	size_t maxNumberOfRegulators(){
+		size_t max = 0;
+		for(size_t i=0; i<target_indices_.size(); ++i){ 
+			auto r = target_indices_[i];
+			if(r < max_index_){
+				max = std::max(target2regulations_[r].size(), max);
+			}
+		}
+		return max;
+	}
+
   private:
 	size_t max_index_;
 	std::vector<size_t> regulator_indices_;
