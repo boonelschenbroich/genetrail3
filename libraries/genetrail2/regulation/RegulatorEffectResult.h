@@ -42,7 +42,9 @@ struct GT2_EXPORT RegulatorEffectResult
 	double mad = 0.0;
 	std::vector<double> scores;
 	double score = 0.0;
+	size_t number_of_extremer_scores = 0;
 	double mean_correlation = 0.0;
+	double abs_mean_correlation = 0.0;
 	double p_value = 1.0;
 	double corrected_p_value = 1.0;
 	bool skip = true;
@@ -64,6 +66,7 @@ struct GT2_EXPORT RegulatorEffectResult
 		header += "P-value\t";
 		if(!skip) {
 			header += "Mean(correlation)\n";
+			header += "Mean(abs(correlation))\n";
 		}
 		return header;
 	}
@@ -87,6 +90,7 @@ struct GT2_EXPORT RegulatorEffectResult
 		strm << '\t' << corrected_p_value;
 		if(!skip) {
 			strm << '\t' << mean_correlation;
+			strm << '\t' << abs_mean_correlation;
 		}
 		strm << '\n';
 	}
@@ -145,6 +149,9 @@ struct GT2_EXPORT RegulatorEffectResult
 		if(!skip) {
 			writer.String("meanCorrelation");
 			writer.Double(mean_correlation);
+
+			writer.String("absMeanCorrelation");
+			writer.Double(abs_mean_correlation);
 		}
 
 		writer.EndObject();

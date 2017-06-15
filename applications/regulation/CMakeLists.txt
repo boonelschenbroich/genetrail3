@@ -71,11 +71,19 @@ set_target_properties(regulator_effect_analysis PROPERTIES
 
 GT2_COMPILE_FLAGS(regulator_effect_analysis)
 
+add_executable(csa csa.cpp)
+target_link_libraries(csa regulationCommon applicationCommon gtcore gtregulation)
+set_target_properties(csa PROPERTIES
+    INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
+)
+
+GT2_COMPILE_FLAGS(csa)
+
 ####################################################################################################
 # Build executable
 ####################################################################################################
 
-install(TARGETS reggae reggae_result_aggregator regulator_ora regulator_effect_analysis
+install(TARGETS reggae reggae_result_aggregator regulator_ora regulator_effect_analysis csa
     RUNTIME DESTINATION bin 
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib

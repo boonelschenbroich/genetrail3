@@ -21,8 +21,8 @@ add_header_to_library(RegulatorGeneAssociationEnrichmentAlgorithms.h)
 add_header_to_library(RegulatorAssociationScore.h)
 add_header_to_library(RegulatoryImpactFactors.h)
 add_header_to_library(RegulatorEffectAnalysis.h)
+add_header_to_library(CorrelationSetAnalysis.h)
 
 # Sources
-
 add_to_library(RegulatorEffectResultAggregator)
 add_to_library(RegulatorCategoryFileReader)
