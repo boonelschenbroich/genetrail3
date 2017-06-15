@@ -21,12 +21,6 @@
 #ifndef GT2_REGULATION_REGULATOR_GENE_ASSOCIATION_ENRICHMENT_ANALYSIS_H
 #define GT2_REGULATION_REGULATOR_GENE_ASSOCIATION_ENRICHMENT_ANALYSIS_H
 
-#include <genetrail2/core/DenseMatrix.h>
-#include <genetrail2/core/Exception.h>
-#include <genetrail2/core/macros.h>
-#include <genetrail2/core/PValue.h>
-#include <genetrail2/core/Statistic.h>
-
 #include <algorithm>
 #include <map>
 #include <random>
@@ -35,10 +29,17 @@
 #include <utility>
 #include <vector>
 #include <fstream>
+#include <stdint.h>
 
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/math/distributions.hpp>
 #include <boost/math/distributions/normal.hpp>
+
+#include <genetrail2/core/DenseMatrix.h>
+#include <genetrail2/core/Exception.h>
+#include <genetrail2/core/macros.h>
+#include <genetrail2/core/PValue.h>
+#include <genetrail2/core/Statistic.h>
 
 #include "RegulatorEffectResult.h"
 #include "RegulationFile.h"
@@ -55,13 +56,16 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 	                            RegulationFile<value_type>& regulationFile,
 								Bootstrapper bootstraper,
                                 NameDatabase name_database,
-	                            bool use_absolute_value, size_t runs)
+	                            bool use_absolute_value, bool fill_blanks,
+								size_t runs, size_t max_regulators_per_target)
 	    : sorted_targets_(sorted_targets),
 	      regulationFile_(regulationFile),
 		  bootstrapper_(bootstraper),
 	      name_database_(name_database),
 	      use_absolute_value_(use_absolute_value),
-	      runs_(runs)
+		  fill_blanks_(fill_blanks),
+	      runs_(runs),
+		  max_regulators_per_target_(max_regulators_per_target)
 	{
 		max_number_of_regulators = 0;
 		biggest_regulator_idx = 0;
@@ -72,6 +76,8 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 	 * Performs the entire RegulatorGeneAssociationEnrichmentAnalysis.
 	 *
 	 * @param algorithm RegulatorEnrichmentAlgorithm that should be performed.
+	 * @param impactScore The impact score that should be computed.
+	 *
 	 * @return A vector of RegulatorEffectResults.
 	 */
 	template <typename Algorithm, typename RegulatorImpactScore>
@@ -110,23 +116,24 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 		std::vector<size_t> tf_list_tmp;
 		size_t size_of_tf_list = 0;
 		for(size_t targetname : sorted_targets_) {
-			
-			//std::cout << targetname << std::endl;
 			// Check if gene is targetted by any Regulator
 			if(!regulationFile_.checkTarget(targetname)) {
 				continue;
 			}
 
-			auto& targets = regulationFile_.target2regulations(targetname);
+			auto& regulations = regulationFile_.target2regulations(targetname);
 
 			// Get the number of regulators
-			size_of_tf_list += targets.size();
+			auto number_of_regulators = std::min(regulations.size(), max_regulators_per_target_);
+			
+			//Check the maximal number of regulators that should be considered
+			max_number_of_regulators = std::max(max_number_of_regulators, number_of_regulators);
 
-			max_number_of_regulators =
-			    std::max(max_number_of_regulators, targets.size());
+			// Check if we have to fill the blanks
+			size_of_tf_list += (fill_blanks_) ? max_number_of_regulators : number_of_regulators;
 
 			// Perform single bootstrapping run
-			bootstrapper_.perform_bootstrapping_run(targets,
+			bootstrapper_.perform_bootstrapping_run(regulations,
 			                                        use_absolute_value_, impactScore);
 		}
 
@@ -140,8 +147,11 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 				}
 
 				std::vector<Regulation>& regulators = regulationFile_.target2regulations(targetname);
-
 				if(regulators.size() <= i) {
+					// Inserts SIZE_MAX to fill the blanks
+					if(fill_blanks_) {
+						tf_list_tmp.emplace_back(SIZE_MAX);
+					}
 					continue;
 				}
 
@@ -164,6 +174,9 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 	{
 		std::vector<std::vector<size_t>> regulator_inidces_tmp(biggest_regulator_idx + 1);
 		for(size_t i = 0; i < tf_list.size(); ++i) {
+			if(tf_list[i] == SIZE_MAX){
+				continue;
+			}
 			regulator_inidces_tmp[tf_list[i]].emplace_back(i);
 		}
 		
@@ -178,7 +191,7 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 	template <typename Algorithm> void compute_scores_(Algorithm algorithm)
 	{
 		bool empty = results_.size() == 0;
-		if(empty) {
+		if(empty || results_.size() < biggest_regulator_idx + 1) {
 			results_.resize(biggest_regulator_idx + 1);
 		}
 		for(size_t i = 0; i < regulator_inidces_.size(); ++i) {
@@ -194,7 +207,7 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 				results_[i].hits = regulator_inidces_[i].size();
 				results_[i].scores.reserve(runs_);
 			}
-
+						
 			results_[i].addScore(score);
 		}
 	}
@@ -211,11 +224,15 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 				continue;
 			}
 
-			for(const auto& reg : regulationFile_.target2regulations(targetname)) {
+			auto& regulations = regulationFile_.target2regulations(targetname);
+			for(size_t i = 0; i < std::min(max_regulators_per_target_, regulations.size()); ++i){
+				auto& reg = regulations[i];
 				if(std::get<2>(reg) <= 1.0 && std::get<2>(reg) >= -1.0 &&
 				   std::get<2>(reg) != 0.0) {
-					regulator2correlations_[std::get<0>(reg)].emplace_back(
-					    std::get<2>(reg));
+					if(std::get<0>(reg) < biggest_regulator_idx) {
+						regulator2correlations_[std::get<0>(reg)].emplace_back(
+					    	std::get<2>(reg));
+					}
 				}
 			}
 		}
@@ -223,6 +240,9 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 		for(size_t i = 0; i < regulator2correlations_.size(); ++i) {
 			results_[i].mean_correlation =
 			    statistic::mean<value_type>(regulator2correlations_[i].begin(),
+			                                regulator2correlations_[i].end());
+			results_[i].abs_mean_correlation =
+			    statistic::abs_mean<value_type>(regulator2correlations_[i].begin(),
 			                                regulator2correlations_[i].end());
 		}
 	}
@@ -253,7 +273,9 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 	NameDatabase name_database_;
 
 	bool use_absolute_value_;
+	bool fill_blanks_;
 	size_t runs_;
+	size_t max_regulators_per_target_;
 
 	size_t max_number_of_regulators;
 	size_t biggest_regulator_idx;

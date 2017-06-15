@@ -32,8 +32,8 @@ namespace bpo = boost::program_options;
 
 std::string scores_, associations_, matrix_, regulations_, out_, method_, adjustment_method_,
     impact_score_, confidence_interval_;
-bool useAbsoluteValues_, decreasingly_, perturbation_, json_;
-size_t seed_, bootstrapping_runs_;
+bool useAbsoluteValues_, decreasingly_, perturbation_, json_, fill_blanks_;
+size_t seed_, bootstrapping_runs_, max_regulators_per_target_ = 0;
 double alpha_;
 
 MatrixReaderOptions matrixOptions;
@@ -61,7 +61,9 @@ bool parseArguments(int argc, char* argv[])
 					  ("adjust,u", bpo::value(&adjustment_method_)->required()->default_value("benjamini-yekutieli"), "Alpha level of confidence interval.")
 					  ("json,j", bpo::value(&json_)->default_value(false)->zero_tokens(), "Output file in .json format (default: .tsv).")
 					  ("impact,p", bpo::value(&impact_score_)->required(), "Method that should be used to compute the impact of regulators.")
-					  ("confidence-intervals, v", bpo::value(&confidence_interval_)->required(), "Method that should be used to compute confidence intervals.");
+					  ("confidence-intervals,v", bpo::value(&confidence_interval_)->required(), "Method that should be used to compute confidence intervals.")
+					  ("max-regulator-per-target,y", bpo::value(&max_regulators_per_target_), "The maximum number of regulators that are allowed to influence a regulator.")
+					  ("fill-blanks,f", bpo::value(&fill_blanks_)->default_value(false)->zero_tokens(), "Should blanks be introduced if a target has a fewer regulators than all other targets.");
 	try {
 		bpo::store(bpo::command_line_parser(argc, argv).options(desc).run(), vm);
 		bpo::notify(vm);
@@ -178,24 +180,23 @@ int runGeneExpressionAnalysis()
 	std::cout << "INFO: Parsing test set" << std::endl;
 	GeneSetReader reader;
 	GeneSet test_set = reader.readScoringFile(scores_);
-	std::vector<std::string> sorted_target_names =
-	    test_set.getSortedIdentifier(decreasingly_);
-	std::vector<size_t> sorted_targets =
-	    translate_test_set(&matrix, sorted_target_names);
-
-	std::cout << "INFO: Parsing regulations" << std::endl;
-	std::unordered_set<size_t> tset(sorted_targets.begin(),
-	                                sorted_targets.end());
+	std::vector<std::string> sorted_target_names = test_set.getSortedIdentifier(decreasingly_);
+	std::vector<size_t> sorted_targets = translate_test_set(&matrix, sorted_target_names);
+	std::unordered_set<size_t> tset(sorted_targets.begin(), sorted_targets.end());
 	MatrixNameDatabase name_database(&matrix);
 	
-	RegulationFileParser<MatrixNameDatabase, double> parser(name_database, tset,
-	                                                        regulations_, 0.0);
+	std::cout << "INFO: Parsing regulations" << std::endl;
+	RegulationFileParser<MatrixNameDatabase, double> parser(name_database, tset, regulations_, 0.0);
 	RegulationFile<double>& regulationFile = parser.getRegulationFile();
+	if(max_regulators_per_target_ == 0){
+		max_regulators_per_target_  = regulationFile.maxNumberOfRegulators();
+	}
+
 	RegulationBootstrapper<double> bootstrapper(&matrix, seed_);
 	RegulatorGeneAssociationEnrichmentAnalysis<RegulationBootstrapper<double>,
 	                                           MatrixNameDatabase, double>
 	    analysis(sorted_targets, regulationFile, bootstrapper, name_database,
-	             useAbsoluteValues_, bootstrapping_runs_);
+	             useAbsoluteValues_, fill_blanks_, bootstrapping_runs_, max_regulators_per_target_);
 	std::vector<RegulatorEffectResult> results = run(analysis);
 
 	std::cout << "INFO: Adjusting p-values" << std::endl;
@@ -233,7 +234,7 @@ int runAssociationAnalysis()
 	RegulatorGeneAssociationEnrichmentAnalysis<DummyBootstrapper,
 	                                           MapNameDatabase, double>
 	    analysis(sorted_targets, regulationFile, bootstrapper, name_database,
-	             useAbsoluteValues_, bootstrapping_runs_);
+	             useAbsoluteValues_, fill_blanks_, bootstrapping_runs_, max_regulators_per_target_);
 	std::vector<RegulatorEffectResult> results = run(analysis);
 
 	std::cout << "INFO: Adjusting p-values" << std::endl;
