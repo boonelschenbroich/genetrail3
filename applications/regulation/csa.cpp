@@ -32,6 +32,7 @@ namespace bpo = boost::program_options;
 
 std::string scores_ = "", matrix_ = "", regulations_ = "", out_ = "", method_ = "", adjustment_method_ = "";
 size_t seed_, permutations_;
+bool upper_tailed_, abs_;
 
 MatrixReaderOptions matrixOptions;
 
@@ -51,7 +52,9 @@ bool parseArguments(int argc, char* argv[])
 					  ("permutations,p", bpo::value(&permutations_)->default_value(0), "Number of bootstrapping runs.")
 					  ("method,m", bpo::value(&method_)->required(), "The method that should be applied (pearson-correlation, spearman-correlation, kendall-correlation).")
 					  ("adjust,a", bpo::value(&adjustment_method_)->required(), "Method to adjust p-values.")
-					  ("output,o", bpo::value(&out_)->required(), "Output prefix for text files.");
+					  ("output,o", bpo::value(&out_)->required(), "Output prefix for text files.")
+					  ("upper-tailed,u", bpo::value(&upper_tailed_)->default_value(false)->zero_tokens(), "Calculate an upper-tailed p-value.")
+					  ("abs,b", bpo::value(&upper_tailed_)->default_value(false)->zero_tokens(), "Use absolute value.");
 	try {
 		bpo::store(bpo::command_line_parser(argc, argv).options(desc).run(), vm);
 		bpo::notify(vm);
@@ -102,11 +105,11 @@ int main(int argc, char* argv[])
 	CorrelationSetAnalysis<double> csa(&matrix, name_database, sorted_targets, regulationFile);
 	std::vector<RegulatorEffectResult> results;
 	if(method_ == "pearson_correlation") {
-		results = csa.run(PearsonCorrelation(), seed_, permutations_);
+		results = csa.run(PearsonCorrelation(), seed_, permutations_, upper_tailed_, abs_);
 	} else if(method_ == "spearman_correlation") {
-		results = csa.run(SpearmanCorrelation(), seed_, permutations_);
+		results = csa.run(SpearmanCorrelation(), seed_, permutations_, upper_tailed_, abs_);
 	} else if(method_ == "kendall_correlation") {
-		results = csa.run(KendallCorrelation(), seed_, permutations_);
+		results = csa.run(KendallCorrelation(), seed_, permutations_, upper_tailed_, abs_);
 	}
 		
 	std::cout << "INFO: Adjusting p-values" << std::endl;
