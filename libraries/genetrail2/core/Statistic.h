@@ -28,6 +28,8 @@
 #include <iostream>
 #include <map>
 
+#include <boost/math/special_functions/atanh.hpp>
+
 namespace GeneTrail
 {
 
@@ -178,6 +180,28 @@ double mean(InputIterator begin, InputIterator end)
 	}
 
 	return (std::accumulate(begin, end, 0.0) / ((value_type)dist));
+}
+
+/**
+ * This method calculates the absolute mean of a given range.
+ *
+ * @param begin InputIterator corresponding to the start of the samples.
+ * @param end   InputIterator corresponding to the end of the samples.
+ *
+ * @return Mean of the given range
+ */
+template <typename value_type, typename InputIterator>
+double abs_mean(InputIterator begin, InputIterator end)
+{
+	auto dist = std::distance(begin, end);
+	if(dist == 0) {
+		return value_type();
+	}
+
+	std::vector<value_type> tmp(begin, end);
+	abs<value_type>(tmp.begin(), tmp.end());
+
+	return (std::accumulate(tmp.begin(), tmp.end(), 0.0) / ((value_type)dist));
 }
 
 /**
@@ -642,6 +666,60 @@ kendall_tau_correlation(InputIterator first_begin, InputIterator first_end,
 
 	return (less_count - greater_count) / denominator;
 }
+
+/**
+ * This function converts the given correlation coefficient
+ * into a t-score with n-2 degrees of freedom.
+ *
+ * @param r Correlation coefficient
+ * @param n Sample size
+ *
+ * @return A t-score that follows a t-distribution with n-2 degrees of freedom.
+ */
+  template <typename value_type>
+  value_type correlation_to_t(value_type r, value_type n) {
+	  return r / ((1.0 - r*r) / (n-2));
+  }
+
+/**
+ * This function implements the Fisher's z-transformation 
+ * for correlation coefficients.
+ *
+ * @param r Correlation coefficient
+ *
+ * @return Z-score that follows a normal distribution with sd 1 / sqrt(n-3).
+ */
+  template <typename value_type>
+  value_type fisher_z_transform(value_type r) {
+	  return boost::math::atanh(r);
+  }
+
+/**
+ * This function calculates the standard error for 
+ * a Fisher's z-transformed correlation coefficient
+ * with n samples.
+ *
+ * @param n Sample size
+ *
+ * @return Standard error.
+ */
+  template <typename value_type>
+  value_type fisher_z_transform_sd(value_type n) {
+	  return 1.0 / sqrt(n - 3.0);
+  }
+
+/**
+ * This function converts a correlation coefficient
+ * into a z-score using Fisher's z-transformation.
+ *
+ * @param n Sample size
+ *
+ * @return Standard error.
+ */
+  template <typename value_type>
+  value_type correlation_to_z(value_type r, value_type n, value_type mean = 0.0) {
+	  return (fisher_z_transform(r) - mean) / fisher_z_transform_sd(n);
+  }
 
 /**
  * This function calculates log(mean(a)) -  log(mean(b)).
