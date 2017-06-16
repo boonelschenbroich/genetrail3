@@ -72,10 +72,10 @@ class GT2_EXPORT CorrelationSetAnalysis
 	}
 
 	template <typename CorrelationCoefficinent> 
-	std::vector<RegulatorEffectResult> run(CorrelationCoefficinent func, size_t seed, size_t runs)
+	std::vector<RegulatorEffectResult> run(CorrelationCoefficinent func, size_t seed, size_t runs, bool upper_tailed, bool abs_correlation)
 	{
 		std::cout << "INFO: Calculating correlations" << std::endl;
-		create_correlations(func);
+		create_correlations(func, abs_correlation);
 
 		std::cout << "INFO: Calculating scores" << std::endl;
 		for(size_t regulator : regulators_) {
@@ -87,7 +87,7 @@ class GT2_EXPORT CorrelationSetAnalysis
 		std::uniform_int_distribution<int> distribution(0, matrix_->rows()-1);
 		for(size_t i=0; i<runs; ++i){
 			std::cout << "INFO: Performing permutation " << i << std::endl;
-			perform_permutation_(twister, distribution);
+			perform_permutation_(twister, distribution, upper_tailed);
 		}
 
 		std::vector<RegulatorEffectResult> results;
@@ -115,7 +115,7 @@ class GT2_EXPORT CorrelationSetAnalysis
 	}
 
 	template <typename CorrelationCoefficient>
-	void create_correlations(CorrelationCoefficient func){
+	void create_correlations(CorrelationCoefficient func, bool abs_correlation){
 		for (size_t i=0; i<matrix_->rows(); ++i) {
 			correlations_.set(i, i, 1.0);
 			for (size_t j=i+1; j<matrix_->rows(); ++j) {
@@ -123,6 +123,9 @@ class GT2_EXPORT CorrelationSetAnalysis
 			    							   target_it(matrix_, j);
 				auto corr = func.compute(regulator_it->begin(), regulator_it->end(),
 			                  			 target_it->begin(), target_it->end());
+				if(abs_correlation) {
+					corr = fabs(corr);
+				}
 				correlations_.set(i, j, corr);
 				correlations_.set(j, i, corr);
 			}
@@ -143,10 +146,14 @@ class GT2_EXPORT CorrelationSetAnalysis
 		value_type n = (value_type)size;
 		results_[regulator].name = name_database_(regulator);
 		results_[regulator].hits = size;
-		results_[regulator].score = (2.0 / (n*(n-1.0))) * sum;
+		if(size == 1){
+			results_[regulator].score = 1.0;
+		} else {
+			results_[regulator].score = (2.0 / (n*(n-1.0))) * sum;
+		}
 	}
 
-	void perform_permutation_(std::mt19937 twister,	std::uniform_int_distribution<int> distribution){
+	void perform_permutation_(std::mt19937 twister,	std::uniform_int_distribution<int> distribution, bool upper_tailed){
 		auto next = number_of_targets_.begin();
 		double sum = 0.0;
 		std::vector<size_t> regs;
@@ -162,9 +169,15 @@ class GT2_EXPORT CorrelationSetAnalysis
 				double n = (double)i;
 				double mean = (2.0 / (n*(n-1.0))) * sum;
 				for (size_t regulator : number_of_targets_to_regulator_[*next]){
-					if(mean > results_[regulator].score) {
-						results_[regulator].number_of_extremer_scores += 1;
-					}
+					if(upper_tailed) {
+						if(mean >= results_[regulator].score) {
+							results_[regulator].number_of_extremer_scores += 1;
+						} 
+					} else{ 
+						if(mean <= results_[regulator].score) {
+							results_[regulator].number_of_extremer_scores += 1;
+						}
+					} 
 				}
 				++next;
 			}
