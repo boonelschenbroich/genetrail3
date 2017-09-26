@@ -56,11 +56,13 @@ TEST(MT, valuesToRanks1)
 	mat(2, 0) = 43;
 	mat(3, 0) = -43;
 	mat(4, 0) = 0;
+	
 	mat(0, 1) = -6;
 	mat(1, 1) = 77;
 	mat(2, 1) = 99998;
 	mat(3, 1) = 89;
 	mat(4, 1) = 179;
+
 	mat(0, 2) = 11;
 	mat(1, 2) = 122;
 	mat(2, 2) = 133;
@@ -69,17 +71,35 @@ TEST(MT, valuesToRanks1)
 	
 	DenseMatrix results(num_rows, num_cols);
 	
+// 	results(0, 0) = 1;
+// 	results(1, 0) = 3;
+// 	results(2, 0) = 2;
+// 	results(3, 0) = 5;
+// 	results(4, 0) = 4;
+// 	
+// 	results(0, 1) = 3;
+// 	results(1, 1) = 5;
+// 	results(2, 1) = 4;
+// 	results(3, 1) = 2;
+// 	results(4, 1) = 1;
+// 	results(0 ,2) = 5;
+// 	results(1, 2) = 4;
+// 	results(2, 2) = 3;
+// 	results(3, 2) = 2;
+// 	results(4, 2) = 1;
+	
 	results(0, 0) = 1;
 	results(1, 0) = 3;
 	results(2, 0) = 2;
 	results(3, 0) = 5;
 	results(4, 0) = 4;
+
+	results(0, 1) = 5;
+	results(1, 1) = 4;
+	results(2, 1) = 1;
+	results(3, 1) = 3;
+	results(4, 1) = 2;
 	
-	results(0, 1) = 3;
-	results(1, 1) = 5;
-	results(2, 1) = 4;
-	results(3, 1) = 2;
-	results(4, 1) = 1;
 	results(0 ,2) = 5;
 	results(1, 2) = 4;
 	results(2, 2) = 3;
@@ -107,14 +127,17 @@ TEST(MT, valuesToRanks2)
 	mat(1, 0) = 7.009;
 	mat(2, 0) = -43.7;
 	mat(3, 0) = -43.6;
+	
 	mat(0, 1) = 0.0;
 	mat(1, 1) = 12.2;
 	mat(2, 1) = -17.7654;
 	mat(3, 1) = -89.13;
+	
 	mat(0, 2) = 11111;
 	mat(1, 2) = 2.1;
 	mat(2, 2) = 0.0009;
 	mat(3, 2) = -12.32;
+	
 	mat(0, 3) = 11.11;
 	mat(1, 3) = 998.0;
 	mat(2, 3) = 133.7;
@@ -127,18 +150,21 @@ TEST(MT, valuesToRanks2)
 	results(1, 0) = 2;
 	results(2, 0) = 4;
 	results(3, 0) = 3;
+	
 	results(0, 1) = 2;
 	results(1, 1) = 1;
 	results(2, 1) = 3;
 	results(3, 1) = 4;
+	
 	results(0 ,2) = 1;
 	results(1, 2) = 2;
 	results(2, 2) = 3;
 	results(3, 2) = 4;
-	results(0 ,3) = 2;
-	results(1, 3) = 4;
+	
+	results(0 ,3) = 4;
+	results(1, 3) = 1;
 	results(2, 3) = 3;
-	results(3, 3) = 1;
+	results(3, 3) = 2;
 	
 	valuesToRanks(mat);
 	
@@ -200,12 +226,12 @@ TEST(MT, valuesToRanksInt)
 	
 	DenseMatrix results(num_rows, num_cols);
 	
-	results(0, 0) = 2;
-	results(1, 0) = 3;
-	results(2, 0) = 1;
-	results(0, 1) = 2;
-	results(1, 1) = 3;
-	results(2, 1) = 1;
+	results(0, 0) = 3;
+	results(1, 0) = 1;
+	results(2, 0) = 2;
+	results(0, 1) = 3;
+	results(1, 1) = 1;
+	results(2, 1) = 2;
 	
 	
 	valuesToRanks(mat);
@@ -266,8 +292,8 @@ TEST(MT, upweightTail)
 	
 	for(size_t i=0; i<num_rows; ++i){
 	  for(size_t j=0; j< num_cols; ++j){
-	    mat.set(i,j,std::abs(num_rows/2 -mat(i,j)));
-	    mat2.set(i,j,std::abs(num_rows/2 -mat2(i,j)));
+	    mat.set(i,j,num_rows/2 + 0.5 -mat(i,j));
+	    mat2.set(i,j,num_rows/2 + 0.5 -mat2(i,j));
 	  }
 	}
 	

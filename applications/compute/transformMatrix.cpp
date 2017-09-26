@@ -78,18 +78,22 @@ bool applyTransformation()
 	  upweightTail(valueMatrix);
 	}
 	
-	else if(transformation.compare("abs")== 0)
+	else if(transformation.compare("abs")== 0){
 	  abs(valueMatrix);
-	else if(transformation.compare("sqrt")== 0)
+	}else if(transformation.compare("sqrt")== 0){
 	  sqrt(valueMatrix);
-	else if(transformation.compare("log")== 0)
+	}else if(transformation.compare("log")== 0){
 	  log(valueMatrix);
-	else if(transformation.compare("log2")== 0)
+	}else if(transformation.compare("log2")== 0){
 	  log2(valueMatrix);
-	else if(transformation.compare("log10")== 0)
+	}else if(transformation.compare("log10")== 0){
 	  log10(valueMatrix);
-	else if(transformation.compare("pow2")== 0)
+	}else if(transformation.compare("pow2")== 0){
 	  pow2(valueMatrix);
+	}else {
+	  std::cerr << "ERROR: Transformation is unknown." << std::endl;
+	  return false;
+	}
 	
 	return true;
 }

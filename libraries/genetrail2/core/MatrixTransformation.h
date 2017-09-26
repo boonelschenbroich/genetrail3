@@ -42,24 +42,17 @@ namespace GeneTrail
 	 */
 	  template <typename Matrix>
 	  void valuesToRanks(Matrix& in_matrix) {
-	     
-	     Matrix rankMatrix(in_matrix.rows(), in_matrix.cols());
-	     std::vector<size_t> rankVec(in_matrix.rows(),0);
-	     
-	     for(size_t c=0; c<in_matrix.cols(); ++c) {
 
- 	      std::iota(rankVec.begin(), rankVec.end(), 1);
+	     for(size_t c=0; c<in_matrix.cols(); ++c) {
+	      std::vector<size_t> rankVec(in_matrix.rows(),0);
+ 	      std::iota(rankVec.begin(), rankVec.end(), 0);
 	      std::sort(rankVec.begin(), rankVec.end(),
-  	      [&](size_t i1, size_t i2) {return in_matrix(i1-1,c) >= in_matrix(i2-1,c);});
-	      
+  	     [&](const size_t a,const size_t b)-> bool {return in_matrix(a,c) > in_matrix(b,c);});
 	      for(size_t v=0; v<rankVec.size(); ++v) {
-		in_matrix.set(v,c,rankVec[v]);
+		in_matrix.set(rankVec[v],c,v+1);
 	      }
-	     
 	     }
-	     
 	     return;
-	      
 	  }
 	  
 	/**
@@ -79,10 +72,9 @@ namespace GeneTrail
 	      }
 	  }
 	  
-	  
-	  
+ 
 	/**
-	 * This function applies |r/2 - value| to each value of the Matrix,
+	 * This function applies |r/2 + 0.5 - value| to each value of the Matrix,
 	 * where r denotes the number of rows.
 	 * 
 	 * The approach is based on the paper
@@ -98,7 +90,7 @@ namespace GeneTrail
 	 }
 	 
 	/**
-	 * This function applies |r/2 + 0.5 - value| to each value of the Matrix,
+	 * This function applies r/2 + 0.5 - value to each value of the Matrix,
 	 * where r denotes the number of rows.
 	 * 
 	 * The approach is based on the paper
@@ -110,7 +102,7 @@ namespace GeneTrail
 	 */
 	template <typename Matrix> 
 	 void upweightTail(Matrix& matrix) {
-	   transformMatrix(matrix, [&](double d) {return std::abs((matrix.rows()/2) -d); });
+	   transformMatrix(matrix, [&](double d) {return (matrix.rows()/2) + 0.5 -d; });
 	 }
 
   
