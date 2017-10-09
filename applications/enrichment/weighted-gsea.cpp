@@ -14,6 +14,7 @@ namespace bpo = boost::program_options;
 namespace bm = boost::math;
 
 bool increasing = false, absolute = false, keepOrder = false;
+std::string scoringMethod = "";
 
 bool parseArguments(int argc, char* argv[], Params& p)
 {
@@ -24,7 +25,8 @@ bool parseArguments(int argc, char* argv[], Params& p)
 	desc.add_options()("identifier, d", bpo::value(&p.identifier_), "A file containing identifier line by line.")(
 	                   "increasing,i", bpo::value(&increasing)->zero_tokens(), "Use increasingly sorted scores. (Decreasing is default)")(
 	                   "absolute,abs", bpo::value(&absolute)->zero_tokens(), "Use decreasingly sorted absolute scores.")(
-	                   "keeporder,k", bpo::value(&keepOrder)->zero_tokens(), "Do not sort by weights (Given order is used).");
+	                   "keeporder,k", bpo::value(&keepOrder)->zero_tokens(), "Do not sort by weights (Given order is used).")
+			   "scoring-method,m", bpo::value<std::string>(&scoringMethod)->default_value("max-deviation"), "Method to calculate the running-sum score.");
 
 	if(absolute && increasing) {
 		std::cerr << "ERROR: Please specify only one option to sort the file."
@@ -64,8 +66,19 @@ int main(int argc, char* argv[])
 	Scores scores(test_set, db);
 
 	auto order = increasing ? Order::Increasing : Order::Decreasing;
-
-	auto algorithm = createEnrichmentAlgorithm<WeightedKolmogorovSmirnov>(p.pValueMode, scores, order, keepOrder);
+	
+	std::unique_ptr<EnrichmentAlgorithm> algorithm;
+	
+	if(scoringMethod.compare("max-deviation")== 0)
+	   algorithm = createEnrichmentAlgorithm<WeightedKolmogorovSmirnov>(p.pValueMode, scores, order, keepOrder);
+	
+	else if(scoringMethod.compare("kuiper")== 0)
+	   algorithm = createEnrichmentAlgorithm<WeightedKuiperKolmogorovSmirnov>(p.pValueMode, scores, order, keepOrder);
+	
+	else {
+	  std::cerr << "ERROR: Scoring method is unknown." << std::endl;
+	  return -2;
+	}
 
 	run(scores, cat_list, algorithm, p, true);
 	return 0;

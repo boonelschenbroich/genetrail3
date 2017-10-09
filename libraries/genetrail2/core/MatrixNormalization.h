@@ -27,6 +27,7 @@
 #include "MatrixIterator.h"
 #include <boost/math/distributions/poisson.hpp>
 #include <boost/math/distributions/normal.hpp>
+#include <genetrail2/core/DenseMatrix.h>
 
 namespace GeneTrail
 {
@@ -213,9 +214,9 @@ namespace GeneTrail
 		 * @return normalized matrix
 		 */
 		 template<typename Normalization, typename Matrix> 
-		 Matrix normalizeMatrix( const Matrix& matrix,  Normalization& norm) {
+		 DenseMatrix normalizeMatrix( const Matrix& matrix,  Normalization& norm) {
 		   
-		  Matrix normalizedMatrix(matrix.rowNames(), matrix.colNames());
+		  DenseMatrix normalizedMatrix(matrix.rowNames(), matrix.colNames());
 		   
 		  RowMajorMatrixIterator<Matrix> row_it(&matrix, 0);
 		  RowMajorMatrixIterator<Matrix> row_end(&matrix, matrix.rows());

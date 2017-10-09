@@ -24,7 +24,7 @@ namespace GeneTrail
 			}
 		}
 
-		if(indices.empty()) {
+		if(indices.empty() && !colnames.empty()) {
 			throw EmptyGroup(groupname);
 		}
 

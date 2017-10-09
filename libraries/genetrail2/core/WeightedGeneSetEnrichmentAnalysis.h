@@ -119,9 +119,11 @@ namespace GeneTrail
 		 *categories.
 		 *
 		 * @param category Category for which the RSc should be computed.
-		 * @return The RSc for the given categories.
+		 * @return A tuple of RSc (maximum deviation from zero) and kuiper's score 
+		 * 	   (difference of max. positive and max. negative deviation) for
+		 * 	   the given categories.
 		 */
-		float_type computeRunningSum(const Category& category) const
+		std::tuple<float_type, float_type> computeRunningSum(const Category& category) const
 		{
 			Indices S = intersection(category, scores_);
 			return computeRunningSum(S.begin(), S.end());
@@ -135,15 +137,17 @@ namespace GeneTrail
 		 *              entities in the list of genes, that are members of a category.
 		 * @param end   End of a sorted list of indices that identifiy the
 		 *              entities in the list of genes, that are members of a category.
-		 * @return The RSc for the given categories.
+		 * @return A tuple of RSc (maximum deviation from zero) and kuiper's score 
+		 * 	   (difference of max. positive and max. negative deviation) for
+		 * 	   the given categories.
 		 */
-		float_type computeRunningSum(Indices::const_iterator begin,
+		std::tuple<float_type, float_type> computeRunningSum(Indices::const_iterator begin,
 		                             Indices::const_iterator end) const
 		{
 			const auto category_size = std::distance(begin, end);
 
 			if(category_size == 0) {
-				return float_type();
+				return std::make_tuple(float_type(),float_type());
 			}
 
 			const float_type NR_inv = 1.0 / sum(begin, end);
@@ -164,8 +168,12 @@ namespace GeneTrail
 
 				lastIndex = *it;
 			}
-
-			return (maxRS > -minRS) ? maxRS : minRS;
+			
+			float_type RSc =  (maxRS > -minRS) ? maxRS : minRS;
+			
+			float_type kuiper = std::max(maxRS,0.0) - std::abs(std::min(0.0,minRS));
+			
+			return std::make_tuple(RSc, kuiper);
 		}
 	};
 }

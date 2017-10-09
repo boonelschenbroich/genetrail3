@@ -524,20 +524,60 @@ namespace GeneTrail
 		std::tuple<double, double> computeScore(const Category& category)
 		{
 			auto score = test_.computeRunningSum(category);
-			return std::make_tuple(score, 0.0);
+			return std::make_tuple(std::get<0>(score), 0.0);
 		}
 
 		std::tuple<double, double> computeScore(IndexIterator begin,
 		                                        IndexIterator end)
 		{
 			auto score = test_.computeRunningSum(begin, end);
-			return std::make_tuple(score, 0.0);
+			return std::make_tuple(std::get<0>(score), 0.0);
 		}
 
 		private:
 		Order order_;
 		WeightedGeneSetEnrichmentAnalysis<double> test_;
 	};
+	
+	class WeightedKuiperKolmogorovSmirnov
+	    : public SetLevelStatistics<StatTags::Indirect, StatTags::SupportsIndices>
+	{
+		public:
+		WeightedKuiperKolmogorovSmirnov(const Scores& scores, Order order)
+		    : order_(order), test_(scores, order)
+		{
+		}
+
+		Order getOrder() const {
+			return order_;
+		}
+
+		void setInputScores(Scores scores)
+		{
+			scores.sortByScore(order_);
+			test_.setScores(std::move(scores));
+		}
+
+		bool canUseCategory(const Category&, size_t) const { return true; }
+
+		std::tuple<double, double> computeScore(const Category& category)
+		{
+			auto score = test_.computeRunningSum(category);
+			return std::make_tuple(std::get<1>(score), 0.0);
+		}
+
+		std::tuple<double, double> computeScore(IndexIterator begin,
+		                                        IndexIterator end)
+		{
+			auto score = test_.computeRunningSum(begin, end);
+			return std::make_tuple(std::get<1>(score), 0.0);
+		}
+
+		private:
+		Order order_;
+		WeightedGeneSetEnrichmentAnalysis<double> test_;
+	};
+
 }
 
 #endif // GT2_SET_LEVEL_STATISTICS_H
