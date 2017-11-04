@@ -48,6 +48,7 @@ struct GT2_EXPORT RegulatorEffectResult
 	double p_value = 1.0;
 	double corrected_p_value = 1.0;
 	bool skip = true;
+	size_t totalNumberOfTargets = 0;
 
 	void addScore(double score) { scores.emplace_back(score); }
 
@@ -57,6 +58,7 @@ struct GT2_EXPORT RegulatorEffectResult
 		header += "Name\t";
 		header += "Rank\t";
 		header += "Hits\t";
+		header += "TotalNumberOfTargets\t";
 		header += "Score\t";
 		if(!skip) {
 			header += "CI\t";
@@ -64,10 +66,8 @@ struct GT2_EXPORT RegulatorEffectResult
 			header += "MAD\t";
 		}
 		header += "P-value\t";
-		if(!skip) {
-			header += "Mean(correlation)\n";
-			header += "Mean(abs(correlation))\n";
-		}
+		header += "Mean(correlation)\n";
+		header += "Mean(abs(correlation))\n";
 		return header;
 	}
 
@@ -82,7 +82,7 @@ struct GT2_EXPORT RegulatorEffectResult
 
 	void serialize(std::ostream& strm)
 	{
-		strm << name << '\t' << rank << '\t' << hits << '\t' << score << '\t';
+		strm << name << '\t' << rank << '\t' << hits << '\t' << totalNumberOfTargets << '\t' << score << '\t';
 		if(!skip) {
 			strm << "[" << std::get<0>(ci) << ',' << std::get<1>(ci) << "]\t"
 			     << sd << '\t' << mad;
@@ -120,6 +120,9 @@ struct GT2_EXPORT RegulatorEffectResult
 		writer.String("hits");
 		writer.Int(hits);
 
+		writer.String("totalNumberOfTargets");
+		writer.Int(totalNumberOfTargets);
+
 		writer.String("score");
 		writer.Double(score);
 
@@ -146,13 +149,11 @@ struct GT2_EXPORT RegulatorEffectResult
 		writer.String("correctedPValue");
 		writer.Double(corrected_p_value);
 
-		if(!skip) {
-			writer.String("meanCorrelation");
-			writer.Double(mean_correlation);
+		writer.String("meanCorrelation");
+		writer.Double(mean_correlation);
 
-			writer.String("absMeanCorrelation");
-			writer.Double(abs_mean_correlation);
-		}
+		writer.String("absMeanCorrelation");
+		writer.Double(abs_mean_correlation);
 
 		writer.EndObject();
 	}
@@ -181,6 +182,12 @@ struct GT2_EXPORT RegulatorEffectResult
 		}
 
 		hits = result["hits"].GetInt();
+
+		if(!result.HasMember("totalNumberOfTargets")) {
+			throw IOError("Found result without total number of target genes.");
+		}
+
+		totalNumberOfTargets = result["totalNumberOfTargets"].GetInt();
 
 		if(!result.HasMember("confidenceInterval")) {
 			throw IOError("Found result without confidence interval.");
@@ -215,7 +222,10 @@ struct GT2_EXPORT RegulatorEffectResult
 
 		if(result.HasMember("meanCorrelation")) {
 			mean_correlation = result["meanCorrelation"].GetDouble();
-			;
+		}
+
+		if(result.HasMember("absMeanCorrelation")) {
+			abs_mean_correlation = result["absMeanCorrelation"].GetDouble();
 		}
 	}
 };

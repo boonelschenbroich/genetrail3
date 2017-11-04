@@ -13,6 +13,7 @@
 #include <genetrail2/regulation/RegulationFileParser.h>
 #include <genetrail2/regulation/RegulationBootstrapper.h>
 #include <genetrail2/regulation/RegulatorAssociationScore.h>
+#include <genetrail2/regulation/RTINetwork.h>
 
 #include <iostream>
 #include <fstream>
@@ -31,8 +32,8 @@ using namespace GeneTrail;
 namespace bpo = boost::program_options;
 
 std::string scores_, associations_, matrix_, regulations_, out_, method_, adjustment_method_,
-    impact_score_, confidence_interval_;
-bool useAbsoluteValues_, decreasingly_, perturbation_, json_, fill_blanks_;
+    impact_score_, confidence_interval_, network_, output_score_file_;
+bool normalize_scores_, useAbsoluteValues_, decreasingly_, perturbation_, json_, fill_blanks_, sort_correlations_decreasingly_, normalize_impact_scores_;
 size_t seed_, bootstrapping_runs_, max_regulators_per_target_ = 0;
 double alpha_;
 
@@ -44,26 +45,30 @@ bool parseArguments(int argc, char* argv[])
 	bpo::options_description desc;
 
 	desc.add_options()("help,h", "Display this message")
-					  ("scores,s", bpo::value(&scores_)->required(), "A whitespace separated file containing deregulated targets.")
-					  ("associations,t", bpo::value(&associations_)->default_value(""), "A whitespace separated file regulator target and association scores.") 
-					  ("matrix,x", bpo::value(&matrix_)->default_value(""), "A whitespace separated file containing expression values for all genes.")
-					  ("no-row-names,w", bpo::value<bool>(&matrixOptions.no_rownames)->default_value(false)->zero_tokens(), "Does the file contain row names.")
-					  ("no-col-names,c", bpo::value<bool>(&matrixOptions.no_colnames)->default_value(false)->zero_tokens(), "Does the file contain column names.")
-					  ("add-col-name,n", bpo::value<bool>(&matrixOptions.additional_colname)->default_value(false)->zero_tokens(), "File containing two lines specifying which rownames belong to which group.")
-					  ("decreasingly,d", bpo::value(&decreasingly_)->default_value(false)->zero_tokens(), "Sort testset decreasingly (default: increasingly).")
-					  ("regulations,r", bpo::value(&regulations_)->default_value(""), "A whitespace separated file containing regulator and target.")
-					  ("abs,a", bpo::value(&useAbsoluteValues_)->default_value(false)->zero_tokens(), "Use absolute correlations.")
+					  ("scores,s", bpo::value(&scores_)->required(), "A whitespace separated file containing deregulated targets. (test set)")
+					  ("associations,t", bpo::value(&associations_)->default_value(""), "A whitespace separated file regulator, target and association scores. (only needed if '--regulations' and '--matrix' options are not provided)") 
+					  ("matrix,x", bpo::value(&matrix_)->default_value(""), "A whitespace separated file containing expression values for all genes. (Only needed if '--matrix' is used)")
+					  ("no-row-names,w", bpo::value<bool>(&matrixOptions.no_rownames)->default_value(false)->zero_tokens(), "Does the matrix file contain row names? (Only needed if '--matrix' is used)")
+					  ("no-col-names,c", bpo::value<bool>(&matrixOptions.no_colnames)->default_value(false)->zero_tokens(), "Does the matrix file contain column names? (Only needed if '--matrix' is used)")
+					  ("add-col-name,n", bpo::value<bool>(&matrixOptions.additional_colname)->default_value(false)->zero_tokens(), "Does the matrix file contain two rows for column names? (Only needed if '--matrix' is used)")
+					  ("decreasingly,d", bpo::value(&decreasingly_)->default_value(false)->zero_tokens(), "Should the testset be sorted decreasingly? (default: increasingly)")
+					  ("regulations,r", bpo::value(&regulations_)->default_value(""), "A whitespace separated file containing regulator and target. (RTI database)")
+					  ("abs,a", bpo::value(&useAbsoluteValues_)->default_value(false)->zero_tokens(), "Should absolute values be used for association scores?")
+					  ("sort-rtis-decreasingly,e", bpo::value(&sort_correlations_decreasingly_)->default_value(false)->zero_tokens(), "Should the association scores for each target be sorted decreasingly? (default: increasingly)")
 					  ("method,m", bpo::value(&method_)->required(), "The method that should be applied (ks-test, wrs-test).")
 					  ("output,o", bpo::value(&out_)->required(), "Output prefix for text files.")
 					  ("seed,e", bpo::value(&seed_)->default_value(0), "Random seed used for pertubation.")
 					  ("bootstrap,b", bpo::value(&bootstrapping_runs_)->default_value(0), "Number of bootstrapping runs.")
 					  ("alpha,l", bpo::value(&alpha_)->required()->default_value(0.1), "Alpha level of confidence interval.")
-					  ("adjust,u", bpo::value(&adjustment_method_)->required()->default_value("benjamini-yekutieli"), "Alpha level of confidence interval.")
+					  ("adjust,u", bpo::value(&adjustment_method_)->required()->default_value("benjamini-yekutieli"), "Method for multiple testing correction. (default: benjamini-yekutieli)")
 					  ("json,j", bpo::value(&json_)->default_value(false)->zero_tokens(), "Output file in .json format (default: .tsv).")
-					  ("impact,p", bpo::value(&impact_score_)->required(), "Method that should be used to compute the impact of regulators.")
-					  ("confidence-intervals,v", bpo::value(&confidence_interval_)->required(), "Method that should be used to compute confidence intervals.")
-					  ("max-regulator-per-target,y", bpo::value(&max_regulators_per_target_), "The maximum number of regulators that are allowed to influence a regulator.")
-					  ("fill-blanks,f", bpo::value(&fill_blanks_)->default_value(false)->zero_tokens(), "Should blanks be introduced if a target has a fewer regulators than all other targets.");
+					  ("impact,p", bpo::value(&impact_score_)->default_value("pearson_correlation"), "Method that should be used to compute the impact of regulators. (pearson-correlation, spearman-correlation, kendall-correlation)")
+					  ("normalize-association-scores,k", bpo::value(&normalize_scores_)->default_value(false)->zero_tokens(), "Should the association scores be normalized? (default: false) (only used if impact score is calculated '--impact/--matrix')")
+					  ("confidence-intervals,v", bpo::value(&confidence_interval_), "Method that should be used to compute confidence intervals. (percentile, bca)")
+					  ("max-regulator-per-target,y", bpo::value(&max_regulators_per_target_), "The maximum number of regulators that are allowed to influence a regulator. (optional)")
+					  ("fill-blanks,f", bpo::value(&fill_blanks_)->default_value(false)->zero_tokens(), "Should blanks be introduced if a target has a fewer regulators than all other targets. (optional)")
+					  ("rti-network-dir,z", bpo::value(&network_)->default_value(""), "Output prefix for RTI network. (optional)")
+					  ("create-score-file,i", bpo::value(&output_score_file_)->default_value(""), "Filename for scorefile that should be generated based on the REGGAE results. This is needed to build the RTI network iteratively. (optional)");
 	try {
 		bpo::store(bpo::command_line_parser(argc, argv).options(desc).run(), vm);
 		bpo::notify(vm);
@@ -100,20 +105,36 @@ struct DummyBootstrapper
 	void create_bootstrap_sample() {}
 
 	template <typename RegulatorImpactScore>
-	void perform_bootstrapping_run(std::vector<Regulation>& regulations, bool use_absolute_values,
-	                               RegulatorImpactScore)
+	void perform_bootstrapping_run(RegulationFile<double>, std::vector<Regulation>& regulations,
+								   bool, bool use_absolute_values,
+	                               bool sort_decreasingly, RegulatorImpactScore)
 	{
+		// Sort values decreasingly
 		if(use_absolute_values) {
-			std::sort(regulations.begin(), regulations.end(),
-			          [](const Regulation& a, const Regulation& b) {
-				return std::abs(std::get<2>(a)) > std::abs(std::get<2>(b));
-			});
+			if (sort_decreasingly) {
+				std::sort(regulations.begin(), regulations.end(),
+						[](const Regulation& a, const Regulation& b) {
+					return std::abs(std::get<2>(a)) > std::abs(std::get<2>(b));
+				});
+			} else {
+				std::sort(regulations.begin(), regulations.end(),
+						[](const Regulation& a, const Regulation& b) {
+					return std::abs(std::get<2>(a)) < std::abs(std::get<2>(b));
+				});
+			}
 		} else {
-			std::sort(regulations.begin(), regulations.end(),
-			          [](const Regulation& a, const Regulation& b) {
-				return std::get<2>(a) > std::get<2>(b);
-			});
-		}
+			if (sort_decreasingly) {
+				std::sort(regulations.begin(), regulations.end(),
+						[](const Regulation& a, const Regulation& b) {
+					return std::get<2>(a) > std::get<2>(b);
+				});
+			} else {
+				std::sort(regulations.begin(), regulations.end(),
+						[](const Regulation& a, const Regulation& b) {
+					return std::get<2>(a) < std::get<2>(b);
+				});
+			}
+		}	
 	}
 };
 
@@ -165,6 +186,17 @@ void calculate_bootstrap_parameters(std::vector<RegulatorEffectResult>& results,
 	}
 }
 
+void write_score_file(std::vector<RegulatorEffectResult>& results, const std::string& file) {
+	std::ofstream out;
+    out.open(file);
+	for(auto& r : results) {
+		if(r.corrected_p_value < 0.05) {
+        	out << r.name << "\t" << r.score << std::endl;
+		}
+	}
+	out.close();
+}
+
 int runGeneExpressionAnalysis()
 {
 	std::cout << "INFO: Parsing data matrix" << std::endl;
@@ -195,8 +227,8 @@ int runGeneExpressionAnalysis()
 	RegulationBootstrapper<double> bootstrapper(&matrix, seed_);
 	RegulatorGeneAssociationEnrichmentAnalysis<RegulationBootstrapper<double>,
 	                                           MatrixNameDatabase, double>
-	    analysis(sorted_targets, regulationFile, bootstrapper, name_database,
-	             useAbsoluteValues_, fill_blanks_, bootstrapping_runs_, max_regulators_per_target_);
+	    analysis(sorted_targets, regulationFile, bootstrapper, name_database, normalize_scores_,
+	             useAbsoluteValues_, sort_correlations_decreasingly_, fill_blanks_, bootstrapping_runs_, max_regulators_per_target_);
 	std::vector<RegulatorEffectResult> results = run(analysis);
 
 	std::cout << "INFO: Adjusting p-values" << std::endl;
@@ -207,6 +239,15 @@ int runGeneExpressionAnalysis()
 
 	std::cout << "INFO: Writing results" << std::endl;
 	write(results, out_, json_);
+	if(network_ != "") {
+		RTINetwork<MatrixNameDatabase, double> network(name_database, results, regulationFile);
+		network.build_network();
+		network.save(network_);
+	}
+
+	if(output_score_file_ != "") {
+		write_score_file(results, output_score_file_);
+	}
 
 	return 0;
 }
@@ -230,21 +271,34 @@ int runAssociationAnalysis()
 	                                sorted_targets.end());
 	RegulationFileParser<MapNameDatabase, double> parser(name_database, tset, associations_, 0.0);
 	RegulationFile<double>& regulationFile = parser.getRegulationFile();
+	if(max_regulators_per_target_ == 0){
+		max_regulators_per_target_  = regulationFile.maxNumberOfRegulators();
+	}
 	DummyBootstrapper bootstrapper;
 	RegulatorGeneAssociationEnrichmentAnalysis<DummyBootstrapper,
 	                                           MapNameDatabase, double>
-	    analysis(sorted_targets, regulationFile, bootstrapper, name_database,
-	             useAbsoluteValues_, fill_blanks_, bootstrapping_runs_, max_regulators_per_target_);
+	    analysis(sorted_targets, regulationFile, bootstrapper, name_database, normalize_scores_,
+	             useAbsoluteValues_, sort_correlations_decreasingly_, fill_blanks_, bootstrapping_runs_, max_regulators_per_target_);
 	std::vector<RegulatorEffectResult> results = run(analysis);
 
 	std::cout << "INFO: Adjusting p-values" << std::endl;
 	adjustPValues(results, adjustment_method_);
 	
-	std::cout << "INFO: Calculating confidence intervals" << std::endl;
-	calculate_bootstrap_parameters(results, alpha_, confidence_interval_);
+	//std::cout << "INFO: Calculating confidence intervals" << std::endl;
+	//calculate_bootstrap_parameters(results, alpha_, confidence_interval_);
 
 	std::cout << "INFO: Writing results" << std::endl;
 	write(results, out_, json_);
+	if(network_ != "") {
+		RTINetwork<MapNameDatabase, double> network(name_database, results, regulationFile);
+		network.build_network();
+		network.save(network_);
+	}
+
+	if(output_score_file_ != "") {
+		write_score_file(results, output_score_file_);
+	}
+
 	return 0;
 }
 

@@ -33,6 +33,8 @@
 #include <tuple>
 #include <cmath>
 
+#include "RegulationFile.h"
+
 namespace GeneTrail
 {
 template <typename ValueType> class GT2_EXPORT RegulationBootstrapper
@@ -76,8 +78,11 @@ template <typename ValueType> class GT2_EXPORT RegulationBootstrapper
 	 *sorted absolute or relative
 	 */
 	template <typename RegulatorImpactScore>
-	void perform_bootstrapping_run(std::vector<Regulation>& regulations,
+	void perform_bootstrapping_run(RegulationFile<double>& rfile,
+								   std::vector<Regulation>& regulations,
+								   bool normalize_scores,
 	                               bool use_absolute_values,
+								   bool sort_decreasingly,
 	                               RegulatorImpactScore score)
 	{
 		subset_.assign(bootstrap_sample_.begin(), bootstrap_sample_.end());
@@ -94,10 +99,15 @@ template <typename ValueType> class GT2_EXPORT RegulationBootstrapper
 			    score.compute(regulator_it->begin(), regulator_it->end(),
 			                  target_it->begin(), target_it->end());
 
-			std::get<2>(r) = result;
+			if(normalize_scores) {
+				size_t tmp = rfile.regulator2regulations(regulator_idx).size();
+				std::get<2>(r) = result / tmp;
+			} else {
+				std::get<2>(r) = result;
+			}
 		}
 
-		sort_(regulations, use_absolute_values);
+		sort_(regulations, use_absolute_values, sort_decreasingly);
 	}
 
   private:
@@ -109,19 +119,33 @@ template <typename ValueType> class GT2_EXPORT RegulationBootstrapper
 	 * @param use_absolute_values Flag indicating if correlations should be
 	 *sorted absolute or relative
 	 */
-	void sort_(std::vector<Regulation>& regulations, bool use_absolute_values)
+	void sort_(std::vector<Regulation>& regulations, bool use_absolute_values, bool sort_decreasingly)
 	{
 		// Sort values decreasingly
 		if(use_absolute_values) {
-			std::sort(regulations.begin(), regulations.end(),
-			          [](const Regulation& a, const Regulation& b) {
-				return std::abs(std::get<2>(a)) > std::abs(std::get<2>(b));
-			});
+			if (sort_decreasingly) {
+				std::sort(regulations.begin(), regulations.end(),
+						[](const Regulation& a, const Regulation& b) {
+					return std::abs(std::get<2>(a)) > std::abs(std::get<2>(b));
+				});
+			} else {
+				std::sort(regulations.begin(), regulations.end(),
+						[](const Regulation& a, const Regulation& b) {
+					return std::abs(std::get<2>(a)) < std::abs(std::get<2>(b));
+				});
+			}
 		} else {
-			std::sort(regulations.begin(), regulations.end(),
-			          [](const Regulation& a, const Regulation& b) {
-				return std::get<2>(a) > std::get<2>(b);
-			});
+			if (sort_decreasingly) {
+				std::sort(regulations.begin(), regulations.end(),
+						[](const Regulation& a, const Regulation& b) {
+					return std::get<2>(a) > std::get<2>(b);
+				});
+			} else {
+				std::sort(regulations.begin(), regulations.end(),
+						[](const Regulation& a, const Regulation& b) {
+					return std::get<2>(a) < std::get<2>(b);
+				});
+			}
 		}
 	}
 

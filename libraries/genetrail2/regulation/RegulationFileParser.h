@@ -98,12 +98,14 @@ template <typename NameDatabase, typename ValueType> class GT2_EXPORT Regulation
 		auto regulator_idx = name_database(regulator);
 		auto target_idx = name_database(target);
 
-		if(test_set.find(target_idx) == test_set.end()) {
+		if(regulator_idx == MAX_MATRIX_INDEX ||
+		   target_idx == MAX_MATRIX_INDEX) {
 			return;
 		}
 
-		if(regulator_idx == MAX_MATRIX_INDEX ||
-		   target_idx == MAX_MATRIX_INDEX) {
+		regulation_file_.increaseNumberOfTargets(regulator_idx);
+
+		if(test_set.find(target_idx) == test_set.end()) {
 			return;
 		}
 

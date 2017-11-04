@@ -22,6 +22,7 @@ add_header_to_library(RegulatorAssociationScore.h)
 add_header_to_library(RegulatoryImpactFactors.h)
 add_header_to_library(RegulatorEffectAnalysis.h)
 add_header_to_library(CorrelationSetAnalysis.h)
+add_header_to_library(RTINetwork.h)
 
 # Sources
 add_to_library(RegulatorEffectResultAggregator)
