@@ -44,14 +44,17 @@ class WRSTest
 
 	RegulatorEffectResult compute_p_value(RegulatorEffectResult& result, size_t )
 	{
-		result.p_value = HTest::upperTailedPValue(test_, result.score);
+		big_float p_value;
+		p_value = HTest::upperTailedPValue(test_, result.score);
+		result.p_value = p_value.convert_to<double>();
 		return result;
 	}
 	
 	template <typename Iterator>
 	double compute_score(size_t n, Iterator begin, Iterator end)
 	{
-		return test_.computeZScore(n, begin, end);
+		big_float z_score = test_.computeZScore(n, begin, end);
+		return z_score.convert_to<double>();
 	}
 	
 	double normalize_score(size_t, size_t, double score)
@@ -61,7 +64,7 @@ class WRSTest
 	}
 	
   private:
-	WilcoxonRankSumTest<double> test_;
+	WilcoxonRankSumTest<big_float> test_;
 };
 
 class KSTest
