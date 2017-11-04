@@ -24,4 +24,7 @@
 #define GT2_LOCAL           __attribute__((visibility ("hidden")))
 #define GT2_EXTERN_VARIABLE extern __attribute__((visibility ("default")))
 
+// This makro is needed to avoid 'unused parameter' warnings when using makros
+#define _unused(x) ((void)(x))
+
 #endif //GENETRAIL2_CONFIG_MACROS_H

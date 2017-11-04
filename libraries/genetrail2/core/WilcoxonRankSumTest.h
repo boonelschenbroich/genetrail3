@@ -27,6 +27,7 @@
 #include "multiprecision.h"
 
 #include <boost/math/distributions/normal.hpp>
+#include <boost/numeric/conversion/cast.hpp>
 
 #include <iostream>
 
@@ -59,9 +60,8 @@ template <typename ValueType> class GT2_EXPORT WilcoxonRankSumTest
 	value_type computeZScore_(value_type rank_sum, value_type size1,
 	                          value_type size2)
 	{
-		value_type mu = (size1 * (size1 + size2 + 1) / ((value_type)2.0));
-		value_type sd = std::sqrt((size1 * size2 * (size1 + size2 + 1)) /
-		                          ((value_type)12.0));
+		value_type mu = (size1 * (size1 + size2 + 1) / boost::numeric_cast<value_type>(2.0));
+		value_type sd = sqrt((size1 * size2 * (size1 + size2 + 1)) / boost::numeric_cast<value_type>(12.0));
 		enriched_ = rank_sum > mu;
 		return (rank_sum - mu) / sd;
 	}

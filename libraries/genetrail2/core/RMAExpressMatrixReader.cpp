@@ -26,7 +26,7 @@
 
 namespace GeneTrail
 {
-	DenseMatrix RMAExpressMatrixReader::read(std::istream& input, unsigned int opts) const
+	DenseMatrix RMAExpressMatrixReader::read(std::istream& input, unsigned int) const
 	{
 		//TODO: interpret the passed options
 

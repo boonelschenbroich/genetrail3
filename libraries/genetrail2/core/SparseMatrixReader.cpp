@@ -114,7 +114,7 @@ namespace GeneTrail
 		result.setColNames(names);
 	}
 
-	void SparseMatrixReader::readNames_(std::istream& input, SparseMatrix& result, uint64_t chunk_size, std::vector<std::string>& names) const
+	void SparseMatrixReader::readNames_(std::istream& input, SparseMatrix&, uint64_t chunk_size, std::vector<std::string>& names) const
 	{
 		unsigned int i = 0;
 
@@ -183,7 +183,7 @@ namespace GeneTrail
 		}
 	}
 
-	SparseMatrix SparseMatrixReader::binaryRead_(std::istream& input, unsigned int opts) const
+	SparseMatrix SparseMatrixReader::binaryRead_(std::istream& input, unsigned int) const
 	{
 		uint8_t chunk_type = 0;
 		uint64_t chunk_size = 0;
@@ -238,7 +238,7 @@ namespace GeneTrail
 		return result;
 	}
 
-	SparseMatrix SparseMatrixReader::textRead_(std::istream& input, unsigned int opts) const
+	SparseMatrix SparseMatrixReader::textRead_(std::istream& input, unsigned int) const
 	{
 		std::string line;
 		// Get the first interesting line

@@ -1,7 +1,7 @@
 /*
  * GeneTrail2 - An efficient library for interpreting genetic data
  * Copyright (C) 2014-2015 Daniel Stöckel <dstoeckel@bioinf.uni-sb.de>
- *               2014 Tim Kehl <tkehl@bioinf.uni-sb.de>
+ *               2014-2017 Tim Kehl <tkehl@bioinf.uni-sb.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Lesser GNU General Public License as
@@ -55,6 +55,69 @@ namespace GeneTrail
 			private:
 			 value_type score_;
 		};
+
+		/*class CorrelationTTest{
+			public:
+			using value_type = double;
+			
+			CorrelationTTest() = default;
+			
+			CorrelationTTest(double r, size_t n)
+			: r_(r),
+			  n_(n),
+			  score_(statistic::correlation_to_t(r, n))
+			{}
+			
+			boost::math::students_t distribution() {
+				boost::math::students_t dist(n_);
+				return dist;
+			}
+			
+			std::pair<value_type, value_type>
+			confidenceInterval(const value_type& alpha)
+			{
+				value_type conf = boost::math::quantile(
+					boost::math::complement(distribution(), (1 - alpha) / 2.0));
+				return std::make_pair(score_ / conf, score_ * conf);
+			}
+			
+			private:
+			 value_type r_;
+			 value_type n_;
+			 value_type score_;
+		};
+
+		class CorrelationZTest{
+			public:
+			using value_type = double;
+			
+			CorrelationZTest() = default;
+			
+			CorrelationZTest(double r, size_t n)
+			: r_(r),
+			  n_(n),
+			  score_(statistic::fisher_z_transform(r))
+			{}
+			
+			boost::math::normal distribution()
+			{
+				boost::math::normal dist(0, statistic::fisher_z_transform(n_));
+				return dist;
+			}
+			
+			std::pair<value_type, value_type>
+			confidenceInterval(const value_type& alpha)
+			{
+				value_type conf = boost::math::quantile(
+					boost::math::complement(distribution(), (1 - alpha) / 2.0));
+				return std::make_pair(score_ / conf, score_ * conf);
+			}
+			
+			private:
+			 value_type r_;
+			 value_type n_;
+			 value_type score_;
+		};*/
 		
 		template <typename Test, typename InputIterator1,
 		          typename InputIterator2>

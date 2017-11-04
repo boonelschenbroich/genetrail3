@@ -167,7 +167,7 @@ namespace GeneTrail
 		}
 	}
 
-	DenseMatrix DenseMatrixReader::binaryRead_(std::istream& input, unsigned int opts) const
+	DenseMatrix DenseMatrixReader::binaryRead_(std::istream& input, unsigned int) const
 	{
 		uint8_t chunk_type = 0;
 		uint64_t chunk_size = 0;

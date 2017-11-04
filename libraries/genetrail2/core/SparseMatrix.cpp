@@ -73,22 +73,22 @@ namespace GeneTrail
 		return m_.coeff(i,j);
 	}
 
-	void SparseMatrix::removeCols(const std::vector< Matrix::index_type >& indices)
+	void SparseMatrix::removeCols(const std::vector< Matrix::index_type >&)
 	{
 		throw NotImplemented(__FILE__, __LINE__, "SparseMatrix::removeCols(const std::vector<Matrix::index_type>&)");
 	}
 
-	void SparseMatrix::removeRows(const std::vector< Matrix::index_type >& indices)
+	void SparseMatrix::removeRows(const std::vector< Matrix::index_type >&)
 	{
 		throw NotImplemented(__FILE__, __LINE__, "SparseMatrix::removeRows(const std::vector<Matrix::index_type>&)");
 	}
 
-	void SparseMatrix::shuffleCols(const std::vector< Matrix::index_type >& perm)
+	void SparseMatrix::shuffleCols(const std::vector< Matrix::index_type >&)
 	{
 		throw NotImplemented(__FILE__, __LINE__, "SparseMatrix::shuffleCols(const std::vector<Matrix::index_type>&)");
 	}
 
-	void SparseMatrix::shuffleRows(const std::vector< Matrix::index_type >& perm)
+	void SparseMatrix::shuffleRows(const std::vector< Matrix::index_type >&)
 	{
 		throw NotImplemented(__FILE__, __LINE__, "SparseMatrix::shuffleRows(const std::vector<Matrix::index_type>&)");
 	}

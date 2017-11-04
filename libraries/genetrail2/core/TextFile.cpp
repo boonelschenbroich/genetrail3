@@ -67,9 +67,9 @@ namespace GeneTrail
 		} while(isValid_() && next_line_ == "");
 	}
 
-	bool TextFile::write(const std::vector<std::string>& r)
+	bool TextFile::write(const std::vector<std::string>&)
 	{
-		//TODO
+		throw NotImplemented(__FILE__, __LINE__, "TextFile::write(const std::vector<std::string>&)");
 		return false;
 	}
 }

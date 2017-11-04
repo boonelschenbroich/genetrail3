@@ -30,6 +30,8 @@
 
 #include <boost/math/special_functions/atanh.hpp>
 
+#include "macros.h"
+
 namespace GeneTrail
 {
 
@@ -489,6 +491,7 @@ value_type cov(InputIterator first_begin, InputIterator first_end,
 {
 	assert(std::distance(first_begin, first_end) ==
 	       std::distance(second_begin, second_end));
+	_unused(second_end);
 	value_type cov = 0.0;
 
 	const size_t n = std::distance(first_begin, first_end);
