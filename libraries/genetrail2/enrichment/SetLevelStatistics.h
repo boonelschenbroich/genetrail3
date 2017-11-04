@@ -69,6 +69,12 @@ namespace GeneTrail
 		};
 	}
 
+	enum NullHypothesis {
+		TWO_SIDED = 1,
+		UPPER_TAILED = 2,
+		LOWER_TAILED = 3
+	};
+
 	template <typename Mode = StatTags::Indirect,
 	          typename Indices = StatTags::DoesNotSupportIndices,
 	          typename Input = StatTags::Scores>
@@ -348,8 +354,10 @@ namespace GeneTrail
 	                                      StatTags::Identifiers>
 	{
 		public:
-		Ora(const Category& reference_set, const Category& test_set)
-		    : test_(reference_set, test_set){};
+		Ora(const Category& reference_set, const Category& test_set, NullHypothesis hypothesis)
+		    : test_(reference_set, test_set),
+			  hypothesis_(hypothesis)
+			{};
 
 		bool canUseCategory(const Category&, size_t) const { return true; }
 
@@ -362,11 +370,21 @@ namespace GeneTrail
 
 		double computeRowWisePValue(EnrichmentResult* result) const
 		{
-			return test_.computePValue(*result->category);
+			switch(hypothesis_) {
+				case TWO_SIDED:
+					return test_.computePValue(*result->category);
+				case UPPER_TAILED:
+					return test_.computeUpperTailedPValue(*result->category);
+				case LOWER_TAILED:
+					return test_.computeLowerTailedPValue(*result->category);
+				default:
+					return test_.computePValue(*result->category);
+			}
 		}
 
 		private:
 		OverRepresentationAnalysis test_;
+		NullHypothesis hypothesis_;
 	};
 	
 	class WilcoxonRSTest : public SetLevelStatistics<StatTags::Direct, StatTags::DoesNotSupportIndices>
