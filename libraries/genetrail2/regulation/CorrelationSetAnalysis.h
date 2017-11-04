@@ -147,7 +147,7 @@ class GT2_EXPORT CorrelationSetAnalysis
 		results_[regulator].name = name_database_(regulator);
 		results_[regulator].hits = size;
 		if(size == 1){
-			results_[regulator].score = 1.0;
+			results_[regulator].score = 0.0;
 		} else {
 			results_[regulator].score = (2.0 / (n*(n-1.0))) * sum;
 		}
