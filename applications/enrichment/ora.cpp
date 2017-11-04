@@ -6,6 +6,7 @@
 
 #include <genetrail2/enrichment/common.h>
 #include <genetrail2/enrichment/EnrichmentAlgorithm.h>
+#include <genetrail2/enrichment/SetLevelStatistics.h>
 #include <genetrail2/enrichment/Parameters.h>
 
 #include <boost/program_options.hpp>
@@ -14,7 +15,7 @@
 using namespace GeneTrail;
 namespace bpo = boost::program_options;
 
-std::string reference;
+std::string reference, hypothesis;
 
 bool parseArguments(int argc, char* argv[], Params& p)
 {
@@ -24,7 +25,8 @@ bool parseArguments(int argc, char* argv[], Params& p)
 	addCommonCLIArgs(desc, p);
 	desc.add_options()
 		("identifier, d", bpo::value(&p.identifier_), "A file containing identifier line by line.")
-		("reference, r", bpo::value<std::string>(&reference)->required(), "A file containing identifier line by line.");
+		("reference, r", bpo::value<std::string>(&reference)->required(), "A file containing identifier line by line.")
+		("hypothesis, h", bpo::value<std::string>(&hypothesis)->default_value("two-sided"), "Null hypothesis that should be used.");
 
 	try
 	{
@@ -69,7 +71,16 @@ int main(int argc, char* argv[])
 	}
 
 	auto db = std::make_shared<EntityDatabase>();
-	auto enrichmentAlgorithm = createEnrichmentAlgorithm<Ora>(p.pValueMode, reference_set.toCategory(db, "reference"), test_set.toCategory(db, "test"));
+	NullHypothesis hypothesis_;
+	if (hypothesis == "upper-tailed") {
+		hypothesis_ = NullHypothesis::UPPER_TAILED;
+	} else if (hypothesis == "lower-tailed") {
+		hypothesis_ = NullHypothesis::LOWER_TAILED;
+	} else {
+		hypothesis_ = NullHypothesis::TWO_SIDED;
+	}
+
+	auto enrichmentAlgorithm = createEnrichmentAlgorithm<Ora>(p.pValueMode, reference_set.toCategory(db, "reference"), test_set.toCategory(db, "test"), hypothesis_);
 
 	Scores scores(test_set, db);
 	run(scores, cat_list, enrichmentAlgorithm, p, true);
