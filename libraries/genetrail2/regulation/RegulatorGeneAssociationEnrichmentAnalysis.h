@@ -29,6 +29,7 @@
 #include <utility>
 #include <vector>
 #include <fstream>
+#include <sstream>
 #include <stdint.h>
 
 #include <boost/numeric/conversion/cast.hpp>
@@ -56,13 +57,16 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 	                            RegulationFile<value_type>& regulationFile,
 								Bootstrapper bootstraper,
                                 NameDatabase name_database,
-	                            bool use_absolute_value, bool fill_blanks,
+								bool normalize_scores,
+	                            bool use_absolute_value, bool sort_decreasingly, bool fill_blanks,
 								size_t runs, size_t max_regulators_per_target)
 	    : sorted_targets_(sorted_targets),
 	      regulationFile_(regulationFile),
 		  bootstrapper_(bootstraper),
 	      name_database_(name_database),
+		  normalize_scores_(normalize_scores),
 	      use_absolute_value_(use_absolute_value),
+		  sort_decreasingly_(sort_decreasingly),
 		  fill_blanks_(fill_blanks),
 	      runs_(runs),
 		  max_regulators_per_target_(max_regulators_per_target)
@@ -71,7 +75,6 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 		biggest_regulator_idx = 0;
 	}
 
-	
 	/**
 	 * Performs the entire RegulatorGeneAssociationEnrichmentAnalysis.
 	 *
@@ -133,8 +136,7 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 			size_of_tf_list += (fill_blanks_) ? max_number_of_regulators : number_of_regulators;
 
 			// Perform single bootstrapping run
-			bootstrapper_.perform_bootstrapping_run(regulations,
-			                                        use_absolute_value_, impactScore);
+			bootstrapper_.perform_bootstrapping_run(regulationFile_, regulations, normalize_scores_, use_absolute_value_, sort_decreasingly_, impactScore);
 		}
 
 		tf_list_tmp.reserve(size_of_tf_list);
@@ -227,12 +229,9 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 			auto& regulations = regulationFile_.target2regulations(targetname);
 			for(size_t i = 0; i < std::min(max_regulators_per_target_, regulations.size()); ++i){
 				auto& reg = regulations[i];
-				if(std::get<2>(reg) <= 1.0 && std::get<2>(reg) >= -1.0 &&
-				   std::get<2>(reg) != 0.0) {
-					if(std::get<0>(reg) < biggest_regulator_idx) {
-						regulator2correlations_[std::get<0>(reg)].emplace_back(
-					    	std::get<2>(reg));
-					}
+				if(std::get<0>(reg) < biggest_regulator_idx) {
+					regulator2correlations_[std::get<0>(reg)].emplace_back(
+				    	std::get<2>(reg));
 				}
 			}
 		}
@@ -272,7 +271,9 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 	Bootstrapper bootstrapper_;
 	NameDatabase name_database_;
 
+	bool normalize_scores_;
 	bool use_absolute_value_;
+	bool sort_decreasingly_;
 	bool fill_blanks_;
 	size_t runs_;
 	size_t max_regulators_per_target_;
