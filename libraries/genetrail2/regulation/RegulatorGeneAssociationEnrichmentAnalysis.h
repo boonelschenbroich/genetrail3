@@ -31,6 +31,7 @@
 #include <fstream>
 #include <sstream>
 #include <stdint.h>
+#include <cmath>
 
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/math/distributions.hpp>
@@ -243,6 +244,12 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 			results_[i].abs_mean_correlation =
 			    statistic::abs_mean<value_type>(regulator2correlations_[i].begin(),
 			                                regulator2correlations_[i].end());
+			if(!std::isfinite(results_[i].mean_correlation)){
+				results_[i].mean_correlation = 0.0;
+			}
+			if(!std::isfinite(results_[i].abs_mean_correlation)){
+				results_[i].abs_mean_correlation = 0.0;
+			}
 		}
 	}
 
