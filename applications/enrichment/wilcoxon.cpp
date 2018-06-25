@@ -62,6 +62,7 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
+	auto db = std::make_shared<EntityDatabase>();
 	GeneSet test_set;
 	CategoryList cat_list;
 
@@ -69,7 +70,7 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	Scores scores(test_set, EntityDatabase::global);
+	Scores scores(test_set, db);
 
 	if(p.identifier() == "") {
 		prepareScores(scores);

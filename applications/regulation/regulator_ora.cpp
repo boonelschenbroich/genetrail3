@@ -30,8 +30,6 @@ namespace bpo = boost::program_options;
 
 std::string genelist_="", scorelist_="", regulations_, output_, method_, correction_method_;
 
-EntityDatabase db;
-
 bool parseArguments(int argc, char* argv[])
 {
 	bpo::variables_map vm;
@@ -63,21 +61,21 @@ bool parseArguments(int argc, char* argv[])
 	return true;
 }
 
-OverRepresentationAnalysis getORA(const Category& reference, const GeneSet& test_set){
+OverRepresentationAnalysis getORA(const Category& reference, const GeneSet& test_set, const std::shared_ptr<EntityDatabase>& db){
 	if(method_ == "hyper"){
-		return OverRepresentationAnalysis(reference, test_set.toCategory("test", &db), true);
+		return OverRepresentationAnalysis(reference, test_set.toCategory(db, "test"), true);
 	} else if(method_ == "fisher"){
-		return OverRepresentationAnalysis(reference, test_set.toCategory("test", &db), false);	
+		return OverRepresentationAnalysis(reference, test_set.toCategory(db, "test"), false);	
 	}
-	return OverRepresentationAnalysis(reference, test_set.toCategory("test", &db));
+	return OverRepresentationAnalysis(reference, test_set.toCategory(db, "test"));
 }
 
 std::vector<RegulatorEffectResult>
 runORA(const Category& reference, const GeneSet& test_set,
-       const std::map<std::string, Category>& categories)
+       const std::map<std::string, Category>& categories, const std::shared_ptr<EntityDatabase>& db)
 {
 	std::vector<RegulatorEffectResult> results;
-	OverRepresentationAnalysis ora = getORA(reference, test_set);
+	OverRepresentationAnalysis ora = getORA(reference, test_set, db);
 	for(auto it = categories.begin(); it != categories.end(); ++it) {
 		std::cout << "INFO: Processing: " << it->first << std::endl;
 		if(ora.numberOfHits(it->second) < 1) {
@@ -96,11 +94,11 @@ runORA(const Category& reference, const GeneSet& test_set,
 
 std::vector<RegulatorEffectResult>
 runBinomialTest(const Category& reference, const GeneSet& test_set,
-                const std::map<std::string, Category>& categories)
+                const std::map<std::string, Category>& categories, const std::shared_ptr<EntityDatabase>& db)
 {
 	std::vector<RegulatorEffectResult> results;
 	BinomialTest<big_float> b;
-	Category test = test_set.toCategory("test", &db);
+	Category test = test_set.toCategory(db, "test");
 	for(auto it = categories.begin(); it != categories.end(); ++it) {
 		std::cout << "INFO: Processing: " << it->first << std::endl;
 		if(b.numberOfHits(test, it->second) < 1) {
@@ -125,7 +123,8 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	RegulatorCategoryFileReader parser(regulations_, &db);
+	auto db = EntityDatabase::global;
+	RegulatorCategoryFileReader parser(regulations_, db);
 	parser.parse();
 
 	std::cout << "INFO: Parsing regulations" << std::endl;
@@ -142,9 +141,9 @@ int main(int argc, char* argv[])
 	}
 	std::vector<RegulatorEffectResult> results;
 	if(method_ == "ora" || method_ == "hyper" || method_ == "fisher") {
-		results = runORA(reference, test_set, categories);
+		results = runORA(reference, test_set, categories, db);
 	} else if(method_ == "binom") {
-		results = runBinomialTest(reference, test_set, categories);
+		results = runBinomialTest(reference, test_set, categories, db);
 	}
 
 	std::sort(results.begin(), results.end(), [](const auto& a, const auto& b) {

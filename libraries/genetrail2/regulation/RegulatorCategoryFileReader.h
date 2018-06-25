@@ -40,8 +40,8 @@ namespace GeneTrail
 class GT2_EXPORT RegulatorCategoryFileReader
 {
   public:
-	RegulatorCategoryFileReader(const std::string& file, EntityDatabase* db)
-	    : file_(file), db_(db), categories_(), reference_(db_, "reference")
+	RegulatorCategoryFileReader(const std::string& file, const std::shared_ptr<EntityDatabase>& db)
+	    : file_(file), db_(db), categories_(), reference_(db_.get(), "reference")
 	{
 	}
 
@@ -60,7 +60,7 @@ class GT2_EXPORT RegulatorCategoryFileReader
 	void read_();
 
 	std::string file_;
-	EntityDatabase* db_;
+	const std::shared_ptr<EntityDatabase>& db_;
 	std::map<std::string, Category> categories_;
 	Category reference_;
 };

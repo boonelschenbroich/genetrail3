@@ -18,7 +18,7 @@ namespace GeneTrail
 				boost::trim(sline[1]);
 				auto it = categories_.find(sline[0]);
 				if(it == categories_.end()) {
-					it = categories_.emplace(sline[0], Category(db_)).first;
+					it = categories_.emplace(sline[0], Category(db_.get())).first;
 					it->second.setName(sline[0]);
 				}
 				it->second.insert(sline[1]);
