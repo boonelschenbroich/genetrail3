@@ -359,7 +359,10 @@ namespace GeneTrail
 			  hypothesis_(hypothesis)
 			{};
 
-		bool canUseCategory(const Category&, size_t) const { return true; }
+		bool canUseCategory(const Category&, size_t) const { 
+			
+			return true; 
+		}
 
 		std::tuple<double, double> computeScore(const Category& c) const
 		{
@@ -406,7 +409,9 @@ namespace GeneTrail
 			ids_.assign(scores.indices().begin(), scores.indices().end());
 		}
 
-		bool canUseCategory(const Category&, size_t) const { return true; }
+		bool canUseCategory(const Category&, size_t hits) const { 
+			return hits > 0; 
+		}
 
 		std::tuple<double, double> computeScore(const Category& category)
 		{

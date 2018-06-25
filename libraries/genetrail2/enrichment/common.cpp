@@ -1,7 +1,7 @@
 /*
  * GeneTrail2 - An efficient library for interpreting genetic data
  * Copyright (C) 2015 Daniel Stöckel <dstoeckel@bioinf.uni-sb.de>
- *               2014 Tim Kehl <tkehl@bioinf.uni-sb.de>
+ *               2014-2018 Tim Kehl <tkehl@bioinf.uni-sb.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Lesser GNU General Public License as
@@ -100,6 +100,25 @@ static PValueList resultVector(const AllResults& results)
 	}
 	return result;
 }
+
+static std::tuple<bool, size_t, std::string>
+processCategory(const Category& c, const Scores& test_set, const size_t min, const size_t max)
+{
+	Scores subset = test_set.subset(c);
+	subset.sortByName();
+
+	std::string entries;
+	for(const auto& entry : subset.names()) {
+		entries += entry + ',';
+	}
+
+	if(!entries.empty()) {
+		entries.resize(entries.size() - 1);
+	}
+
+	return std::make_tuple(min <= c.size() && c.size() <= max, subset.size(), std::move(entries));
+}
+
 
 static std::tuple<bool, size_t, std::string>
 processCategory(const Category& c, const Scores& test_set, const Params& p)
