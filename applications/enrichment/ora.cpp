@@ -80,6 +80,7 @@ int main(int argc, char* argv[])
 		hypothesis_ = NullHypothesis::TWO_SIDED;
 	}
 
+	auto db = std::make_shared<EntityDatabase>();
 	auto enrichmentAlgorithm = createEnrichmentAlgorithm<Ora>(p.pValueMode, reference_set.toCategory(db, "reference"), test_set.toCategory(db, "test"), hypothesis_);
 
 	Scores scores(test_set, db);
