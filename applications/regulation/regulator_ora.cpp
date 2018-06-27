@@ -123,7 +123,7 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	auto db = EntityDatabase::global;
+	auto db = std::make_shared<EntityDatabase>();
 	RegulatorCategoryFileReader parser(regulations_, db);
 	parser.parse();
 
