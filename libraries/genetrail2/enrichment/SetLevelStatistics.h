@@ -548,8 +548,8 @@ namespace GeneTrail
 	    : public SetLevelStatistics<StatTags::Indirect, StatTags::SupportsIndices>
 	{
 		public:
-		WeightedKuiperKolmogorovSmirnov(const Scores& scores, Order order)
-		    : order_(order), test_(scores, order)
+		WeightedKuiperKolmogorovSmirnov(const Scores& scores, Order order, bool keepOrder)
+		    : order_(order), test_(scores, order, keepOrder)
 		{
 		}
 
