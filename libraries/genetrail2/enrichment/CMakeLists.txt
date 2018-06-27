@@ -8,6 +8,9 @@ SET(DIR ${PROJECT_SOURCE_DIR})
 SET(LIBNAME "ENRICHMENT")
 
 add_header_to_library(
+	ContingencyEnrichmentResult.h
+	ContingencyMatrixParser.h
+	ContingencyORA.h
 	EnrichmentResult.h
 	PermutationTest.h
 )

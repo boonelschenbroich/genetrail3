@@ -26,12 +26,13 @@ add_enrichment(ora)
 add_enrichment(htests)
 add_enrichment(wilcoxon)
 add_enrichment(enrichment enrichment.cpp)
+add_enrichment(contingency_ora)
 
 ####################################################################################################
 # Build executable
 ####################################################################################################
 
-install(TARGETS hotelling_t_test gsea ora htests enrichment weighted-gsea
+install(TARGETS hotelling_t_test gsea ora htests enrichment weighted-gsea contingency_ora
 	RUNTIME DESTINATION bin
 	LIBRARY DESTINATION lib
 	ARCHIVE DESTINATION lib
