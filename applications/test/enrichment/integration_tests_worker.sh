@@ -30,7 +30,6 @@ function runMethod {
 	local ID="${1}_${2}"
 
 	echo -n "Running ${ID}... "
-
 	"${BINARY_PATH}/$1" $3 --seed "${RANDOM_SEED}" --categories "${GENERATED_INPUT_DIR}/categories.txt" -o "${OUTPUT}" "${@:4}" > /dev/null
 
 	if [[ ! -f "${OUTPUT}/KEGG.txt" ]]; then
@@ -53,6 +52,13 @@ function runMethod {
 
 	if [[ "${DIFF}" != '' ]]; then
 		echo "[1;31mError[0m"
+		echo ""
+		echo "============================================================"
+		echo "Please type the following commands to check the differences:"
+		echo "    > ${BINARY_PATH}/$1 $3 --seed ${RANDOM_SEED} --categories ${GENERATED_INPUT_DIR}/categories.txt -o  ${OUTPUT} ${@:4}"
+		echo "    > vimdiff ${REFERENCE} ${OUTPUT}${ID}.txt"
+		echo "============================================================"
+		echo ""
 		result=1
 	else
 		echo "[0;32mPassed[0m"
