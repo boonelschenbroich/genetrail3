@@ -30,6 +30,7 @@
 #include <genetrail2/core/WeightedGeneSetEnrichmentAnalysis.h>
 #include <genetrail2/core/OverRepresentationAnalysis.h>
 #include <genetrail2/core/OneSampleTTest.h>
+#include <genetrail2/core/IndependentTTest.h>
 #include <genetrail2/core/WilcoxonRankSumTest.h>
 #include <genetrail2/core/misc_algorithms.h>
 
@@ -195,7 +196,7 @@ namespace GeneTrail
 
 		bool canUseCategory(const Category&, size_t hits) const
 		{
-			return hits >= 1;
+			return hits > 1;
 		}
 
 		double computeRowWisePValue(EnrichmentResult* result)
@@ -491,9 +492,6 @@ namespace GeneTrail
 				                               result->score)
 				    .convert_to<double>();
 			}
-
-			// This is needed to compute the normalized score
-			result->score = test_.computeScore(ids_.size(), intersection_size, result->score).convert_to<double>();
 						
 			return p_value;
 		}
