@@ -1,7 +1,7 @@
 /*
  * GeneTrail2 - An efficient library for interpreting genetic data
  * Copyright (C) 2015 Daniel Stöckel <dstoeckel@bioinf.uni-sb.de>
- *               2014-2018 Tim Kehl <tkehl@bioinf.uni-sb.de>
+ *               2014 Tim Kehl <tkehl@bioinf.uni-sb.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Lesser GNU General Public License as
@@ -102,25 +102,6 @@ static PValueList resultVector(const AllResults& results)
 }
 
 static std::tuple<bool, size_t, std::string>
-processCategory(const Category& c, const Scores& test_set, const size_t min, const size_t max)
-{
-	Scores subset = test_set.subset(c);
-	subset.sortByName();
-
-	std::string entries;
-	for(const auto& entry : subset.names()) {
-		entries += entry + ',';
-	}
-
-	if(!entries.empty()) {
-		entries.resize(entries.size() - 1);
-	}
-
-	return std::make_tuple(min <= c.size() && c.size() <= max, subset.size(), std::move(entries));
-}
-
-
-static std::tuple<bool, size_t, std::string>
 processCategory(const Category& c, const Scores& test_set, const Params& p)
 {
 	Scores subset = test_set.subset(c);
@@ -135,7 +116,7 @@ processCategory(const Category& c, const Scores& test_set, const Params& p)
 		entries.resize(entries.size() - 1);
 	}
 
-	return std::make_tuple(p.minimum <= c.size() && c.size() <= p.maximum, subset.size(), std::move(entries));
+	return std::make_tuple(p.minimum <= subset.size() && subset.size() <= p.maximum, subset.size(), std::move(entries));
 }
 
 static void writeFiles(const std::string& output_dir, const AllResults& all_results)
@@ -269,14 +250,6 @@ static void adjustSeparately(AllResults& all_results, MultipleTestingCorrection 
 }
 
 static void computeRowWisePValues(const EnrichmentAlgorithmPtr& algorithm,
-=======
-		results = pvalue::adjustPValues(results, correction);
->>>>>>> [core] Make pvalue adjustment methods more flexible.
-		updatePValues(results_it.second, results);
-	}
-}
-
-static void computeRowWisePValues(const EnrichmentAlgorithmPtr& algorithm,
                            EnrichmentResults& results, const Scores& scores, const Params& p)
 {
 	using Test = RowPermutationTest<double>;
@@ -400,21 +373,34 @@ static void computePValues(EnrichmentAlgorithmPtr& algorithm,
 		case PValueMode::RowWise:
 			computeRowWisePValues(algorithm, results, scores, p);
 			break;
-		case PValueMode::ColumnWise:
-			computeColumnWisePValues(algorithm, results, scores, p, scores.db().get());
-			break;
-		case PValueMode::Restandardize:
-			computeRestandardizationPValues(algorithm);
-			break;
-	}
+                case PValueMode::ColumnWise:
+                        computeColumnWisePValues(algorithm, results, scores, p, scores.db().get());
+                        break;
+                case PValueMode::Restandardize:
+                        computeRestandardizationPValues(algorithm);
+                        break;
+        }
 }
 
 void run(Scores& test_set, CategoryList& cat_list,
          EnrichmentAlgorithmPtr& algorithm, const Params& p, bool computePValue)
 {
-	test_set.sortByIndex();
+        test_set.sortByIndex();
 
-	AllResults name_to_cat_results(compute(test_set, cat_list, algorithm, p));
-	if(computePValue && !algorithm->pValuesComputed()) {
-		computePValues(algorithm, name_to_cat_results, test_set, p);
-	}
+        AllResults name_to_cat_results(compute(test_set, cat_list, algorithm, p));
+        if(computePValue && !algorithm->pValuesComputed()) {
+                computePValues(algorithm, name_to_cat_results, test_set, p);
+        }
+
+        if(p.adjustment && boost::get(p.adjustment) != MultipleTestingCorrection::GSEA) {
+                // Checks how they should be adjusted
+                if(p.adjustSeparately) {
+                        adjustSeparately(name_to_cat_results, p.adjustment.get());
+                } else {
+                        adjustCombined(name_to_cat_results, p.adjustment.get());
+                }
+        }
+
+        writeFiles(p.out(), name_to_cat_results);
+}
+
