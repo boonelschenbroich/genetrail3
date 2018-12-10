@@ -1,0 +1,174 @@
+#!/bin/bash
+
+help() {
+    ./ora -h
+}
+export -f help
+
+# Check if command line arguments are provided
+if [ $# -eq 0 ];then
+    help
+    exit -1
+fi
+
+COMMAND=""
+THREADS=12
+export SKIP_INPUT_FILES=true
+
+# Parse commmand line arguments
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+key="$1"
+case $key in
+    -t|--significance)
+    export COMMAND=${COMMAND}" --significance $2"
+    shift
+    shift
+    ;;
+    -c|--categories)
+    export CATEGORY=" --category "
+    export CATEGORY_NAME=" --category_name "
+    export CATEGORIES="$2" 
+    #export COMMAND=${COMMAND}" --categories $2"
+    shift
+    shift
+    ;;
+    -s|--scores)
+    export SKIP_INPUT_FILES=true
+    export INPUT=" --scores "
+    export FILES="$2"
+    #export COMMAND=${COMMAND}" --scores $2"
+    shift
+    shift
+    ;;
+    --score_files)
+    export SKIP_INPUT_FILES=false
+    export INPUT=" --scores "
+    export FILES="$2"
+    shift
+    shift
+    ;;
+    -n|--minimum)
+    export COMMAND=${COMMAND}" --minimum $2"
+    shift
+    shift
+    ;;
+    -x|--maximum)
+    export COMMAND=${COMMAND}" --maximum $2"
+    shift
+    shift
+    ;;
+    -o|--output)
+    export COMMAND=${COMMAND}" --output $2"
+    shift
+    shift
+    ;;
+    -a|--adjustment)
+    export COMMAND=${COMMAND}" --adjustment $2"
+    shift
+    shift
+    ;;
+    -u|--adjust_separately)
+    export COMMAND=${COMMAND}" --adjust_separately $2"
+    shift
+    ;;
+    -l|--pvalue_strategy)
+    export COMMAND=${COMMAND}" --pvalue_strategy $2"
+    shift
+    shift
+    ;;
+    -p|--permutations)
+    export COMMAND=${COMMAND}" --permutations $2"
+    shift
+    shift
+    ;;
+    -d|--data_matrix_path)
+    export COMMAND=${COMMAND}" --data_matrix_path $2"
+    shift
+    shift
+    ;;
+    -g|--groups)
+    export COMMAND=${COMMAND}" --groups $2"
+    shift
+    shift
+    ;;
+    -r|--scoring_method)
+    export COMMAND=${COMMAND}" --scoring_method $2"
+    shift
+    shift
+    ;;
+    --identifier_lists)
+    export SKIP_INPUT_FILES=false
+    export INPUT=" --identifier "
+    export FILES="$2"
+    #export COMMAND=${COMMAND}" --identifier $2"
+    shift
+    shift
+    ;;
+    --identifier)
+    export SKIP_INPUT_FILES=true
+    export INPUT=" --identifier "
+    export FILES="$2"
+    #export COMMAND=${COMMAND}" --identifier $2"
+    shift
+    shift
+    ;;
+    --reference)
+    export COMMAND=${COMMAND}" --reference $2"
+    shift
+    shift
+    ;;
+    --hypothesis)
+    export COMMAND=${COMMAND}" --hypothesis $2"
+    shift
+    shift
+    ;;
+    -e|--seed)
+    export COMMAND=${COMMAND}" --seed $2"
+    shift
+    shift
+    ;;
+    --threads)
+    export THREADS="$2"
+    shift
+    shift
+    ;;
+    -h|--help)
+    help
+    exit -1
+    shift
+    ;;
+    *)
+    help
+    exit -1
+    shift
+    shift
+    ;;
+esac 
+done
+
+# Check if required parameters are set
+#if [ -z ${ASSEMBLY+x} ]; then
+#    echo "ERROR: the option '--assembly' is required but missing"
+#    help
+#    exit -1
+#fi
+
+# Helper function to create command
+command() {
+    echo "./ora ${COMMAND} ${INPUT} $1 ${CATEGORY} $2 ${CATEGORY_NAME} $3"
+}
+export -f command
+
+#
+if [ "$SKIP_INPUT_FILES" = false ]; then
+FILES="$(cat $FILES)"
+fi
+CATEGORY_NAMES="$(cat $CATEGORIES | awk  '{ print $1 }')"
+CATEGORIES="$(cat $CATEGORIES | awk  '{ print $2 }')"
+
+# Run command for each chromosome in parallel
+parallel command ::: $FILES ::: $CATEGORIES :::+ ${CATEGORY_NAMES} > script.sh
+#parallel -j ${THREADS} :::: script.sh
+#rm script.sh
