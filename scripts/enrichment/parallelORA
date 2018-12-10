@@ -70,7 +70,7 @@ case $key in
     shift
     ;;
     -u|--adjust_separately)
-    export COMMAND=${COMMAND}" --adjust_separately $2"
+    export COMMAND=${COMMAND}" --adjust_separately "
     shift
     ;;
     -l|--pvalue_strategy)
@@ -169,6 +169,7 @@ CATEGORY_NAMES="$(cat $CATEGORIES | awk  '{ print $1 }')"
 CATEGORIES="$(cat $CATEGORIES | awk  '{ print $2 }')"
 
 # Run command for each chromosome in parallel
-parallel command ::: $FILES ::: $CATEGORIES :::+ ${CATEGORY_NAMES} > script.sh
-#parallel -j ${THREADS} :::: script.sh
-#rm script.sh
+SCRIPT="$RANDOM"script.sh
+parallel command ::: $FILES ::: $CATEGORIES :::+ ${CATEGORY_NAMES} > $SCRIPT
+parallel -j ${THREADS} :::: script.sh
+rm $SCRIPT
