@@ -58,7 +58,6 @@ typedef std::vector<std::pair<std::string, double>> PValueList;
 
 using CategoryList = std::list<std::pair<std::string, std::string>>;
 
-
 /**
  * This function initializes the needed attributes.
  *

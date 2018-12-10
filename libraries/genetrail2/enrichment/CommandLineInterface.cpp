@@ -1,7 +1,7 @@
 /*
  * GeneTrail2 - An efficient library for interpreting genetic data
  * Copyright (C) 2015 Daniel Stöckel <dstoeckel@bioinf.uni-sb.de>
- *               2014 Tim Kehl <tkehl@bioinf.uni-sb.de>
+ *               2014-2018 Tim Kehl <tkehl@bioinf.uni-sb.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Lesser GNU General Public License as
@@ -39,7 +39,9 @@ namespace GeneTrail {
 		desc.add_options()
 			("help,h", "Display this message")
 			("significance,t", value(&p.significance)->default_value(0.01), "The critical value for rejecting the H0 hypothesis.")
-			("categories,c",   value(&p.categories_)->required(), "A .gmt file containing the categories to be tested.")
+			("categories,c",   value(&p.categories_), "A list of .gmt files containing the categories to be tested.")
+			("category,y",   value(&p.category_), "A single .gmt containing the categories to be tested.")
+			("category_name,z",   value(&p.category_name_), "A single .gmt containing the categories to be tested.")
 			("scores,s",       value(&p.scores_), "A whitespace separated file containing identifier and scores.")
 			("minimum,n",      value(&p.minimum)->default_value(0), "Minimum number of genes allowed in categories.")
 			("maximum,x",      value(&p.maximum)->default_value(1000), "Maximum number of genes allowed in categories.")
@@ -80,6 +82,23 @@ namespace GeneTrail {
 
 		if(p.minimum > p.maximum) {
 			std::cerr << "WARNING: minimum category size is larger than maximum category size." << std::endl;
+		}
+
+		if(p.categories() != "" && p.category() != "") {
+			std::cerr << "ERROR: You must specify either --category or --categories, not both." << std::endl;
+			return false;
+		}
+
+		if(p.categories() == "") {
+			if(p.category() == "") {
+				std::cerr << "ERROR: You must specify either --category or --categories." << std::endl;
+				return false;
+			} else {
+				if(p.category_name_ == "") {
+					std::cerr << "ERROR: You must specify a valid category name." << std::endl;
+					return false;
+				}
+			}
 		}
 
 		return true;

@@ -1,6 +1,7 @@
 /*
  * GeneTrail2 - An efficient library for interpreting genetic data
  * Copyright (C) 2015 Daniel Stöckel <dstoeckel@bioinf.uni-sb.de>
+ *				 2018 Tim Kehl <tkehl@bioinf.uni-sb.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Lesser GNU General Public License as
@@ -56,6 +57,14 @@ namespace GeneTrail {
 			return categories_.filePath;
 		}
 
+		const std::string& category() const {
+			return category_.filePath;
+		}
+
+		const std::string& category_name() const {
+			return category_name_;
+		}
+
 		const std::string& scores() const {
 			return scores_.filePath;
 		}
@@ -79,10 +88,13 @@ namespace GeneTrail {
 		double significance;
 
 		FilePath categories_;
+		FilePath category_;
 		FilePath scores_;
 		FilePath identifier_;
 		FilePath dataMatrixPath_;
 		FilePath groups_;
+
+		std::string category_name_;
 
 		DirectoryPath out_;
 

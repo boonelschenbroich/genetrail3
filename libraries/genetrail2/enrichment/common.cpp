@@ -156,8 +156,12 @@ int init(GeneSet& test_set, CategoryList& cat_list, const Params& p)
 	}
 
 	try {
-		// TODO: Add single category feature
-		cat_list = getCategoryList(p.categories());
+		if (p.categories() != ""){
+			// TODO: Add single category feature
+			cat_list = getCategoryList(p.categories());
+		} else {
+			cat_list.emplace_back(p.category_name(), p.category());
+		}
 	} catch(IOError& exn) {
 		std::cerr << "ERROR: Failed to read categories. Reason: " << exn.what()
 		          << std::endl;
