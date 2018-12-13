@@ -27,10 +27,10 @@ case $key in
     shift
     ;;
     -c|--categories)
-    export CATEGORY=" --category "
-    export CATEGORY_NAME=" --category_name "
-    export CATEGORIES="$2" 
-    #export COMMAND=${COMMAND}" --categories $2"
+    #export CATEGORY=" --category "
+    #export CATEGORY_NAME=" --category_name "
+    #export CATEGORIES="$2" 
+    export COMMAND=${COMMAND}" --categories $2"
     shift
     shift
     ;;
@@ -156,8 +156,13 @@ done
 #fi
 
 # Helper function to create command
+#command() {
+#    echo "./ora ${COMMAND} ${INPUT} $1 ${CATEGORY} $2 ${CATEGORY_NAME} $3"
+#}
+#export -f command
+
 command() {
-    echo "./ora ${COMMAND} ${INPUT} $1 ${CATEGORY} $2 ${CATEGORY_NAME} $3"
+    echo "./ora ${COMMAND} ${INPUT}"
 }
 export -f command
 
@@ -165,11 +170,12 @@ export -f command
 if [ "$SKIP_INPUT_FILES" = false ]; then
 FILES="$(cat $FILES)"
 fi
-CATEGORY_NAMES="$(cat $CATEGORIES | awk  '{ print $1 }')"
-CATEGORIES="$(cat $CATEGORIES | awk  '{ print $2 }')"
+#CATEGORY_NAMES="$(cat $CATEGORIES | awk  '{ print $1 }')"
+#CATEGORIES="$(cat $CATEGORIES | awk  '{ print $2 }')"
 
 # Run command for each chromosome in parallel
 SCRIPT="$RANDOM"script.sh
-parallel command ::: $FILES ::: $CATEGORIES :::+ ${CATEGORY_NAMES} > $SCRIPT
+#parallel command ::: $FILES ::: $CATEGORIES :::+ ${CATEGORY_NAMES} > $SCRIPT
+parallel command ::: $FILES > $SCRIPT
 parallel -j ${THREADS} :::: script.sh
 rm $SCRIPT
