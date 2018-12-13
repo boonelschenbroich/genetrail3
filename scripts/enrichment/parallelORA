@@ -1,7 +1,7 @@
 #!/bin/bash
 
 help() {
-    ./ora -h
+    /home/HPL/tkehl/workspace/graviton-binaries/ora -h
 }
 export -f help
 
@@ -60,7 +60,8 @@ case $key in
     shift
     ;;
     -o|--output)
-    export COMMAND=${COMMAND}" --output $2"
+    export OUTPUT=" --output "
+    #export COMMAND=${COMMAND}" --output $2"
     shift
     shift
     ;;
@@ -162,7 +163,8 @@ done
 #export -f command
 
 command() {
-    echo "./ora ${COMMAND} ${INPUT}"
+    IFS=';' read -r -a array <<< $1
+    echo "/home/HPL/tkehl/workspace/graviton-binaries/ora ${COMMAND} ${INPUT} ${array[0]} ${OUTPUT} ${array[1]}"
 }
 export -f command
 
@@ -177,5 +179,6 @@ fi
 SCRIPT="$RANDOM"script.sh
 #parallel command ::: $FILES ::: $CATEGORIES :::+ ${CATEGORY_NAMES} > $SCRIPT
 parallel command ::: $FILES > $SCRIPT
-parallel -j ${THREADS} :::: script.sh
-rm $SCRIPT
+echo $SCRIPT
+parallel -j ${THREADS} :::: $SCRIPT
+#rm $SCRIPT
