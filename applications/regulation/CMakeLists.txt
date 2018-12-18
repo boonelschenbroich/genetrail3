@@ -69,6 +69,13 @@ set_target_properties(regulator_effect_analysis PROPERTIES
     INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
 )
 
+configure_file(${CMAKE_SOURCE_DIR}/scripts/regulation/parallel_regulator_ora.in ${CMAKE_SOURCE_DIR}/scripts/regulation/parallel_regulator_ora @ONLY)
+file(COPY ${CMAKE_SOURCE_DIR}/scripts/regulation/parallel_regulator_ora
+		DESTINATION ${CMAKE_BINARY_DIR}/applications/regulation/
+		FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
+		GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+)
+
 GT2_COMPILE_FLAGS(regulator_effect_analysis)
 
 add_executable(csa csa.cpp)

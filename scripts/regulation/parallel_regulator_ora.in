@@ -1,0 +1,114 @@
+#!/bin/bash
+
+help() {
+    @CMAKE_BINARY_DIR@/applications/regulation/ora -h
+}
+export -f help
+
+# Check if command line arguments are provided
+if [ $# -eq 0 ];then
+    help
+    exit -1
+fi
+
+COMMAND=""
+THREADS=8
+export SKIP_INPUT_FILES=true
+export OUTPUT=" --output "
+
+# Parse commmand line arguments
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+key="$1"
+case $key in
+    -s|--scorelist)
+    export SKIP_INPUT_FILES=true
+    export INPUT=" --scorelist "
+    export FILES="$2"
+    shift
+    shift
+    ;;
+    --scorelists)
+    export SKIP_INPUT_FILES=false
+    export INPUT=" --scorelist "
+    export FILES="$2"
+    shift
+    shift
+    ;;
+    -o|--output)
+    export OUTPUT=" --output "
+    shift
+    shift
+    ;;
+    -a|--adjust)
+    export COMMAND=${COMMAND}" --adjust $2"
+    shift
+    shift
+    ;;
+    -m|--method)
+    export COMMAND=${COMMAND}" --method $2"
+    shift
+    shift
+    ;;
+    --genelists)
+    export SKIP_INPUT_FILES=false
+    export INPUT=" --genelist "
+    export FILES="$2"
+    shift
+    shift
+    ;;
+    -g|--genelist)
+    export SKIP_INPUT_FILES=true
+    export INPUT=" --genelist "
+    export FILES="$2"
+    shift
+    shift
+    ;;
+    -r|--regulations)
+    export COMMAND=${COMMAND}" --regulations $2"
+    shift
+    shift
+    ;;
+    --threads)
+    export THREADS="$2"
+    shift
+    shift
+    ;;
+    -h|--help)
+    help
+    exit -1
+    shift
+    ;;
+    *)
+    help
+    exit -1
+    shift
+    shift
+    ;;
+esac 
+done
+
+# Check if required parameters are set
+#if [ -z ${ASSEMBLY+x} ]; then
+#    echo "ERROR: the option '--assembly' is required but missing"
+#    help
+#    exit -1
+#fi
+
+# Helper function to create command
+command() {
+    IFS=';' read -r -a array <<< $1
+    echo @CMAKE_BINARY_DIR@/applications/regulation/ora" ${COMMAND} ${INPUT} ${array[0]} ${OUTPUT} ${array[1]}"
+}
+export -f command
+
+if [ "$SKIP_INPUT_FILES" = false ]; then
+FILES="$(cat $FILES)"
+fi
+
+# Run command for each chromosome in parallel
+SCRIPT="$RANDOM"script.sh
+parallel command ::: $FILES ::: $CATEGORIES > $SCRIPT
+parallel -j ${THREADS} :::: $SCRIPT
+rm $SCRIPT
