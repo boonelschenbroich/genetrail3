@@ -368,6 +368,41 @@ namespace Entropy
 		
 		return conditional_cummulative_entropy_estimator_for_sorted_vectors(Xs, Y_transformed);
 	}
+
+		/**
+	* This method calculates the conditional cummulative entropy h(X|Y).
+	*
+	* @param X Vector of scores.
+	* @param Y Vector of vector of scores.
+	*
+	* @return conditional cummulative entropy h(X|Y)
+	*/
+	template <typename value_type>
+	std::vector<value_type> conditional_cummulative_entropy_kruskall_estimator(const std::vector<value_type>& X, const std::vector<std::vector<value_type> >& Y)
+	{
+		//Sort vector X
+		std::vector<value_type> Xs(std::distance(X.begin(),X.end()));
+		std::copy(X.begin(), X.end(), Xs.begin());
+		std::sort(Xs.begin(), Xs.end());
+		
+		//Sort indices according to X
+		std::vector<size_t> indices(X.size());	
+		std::iota(indices.begin(), indices.end(), 0);
+		std::sort(indices.begin(), indices.end(), [&](size_t a, size_t b){return X[a] < X[b];});
+
+		// Combine all Ys into one vector and sort this vector with respect to X.
+		std::vector<std::vector<value_type> > Y_transformed;
+		Y_transformed.reserve(Y[0].size());
+		for(size_t i : indices){
+			std::vector<value_type> Yi(Y.size());
+			for(size_t j=0; j<Y.size(); ++j) {
+				Yi[j]=Y[j][i]; 
+			}
+			Y_transformed.emplace_back(std::move(Yi));
+		}
+		
+		return conditional_cummulative_entropy_kruskall_estimator_for_sorted_vectors(Xs, Y_transformed);
+	}
 }
 }
 
