@@ -39,11 +39,18 @@ set_target_properties(transformMatrix PROPERTIES
     INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
 )
 
+add_executable(interactiveUDS interactive_UDS.cpp)
+target_link_libraries(interactiveUDS applicationCommon gtcore ${BOOST_LIBRARIES})
+GT2_COMPILE_FLAGS(interactiveUDS)
+set_target_properties(interactiveUDS PROPERTIES
+    INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
+)
+
 ####################################################################################################
 # Install
 ####################################################################################################
 
-install(TARGETS computeScores transformScores normalityCheck normalizeMatrix transformMatrix
+install(TARGETS computeScores transformScores normalityCheck normalizeMatrix transformMatrix interactiveUDS
 	RUNTIME DESTINATION bin
 	LIBRARY DESTINATION lib
 	ARCHIVE DESTINATION lib

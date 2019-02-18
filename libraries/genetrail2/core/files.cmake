@@ -37,6 +37,7 @@ add_header_to_library(BinomialTest.h)
 add_header_to_library(NameDatabases.h)
 add_header_to_library(MatrixNormalization.h)
 add_header_to_library(MatrixTransformation.h)
+add_header_to_library(Entropy.h)
 
 # Sources
 add_to_library(AbstractMatrix)
