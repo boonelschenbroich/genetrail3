@@ -114,7 +114,7 @@ TEST(ConditionalCummulativeEntropy, Random100)
 	EXPECT_NEAR(conditional_entropy, 0.2468272, TOLERANCE);
 }
 
-TEST(ConditionalCummulativeEntropyEstimator, Null)
+/*TEST(ConditionalCummulativeEntropyEstimator, Null)
 {
 	std::vector<std::vector<double>> v;
 	v.emplace_back(a);
@@ -170,4 +170,4 @@ TEST(ConditionalCummulativeEntropyEstimator, ConditionedOnTwoVectors10)
 	EXPECT_NEAR(ve[7], 1.5987954, TOLERANCE);
 	EXPECT_NEAR(ve[8], 1.7039022, TOLERANCE);
 	EXPECT_NEAR(ve[9], 1.7563245, TOLERANCE);
-}
+}*/

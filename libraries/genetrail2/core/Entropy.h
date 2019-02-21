@@ -189,25 +189,27 @@ namespace Entropy
 		std::sort(indices.begin(), indices.end(), [&](size_t a, size_t b){
 			auto da = dist(Y[a], nullv); 
 			auto db = dist(Y[b], nullv);
-			return da < db;
-		});
-		std::vector<std::vector<value_type>> Y_sorted(Y.size());
-		std::copy(Y.begin(), Y.end(), Y_sorted.begin());
-		std::sort(Y_sorted.begin(), Y_sorted.end(), [&](auto a, auto b){
-			auto da = dist(a, nullv); 
-			auto db = dist(b, nullv);
+			if(da == db) {
+				return X[a] < X[b];
+			}
 			return da < db;
 		});
 
+		/*std::cout << "================================" << std::endl  << "Sorted with respect to Y:" << std::endl;
+		for(size_t i=0; i<indices.size();++i){
+			std::cout << "X[" << i << "]=" << X[indices[i]] << " - Y[" << i << "]=" << Y[indices[i]][0] << std::endl; 
+		}
+		std::cout << "================================" << std::endl;*/
+
 		//Initial bins
 		std::vector<value_type> bin_entropy(Y.size());
-		for(size_t i=0; i<Y_sorted.size(); ++i) {
+		for(size_t i=0; i<Y.size(); ++i) {
 			bin_entropy[i] = value_type(0);
 		}
 
 		//Calculate entropy of neighbours
-		std::vector<std::tuple<size_t, size_t, std::vector<size_t>, value_type>> entropy_between_neighbors(Y_sorted.size()-1);
-		for(size_t i=1; i<Y_sorted.size(); ++i){
+		std::vector<std::tuple<size_t, size_t, std::vector<size_t>, value_type>> entropy_between_neighbors(Y.size()-1);
+		for(size_t i=1; i<Y.size(); ++i){
 			std::vector<size_t> nbins(2);
 			nbins[0] = indices[i];
 			nbins[1] = indices[i-1];
@@ -234,40 +236,47 @@ namespace Entropy
 		std::vector<value_type> entropies;
 		entropies.reserve(X.size());
 		entropies.emplace_back(value_type(0));
+		std::vector<std::vector<size_t>> bins;
 		for(size_t i=0; i<entropy_between_neighbors.size(); ++i){
 			size_t left = std::get<0>(entropy_between_neighbors[i]);
 			size_t right = std::get<1>(entropy_between_neighbors[i]);
 			
 			//Update entropy
-			//entropy -= bin_entropy[left];
-			//entropy -= bin_entropy[right];
 			entropy += std::get<3>(entropy_between_neighbors[i]);
 
 			bin_entropy[left] = std::get<3>(entropy_between_neighbors[i]);
 			bin_entropy[right] = std::get<3>(entropy_between_neighbors[i]);
 
 			//Update neighbors
-			size_t l = entropy_between_neighbors.size();
-			size_t r = entropy_between_neighbors.size();
-			for(size_t j=i;j < entropy_between_neighbors.size();++j) {
-				if(left == std::get<1>(entropy_between_neighbors[j])) {
-					l = j;
+			for(size_t j=i+1;j < entropy_between_neighbors.size();++j) {
+				if(left >= std::get<0>(entropy_between_neighbors[j]) && left <= std::get<1>(entropy_between_neighbors[j])) {
+					//Merge bins
 					std::vector<size_t>& nbins = std::get<2>(entropy_between_neighbors[j]);
 					nbins.insert(nbins.end(), std::get<2>(entropy_between_neighbors[i]).begin(), std::get<2>(entropy_between_neighbors[i]).end());
 					std::sort(nbins.begin(), nbins.end());
 					auto last = std::unique(nbins.begin(), nbins.end());
-					nbins.erase(last, nbins.end());
+					nbins.erase(last, nbins.end());		
+
+					//Update border
+					std::get<1>(entropy_between_neighbors[j]) = std::get<1>(entropy_between_neighbors[i]);
+
+					//Update entropy			
 					value_type z_n = boost::numeric_cast<value_type>(nbins.size()) / boost::numeric_cast<value_type>(X.size());
 					std::get<3>(entropy_between_neighbors[j]) = z_n * conditional_cummulative_entropy_for_sorted_vectors(X, nbins);
 					std::get<3>(entropy_between_neighbors[j]) -= bin_entropy[std::get<0>(entropy_between_neighbors[j])];
 					std::get<3>(entropy_between_neighbors[j]) -= bin_entropy[std::get<1>(entropy_between_neighbors[j])];
-				} else if(right ==  std::get<0>(entropy_between_neighbors[j])) {
-					r = j;
+				} else if(right >= std::get<0>(entropy_between_neighbors[j]) && right <= std::get<1>(entropy_between_neighbors[j])) {
+					//Merge bins
 					std::vector<size_t>& nbins = std::get<2>(entropy_between_neighbors[j]);
 					nbins.insert(nbins.end(), std::get<2>(entropy_between_neighbors[i]).begin(), std::get<2>(entropy_between_neighbors[i]).end());
 					std::sort(nbins.begin(), nbins.end());
 					auto last = std::unique(nbins.begin(), nbins.end());
 					nbins.erase(last, nbins.end());
+					
+					//Update border
+					std::get<0>(entropy_between_neighbors[j]) = std::get<0>(entropy_between_neighbors[i]);
+
+					//Update entropy
 					value_type z_n = boost::numeric_cast<value_type>(nbins.size()) / boost::numeric_cast<value_type>(X.size());
 					std::get<3>(entropy_between_neighbors[j]) = z_n * conditional_cummulative_entropy_for_sorted_vectors(X, nbins);
 					std::get<3>(entropy_between_neighbors[j]) -= bin_entropy[std::get<0>(entropy_between_neighbors[j])];
@@ -275,11 +284,24 @@ namespace Entropy
 				}
 			}
 
-			if (l < entropy_between_neighbors.size()) { 
-				reorder_vector_inplace(entropy_between_neighbors, i+1, l, r);
+			if(i+2 < entropy_between_neighbors.size()){
+				std::sort(entropy_between_neighbors.begin()+(i+1), entropy_between_neighbors.end(), [&](const auto& a, const auto& b){
+					return std::get<3>(a) < std::get<3>(b);
+				});
+				/*std::cout << std::endl << "##############################################" << std::endl;
+				for(size_t j=i+1; j<entropy_between_neighbors.size(); ++j) {
+					auto& e = entropy_between_neighbors[j];
+					std::cout << "Entropy(" << std::get<0>(e) << ", " << std::get<1>(e) << ") - [";
+					for(size_t i=0; i<std::get<2>(e).size(); ++i) {
+						std::cout << std::get<2>(e)[i] << ", ";
+					}
+					std::cout << "] - " << std::get<3>(e) << std::endl;
+				}*/
 			}
-			if (r < entropy_between_neighbors.size()) {
-				reorder_vector_inplace(entropy_between_neighbors, i+1, r, entropy_between_neighbors.size());
+
+			if(i == entropy_between_neighbors.size()-2){
+				std::cout << "[" << std::get<0>(entropy_between_neighbors[i]) << ", " << std::get<1>(entropy_between_neighbors[i]) << "]" << std::endl;
+				bins.emplace_back(std::get<2>(entropy_between_neighbors[i]));
 			}
 
 			entropies.emplace_back(entropy);

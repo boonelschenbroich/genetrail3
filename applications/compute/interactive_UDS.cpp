@@ -93,7 +93,7 @@ void greedy() {
 		scores.emplace_back(target_scores);
 		out << target << " <- c(";
 		curves.emplace_back(target);
-		std::vector<double> own_entropy = Entropy::conditional_cummulative_entropy_estimator(target_scores, scores);
+		std::vector<double> own_entropy = std::get<0>(Entropy::conditional_cummulative_entropy_estimator(target_scores, scores));
 		for(size_t i=0; i<own_entropy.size(); ++i) {
 				own_entropy[i] = (own_entropy.back() - own_entropy[i]) / own_entropy.back();
 				out << own_entropy[i];
@@ -119,6 +119,9 @@ void greedy() {
 				// Calculate entropy
 				std::string tmp = regg;
 				boost::replace_all(tmp, ",", ".");
+				
+				
+				/////////////////////////////////////////////////////////////////
 				out << tmp << " <- c(";
 				curves.emplace_back(tmp);
 				std::vector<double> entropy = Entropy::conditional_cummulative_entropy_estimator(target_scores, regulator_scores);
@@ -130,6 +133,8 @@ void greedy() {
 						}
 				}
 				out << ")" << std::endl;
+
+				/////////////////////////////////////////////////////////////////
 
 				std::cout << std::endl;
 				std::cout << target << "|" << regg << " - Mean: " << statistic::mean<double>(entropy.begin(), entropy.end()) << std::endl;
@@ -149,6 +154,7 @@ void greedy() {
 				out << " + geom_line(aes(y = " << c << ", colour = \"" << c << "\"))";
 		}
 		out << std::endl;
+		
 		out << "ggplot(df, aes(Bins))";
 		out << + " + geom_line(data=data.frame(X=c(0,length(" << curves[0] << ")), Y=c(0,1)), aes(x=X, y=Y), colour='black')";
 		for (auto c : curves) {
@@ -156,6 +162,31 @@ void greedy() {
 		}
 		out << " + xlim(0, length(" << curves[0] << ")/3)";
 		out << std::endl;
+
+		out << "ggplot(df, aes(Bins))";
+		out << + " + geom_line(data=data.frame(X=c(0,length(" << curves[0] << ")), Y=c(0,1)), aes(x=X, y=Y), colour='black')";
+		for (auto c : curves) {
+				out << " + geom_line(aes(y = " << c << ", colour = \"" << c << "\"))";
+		}
+		out << " + xlim(0, 100)";
+		out << std::endl;
+
+		out << "ggplot(df, aes(Bins))";
+		out << + " + geom_line(data=data.frame(X=c(0,length(" << curves[0] << ")), Y=c(0,1)), aes(x=X, y=Y), colour='black')";
+		for (auto c : curves) {
+				out << " + geom_line(aes(y = " << c << ", colour = \"" << c << "\"))";
+		}
+		out << " + xlim(0, 50)";
+		out << std::endl;
+
+		out << "ggplot(df, aes(Bins))";
+		out << + " + geom_line(data=data.frame(X=c(0,length(" << curves[0] << ")), Y=c(0,1)), aes(x=X, y=Y), colour='black')";
+		for (auto c : curves) {
+				out << " + geom_line(aes(y = " << c << ", colour = \"" << c << "\"))";
+		}
+		out << " + xlim(0, 30)";
+		out << std::endl;
+
 		out << "dev.off()" << std::endl;
 
 		out.close();
@@ -195,7 +226,7 @@ void kruskall() {
 		scores.emplace_back(target_scores);
 		out << target << " <- c(";
 		curves.emplace_back(target);
-		std::vector<double> own_entropy = Entropy::conditional_cummulative_entropy_estimator(target_scores, scores);
+		std::vector<double> own_entropy = Entropy::conditional_cummulative_entropy_kruskall_estimator(target_scores, scores);
 		for(size_t i=0; i<own_entropy.size(); ++i) {
 				own_entropy[i] = (own_entropy.back() - own_entropy[i]) / own_entropy.back();
 				out << own_entropy[i];
@@ -256,7 +287,7 @@ void kruskall() {
 		for (auto c : curves) {
 				out << " + geom_line(aes(y = " << c << ", colour = \"" << c << "\"))";
 		}
-		out << " + xlim(0, length(" << curves[0] << ")/3)";
+		out << " + xlim(0, length(" << curves[0] << ")/10)";
 		out << std::endl;
 		out << "dev.off()" << std::endl;
 
