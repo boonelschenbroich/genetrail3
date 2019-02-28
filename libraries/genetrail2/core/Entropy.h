@@ -40,6 +40,128 @@ namespace GeneTrail
  */
 namespace Entropy
 {
+
+	template <typename value_type>
+	std::tuple<value_type, value_type> min_max(const std::vector<value_type>& X) {
+		value_type min=X[0], max=X[0];
+		for(size_t i=1; i<X.size(); ++i) {
+			min = (min > X[i]) ? X[i] : min;
+			max = (max < X[i]) ? X[i] : max;
+		}
+
+		return std::make_tuple(min, max);
+	}
+
+   /**
+	* This method calculates the entropy.
+	*
+	* @param x Vector.
+	* @param y Vector.
+	* @param number_of_bins Number of bins.
+	*
+	* @returns The entropy of X
+	*/
+	template <typename value_type>
+	value_type entropy(const std::vector<value_type>& X, size_t number_of_bins) {
+		std::vector<value_type> bins(number_of_bins, 0.0);
+		value_type minX, maxX;
+		std::tie(minX, maxX) = min_max(X);
+		value_type n = boost::numeric_cast<value_type>(X.size());
+		value_type entropy = 0;
+		for(size_t i=0; i<X.size(); ++i) {
+			value_type xi = (X[i] - minX + 1.0) / (n / number_of_bins);
+			size_t x = X[i] < maxX ? boost::numeric_cast<size_t>(std::ceil(xi) - 1) : number_of_bins - 1;
+			bins[x] +=1;
+		}
+		
+		for(size_t i=0; i<bins.size(); ++i) {
+			value_type pi = bins[i] / n;
+			if(pi > 0) {
+				entropy -= pi * log(pi);
+			}
+		}
+		return entropy;
+	}
+
+	/**
+	* This method calculates the joint entropy.
+	*
+	* @param x Vector.
+	* @param y Vector.
+	* @param number_of_bins Number of bins.
+	*
+	* @returns The joint entropy of X and Y
+	*/
+	template <typename value_type>
+	value_type joint_entropy(const std::vector<value_type>& X, const std::vector<value_type>& Y, size_t number_of_bins)
+	{
+		// Prepare bins
+		std::vector<std::vector<value_type>> bins;
+		bins.reserve(number_of_bins);
+		for(size_t i=0; i<number_of_bins; ++i){
+			std::vector<value_type> bin(number_of_bins, 0.0);
+			bins.emplace_back(bin);
+		}
+ 
+		// Get range
+		value_type minX, maxX, minY, maxY;
+		std::tie(minX, maxX) = min_max(X);
+		std::tie(minY, maxY) = min_max(Y);
+		
+		value_type n = boost::numeric_cast<value_type>(X.size());
+		// Fill bins
+		for(size_t i=0; i<number_of_bins; ++i) {
+			size_t x = X[i] < maxX ? boost::numeric_cast<size_t>(std::ceil((X[i] - minX + 1.0) / (n/number_of_bins))-1) : number_of_bins - 1;
+			size_t y = Y[i] < maxY ? boost::numeric_cast<size_t>(std::ceil((Y[i] - minY + 1.0) / (n/number_of_bins))-1) : number_of_bins - 1;
+			bins[x][y] += 1.0;
+		}
+
+		value_type entropy = 0.0;
+		for(size_t i=0; i<number_of_bins; ++i) {
+			for(size_t j=0; j<number_of_bins; ++j) {
+				value_type pij = bins[i][j] / n;
+				if(pij > 0) {
+					entropy -= pij * log(pij);
+				}
+			}
+		}
+
+		return entropy;
+	}
+
+	/**
+	* This method calculates the conditional entropy.
+	*
+	* @param x Vector.
+	* @param y Vector.
+	* @param number_of_bins Number of bins.
+	*
+	* @returns The conditional entropy of X and Y
+	*/
+	template <typename value_type>
+	value_type conditional_entropy(const std::vector<value_type>& X, const std::vector<value_type>& Y, size_t number_of_bins)
+	{
+		return joint_entropy(X, Y, number_of_bins) - entropy(X, number_of_bins);
+	}
+
+
+   /**
+	* This method calculates the fraction of information.
+	*
+	* @param x Vector.
+	* @param y Vector.
+	* @param number_of_bins Number of bins.
+	*
+	* @returns The fraction of information  I(X,Y)/h(X)
+	*/
+	template <typename value_type>
+	value_type fraction_of_information(const std::vector<double>& X, const std::vector<double>& Y, size_t number_of_bins)
+	{
+		value_type hxy = conditional_entropy(X,Y,number_of_bins);
+		value_type hx = entropy(X, number_of_bins);
+		return (hx - hxy) / hx;
+	}
+	
 	/**
 	* This method calculates the cummulative entropy
 	*

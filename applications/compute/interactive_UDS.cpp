@@ -93,7 +93,7 @@ void greedy() {
 		scores.emplace_back(target_scores);
 		out << target << " <- c(";
 		curves.emplace_back(target);
-		std::vector<double> own_entropy = std::get<0>(Entropy::conditional_cummulative_entropy_estimator(target_scores, scores));
+		std::vector<double> own_entropy = Entropy::conditional_cummulative_entropy_estimator(target_scores, scores);
 		for(size_t i=0; i<own_entropy.size(); ++i) {
 				own_entropy[i] = (own_entropy.back() - own_entropy[i]) / own_entropy.back();
 				out << own_entropy[i];
