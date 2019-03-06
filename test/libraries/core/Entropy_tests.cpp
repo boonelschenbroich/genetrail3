@@ -119,7 +119,7 @@ TEST(ConditionalCummulativeEntropy, Random100)
 	EXPECT_NEAR(conditional_entropy, 0.2468272, TOLERANCE);
 }
 
-TEST(ConditionalCummulativeEntropyEstimator, Null)
+TEST(ConditionalCummulativeEntropyEstimatorKruskall, Null)
 {
 	std::vector<std::vector<double>> v;
 	v.emplace_back(a);
@@ -130,7 +130,7 @@ TEST(ConditionalCummulativeEntropyEstimator, Null)
 	}
 }
 
-TEST(ConditionalCummulativeEntropyEstimator, SameVector)
+TEST(ConditionalCummulativeEntropyEstimatorKruskall, SameVector)
 {
 	std::vector<std::vector<double>> v;
 	v.emplace_back(b);
@@ -158,7 +158,7 @@ std::vector<double> x(xi);
 std::vector<double> y(yi);
 std::vector<double> z(zi);
 
-TEST(ConditionalCummulativeEntropyEstimator, ConditionedOnTwoVectors10)
+TEST(ConditionalCummulativeEntropyEstimatorKruskall, ConditionedOnTwoVectors10)
 {
 	std::vector<std::vector<double>> v;
 	v.emplace_back(y);
@@ -175,4 +175,36 @@ TEST(ConditionalCummulativeEntropyEstimator, ConditionedOnTwoVectors10)
 	EXPECT_NEAR(ve[7], 1.5987954, TOLERANCE);
 	EXPECT_NEAR(ve[8], 1.7039022, TOLERANCE);
 	EXPECT_NEAR(ve[9], 1.7563245, TOLERANCE);
+}
+
+TEST(ConditionalCummulativeEntropyEstimatorGreedy, Null)
+{
+	std::vector<std::vector<double>> v;
+	v.emplace_back(a);
+	v.emplace_back(a);
+	std::vector<double> ve = Entropy::conditional_cummulative_entropy_estimator(a,v);
+	for(auto e : ve){
+		EXPECT_NEAR(e, 0.0, TOLERANCE);
+	}
+}
+
+TEST(ConditionalCummulativeEntropyEstimatorGreedy, SameVector)
+{
+	std::vector<std::vector<double>> v;
+	v.emplace_back(b);
+	std::vector<double> ve = Entropy::conditional_cummulative_entropy_estimator(b,v);
+	EXPECT_NEAR(ve[0], 0.0, TOLERANCE);
+	//EXPECT_NEAR(ve[1], 0.138629, TOLERANCE);
+	//EXPECT_NEAR(ve[2], 0.381909, TOLERANCE);
+	//EXPECT_NEAR(ve[3], 0.727127, TOLERANCE);
+	EXPECT_NEAR(ve[4], 1.17341, TOLERANCE);
+
+	v.emplace_back(b);
+	v.emplace_back(b);
+	ve = Entropy::conditional_cummulative_entropy_estimator(b,v);
+	EXPECT_NEAR(ve[0], 0.0, TOLERANCE);
+	//EXPECT_NEAR(ve[1], 0.138629, TOLERANCE);
+	//EXPECT_NEAR(ve[2], 0.381909, TOLERANCE);
+	//EXPECT_NEAR(ve[3], 0.727127, TOLERANCE);
+	EXPECT_NEAR(ve[4], 1.17341, TOLERANCE);
 }

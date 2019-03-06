@@ -364,6 +364,9 @@ namespace Entropy
 			size_t right = std::get<1>(entropy_between_neighbors[i]);
 			
 			//Update entropy
+			//entropy -= std::get<3>(entropy_between_neighbors[i]);
+			entropy -= bin_entropy[left];
+			entropy -= bin_entropy[right];
 			entropy += std::get<3>(entropy_between_neighbors[i]);
 
 			bin_entropy[left] = std::get<3>(entropy_between_neighbors[i]);
@@ -385,8 +388,6 @@ namespace Entropy
 					//Update entropy			
 					value_type z_n = boost::numeric_cast<value_type>(nbins.size()) / boost::numeric_cast<value_type>(X.size());
 					std::get<3>(entropy_between_neighbors[j]) = z_n * conditional_cummulative_entropy_for_sorted_vectors(X, nbins);
-					std::get<3>(entropy_between_neighbors[j]) -= bin_entropy[std::get<0>(entropy_between_neighbors[j])];
-					std::get<3>(entropy_between_neighbors[j]) -= bin_entropy[std::get<1>(entropy_between_neighbors[j])];
 				} else if(right >= std::get<0>(entropy_between_neighbors[j]) && right <= std::get<1>(entropy_between_neighbors[j])) {
 					//Merge bins
 					std::vector<size_t>& nbins = std::get<2>(entropy_between_neighbors[j]);
@@ -401,8 +402,6 @@ namespace Entropy
 					//Update entropy
 					value_type z_n = boost::numeric_cast<value_type>(nbins.size()) / boost::numeric_cast<value_type>(X.size());
 					std::get<3>(entropy_between_neighbors[j]) = z_n * conditional_cummulative_entropy_for_sorted_vectors(X, nbins);
-					std::get<3>(entropy_between_neighbors[j]) -= bin_entropy[std::get<0>(entropy_between_neighbors[j])];
-					std::get<3>(entropy_between_neighbors[j]) -= bin_entropy[std::get<1>(entropy_between_neighbors[j])];
 				}
 			}
 
@@ -421,7 +420,7 @@ namespace Entropy
 				}*/
 			}
 
-			if(i == entropy_between_neighbors.size()-2){
+			if(i >= entropy_between_neighbors.size()-2){
 				std::cout << "[" << std::get<0>(entropy_between_neighbors[i]) << ", " << std::get<1>(entropy_between_neighbors[i]) << "]" << std::endl;
 				bins.emplace_back(std::get<2>(entropy_between_neighbors[i]));
 			}
