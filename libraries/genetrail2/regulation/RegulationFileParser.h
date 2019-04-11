@@ -41,6 +41,7 @@
 #include <cmath>
 #include <limits>
 
+
 namespace GeneTrail
 {
 template <typename NameDatabase, typename ValueType> class GT2_EXPORT RegulationFileParser
@@ -55,7 +56,16 @@ template <typename NameDatabase, typename ValueType> class GT2_EXPORT Regulation
 	    : regulation_file_(name_database.size(), MAX_MATRIX_INDEX)
 
 	{
-		read_(name_database, test_set, file, default_value);
+	  read_(name_database, test_set, file, default_value);
+	}
+	//constructor for MAGAE
+	RegulationFileParser(NameDatabase& name_database_matrix,NameDatabase& name_database_micro,
+	                     const std::unordered_set<size_t> test_set,
+	                     const std::string& file, value_type default_value)
+	    : regulation_file_(name_database_matrix.size(),name_database_micro.size(), MAX_MATRIX_INDEX)
+
+	{
+	  read_(name_database_matrix,name_database_micro, test_set, file, default_value);
 	}
 
 	RegulationFile<value_type>& getRegulationFile() { return regulation_file_; }
@@ -89,6 +99,35 @@ template <typename NameDatabase, typename ValueType> class GT2_EXPORT Regulation
 			}
 		}
 	}
+	//function for MAGAE
+	void read_(NameDatabase& name_database, NameDatabase& name_database_micro,
+	           const std::unordered_set<size_t>& test_set,
+	           const std::string& file, value_type default_value)
+	{
+		std::ifstream input(file);
+		if(!input) {
+			throw GeneTrail::IOError("File (" + file +
+			                         ") is not open for reading");
+		}
+
+		std::vector<std::string> sline;
+		for(std::string line; getline(input, line);) {
+
+			boost::trim_if(line, boost::is_any_of("\t "));
+			boost::split(sline, line, boost::is_any_of(" \t"), boost::token_compress_on);
+
+			if(sline.size() == 2) {
+				addRegulation_(name_database,name_database_micro, test_set, sline[0], sline[1],
+				               default_value);
+			} else if(sline.size() == 3) {
+				addRegulation_(name_database,name_database_micro, test_set, sline[0], sline[1],
+				               boost::lexical_cast<value_type>(sline[2]));
+			} else {
+				throw GeneTrail::IOError("Wrong file format.");
+			}
+
+		}
+	}
 
 	void addRegulation_(NameDatabase& name_database,
 	                    const std::unordered_set<size_t>& test_set,
@@ -112,6 +151,29 @@ template <typename NameDatabase, typename ValueType> class GT2_EXPORT Regulation
 		regulation_file_.addRegulation(regulator_idx, target_idx, value);
 	}
 
+	//function for MAGAE
+	void addRegulation_(NameDatabase& name_database,NameDatabase& name_database_micro,
+	                    const std::unordered_set<size_t>& test_set,
+	                    const std::string& regulator, const std::string& target,
+	                    value_type value)
+	{
+		auto regulator_idx = name_database_micro(regulator);
+		auto target_idx = name_database(target);
+
+		if(regulator_idx == MAX_MATRIX_INDEX ||
+		   target_idx == MAX_MATRIX_INDEX) {
+			return;
+		}
+
+		regulation_file_.increaseNumberOfTargets(regulator_idx);
+
+		if(test_set.find(target_idx) == test_set.end()) {
+			return;
+		}
+
+		regulation_file_.addRegulation(regulator_idx, target_idx, value);
+
+	}
 	RegulationFile<value_type> regulation_file_;
 };
 }

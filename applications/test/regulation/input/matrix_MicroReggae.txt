@@ -1,0 +1,10 @@
+sampleNormal3	 sampleNormal2	sampleNormal1	sampleNormal4	sampleNormal5	sampleNormal6	sampleNormal7	sampleNormal8	sampleNormal9	sampleNormal10	sampleNormal11	sampleNormal12	sampleTumor1 	sampleTumor2 	sampleTumor3 	sampleTumor4 	sampleTumor5 	sampleTumor6 	sampleTumor7 	sampleTumor8 	sampleTumor9 	sampleTumor10 	sampleTumor11 	sampleTumor12 	sampleTumor13	sampleTumor14 	sampleTumor15 	sampleTumor16 	sampleTumor17 	sampleTumor20 	sampleTumor19 	sampleTumor18
+TARS2	1	2	3	4	5	6	7	8	9	10	11	12	1	2	3	4	5	6	7	8	9	10	11	12	13	14	15	16	17	18	19	20
+LAMTOR5	56	57	686	6	546	87	9	0.86	56	67	54	2	43	7	9	5	3	6	7	9	56	8	5	9	0	6	4	2	6	8	9	0
+TNFRSF9	97	66	8	0	0	8	6	2	3	4	5	7	65	8	68	45	2	7	67	4	57	8	4	3	86	9	0	6	54	3	6	8	
+ARID4B	3	43	76	98	0	7	56	43	67	8	9	0	7	6	5	43	23	2	6	78	7	34	43	54	56	7	87	9	0	0	78	67
+QSOX1	978	56	76	8	9	6	5	4	3	56	78	56	4	356	8	8	56	8	57	8	75	75	75	76	7	8	9	9	9	54433	2	2
+CD48	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0
+RBBP4	78	6	56	67	789	089	689	56	4	65	67	8	9	0	8	56	4	67	89	67	4	4	56	98	67	5	5	65	67	787	78	8
+SYT14	9	78	6	4	3	1	1	0	0.896	0.9876	0.6785	0.67554	0.876	0.875	0.785443	3	5	7	8	9	5	3	4	6	7	8	9	0	88	7	6	9
+FCAMR 	9	8	0	8	7	4	3	2	6	5	4	5	67	78	879	56	43	3	54	56	67	7	5	43	3	2	4	45	65	6	7	7

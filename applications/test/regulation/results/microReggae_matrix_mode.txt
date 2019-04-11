@@ -1,0 +1,74 @@
+[
+    {
+        "regulator": "hsa-miR-1238-3p",
+        "rank": 1,
+        "hits": 2,
+        "totalNumberOfTargets": 0,
+        "score": 1.178511301977579,
+        "expectedHits": 0.0,
+        "pValue": 0.11929641465821779,
+        "correctedPValue": 1.0,
+        "meanCorrelation": -0.12967807326808596,
+        "absMeanCorrelation": 0.12967807326808596
+    },
+    {
+        "regulator": "hsa-miR-1184",
+        "rank": 2,
+        "hits": 1,
+        "totalNumberOfTargets": 0,
+        "score": 0.9486832980505138,
+        "expectedHits": 0.0,
+        "pValue": 0.17139085557395573,
+        "correctedPValue": 1.0,
+        "meanCorrelation": -0.14356715952269595,
+        "absMeanCorrelation": 0.14356715952269595
+    },
+    {
+        "regulator": "hsa-miR-598-5p",
+        "rank": 3,
+        "hits": 4,
+        "totalNumberOfTargets": 0,
+        "score": 0.3779644730092272,
+        "expectedHits": 0.0,
+        "pValue": 0.35272849305563677,
+        "correctedPValue": 1.0,
+        "meanCorrelation": 0.10511106818595076,
+        "absMeanCorrelation": 0.2782120827618332
+    },
+    {
+        "regulator": "hsa-miR-4721",
+        "rank": 4,
+        "hits": 2,
+        "totalNumberOfTargets": 0,
+        "score": -0.23570226039551585,
+        "expectedHits": 0.0,
+        "pValue": 0.5931681421166041,
+        "correctedPValue": 1.0,
+        "meanCorrelation": 0.0,
+        "absMeanCorrelation": 0.0
+    },
+    {
+        "regulator": "hsa-miR-3191-5p",
+        "rank": 5,
+        "hits": 1,
+        "totalNumberOfTargets": 0,
+        "score": -1.2649110640673516,
+        "expectedHits": 0.0,
+        "pValue": 0.8970483946339658,
+        "correctedPValue": 1.0,
+        "meanCorrelation": -0.04395657279800716,
+        "absMeanCorrelation": 0.04395657279800716
+    },
+    {
+        "regulator": "hsa-miR-3688-5p",
+        "rank": 6,
+        "hits": 1,
+        "totalNumberOfTargets": 0,
+        "score": -1.5811388300841896,
+        "expectedHits": 0.0,
+        "pValue": 0.9430768509966709,
+        "correctedPValue": 1.0,
+        "meanCorrelation": 0.3487171442041143,
+        "absMeanCorrelation": 0.3487171442041143
+    }
+]

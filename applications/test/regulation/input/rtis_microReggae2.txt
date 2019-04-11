@@ -1,0 +1,11 @@
+hsa-miR-1238-3p	TARS2
+hsa-miR-153-3p	LAMTOR5
+hsa-miR-211-5p	TNFRSF9
+hsa-miR-3688-5p	TARS2
+hsa-miR-3191-5p	TARS2
+hsa-miR-1238-3p	LAMTOR5
+hsa-miR-4721	LAMTOR5
+hsa-miR-153-3p	TNFRSF9
+hsa-miR-4721	FCAMR
+hsa-miR-211-5p	FCAMR
+hsa-miR-598-5p	TARS2

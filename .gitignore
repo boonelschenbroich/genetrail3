@@ -1,6 +1,10 @@
+build
 build/
 *~
 *.orig
 *.swp
 *.kdev4
 *.bak
+test/libraries/core/data/FiDePaRunner*
+.idea
+.idea/

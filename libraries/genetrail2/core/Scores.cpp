@@ -268,4 +268,9 @@ namespace GeneTrail
 		           data_.end();
 		}
 	}
+	EntityDatabase Scores::getEntityDatabase()
+	{
+	  std::shared_ptr<EntityDatabase> pt = std::make_shared<EntityDatabase>(*db_);
+	  return *pt;
+	}
 }

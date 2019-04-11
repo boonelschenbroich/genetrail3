@@ -47,6 +47,14 @@ template <typename ValueType> class GT2_EXPORT RegulationFile
 		  total_number_of_targets_(number_of_genes, max_index_)
 	{
 	}
+	
+	RegulationFile(size_t number_of_genes, size_t number_of_mirnas, size_t max_index)
+	    : max_index_(max_index),
+		  regulator_indices_(number_of_mirnas, max_index_),
+	      target_indices_(number_of_genes, max_index_),
+		  total_number_of_targets_(number_of_mirnas, max_index_)
+	{
+	}
 
 	std::vector<Regulation>& target2regulations(size_t target)
 	{
@@ -70,8 +78,9 @@ template <typename ValueType> class GT2_EXPORT RegulationFile
 			target_indices_[target_idx] = target2regulations_.size();
 			target2regulations_.emplace_back();
 		}
-
+		
 		const Regulation reg = std::make_tuple(regulator_idx, target_idx, value);
+
 		regulator2regulations_[regulator_indices_[regulator_idx]].emplace_back(reg);
 		target2regulations_[target_indices_[target_idx]].emplace_back(reg);
 	}
@@ -109,7 +118,6 @@ template <typename ValueType> class GT2_EXPORT RegulationFile
 		}
 		return max;
 	}
-
 	size_t maxNumberOfRegulators(){
 		size_t max = 0;
 		for(size_t i=0; i<target_indices_.size(); ++i){ 

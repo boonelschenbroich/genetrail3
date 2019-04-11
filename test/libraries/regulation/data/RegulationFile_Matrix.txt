@@ -1,6 +1,6 @@
-SampleA SampleB
-GeneA 1.0 1.0
-GeneB 1.0 1.0
-GeneC 1.0 1.0
-GeneD 1.0 1.0
-GeneE 1.0 1.0
+SampleA SampleB sampleC
+GeneA 2.0 4.0	3.0
+GeneB 1.0 1.0	1.0
+GeneC 1.0 1.0	1.0
+GeneD 1.0 1.0	1.0
+GeneE 1.0 1.0	1.0

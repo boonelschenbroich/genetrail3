@@ -219,7 +219,24 @@ namespace GeneTrail
 	{
 		m_.row(i) = v.transpose();
 	}
+	
+	
+	
 
+	void DenseMatrix::sortRows(std::vector<std::string>& orientation){
+	  //sort rows accoring to orientation
+	    for(size_t r = 0; r < rows(); ++r){
+	      auto old_row = row(r);
+	      Eigen::Matrix<value_type, Eigen::Dynamic, 1> new_row(orientation.size());
+	      for(size_t o = 0; o < orientation.size(); ++o){
+		    new_row[o] = old_row[colIndex(orientation[o])];
+	      }
+	      setRow(rowName(r),new_row);
+	    }
+	    //sort colomn names according to orientaion
+	    setColNames(orientation);
+	  }
+	
 	void DenseMatrix::shuffle_(std::vector<index_type> perm,
 	                           std::map<std::string, index_type>& name_to_index,
 	                           std::vector<std::string>& index_to_name,

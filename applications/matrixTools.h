@@ -42,6 +42,7 @@ namespace GeneTrail
 	                                        const MatrixReaderOptions& options);
 	GT2_EXPORT DenseMatrix readDenseMatrix(const std::string& matrix,
 	                                       const MatrixReaderOptions& options);
+	std::vector<unsigned int> getIndices(const DenseMatrix& matrix, const std::vector<std::string>& colnames, const std::string& groupname);
 }
 
 #endif // MATRIX_TOOLS_H

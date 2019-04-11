@@ -1,0 +1,3 @@
+sampleTumor1,sampleTumor2,sampleTumor3,sampleTumor4,sampleTumor5,sampleTumor6,sampleTumor7,sampleTumor8,sampleTumor9,sampleTumor10,sampleTumor11,sampleTumor12,sampleTumor13,sampleTumor14,sampleTumor15,sampleTumor16,sampleTumor17,sampleTumor20,sampleTumor19,sampleTumor18
+
+sampleNormal3,sampleNormal2,sampleNormal1,sampleNormal4,sampleNormal5,sampleNormal6,sampleNormal7,sampleNormal8,sampleNormal9,sampleNormal10,sampleNormal11,sampleNormal12

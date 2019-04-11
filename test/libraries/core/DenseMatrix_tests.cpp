@@ -22,6 +22,7 @@
 
 #include <genetrail2/core/DenseMatrix.h>
 #include <config.h>
+#include <Eigen/Core>
 
 using namespace GeneTrail;
 
@@ -543,4 +544,173 @@ TEST_F(DenseMatrixTest, matrix_const)
 	EXPECT_EQ(mat2.rows(), mat2.matrix().rows());
 
 	EXPECT_EQ(mat2(0, 0), mat2.matrix()(0, 0));
+}
+TEST_F(DenseMatrixTest,sortRows)
+{
+	std::vector<std::string> rows {"mir1","mir2","mir3"};
+	std::vector<std::string> cols {"sample1","sample2","sample3","sample4","sample5","sample6","sample7"};
+	DenseMatrix mat(rows,cols);
+	//fill the matrix
+	mat(0,0) = 1;
+	mat(0,1) = 2;
+	mat(0,2) = 3;
+	mat(0,3) = 4;
+	mat(0,4) = 5;
+	mat(0,5) = 6;
+	mat(0,6) = 7;
+	
+	mat(1,0) = 1;
+	mat(1,1) = 2;
+	mat(1,2) = 3;
+	mat(1,3) = 4;
+	mat(1,4) = 5;
+	mat(1,5) = 6;
+	mat(1,6) = 7;
+	
+	mat(2,0) = 1;
+	mat(2,1) = 2;
+	mat(2,2) = 3;
+	mat(2,3) = 4;
+	mat(2,4) = 5;
+	mat(2,5) = 6;
+	mat(2,6) = 7;
+	//fill orientation vector
+	std::vector<std::string> orientation {"sample7","sample6","sample5","sample4","sample3","sample2","sample1"};
+	//sort matrix
+	mat.sortRows(orientation);
+	
+	EXPECT_EQ(mat.colName(0) , "sample7");
+	EXPECT_EQ(mat.colName(1) , "sample6");
+	EXPECT_EQ(mat.colName(2) , "sample5");
+	EXPECT_EQ(mat.colName(3) , "sample4");
+	EXPECT_EQ(mat.colName(4) , "sample3");
+	EXPECT_EQ(mat.colName(5) , "sample2");
+	EXPECT_EQ(mat.colName(6) , "sample1");
+	
+	EXPECT_EQ(mat.row(0)[0],7);
+	EXPECT_EQ(mat.row(0)[1],6);
+	EXPECT_EQ(mat.row(0)[2],5);
+	EXPECT_EQ(mat.row(0)[3],4);
+	EXPECT_EQ(mat.row(0)[4],3);
+	EXPECT_EQ(mat.row(0)[5],2);
+	EXPECT_EQ(mat.row(0)[6],1);
+
+	EXPECT_EQ(mat.row(1)[0],7);
+	EXPECT_EQ(mat.row(1)[1],6);
+	EXPECT_EQ(mat.row(1)[2],5);
+	EXPECT_EQ(mat.row(1)[3],4);
+	EXPECT_EQ(mat.row(1)[4],3);
+	EXPECT_EQ(mat.row(1)[5],2);
+	EXPECT_EQ(mat.row(1)[6],1);
+	
+	EXPECT_EQ(mat.row(2)[0],7);
+	EXPECT_EQ(mat.row(2)[1],6);
+	EXPECT_EQ(mat.row(2)[2],5);
+	EXPECT_EQ(mat.row(2)[3],4);
+	EXPECT_EQ(mat.row(2)[4],3);
+	EXPECT_EQ(mat.row(2)[5],2);
+	EXPECT_EQ(mat.row(2)[6],1);
+
+}
+TEST_F(DenseMatrixTest,sortRows1)
+{
+	std::vector<std::string> rows {"mir4","mir5","mir6"};
+	std::vector<std::string> cols {"sample1","sample2","sample3","sample4"};
+	DenseMatrix mat(rows,cols);
+	//fill the matrix
+	mat(0,0) = 3;
+	mat(0,1) = 2;
+	mat(0,2) = 1;
+	mat(0,3) = 4;
+	
+	mat(1,0) = 1;
+	mat(1,1) = 2;
+	mat(1,2) = 3;
+	mat(1,3) = 4;
+	
+	mat(2,0) = 7;
+	mat(2,1) = 8;
+	mat(2,2) = 9;
+	mat(2,3) = 4;
+	
+	//fill orientation vector
+	std::vector<std::string> orientation {"sample3","sample4","sample1","sample2"};
+	//sort matrix
+	mat.sortRows(orientation);
+	
+	EXPECT_EQ(mat.colName(0) , "sample3");
+	EXPECT_EQ(mat.colName(1) , "sample4");
+	EXPECT_EQ(mat.colName(2) , "sample1");
+	EXPECT_EQ(mat.colName(3) , "sample2");
+		
+	EXPECT_EQ(mat.row(0)[0],1);
+	EXPECT_EQ(mat.row(0)[1],4);
+	EXPECT_EQ(mat.row(0)[2],3);
+	EXPECT_EQ(mat.row(0)[3],2);
+
+	EXPECT_EQ(mat.row(1)[0],3);
+	EXPECT_EQ(mat.row(1)[1],4);
+	EXPECT_EQ(mat.row(1)[2],1);
+	EXPECT_EQ(mat.row(1)[3],2);
+	
+	EXPECT_EQ(mat.row(2)[0],9);
+	EXPECT_EQ(mat.row(2)[1],4);
+	EXPECT_EQ(mat.row(2)[2],7);
+	EXPECT_EQ(mat.row(2)[3],8);
+	
+	
+	EXPECT_EQ(mat.rowName(0), "mir4");
+	EXPECT_EQ(mat.rowName(1), "mir5");
+	EXPECT_EQ(mat.rowName(2), "mir6");
+}
+
+TEST_F(DenseMatrixTest,sortRows2)
+{
+	std::vector<std::string> rows {"mir4","mir5","mir6"};
+	std::vector<std::string> cols {"sample1","sample2","sample3","sample4"};
+	DenseMatrix mat(rows,cols);
+	//fill the matrix
+	mat(0,0) = 3;
+	mat(0,1) = 2;
+	mat(0,2) = 1;
+	mat(0,3) = 4;
+	
+	mat(1,0) = 1;
+	mat(1,1) = 2;
+	mat(1,2) = 3;
+	mat(1,3) = 4;
+	
+	mat(2,0) = 7;
+	mat(2,1) = 8;
+	mat(2,2) = 9;
+	mat(2,3) = 4;
+	
+	//fill orientation vector
+	std::vector<std::string> orientation {"sample1","sample2","sample3","sample4"};
+	//sort matrix
+	mat.sortRows(orientation);
+	
+	EXPECT_EQ(mat.colName(0) , "sample1");
+	EXPECT_EQ(mat.colName(1) , "sample2");
+	EXPECT_EQ(mat.colName(2) , "sample3");
+	EXPECT_EQ(mat.colName(3) , "sample4");
+		
+	EXPECT_EQ(mat.row(0)[0],3);
+	EXPECT_EQ(mat.row(0)[1],2);
+	EXPECT_EQ(mat.row(0)[2],1);
+	EXPECT_EQ(mat.row(0)[3],4);
+
+	EXPECT_EQ(mat.row(1)[0],1);
+	EXPECT_EQ(mat.row(1)[1],2);
+	EXPECT_EQ(mat.row(1)[2],3);
+	EXPECT_EQ(mat.row(1)[3],4);
+	
+	EXPECT_EQ(mat.row(2)[0],7);
+	EXPECT_EQ(mat.row(2)[1],8);
+	EXPECT_EQ(mat.row(2)[2],9);
+	EXPECT_EQ(mat.row(2)[3],4);
+	
+	EXPECT_EQ(mat.rowName(0), "mir4");
+	EXPECT_EQ(mat.rowName(1), "mir5");
+	EXPECT_EQ(mat.rowName(2), "mir6");
 }

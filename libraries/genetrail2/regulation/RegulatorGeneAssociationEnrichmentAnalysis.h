@@ -32,16 +32,19 @@
 #include <sstream>
 #include <stdint.h>
 #include <cmath>
+#include <limits>
 
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/math/distributions.hpp>
 #include <boost/math/distributions/normal.hpp>
 
+#include <genetrail2/core/HTest.h>
 #include <genetrail2/core/DenseMatrix.h>
 #include <genetrail2/core/Exception.h>
 #include <genetrail2/core/macros.h>
 #include <genetrail2/core/PValue.h>
 #include <genetrail2/core/Statistic.h>
+#include <genetrail2/core/WilcoxonRankSumTest.h>
 
 #include "RegulatorEffectResult.h"
 #include "RegulationFile.h"
@@ -75,6 +78,8 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 		max_number_of_regulators = 0;
 		biggest_regulator_idx = 0;
 	}
+	
+	
 
 	/**
 	 * Performs the entire RegulatorGeneAssociationEnrichmentAnalysis.
@@ -91,7 +96,7 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 		// Perform algorithm without bootstrapping
 		perform_bootstrapping_run_(impactScore);
 		create_regulator_lists_();
-		compute_scores_(algorithm);
+		compute_scores_(algorithm,x);
 		extract_correlations_();
 
 		// Perform runs_ bootstrapping runs;
@@ -100,8 +105,9 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 			          << std::endl;
 			bootstrapper_.create_bootstrap_sample();
 			perform_bootstrapping_run_(impactScore);
-			create_regulator_lists_();
-			compute_scores_(algorithm);
+			create_regulator_lists_();			
+			compute_scores_(algorithm,s);
+
 		}
 
 		// Compute p-value
@@ -121,10 +127,10 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 		size_t size_of_tf_list = 0;
 		for(size_t targetname : sorted_targets_) {
 			// Check if gene is targetted by any Regulator
+
 			if(!regulationFile_.checkTarget(targetname)) {
 				continue;
 			}
-
 			auto& regulations = regulationFile_.target2regulations(targetname);
 
 			// Get the number of regulators
@@ -138,8 +144,8 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 
 			// Perform single bootstrapping run
 			bootstrapper_.perform_bootstrapping_run(regulationFile_, regulations, normalize_scores_, use_absolute_value_, sort_decreasingly_, impactScore);
-		}
 
+		}
 		tf_list_tmp.reserve(size_of_tf_list);
 
 		for(size_t i = 0; i < max_number_of_regulators; ++i) {
@@ -149,7 +155,8 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 					continue;
 				}
 
-				std::vector<Regulation>& regulators = regulationFile_.target2regulations(targetname);
+				std::vector<Regulation>& regulators = regulationFile_.target2regulations(targetname);	
+			
 				if(regulators.size() <= i) {
 					// Inserts SIZE_MAX to fill the blanks
 					if(fill_blanks_) {
@@ -182,7 +189,7 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 			}
 			regulator_inidces_tmp[tf_list[i]].emplace_back(i);
 		}
-		
+ 		
 		regulator_inidces_ = regulator_inidces_tmp;
 	}
 
@@ -191,29 +198,34 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 	 *
 	 * @param algorithm The algorithm to be performed (ks-test, wrs-test)
 	 */
-	template <typename Algorithm> void compute_scores_(Algorithm algorithm)
+	template <typename Algorithm> void compute_scores_(Algorithm algorithm,std::string& s)
 	{
 		bool empty = results_.size() == 0;
 		if(empty || results_.size() < biggest_regulator_idx + 1) {
 			results_.resize(biggest_regulator_idx + 1);
 		}
 		for(size_t i = 0; i < regulator_inidces_.size(); ++i) {
+
 			if(regulator_inidces_[i].size() == 0){
 				continue;
 			}
+
 			auto score = algorithm.compute_score(tf_list.size(),
 			                                     regulator_inidces_[i].begin(),
 			                                     regulator_inidces_[i].end());
+
 
 			if(empty) {
 				results_[i].name = name_database_(i);
 				results_[i].hits = regulator_inidces_[i].size();
 				results_[i].scores.reserve(runs_);
 			}
-						
 			results_[i].addScore(score);
+
+			
 		}
 	}
+	
 
 	/**
 	 * Extracts the mean correlations so we judge what effect the regulator has.
@@ -265,11 +277,13 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 			
 			std::cout << "INFO: Computing p-values for category '"
 			          << result.name << "'" << std::endl;
+			
 			result.score = statistic::middle<value_type>(result.scores.begin(),
 			                                             result.scores.end());
 			algorithm.compute_p_value(result, tf_list.size());
 			
 			result.normalize_scores(algorithm, tf_list.size());
+			
 		}
 	}
 

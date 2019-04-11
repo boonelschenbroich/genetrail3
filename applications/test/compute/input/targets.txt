@@ -1,0 +1,9 @@
+hsa-let-7a-3p	PON3
+hsa-let-7a-5p	DMTN
+hsa-let-7a-3p	HDGSZ
+mirna6	CD7
+hsa-miR-100-5p	CCL20
+hsa-let-7a-3p	JFH
+hsa-let-7a-5p	PON3
+hsa-miR-22-3p	CD7
+hsa-let-7a-5p	KDJ

@@ -1,0 +1,6 @@
+hsa-miR-1181	1
+hsa-miR-1-3p	867
+hsa-miR-1256	9
+hsa-miR-107 	4
+hsa-miR-100	9
+hsa-miR-22	11 

@@ -4,10 +4,25 @@ project(compute)
 # Build executable
 ####################################################################################################
 
+
 add_executable(computeScores computeScores.cpp)
 target_link_libraries(computeScores applicationCommon gtcore ${BOOST_LIBRARIES})
 GT2_COMPILE_FLAGS(computeScores)
 set_target_properties(computeScores PROPERTIES
+    INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
+)
+
+add_executable(computeNOD nod.cpp)
+target_link_libraries(computeNOD applicationCommon gtcore ${BOOST_LIBRARIES})
+GT2_COMPILE_FLAGS(computeNOD)
+set_target_properties(computeNOD PROPERTIES
+    INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
+)
+
+add_executable(computeNetworkFormular computeNetworkFormular.cpp)
+target_link_libraries(computeNetworkFormular applicationCommon gtcore ${BOOST_LIBRARIES})
+GT2_COMPILE_FLAGS(computeNetworkFormular)
+set_target_properties(computeNetworkFormular PROPERTIES
     INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
 )
 

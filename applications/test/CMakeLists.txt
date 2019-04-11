@@ -1,2 +1,3 @@
 add_subdirectory(enrichment)
 add_subdirectory(regulation)
+add_subdirectory(compute)

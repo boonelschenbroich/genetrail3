@@ -1,0 +1,50 @@
+[
+    {
+        "regulator": "hsa-miR-22-3p",
+        "rank": 1,
+        "hits": 3,
+        "totalNumberOfTargets": 0,
+        "score": 1.2535663410560174,
+        "expectedHits": 0.0,
+        "pValue": 0.10499983587780477,
+        "correctedPValue": 0.8749986323150396,
+        "meanCorrelation": -0.06778133039804388,
+        "absMeanCorrelation": 0.21690769169885736
+    },
+    {
+        "regulator": "hsa-miR-100-5p",
+        "rank": 2,
+        "hits": 2,
+        "totalNumberOfTargets": 0,
+        "score": 0.26111648393354677,
+        "expectedHits": 0.0,
+        "pValue": 0.397001340096381,
+        "correctedPValue": 1.0,
+        "meanCorrelation": -0.12467505744365229,
+        "absMeanCorrelation": 0.12467505744365229
+    },
+    {
+        "regulator": "hsa-miR-555-3p",
+        "rank": 3,
+        "hits": 2,
+        "totalNumberOfTargets": 0,
+        "score": -0.5222329678670935,
+        "expectedHits": 0.0,
+        "pValue": 0.699245932779705,
+        "correctedPValue": 1.0,
+        "meanCorrelation": 0.0,
+        "absMeanCorrelation": 0.0
+    },
+    {
+        "regulator": "hsa-let-7a-3p",
+        "rank": 4,
+        "hits": 3,
+        "totalNumberOfTargets": 0,
+        "score": -1.0256451881367415,
+        "expectedHits": 0.0,
+        "pValue": 0.8474705703691609,
+        "correctedPValue": 1.0,
+        "meanCorrelation": -0.044081493336563418,
+        "absMeanCorrelation": 0.1335247133572524
+    }
+]

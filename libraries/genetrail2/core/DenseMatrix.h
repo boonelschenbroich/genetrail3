@@ -213,7 +213,12 @@ namespace GeneTrail
 			 *       .matrix().transpose()
 			 */
 			void transpose() override;
-
+			
+			/**
+			 * 
+			 * sorts the rows of the matrix according to the colomn names of matrix m
+			 */
+			void sortRows(std::vector<std::string>& m);
 			///@}
 		private:
 			// Actual matrix payload
@@ -230,6 +235,16 @@ namespace GeneTrail
 			              std::map<std::string, index_type>& name_to_index,
 			              std::vector<std::string>& index_to_name,
 			              std::function<void(index_type, index_type)> swap);
+			
+// 			struct MyComparator{
+// 			    const std::vector<int> order;
+// 			    MyComparator(const std::vector<int> val_vec):
+// 			      order(val_vec){}
+// 	    
+// 			    bool operator()(int i1, int i2){
+// 				return order[i1] < order[i2];
+// 			    } 
+//			};
 	};
 }
 

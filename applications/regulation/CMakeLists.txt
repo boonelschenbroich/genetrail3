@@ -47,6 +47,16 @@ set_target_properties(reggae PROPERTIES
 
 GT2_COMPILE_FLAGS(reggae)
 
+
+add_executable(microReggae microReggae.cpp)
+target_link_libraries(microReggae applicationCommon gtcore regulationCommon gtregulation)
+set_target_properties(microReggae PROPERTIES
+    INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
+)
+
+GT2_COMPILE_FLAGS(microReggae)
+
+
 add_executable(reggae_result_aggregator reggae_result_aggregator.cpp)
 target_link_libraries(reggae_result_aggregator applicationCommon gtcore gtregulation)
 set_target_properties(reggae_result_aggregator PROPERTIES

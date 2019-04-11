@@ -1,3 +1,4 @@
+ 
 #!/bin/bash
 
 source "$1"
@@ -33,9 +34,52 @@ function runREGGAEMatrixMode {
 		--abs
 }
 
+function runMicroREGGAEAssociationMode {
+	runMethod "microREGGAE with association file" microReggae  "microReggae_association_mode.txt"\
+		--scores "${BASE_DIR}/input/deregulated_genes_microReggae.txt" \
+		--associations "${BASE_DIR}/input/rtis_with_correlation_microReggae.txt" \
+		--method wrs-test \
+		--json 
+}
+
+
+function runMicroREGGAEMatrixMode {
+	runMethod "microREGGAE with miRNA expression matrix" microReggae  "microReggae_matrix_mode.txt"\
+		--scores "${BASE_DIR}/input/deregulated_genes_microReggae.txt" \
+		--matrix "${BASE_DIR}/input/matrix_MicroReggae.txt" \
+		--matrix-micro  "${BASE_DIR}/input/microMatrix.txt" \
+		--regulations "${BASE_DIR}/input/rtis_microReggae.txt" \
+		--method wrs-test \
+		--json \
+		--impact pearson_correlation 
+				
+}
+function runMicroREGGAEMatrixMode2 {
+	runMethod "microREGGAE with miRNA expression matrix2" microReggae  "microReggae_matrix_mode2.txt"\
+		--scores "${BASE_DIR}/input/deregulated_genes_microReggae2.txt" \
+		--matrix "${BASE_DIR}/input/matrix_MicroReggae.txt" \
+		--matrix-micro  "${BASE_DIR}/input/microMatrix.txt" \
+		--regulations "${BASE_DIR}/input/rtis_microReggae2.txt" \
+		--method wrs-test \
+		--json \
+		--impact pearson_correlation 
+				
+}
+
+function runMicroREGGAEMatrixMode3 {
+	runMethod "microREGGAE with miRNA expression matrix3" microReggae  "microReggae_matrix_mode3.txt"\
+		--scores "${BASE_DIR}/input/deregulated_genes3.txt" \
+		--matrix "${BASE_DIR}/input/matrix3.txt" \
+		--matrix-micro  "${BASE_DIR}/input/microMatrix3.txt" \
+		--regulations "${BASE_DIR}/input/rtis3.txt" \
+		--method wrs-test \
+		--json \
+		--impact pearson_correlation 
+				
+}
 function runMethod {
 	mkdir -p "${OUTPUT}"
-
+	
 	echo "Running $1 ..."
 	"${BINARY_PATH}/$2" --seed "${RANDOM_SEED}" --output "${OUTPUT}/$3" "${@:4}" > /dev/null
 	
@@ -71,3 +115,7 @@ function runMethod {
 
 runREGGAEAssiciationsMode
 runREGGAEMatrixMode
+runMicroREGGAEAssociationMode
+runMicroREGGAEMatrixMode
+runMicroREGGAEMatrixMode2
+runMicroREGGAEMatrixMode3

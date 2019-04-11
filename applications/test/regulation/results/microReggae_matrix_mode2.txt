@@ -1,0 +1,86 @@
+[
+    {
+        "regulator": "hsa-miR-211-5p",
+        "rank": 1,
+        "hits": 2,
+        "totalNumberOfTargets": 0,
+        "score": 1.8856180831641268,
+        "expectedHits": 0.0,
+        "pValue": 0.029673219395959947,
+        "correctedPValue": 0.5385689320366729,
+        "meanCorrelation": -0.050615798031023239,
+        "absMeanCorrelation": 0.050615798031023239
+    },
+    {
+        "regulator": "hsa-miR-598-5p",
+        "rank": 2,
+        "hits": 1,
+        "totalNumberOfTargets": 0,
+        "score": 1.2649110640673516,
+        "expectedHits": 0.0,
+        "pValue": 0.1029516053660342,
+        "correctedPValue": 0.9342858186967603,
+        "meanCorrelation": -0.20011120378952108,
+        "absMeanCorrelation": 0.20011120378952108
+    },
+    {
+        "regulator": "hsa-miR-1238-3p",
+        "rank": 3,
+        "hits": 2,
+        "totalNumberOfTargets": 0,
+        "score": 0.4714045207910317,
+        "expectedHits": 0.0,
+        "pValue": 0.31867594411696856,
+        "correctedPValue": 1.0,
+        "meanCorrelation": -0.12967807326808596,
+        "absMeanCorrelation": 0.12967807326808596
+    },
+    {
+        "regulator": "hsa-miR-153-3p",
+        "rank": 4,
+        "hits": 2,
+        "totalNumberOfTargets": 0,
+        "score": -0.7071067811865475,
+        "expectedHits": 0.0,
+        "pValue": 0.7602499389065233,
+        "correctedPValue": 1.0,
+        "meanCorrelation": 0.015477690756031594,
+        "absMeanCorrelation": 0.08047166574662757
+    },
+    {
+        "regulator": "hsa-miR-4721",
+        "rank": 5,
+        "hits": 2,
+        "totalNumberOfTargets": 0,
+        "score": -0.7071067811865475,
+        "expectedHits": 0.0,
+        "pValue": 0.7602499389065233,
+        "correctedPValue": 1.0,
+        "meanCorrelation": 0.0,
+        "absMeanCorrelation": 0.0
+    },
+    {
+        "regulator": "hsa-miR-3191-5p",
+        "rank": 6,
+        "hits": 1,
+        "totalNumberOfTargets": 0,
+        "score": -0.9486832980505138,
+        "expectedHits": 0.0,
+        "pValue": 0.8286091444260443,
+        "correctedPValue": 1.0,
+        "meanCorrelation": -0.04395657279800716,
+        "absMeanCorrelation": 0.04395657279800716
+    },
+    {
+        "regulator": "hsa-miR-3688-5p",
+        "rank": 7,
+        "hits": 1,
+        "totalNumberOfTargets": 0,
+        "score": -1.5811388300841896,
+        "expectedHits": 0.0,
+        "pValue": 0.9430768509966709,
+        "correctedPValue": 1.0,
+        "meanCorrelation": 0.3487171442041143,
+        "absMeanCorrelation": 0.3487171442041143
+    }
+] 

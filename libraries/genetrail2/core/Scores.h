@@ -25,6 +25,7 @@
 
 #include <boost/iterator/transform_iterator.hpp>
 
+#include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
@@ -42,7 +43,7 @@ namespace GeneTrail
 	class GT2_EXPORT Score
 	{
 		public:
-		Score(EntityDatabase& db, const std::string& n, double s) : entity_(db(n)), score_(s) {}
+		Score(EntityDatabase& db, const std::string& n, double s) : entity_(db(n)), score_(s), db_(db) {}
 		Score(size_t i, double s) : entity_(i), score_(s) {}
 
 		const std::string& name(const EntityDatabase& db) const { return db(entity_); }
@@ -54,6 +55,7 @@ namespace GeneTrail
 		private:
 		size_t entity_;
 		double score_;
+		EntityDatabase db_;
 	};
 
 	class GT2_EXPORT Scores
@@ -257,6 +259,8 @@ namespace GeneTrail
 		}
 
 		const Score& operator[](size_t i) const { return data_[i]; }
+
+		EntityDatabase getEntityDatabase();
 
 		void sortByName();
 		void sortByIndex();

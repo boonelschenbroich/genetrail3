@@ -81,6 +81,19 @@ class GT2_EXPORT KendallCorrelation
 		                                                          begin2, end2);
 	}
 };
+
+class GT2_EXPORT NetworkFormular
+{
+  public:
+	NetworkFormular() {}	
+	template <typename Iterator1, typename Iterator2>
+	typename std::iterator_traits<Iterator1>::value_type
+	compute(Iterator1 , Iterator1 , Iterator2 ,
+	        Iterator2 ) const
+	{
+	  return(std::numeric_limits<typename std::iterator_traits<Iterator1>::value_type>::min());
+	}
+};
 }
 
 #endif // GT2_REGULATOR_ASSOCIATION_SCORE_H

@@ -1,0 +1,5 @@
+miRNA1   GeneB   1.0 
+miRNA3   GeneC   2.0 
+miRNA4   GeneD   3.0 
+miRNA4   GeneB   4.0 
+miRNA1   GeneE   5.0

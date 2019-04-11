@@ -1,0 +1,6 @@
+hsa-let-7a-3p	PON3	0.0735042
+hsa-let-7a-3p	JFH	0.626469
+hsa-let-7a-5p	DMTN	-1.39351
+hsa-let-7a-5p	PON3	-0.157092
+hsa-miR-100-5p	CCL20	-1.26896
+hsa-miR-22-3p	CD7	-3.57508

@@ -1,0 +1,74 @@
+[
+    {
+        "regulator": "hsa-miR-598-5p",
+        "rank": 1,
+        "hits": 4,
+        "totalNumberOfTargets": 0,
+        "score": 1.889822365046136,
+        "expectedHits": 0.0,
+        "pValue": 0.029390860677679453,
+        "correctedPValue": 0.4320456519618879,
+        "meanCorrelation": -0.855710635,
+        "absMeanCorrelation": 0.855710635
+    },
+    {
+        "regulator": "hsa-miR-3688-5p",
+        "rank": 2,
+        "hits": 1,
+        "totalNumberOfTargets": 0,
+        "score": 0.0,
+        "expectedHits": 0.0,
+        "pValue": 0.5,
+        "correctedPValue": 1.0,
+        "meanCorrelation": -0.22222,
+        "absMeanCorrelation": 0.22222
+    },
+    {
+        "regulator": "hsa-miR-3191-5p",
+        "rank": 3,
+        "hits": 2,
+        "totalNumberOfTargets": 0,
+        "score": 0.0,
+        "expectedHits": 0.0,
+        "pValue": 0.5,
+        "correctedPValue": 1.0,
+        "meanCorrelation": 0.11966937999999999,
+        "absMeanCorrelation": 0.20143062
+    },
+    {
+        "regulator": "hsa-miR-1184",
+        "rank": 4,
+        "hits": 1,
+        "totalNumberOfTargets": 0,
+        "score": -0.3162277660168379,
+        "expectedHits": 0.0,
+        "pValue": 0.6240851829770753,
+        "correctedPValue": 1.0,
+        "meanCorrelation": -0.47456,
+        "absMeanCorrelation": 0.47456
+    },
+    {
+        "regulator": "hsa-miR-4721",
+        "rank": 5,
+        "hits": 1,
+        "totalNumberOfTargets": 0,
+        "score": -0.6324555320336758,
+        "expectedHits": 0.0,
+        "pValue": 0.7364553715672308,
+        "correctedPValue": 1.0,
+        "meanCorrelation": 0.0,
+        "absMeanCorrelation": 0.0
+    },
+    {
+        "regulator": "hsa-miR-1238-3p",
+        "rank": 6,
+        "hits": 2,
+        "totalNumberOfTargets": 0,
+        "score": -1.6499158227686109,
+        "expectedHits": 0.0,
+        "pValue": 0.9505199229902971,
+        "correctedPValue": 1.0,
+        "meanCorrelation": 0.025249729999999999,
+        "absMeanCorrelation": 0.040957969999999999
+    }
+]

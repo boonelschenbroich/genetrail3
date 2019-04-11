@@ -22,7 +22,7 @@
 #define GT2_DENSE_COLUMN_SUBSET_H
 
 #include "DenseMatrix.h"
-
+#include <iostream>
 #include "macros.h"
 
 #include <boost/range/irange.hpp>
