@@ -42,6 +42,7 @@ using rational = bmp::mpq_rational;
 }
 #else
 #include <boost/multiprecision/cpp_dec_float.hpp>
+#include <boost/multiprecision/cpp_int.hpp>
 namespace GeneTrail
 {
 namespace bmp = boost::multiprecision;

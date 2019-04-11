@@ -39,6 +39,7 @@
 #include <boost/iterator/filter_iterator.hpp>
 #include <boost/iterator/transform_iterator.hpp>
 #include <boost/iterator/zip_iterator.hpp>
+#include <boost/optional.hpp>
 
 #include <vector>
 #include <utility>
