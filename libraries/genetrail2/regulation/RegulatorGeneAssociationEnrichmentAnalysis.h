@@ -96,7 +96,7 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 		// Perform algorithm without bootstrapping
 		perform_bootstrapping_run_(impactScore);
 		create_regulator_lists_();
-		compute_scores_(algorithm,x);
+		compute_scores_(algorithm);
 		extract_correlations_();
 
 		// Perform runs_ bootstrapping runs;
@@ -106,7 +106,7 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 			bootstrapper_.create_bootstrap_sample();
 			perform_bootstrapping_run_(impactScore);
 			create_regulator_lists_();			
-			compute_scores_(algorithm,s);
+			compute_scores_(algorithm);
 
 		}
 
@@ -198,7 +198,7 @@ template <typename Bootstrapper, typename NameDatabase, typename ValueType> clas
 	 *
 	 * @param algorithm The algorithm to be performed (ks-test, wrs-test)
 	 */
-	template <typename Algorithm> void compute_scores_(Algorithm algorithm,std::string& s)
+	template <typename Algorithm> void compute_scores_(Algorithm algorithm)
 	{
 		bool empty = results_.size() == 0;
 		if(empty || results_.size() < biggest_regulator_idx + 1) {

@@ -6,21 +6,22 @@ source "$1"
 RANDOM_SEED=8095254980
 
 function runREGGAEAssiciationsMode {
-	runMethod "REGGAE with association file" reggae "reggae_association_file.txt" --scores "${BASE_DIR}/input/deregulated_genes.txt" \
+	runMethod "REGGAE with association file" reggae "reggae_association_file_new.txt" --scores "${BASE_DIR}/input/deregulated_genes.txt" \
 		 --associations "${BASE_DIR}/input/rtis_with_correlation.txt" \
 		 --method wrs-test \
-		 --bootstrap 0\
+		 --bootstrap 0 \
 		 --alpha 0.1\
 		 --adjust benjamini_yekutieli\
 		 --json\
 		 --impact pearson_correlation\
 		 --confidence-intervals percentile\
+		 --sort-rtis-decreasingly \
 		 --decreasingly\
 		 --abs
 }
 
 function runREGGAEMatrixMode {
-	runMethod "REGGAE with gene expression matrix" reggae  "reggae_gene_expression_matrix.txt" --scores "${BASE_DIR}/input/deregulated_genes.txt" \
+	runMethod "REGGAE with gene expression matrix" reggae  "reggae_gene_expression_matrix_new.txt" --scores "${BASE_DIR}/input/deregulated_genes.txt" \
 		--matrix "${BASE_DIR}/input/matrix.txt" \
 		--regulations "${BASE_DIR}/input/rtis.txt" \
 		--method wrs-test \
@@ -30,6 +31,7 @@ function runREGGAEMatrixMode {
 		--json \
 		--impact pearson_correlation \
 		--confidence-intervals percentile \
+                --sort-rtis-decreasingly \
 		--decreasingly \
 		--abs
 }
@@ -79,12 +81,13 @@ function runMicroREGGAEMatrixMode3 {
 }
 function runMethod {
 	mkdir -p "${OUTPUT}"
-	
-	echo "Running $1 ..."
+
+		
+	echo -ne "Running $1 ... "
 	"${BINARY_PATH}/$2" --seed "${RANDOM_SEED}" --output "${OUTPUT}/$3" "${@:4}" > /dev/null
 	
 	if [[ ! -f "${OUTPUT}/$3" ]]; then
-		echo "[1;31mNo output has been produced![0m"
+		echo "[1;31mNo output has been produced![0m";
 		result=1
 		return
 	fi
@@ -92,7 +95,7 @@ function runMethod {
 	REFERENCE="${BASE_DIR}/results/$3"
 
 	if [[ ! -f ${REFERENCE} ]]; then
-		echo "[1;31mCould not open file '${REFERENCE}'[0m"
+		echo "[1;31mCould not open file '${REFERENCE}'[0m";
 		result=1
 		return
 	fi
@@ -100,8 +103,15 @@ function runMethod {
 	local DIFF=$(diff -purN "${REFERENCE}" "${OUTPUT}/$3")
 
 	if [[ "${DIFF}" != '' ]]; then
-		echo "[1;31mError[0m - Type to check: vimdiff ${REFERENCE} ${OUTPUT}/$3"
-		result=1
+                echo -e "\e[01;31mError\e[0m"
+		echo ""
+                echo "    ============================================================"
+                echo "    Please type the following commands to check the differences:"
+                echo "        > "${BINARY_PATH}/$2" --seed "${RANDOM_SEED}" --output "${OUTPUT}/$3" "${@:4}" > /dev/null" 
+                echo "        > vimdiff ${REFERENCE} ${OUTPUT}/$3"
+                echo "    ============================================================"
+                echo ""
+                result=1
 	else
 		echo "[0;32mPassed[0m"
 		rm "${OUTPUT}/$3"
@@ -115,7 +125,7 @@ function runMethod {
 
 runREGGAEAssiciationsMode
 runREGGAEMatrixMode
-runMicroREGGAEAssociationMode
-runMicroREGGAEMatrixMode
-runMicroREGGAEMatrixMode2
-runMicroREGGAEMatrixMode3
+#runMicroREGGAEAssociationMode
+#runMicroREGGAEMatrixMode
+#runMicroREGGAEMatrixMode2
+#runMicroREGGAEMatrixMode3

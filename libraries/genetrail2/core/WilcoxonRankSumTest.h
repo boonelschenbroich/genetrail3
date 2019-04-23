@@ -71,7 +71,7 @@ template <typename ValueType> class GT2_EXPORT WilcoxonRankSumTest
 	              size_t size1, size_t size2)
 	{
 		value_type rank_sum1 = 0;
-		value_type rank_sum2 = 0;
+		//value_type rank_sum2 = 0;
 
 		size_t i = 0;
 		while(i < r.size()) {
@@ -226,7 +226,6 @@ template <typename ValueType> class GT2_EXPORT WilcoxonRankSumTest
 	{
 		auto size1 = std::distance(first, last);
 		auto size2 = scores.size() - size1;
-		assert(size1 <= scores.size());
 
 		value_type rank_sum1 = 0;
 		value_type rank_sum2 = 0;
