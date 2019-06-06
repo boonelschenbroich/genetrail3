@@ -51,7 +51,7 @@ bool parseArguments(int argc, char* argv[])
 					  ("scores,s", bpo::value(&scores_)->required(), "A whitespace separated file containing deregulated targets. (test set)")
 					  ("associations,t", bpo::value(&associations_)->default_value(""), "A whitespace separated file regulator, target and association scores. (only needed if '--regulations' and '--matrix' options are not provided)") 
 					  ("matrix,x", bpo::value(&matrix_)->default_value(""), "A whitespace separated file containing expression values for all genes. (Only needed if '--matrix' is used)")
-					  ("matrix-micro,h",bpo::value(&matrix_micro_)->default_value(""),"A whitespace separated file containing the expression values for all mircoRNAs.")   
+					  ("matrix-micro,f",bpo::value(&matrix_micro_)->default_value(""),"A whitespace separated file containing the expression values for all mircoRNAs.")   
 					  ("groups,g", bpo::value<std::string>(&groups_), "File containing two lines specifying which colnames belong to which group. First line corresponds to test samples, second line to reference samples. (Only needed if matrices are given.)")
 					  ("fold-change,i", bpo::value(&fold_change_)->default_value(false)->zero_tokens(), "Should the fold change of miRNAs be calculated in order to exclude ones with small fold change?")
 					  ("no-row-names,w", bpo::value<bool>(&matrixOptions.no_rownames)->default_value(false)->zero_tokens(), "Does the matrix file contain row names? (Only needed if '--matrix' is used)")
@@ -70,8 +70,7 @@ bool parseArguments(int argc, char* argv[])
 					  ("json,j", bpo::value(&json_)->default_value(false)->zero_tokens(), "Output file in .json format (default: .tsv).")
 					  ("impact,p", bpo::value(&impact_score_)->default_value("pearson_correlation"), "Method that should be used to compute the impact of regulators. (pearson_correlation, spearman_correlation, kendall_correlation, network_formular)")
 					  ("normalize-association-scores,k", bpo::value(&normalize_scores_)->default_value(false)->zero_tokens(), "Should the association scores be normalized? (default: false) (only used if impact score is calculated '--impact/--matrix')")
-					  //("confidence-intervals,v", bpo::value(&confidence_interval_), "Method that should be used to compute confidence intervals. (percentile, bca)")
-					 
+					  ("confidence-intervals,v", bpo::value(&confidence_interval_), "Method that should be used to compute confidence intervals. (percentile, bca)")
 					  ("max-regulator-per-target,y", bpo::value(&max_regulators_per_target_), "The maximum number of regulators that are allowed to influence a regulator. (optional)")
 					  ("fill-blanks,f", bpo::value(&fill_blanks_)->default_value(false)->zero_tokens(), "Should blanks be introduced if a target has a fewer regulators than all other targets. (optional)")
 					  ("rti-network-dir,z", bpo::value(&network_)->default_value(""), "Output prefix for RTI network. (optional)")
@@ -107,11 +106,6 @@ bool parseArguments(int argc, char* argv[])
 		}
 	}
 	return true;
-	
-	
-
-
-
 }
 
 struct DummyBootstrapper
@@ -249,8 +243,8 @@ int runAssociationAnalysis()
 	std::cout << "INFO: Adjusting p-values" << std::endl;
 	adjustPValues(results, adjustment_method_);
 	
-	//std::cout << "INFO: Calculating confidence intervals" << std::endl;
-	//calculate_bootstrap_parameters(results, alpha_, confidence_interval_);
+	std::cout << "INFO: Calculating confidence intervals" << std::endl;
+	calculate_bootstrap_parameters(results, alpha_, confidence_interval_);
 
 	std::cout << "INFO: Writing results" << std::endl;
 	write(results, out_, json_);
@@ -382,8 +376,8 @@ int matrixAnalysis()
     std::cout << "INFO: Adjusting p-values" << std::endl;
     adjustPValues(results, adjustment_method_);
 	
-    //std::cout << "INFO: Calculating confidence intervals" << std::endl;
-    //calculate_bootstrap_parameters(results, alpha_, confidence_interval_);
+    std::cout << "INFO: Calculating confidence intervals" << std::endl;
+    calculate_bootstrap_parameters(results, alpha_, confidence_interval_);
 
     std::cout << "INFO: Writing results" << std::endl;
     write(results, out_, json_);
