@@ -159,8 +159,8 @@ done
 
 # Helper function to create command
 command() {
-    IFS=';' read -r -a array <<< $1
-    IFS=';' read -r -a cat <<< $2
+    IFS=';' read -r -a array <<< "$1"
+    IFS=';' read -r -a cat <<< "$2"
     echo @CMAKE_BINARY_DIR@/applications/enrichment/ora" ${COMMAND} ${INPUT} ${array[0]} ${OUTPUT} ${array[1]} ${CATEGORY} ${cat[1]} ${CATEGORY_NAME} ${cat[0]}"
 }
 export -f command
@@ -173,7 +173,7 @@ echo "$CATEGORIES"
 
 # Run command for each chromosome in parallel
 SCRIPT="$RANDOM"script.sh
-parallel command ::: $FILES ::: $CATEGORIES > $SCRIPT
+parallel command ::: "$FILES" ::: "$CATEGORIES" > $SCRIPT
 echo $SCRIPT
 parallel -j ${THREADS} :::: $SCRIPT
 rm $SCRIPT
