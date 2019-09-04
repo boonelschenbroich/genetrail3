@@ -21,6 +21,7 @@
 #define GT2_CORE_MULTIPRECISION_H
 
 #include <genetrail2/core/config.h>
+#include <boost/math/bindings/detail/big_lanczos.hpp>
 
 #if defined GENETRAIL2_HAS_MPFR
 #include <boost/multiprecision/mpfr.hpp>
@@ -60,6 +61,44 @@ namespace GeneTrail
 	using big_float_1000 = big_float_tpl<1000>;
 	using big_float      = big_float_50;
 }
+
+// Defining the lanczos approximation that we want for our precision. The
+// default lookup from boost (version 1.65 and above) wants undefined_lanczos
+// which is incredibly slow. (More details in github.com/boostorg/math/issues/247)
+namespace boost{ namespace math{ namespace lanczos{
+	// Define template for our own lanczos class that uses the closest existing
+	// lanczos for the given type
+        template <typename return_type, typename lanczos_type>
+	struct gt2_lanczos_tpl{
+                static return_type lanczos_sum(const return_type& z){ return lanczos_type::lanczos_sum(z); }
+                static return_type lanczos_sum_expG_scaled(const return_type& z){ return lanczos_type::lanczos_sum_expG_scaled(z); }
+                static return_type lanczos_sum_near_1(const return_type& z){ return lanczos_type::lanczos_sum_near_1(z); }
+                static return_type lanczos_sum_near_2(const return_type& z){ return lanczos_type::lanczos_sum_near_2(z); }
+                static return_type g(){ return lanczos_type::g(); }
+        };
+
+	// Specializations of the general lanczos struct. Now we can safely use
+	// boost::math::binomial_coefficient() and it will choose one of the
+	// lanczos specializations defined here.
+        template<class Policy>
+        struct lanczos<GeneTrail::big_float_50, Policy>{
+                typedef gt2_lanczos_tpl<GeneTrail::big_float_50, lanczos31UDT> type;
+        };
+        template<class Policy>
+        struct lanczos<GeneTrail::big_float_100, Policy>{
+                typedef gt2_lanczos_tpl<GeneTrail::big_float_100, lanczos61UDT> type;
+        };
+        template<class Policy>
+        struct lanczos<GeneTrail::big_float_500, Policy>{
+                typedef gt2_lanczos_tpl<GeneTrail::big_float_500, lanczos61UDT> type;
+        };
+        template<class Policy>
+        struct lanczos<GeneTrail::big_float_1000, Policy>{
+                typedef gt2_lanczos_tpl<GeneTrail::big_float_1000, lanczos61UDT> type;
+        };
+
+}}}
+
 
 #endif // GT2_CORE_MULTIPRECISION_H
 
