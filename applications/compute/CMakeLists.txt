@@ -54,6 +54,13 @@ set_target_properties(transformMatrix PROPERTIES
     INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
 )
 
+add_executable(NAHandler naHandler.cpp)
+target_link_libraries(NAHandler applicationCommon gtcore ${BOOST_LIBRARIES})
+GT2_COMPILE_FLAGS(NAHandler)
+set_target_properties(NAHandler PROPERTIES
+    INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
+)
+
 add_executable(interactiveUDS interactive_UDS.cpp)
 target_link_libraries(interactiveUDS applicationCommon gtcore ${BOOST_LIBRARIES})
 GT2_COMPILE_FLAGS(interactiveUDS)

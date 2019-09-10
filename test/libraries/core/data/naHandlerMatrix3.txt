@@ -1,0 +1,4 @@
+Hi	Hi2	Hi3	Hi4
+G1	null	NAN	4	3
+G2	8	NA	9	4
+G3	nan	2	NULL	0
