@@ -157,23 +157,33 @@ done
 #    exit -1
 #fi
 
+CATEGORIES="$(cat $CATEGORIES | awk  '{ print $1";"$2 }')"
+
 # Helper function to create command
 command() {
-    IFS=';' read -r -a array <<< $1
-    IFS=';' read -r -a cat <<< $2
+    IFS=';' read -r -a array <<< "$1"
+    IFS=';' read -r -a cat <<< "$2"
     echo /home/HPL/tkehl/workspace/genetrail2/build/applications/enrichment/ora" ${COMMAND} ${INPUT} ${array[0]} ${OUTPUT} ${array[1]} ${CATEGORY} ${cat[1]} ${CATEGORY_NAME} ${cat[0]}"
 }
 export -f command
 
-if [ "$SKIP_INPUT_FILES" = false ]; then
-FILES="$(cat $FILES)"
-fi
-CATEGORIES="$(cat $CATEGORIES | awk  '{ print $1";"$2 }')"
-echo "$CATEGORIES"
-
-# Run command for each chromosome in parallel
 SCRIPT="$RANDOM"script.sh
-parallel command ::: $FILES ::: $CATEGORIES > $SCRIPT
-echo $SCRIPT
-parallel -j ${THREADS} :::: $SCRIPT
+
+# Helper function to create script
+create_script() {
+    tmpFILES="$(cat  $1)"
+    #parallel command ::: "$tmpFILES" ::: "$CATEGORIES" > $SCRIPT
+    parallel command ::: "$tmpFILES" ::: "$CATEGORIES"
+}
+export -f create_script
+
+#Process input files in batches to avoid variable overflow
+PREFIX="$RANDOM"tmp.
+split --lines=500 $FILES ${PREFIX}
+ls tmp.* | parallel create_script :::: - > $SCRIPT
+
+parallel --bar -j ${THREADS} :::: $SCRIPT > /dev/null
+
 rm $SCRIPT
+rm $PREFIX*
+

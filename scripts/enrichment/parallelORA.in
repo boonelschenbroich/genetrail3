@@ -157,6 +157,8 @@ done
 #    exit -1
 #fi
 
+CATEGORIES="$(cat $CATEGORIES | awk  '{ print $1";"$2 }')"
+
 # Helper function to create command
 command() {
     IFS=';' read -r -a array <<< "$1"
@@ -165,15 +167,23 @@ command() {
 }
 export -f command
 
-if [ "$SKIP_INPUT_FILES" = false ]; then
-FILES="$(cat $FILES)"
-fi
-CATEGORIES="$(cat $CATEGORIES | awk  '{ print $1";"$2 }')"
-echo "$CATEGORIES"
-
-# Run command for each chromosome in parallel
 SCRIPT="$RANDOM"script.sh
-parallel command ::: "$FILES" ::: "$CATEGORIES" > $SCRIPT
-echo $SCRIPT
-parallel -j ${THREADS} :::: $SCRIPT
+
+# Helper function to create script
+create_script() {
+    tmpFILES="$(cat  $1)"
+    #parallel command ::: "$tmpFILES" ::: "$CATEGORIES" > $SCRIPT
+    parallel command ::: "$tmpFILES" ::: "$CATEGORIES"
+}
+export -f create_script
+
+#Process input files in batches to avoid variable overflow
+PREFIX="$RANDOM"tmp.
+split --lines=500 $FILES ${PREFIX}
+ls tmp.* | parallel create_script :::: - > $SCRIPT
+
+parallel --bar -j ${THREADS} :::: $SCRIPT > /dev/null
+
 rm $SCRIPT
+rm $PREFIX*
+
