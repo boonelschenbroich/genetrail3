@@ -70,6 +70,10 @@ namespace GeneTrail
 		if(options.additional_colname) {
 			opts |= DenseMatrixReader::ADDITIONAL_COL_NAME;
 		}
+		
+		if(options.split_only_tab) {
+			opts |= DenseMatrixReader::SPLIT_ONLY_TAB;
+		}
 
 		DenseMatrixReader reader;
 

@@ -227,8 +227,10 @@ namespace GeneTrail
 		// Get the first interesting line
 		skipEmptyLines_(input, line);
 
+		std::string split_string = (opts & SPLIT_ONLY_TAB) ? "\t" : " \t";
 		std::vector<std::string> fields;
-		boost::split(fields, line, boost::is_any_of(" \t"), boost::token_compress_on);
+		
+		boost::split(fields, line, boost::is_any_of(split_string), boost::token_compress_on);
 
 		std::vector<std::string> row_names;
 		std::vector<std::string> col_names;
@@ -245,7 +247,7 @@ namespace GeneTrail
 			}
 
 			skipEmptyLines_(input, line);
-			boost::split(fields, line, boost::is_any_of(" \t"), boost::token_compress_on);
+			boost::split(fields, line, boost::is_any_of(split_string), boost::token_compress_on);
 		}
 
 		const size_t num_fields = fields.size();
@@ -285,7 +287,7 @@ namespace GeneTrail
 				continue;
 			}
 
-			boost::split(fields, line, boost::is_any_of(" \t"), boost::token_compress_on);
+			boost::split(fields, line, boost::is_any_of(split_string), boost::token_compress_on);
 
 			if(fields.size() != num_fields)
 			{

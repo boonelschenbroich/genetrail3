@@ -17,6 +17,7 @@ namespace GeneTrail
 		bool no_rownames = false;
 		bool no_colnames = false;
 		bool additional_colname = false;
+		bool split_only_tab = false;
 	};
 
 	class GT2_EXPORT EmptyGroup : public std::exception

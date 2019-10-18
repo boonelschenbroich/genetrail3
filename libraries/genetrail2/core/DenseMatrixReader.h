@@ -46,7 +46,8 @@ namespace GeneTrail
 				READ_ROW_NAMES      = 1 << 0, /// The file contains row names (only ascii)
 				READ_COL_NAMES      = 1 << 1, /// The file contains column names (only ascii)
 				TRANSPOSE           = 1 << 2, /// Read a transposed version of the matrix
-				ADDITIONAL_COL_NAME = 1 << 3  /// The row names have a column name assigned to them (only ascii)
+				ADDITIONAL_COL_NAME = 1 << 3, /// The row names have a column name assigned to them (only ascii)
+				SPLIT_ONLY_TAB      = 1 << 4  /// Should the matrix be split on tab or also on whitespace
 			};
 
 			/**
