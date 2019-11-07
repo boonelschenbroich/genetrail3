@@ -23,6 +23,7 @@
 
 #include "EnrichmentResult.h"
 
+#include <genetrail2/core/DenseMatrix.h>
 #include <genetrail2/core/HTest.h>
 #include <genetrail2/core/Scores.h>
 #include <genetrail2/core/GeneSetEnrichmentAnalysis.h>
@@ -389,6 +390,45 @@ namespace GeneTrail
 		private:
 		OverRepresentationAnalysis test_;
 		NullHypothesis hypothesis_;
+	};
+
+	class PreprocessedORA : public SetLevelStatistics<StatTags::Direct,
+	                                      StatTags::DoesNotSupportIndices,
+	                                      StatTags::Identifiers>
+	{
+		public:
+		PreprocessedORA(const Category& reference_set, const Category& test_set, NullHypothesis hypothesis, const DenseMatrix& p_values)
+		: reference_set_(reference_set), 
+		  test_set_(test_set),
+		  hypothesis_(hypothesis), 
+		  test_(reference_set, test_set),
+		  p_values_(p_values)
+		{};
+
+		bool canUseCategory(const Category&, size_t) const { 
+			return true; 
+		}
+
+		std::tuple<double, double> computeScore(const Category& c) const
+		{
+			//!! IMPORTANT:
+			//!! Here we need to compare the number of hits and the expected number of hits.
+			return std::make_tuple(test_.numberOfHits(c), test_.expectedNumberOfHits(c));
+		}
+
+		double computeRowWisePValue(EnrichmentResult* result) const
+		{
+			size_t csize = Category::intersect("null", *result->category, reference_set_).size();
+			return p_values_(csize, result->hits);
+		}
+
+		private:
+
+		const Category& reference_set_;
+		const Category& test_set_;
+		NullHypothesis hypothesis_;
+		OverRepresentationAnalysis test_;
+		const GeneTrail::DenseMatrix& p_values_;
 	};
 	
 	class WilcoxonRSTest : public SetLevelStatistics<StatTags::Direct, StatTags::DoesNotSupportIndices>

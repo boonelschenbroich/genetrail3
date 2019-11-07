@@ -15,6 +15,7 @@ COMMAND=""
 THREADS=8
 export SKIP_INPUT_FILES=true
 export OUTPUT=" --output "
+export USE_PREPROCESSED_P_VALUES=false
 
 # Parse commmand line arguments
 POSITIONAL=()
@@ -136,6 +137,16 @@ case $key in
     shift
     shift
     ;;
+    --use-precomputed-p-values)
+    export USE_PREPROCESSED_P_VALUES=true
+    export COMMAND=${COMMAND}" --use-precomputed-p-values"
+    shift
+    ;;
+    --precomputed-p-values)
+    export COMMAND=${COMMAND}" --use-precomputed-p-values $2"
+    shift
+    shift
+    ;;
     -h|--help)
     help
     exit -1
@@ -157,30 +168,52 @@ done
 #    exit -1
 #fi
 
-CATEGORIES="$(cat $CATEGORIES | awk  '{ print $1";"$2 }')"
+export SCRIPT="$RANDOM"script.sh
 
-# Helper function to create command
-command() {
-    IFS=';' read -r -a array <<< "$1"
-    IFS=';' read -r -a cat <<< "$2"
-    echo @CMAKE_BINARY_DIR@/applications/enrichment/ora" ${COMMAND} ${INPUT} ${array[0]} ${OUTPUT} ${array[1]} ${CATEGORY} ${cat[1]} ${CATEGORY_NAME} ${cat[0]}"
-}
-export -f command
+if [ !$USE_PREPROCESSED_P_VALUES ];then
+    CATEGORYLIST="$(cat $CATEGORIES | awk  '{ print $1";"$2 }')"
+    
+    # Helper function to create command
+    command() {
+        IFS=';' read -r -a array <<< "$1"
+        IFS=';' read -r -a cat <<< "$2"
+        echo @CMAKE_BINARY_DIR@/applications/enrichment/ora" ${COMMAND} ${INPUT} ${array[0]} ${OUTPUT} ${array[1]} ${CATEGORY} ${cat[1]} ${CATEGORY_NAME} ${cat[0]}"
+    }
+    export -f command 
+    
+    # Helper function to create script
+    create_script() {
+        tmpFILES="$(cat  $1)"
+        #parallel command ::: "$tmpFILES" ::: "$CATEGORIES" > $SCRIPT
+        parallel command ::: "$tmpFILES" ::: "$CATEGORYLIST"
+    }
+    export -f create_script
+    
+    #Process input files in batches to avoid variable overflow
+    PREFIX="$RANDOM"tmp.
+    split --lines=500 $FILES ${PREFIX}
+    ls ${PREFIX}* | parallel create_script :::: - > $SCRIPT
+else
+    # Helper function to create command
+    command() {
+        IFS=';' read -r -a array <<< "$1"
+        echo @CMAKE_BINARY_DIR@/applications/enrichment/ora" ${COMMAND} ${INPUT} ${array[0]} ${OUTPUT} ${array[1]}"
+    }
+    export -f command
 
-SCRIPT="$RANDOM"script.sh
+    # Helper function to create script
+    create_script() {
+        tmpFILES="$(cat  $1)"
+        #parallel command ::: "$tmpFILES" ::: "$CATEGORIES" > $SCRIPT
+        parallel command ::: "$tmpFILES"
+    }
+    export -f create_script
 
-# Helper function to create script
-create_script() {
-    tmpFILES="$(cat  $1)"
-    #parallel command ::: "$tmpFILES" ::: "$CATEGORIES" > $SCRIPT
-    parallel command ::: "$tmpFILES" ::: "$CATEGORIES"
-}
-export -f create_script
-
-#Process input files in batches to avoid variable overflow
-PREFIX="$RANDOM"tmp.
-split --lines=500 $FILES ${PREFIX}
-ls ${PREFIX}* | parallel create_script :::: - > $SCRIPT
+    #Process input files in batches to avoid variable overflow
+    PREFIX="$RANDOM"tmp.
+    split --lines=500 $FILES ${PREFIX}
+    ls ${PREFIX}* | parallel create_script :::: - > $SCRIPT
+fi
 
 parallel --bar -j ${THREADS} :::: $SCRIPT > /dev/null
 
