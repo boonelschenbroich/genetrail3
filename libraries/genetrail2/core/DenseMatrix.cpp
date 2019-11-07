@@ -281,6 +281,5 @@ namespace GeneTrail
 		AbstractMatrix::transpose();
 		m_.transposeInPlace();
 	}
-
 }
 

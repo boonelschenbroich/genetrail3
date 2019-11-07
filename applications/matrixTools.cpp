@@ -14,32 +14,16 @@ namespace GeneTrail
 	           const std::vector<std::string>& colnames,
 	           const std::string& groupname)
 	{
-		std::vector<unsigned int> indices;
-		indices.reserve(colnames.size());
-		for(const auto& s : colnames) {
-			if(matrix.hasCol(s)) {
-				indices.emplace_back(matrix.colIndex(s));
-			} else {
-				std::cerr << "WARNING: Could not find column \"" + s + "\".\n";
-			}
-		}
-
-		if(indices.empty() && !colnames.empty()) {
-			throw EmptyGroup(groupname);
-		}
-
-		return indices;
+		MatrixTools tools;
+		return tools.getIndices(matrix, colnames, groupname);
 	}
 
 	std::tuple<DenseColumnSubset, DenseColumnSubset>
 	splitMatrix(DenseMatrix& matrix, const std::vector<std::string>& reference,
 	            const std::vector<std::string>& test)
 	{
-		return std::make_tuple(
-		    DenseColumnSubset(
-		        &matrix, getIndices(matrix, reference, "reference")),
-		    DenseColumnSubset(
-		        &matrix, getIndices(matrix, test, "test")));
+		MatrixTools tools;
+		return tools.splitMatrix(matrix, reference, test);
 	}
 
 	DenseMatrix buildDenseMatrix(const std::string& expr1,

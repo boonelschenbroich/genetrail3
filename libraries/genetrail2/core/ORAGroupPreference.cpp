@@ -17,6 +17,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
 #include "ORAGroupPreference.h"
 #include "Exception.h"
 
@@ -29,8 +30,8 @@ using namespace GeneTrail;
 
 
 void ORAGroupPreference::calculatePreference(const DenseMatrix& matrix, const Metadata& metadata, DenseMatrix& result) const{
-	std::vector<std::string> groups = getGroups(metadata);
-	std::vector<std::vector<unsigned int>> group_indices = getGroupIndices(matrix, metadata, groups);
+	std::vector<std::string> groups = ORAGroupPreference::getGroups(metadata);
+	std::vector<std::vector<unsigned int>> group_indices = ORAGroupPreference::getGroupIndices(matrix, metadata, groups);
 	result = DenseMatrix(matrix.rows(), groups.size());
 	result.setColNames(groups);
 	result.setRowNames(matrix.rowNames());
@@ -49,7 +50,7 @@ void ORAGroupPreference::calculatePreference(const DenseMatrix& matrix, const Me
 	}
 }
 
-std::vector<std::string> ORAGroupPreference::getGroups(const Metadata& metadata) const{
+std::vector<std::string> ORAGroupPreference::getGroups(const Metadata& metadata){
 	std::set<std::string> groups;
 	for(auto it=metadata.begin(); it != metadata.end(); ++it){
 		groups.insert(get<std::string>(it->second));
@@ -57,27 +58,12 @@ std::vector<std::string> ORAGroupPreference::getGroups(const Metadata& metadata)
 	return std::vector<std::string>(groups.begin(), groups.end());
 }
 
-std::vector<std::vector<unsigned int>> ORAGroupPreference::getGroupIndices(const DenseMatrix& matrix, const Metadata& metadata, const std::vector<std::string> groups) const{
-	std::vector<std::vector<unsigned int>> group_indices(groups.size());
-	auto col_names = matrix.colNames();
-	size_t column_index = -1;
-	
-	for(const std::string& col_name: col_names){
-		column_index++;
-		if(metadata.has(col_name)){
-			std::string group = get<std::string>(metadata.get(col_name));
-			auto elem_it = std::find(groups.begin(), groups.end(), group);
-			if(elem_it == groups.end()){
-				throw IOError("Internal server error: element " + group + " was " +
-				"inserted into the list of groups, but not found later");
-			}
-			size_t group_index = std::distance(groups.begin(), elem_it);
-			group_indices[group_index].push_back(column_index);
-		} else{
-			throw IOError("The metadata file had no entry for the sample " + col_name + ".");
-		}
-	}
-	return group_indices;
+std::vector<std::vector<unsigned int>> ORAGroupPreference::getGroupIndices(const DenseMatrix& matrix, const Metadata& metadata, const std::vector<std::string> groups){
+	return ORAGroupPreference::getGroupIndices_<unsigned int>(matrix, metadata, groups, 0);
+}
+
+std::vector<std::vector<std::string>> ORAGroupPreference::getGroupedSamples(const DenseMatrix& matrix, const Metadata& metadata, const std::vector<std::string> groups){
+	return ORAGroupPreference::getGroupIndices_<std::string>(matrix, metadata, groups, "");
 }
 
 void ORAGroupPreference::addToTable(std::vector<size_t>& table, double p_value, bool is_current_group) const{

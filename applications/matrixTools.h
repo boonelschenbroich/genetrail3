@@ -2,7 +2,7 @@
 #define MATRIX_TOOLS_H
 
 #include <genetrail2/core/DenseColumnSubset.h>
-
+#include <genetrail2/core/MatrixTools.h>
 #include <genetrail2/core/macros.h>
 
 #include <string>
@@ -18,21 +18,6 @@ namespace GeneTrail
 		bool no_colnames = false;
 		bool additional_colname = false;
 		bool split_only_tab = false;
-	};
-
-	class GT2_EXPORT EmptyGroup : public std::exception
-	{
-		public:
-		EmptyGroup(const std::string& name) noexcept : groupname_(name) {}
-
-		virtual const char* what() const noexcept
-		{
-			return (std::string("Group \"") + groupname_ +
-			        "\" does not contain any datapoint.").c_str();
-		}
-
-		private:
-		std::string groupname_;
 	};
 
 	GT2_EXPORT std::tuple<DenseColumnSubset, DenseColumnSubset>

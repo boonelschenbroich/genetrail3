@@ -219,6 +219,7 @@ namespace GeneTrail
 			 * sorts the rows of the matrix according to the colomn names of matrix m
 			 */
 			void sortRows(std::vector<std::string>& m);
+			
 			///@}
 		private:
 			// Actual matrix payload

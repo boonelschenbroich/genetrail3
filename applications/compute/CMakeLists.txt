@@ -75,6 +75,13 @@ set_target_properties(interactiveUDS PROPERTIES
     INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
 )
 
+add_executable(computeGroupedScores computeGroupedScores.cpp)
+target_link_libraries(computeGroupedScores applicationCommon gtcore ${BOOST_LIBRARIES})
+GT2_COMPILE_FLAGS(computeGroupedScores)
+set_target_properties(computeGroupedScores PROPERTIES
+    INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
+)
+
 ####################################################################################################
 # Install
 ####################################################################################################

@@ -54,6 +54,12 @@ namespace GeneTrail {
 			 */
 			void calculatePreference(const DenseMatrix& matrix, const Metadata& metadata, DenseMatrix& result) const;
 			
+			static std::vector<std::string> getGroups(const Metadata& metadata);
+			
+			static std::vector<std::vector<unsigned int>> getGroupIndices(const DenseMatrix& matrix, const Metadata& metadata, const std::vector<std::string> groups);
+			
+			static std::vector<std::vector<std::string>> getGroupedSamples(const DenseMatrix& matrix, const Metadata& metadata, const std::vector<std::string> groups);
+			
 		private:
 			unsigned int MINDEX = 0;
 			unsigned int LINDEX = 1;
@@ -61,15 +67,47 @@ namespace GeneTrail {
 			unsigned int KINDEX = 3;
 			double threshold_;
 			
-			std::vector<std::string> getGroups(const Metadata& metadata) const;
-			std::vector<std::vector<unsigned int>> getGroupIndices(const DenseMatrix& matrix, const Metadata& metadata, const std::vector<std::string> groups) const;
 			void addToTable(std::vector<size_t>& table, double p_value, bool is_current_group) const;
 			double computePValue_(const std::vector<size_t>& table) const;
 			double computePValue_(size_t m, size_t l, size_t n, size_t k) const;
 
 			HypergeometricTest<uint64_t, big_float> hyperTest_;
-
+			
+			template <typename T>
+			static std::vector<std::vector<T>> getGroupIndices_(
+				const DenseMatrix& matrix,
+				const Metadata& metadata,
+				const std::vector<std::string> groups,
+				T dummy
+   															)
+			{
+				std::vector<std::vector<T>> result(groups.size());
+				auto col_names = matrix.colNames();
+				size_t column_index = -1;
+				
+				for(const std::string& col_name: col_names){
+					column_index++;
+					if(metadata.has(col_name)){
+						std::string group = get<std::string>(metadata.get(col_name));
+						auto elem_it = std::find(groups.begin(), groups.end(), group);
+						if(elem_it == groups.end()){
+							throw IOError("Internal server error: element " + group + " was " +
+							"inserted into the list of groups, but not found later");
+						}
+						size_t group_index = std::distance(groups.begin(), elem_it);
+						result[group_index].push_back(getGroupValue_(column_index, col_name, dummy));
+					} else{
+						throw IOError("The metadata file had no entry for the sample " + col_name + ".");
+					}
+				}
+				return result;
+			}
+			
+			template <typename T> static T getGroupValue_(size_t, const std::string&, T){return 0;}
+			static unsigned int getGroupValue_(size_t c, const std::string&, unsigned int){return c;}
+			static std::string getGroupValue_(size_t, const std::string& n, std::string){return n;}
 	};
+	
 }
 
 #endif // GT2_CORE_OVER_REPRESENTATION_ANALYSIS_H
