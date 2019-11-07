@@ -1,3 +1,5 @@
+#include <genetrail2/core/DenseMatrix.h>
+#include <genetrail2/core/DenseMatrixReader.h>
 #include <genetrail2/core/EntityDatabase.h>
 #include <genetrail2/core/Exception.h>
 #include <genetrail2/core/GeneSet.h>
@@ -11,11 +13,13 @@
 
 #include <boost/program_options.hpp>
 #include <iostream>
+#include <fstream>
 
 using namespace GeneTrail;
 namespace bpo = boost::program_options;
 
-std::string reference, hypothesis;
+std::string reference, hypothesis, preComputedPValues;
+bool usePreComputedPValues = false;
 
 bool parseArguments(int argc, char* argv[], Params& p)
 {
@@ -26,7 +30,9 @@ bool parseArguments(int argc, char* argv[], Params& p)
 	desc.add_options()
 		("identifier, d", bpo::value(&p.identifier_), "A file containing identifier line by line.")
 		("reference, r", bpo::value<std::string>(&reference)->required(), "A file containing identifier line by line.")
-		("hypothesis, h", bpo::value<std::string>(&hypothesis)->default_value("two-sided"), "Null hypothesis that should be used.");
+		("hypothesis, h", bpo::value<std::string>(&hypothesis)->default_value("two-sided"), "Null hypothesis that should be used.")
+		("use-precomputed-p-values, u", bpo::value<bool>(&usePreComputedPValues)->zero_tokens(), "Use precomputed p-values.")
+		("precomputed-p-values, p", bpo::value<std::string>(&preComputedPValues), "Precomputed p-values.");
 
 	try
 	{
@@ -80,10 +86,24 @@ int main(int argc, char* argv[])
 		hypothesis_ = NullHypothesis::TWO_SIDED;
 	}
 
-	auto enrichmentAlgorithm = createEnrichmentAlgorithm<Ora>(p.pValueMode, reference_set.toCategory(db, "reference"), test_set.toCategory(db, "test"), hypothesis_);
+    if (!usePreComputedPValues) {
+		auto enrichmentAlgorithm = createEnrichmentAlgorithm<Ora>(p.pValueMode, reference_set.toCategory(db, "reference"), test_set.toCategory(db, "test"), hypothesis_);
+		Scores scores(test_set, db);
+		run(scores, cat_list, enrichmentAlgorithm, p, true);
+	} else {
+		DenseMatrixReader reader;
+		std::ifstream file(preComputedPValues);
+		if(!file) {
+			std::cerr << "Could not open " << preComputedPValues << " for reading." << std::endl;
+			return -1;
+		}
+		DenseMatrix p_values = reader.read(file);
+		file.close();
 
-	Scores scores(test_set, db);
-	run(scores, cat_list, enrichmentAlgorithm, p, true);
+		auto enrichmentAlgorithm = createEnrichmentAlgorithm<PreprocessedORA>(p.pValueMode, reference_set.toCategory(db, "reference"), test_set.toCategory(db, "test"), hypothesis_, p_values);
+		Scores scores(test_set, db);
+		run(scores, cat_list, enrichmentAlgorithm, p, true);
+	}
 
 	return 0;
 }

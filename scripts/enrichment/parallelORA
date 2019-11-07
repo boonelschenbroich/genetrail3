@@ -180,7 +180,7 @@ export -f create_script
 #Process input files in batches to avoid variable overflow
 PREFIX="$RANDOM"tmp.
 split --lines=500 $FILES ${PREFIX}
-ls tmp.* | parallel create_script :::: - > $SCRIPT
+ls ${PREFIX}* | parallel create_script :::: - > $SCRIPT
 
 parallel --bar -j ${THREADS} :::: $SCRIPT > /dev/null
 
