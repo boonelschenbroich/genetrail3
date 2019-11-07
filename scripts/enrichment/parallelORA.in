@@ -139,11 +139,10 @@ case $key in
     ;;
     --use-precomputed-p-values)
     export USE_PREPROCESSED_P_VALUES=true
-    export COMMAND=${COMMAND}" --use-precomputed-p-values"
     shift
     ;;
     --precomputed-p-values)
-    export COMMAND=${COMMAND}" --use-precomputed-p-values $2"
+    #export COMMAND=${COMMAND}" --precomputed-p-values $2"
     shift
     shift
     ;;
@@ -161,20 +160,13 @@ case $key in
 esac 
 done
 
-# Check if required parameters are set
-#if [ -z ${ASSEMBLY+x} ]; then
-#    echo "ERROR: the option '--assembly' is required but missing"
-#    help
-#    exit -1
-#fi
-
 export SCRIPT="$RANDOM"script.sh
 
-if [ $USE_PREPROCESSED_P_VALUES ];then
+if $USE_PREPROCESSED_P_VALUES; then
     # Helper function to create command
     command() {
         IFS=';' read -r -a array <<< "$1"
-        echo @CMAKE_BINARY_DIR@/applications/enrichment/ora" ${COMMAND} ${INPUT} ${array[0]} ${OUTPUT} ${array[1]} --categories ${CATEGORIES}" 
+        echo @CMAKE_BINARY_DIR@/applications/enrichment/ora" ${COMMAND} ${INPUT} ${array[0]} ${OUTPUT} ${array[1]} --use-precomputed-p-values --precomputed-p-values ${array[2]} --categories ${CATEGORIES}" 
     }
     export -f command
 
@@ -190,7 +182,6 @@ if [ $USE_PREPROCESSED_P_VALUES ];then
     split --lines=500 $FILES ${PREFIX}
     ls ${PREFIX}* | parallel create_script :::: - > $SCRIPT
 else
-    echo $USE_PREPROCESSED_P_VALUES
     export CATEGORYLIST="$(cat $CATEGORIES | awk  '{ print $1";"$2 }')"
     
     # Helper function to create command
