@@ -14,6 +14,7 @@
 #include <boost/program_options.hpp>
 #include <iostream>
 #include <fstream>
+#include <chrono> 
 
 using namespace GeneTrail;
 namespace bpo = boost::program_options;
@@ -91,18 +92,29 @@ int main(int argc, char* argv[])
 		Scores scores(test_set, db);
 		run(scores, cat_list, enrichmentAlgorithm, p, true);
 	} else {
+		//auto start = std::chrono::high_resolution_clock::now();
 		DenseMatrixReader reader;
 		std::ifstream file(preComputedPValues);
 		if(!file) {
 			std::cerr << "Could not open " << preComputedPValues << " for reading." << std::endl;
 			return -1;
 		}
-		DenseMatrix p_values = reader.read(file);
+		//This is needed since our matrix does not contain any row/col names
+		unsigned int opts = DenseMatrixReader::NO_OPTIONS;
+		DenseMatrix p_values = reader.read(file, opts);
 		file.close();
+		//auto finish = std::chrono::high_resolution_clock::now();
+		//std::chrono::duration<double> elapsed = finish - start;
+		//std::cout << "Elapsed time (Loading Matrix): " << elapsed.count() << " s\n";
 
+		p.verbose = false;
+                //start = std::chrono::high_resolution_clock::now();
 		auto enrichmentAlgorithm = createEnrichmentAlgorithm<PreprocessedORA>(p.pValueMode, reference_set.toCategory(db, "reference"), test_set.toCategory(db, "test"), hypothesis_, p_values);
 		Scores scores(test_set, db);
 		run(scores, cat_list, enrichmentAlgorithm, p, true);
+		//finish = std::chrono::high_resolution_clock::now();
+		//elapsed = finish - start;
+		//std::cout << "Elapsed time (Enrichment analysis): " << elapsed.count() << " s\n";
 	}
 
 	return 0;
