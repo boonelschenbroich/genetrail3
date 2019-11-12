@@ -204,8 +204,7 @@ static AllResults compute(Scores& test_set, CategoryList& cat_list,
 			auto category_db = input.read();
 			Results name_to_result;
 			for(const auto& c : category_db) {
-				std::cout << "INFO: Processing - " << cat.first << " - "
-				          << c.name() << std::endl;
+				if(p.verbose) std::cout << "INFO: Processing - " << cat.first << " - " << c.name() << std::endl;
 				auto processed = processCategory(c, test_set, p);
 
 				std::shared_ptr<EnrichmentResult> result;

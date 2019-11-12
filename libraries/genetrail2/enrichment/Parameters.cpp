@@ -29,6 +29,7 @@ Params::Params()
 	numPermutations(100000),
 	randomSeed(std::random_device{}()),
 	adjustSeparately(false),
+	verbose(true),
 	pValueMode(PValueMode::RowWise)
 	{
 	}

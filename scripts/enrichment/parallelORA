@@ -15,6 +15,7 @@ COMMAND=""
 THREADS=8
 export SKIP_INPUT_FILES=true
 export OUTPUT=" --output "
+export USE_PREPROCESSED_P_VALUES=false
 
 # Parse commmand line arguments
 POSITIONAL=()
@@ -136,6 +137,15 @@ case $key in
     shift
     shift
     ;;
+    --use-precomputed-p-values)
+    export USE_PREPROCESSED_P_VALUES=true
+    shift
+    ;;
+    --precomputed-p-values)
+    #export COMMAND=${COMMAND}" --precomputed-p-values $2"
+    shift
+    shift
+    ;;
     -h|--help)
     help
     exit -1
@@ -150,37 +160,50 @@ case $key in
 esac 
 done
 
-# Check if required parameters are set
-#if [ -z ${ASSEMBLY+x} ]; then
-#    echo "ERROR: the option '--assembly' is required but missing"
-#    help
-#    exit -1
-#fi
+export SCRIPT="$RANDOM"script.sh
 
-CATEGORIES="$(cat $CATEGORIES | awk  '{ print $1";"$2 }')"
+if $USE_PREPROCESSED_P_VALUES; then
+    # Helper function to create command
+    command() {
+        IFS=';' read -r -a array <<< "$1"
+        echo /home/HPL/tkehl/workspace/genetrail2/build/applications/enrichment/ora" ${COMMAND} ${INPUT} ${array[0]} ${OUTPUT} ${array[1]} --use-precomputed-p-values --precomputed-p-values ${array[2]} --categories ${CATEGORIES}" 
+    }
+    export -f command
 
-# Helper function to create command
-command() {
-    IFS=';' read -r -a array <<< "$1"
-    IFS=';' read -r -a cat <<< "$2"
-    echo /home/HPL/tkehl/workspace/genetrail2/build/applications/enrichment/ora" ${COMMAND} ${INPUT} ${array[0]} ${OUTPUT} ${array[1]} ${CATEGORY} ${cat[1]} ${CATEGORY_NAME} ${cat[0]}"
-}
-export -f command
+    # Helper function to create script
+    create_script() {
+        tmpFILES="$(cat  $1)"
+        parallel command ::: "$tmpFILES"
+    }
+    export -f create_script
 
-SCRIPT="$RANDOM"script.sh
-
-# Helper function to create script
-create_script() {
-    tmpFILES="$(cat  $1)"
-    #parallel command ::: "$tmpFILES" ::: "$CATEGORIES" > $SCRIPT
-    parallel command ::: "$tmpFILES" ::: "$CATEGORIES"
-}
-export -f create_script
-
-#Process input files in batches to avoid variable overflow
-PREFIX="$RANDOM"tmp.
-split --lines=500 $FILES ${PREFIX}
-ls ${PREFIX}* | parallel create_script :::: - > $SCRIPT
+    #Process input files in batches to avoid variable overflow
+    PREFIX="$RANDOM"tmp.
+    split --lines=500 $FILES ${PREFIX}
+    ls ${PREFIX}* | parallel create_script :::: - > $SCRIPT
+else
+    export CATEGORYLIST="$(cat $CATEGORIES | awk  '{ print $1";"$2 }')"
+    
+    # Helper function to create command
+    command() {
+        IFS=';' read -r -a array <<< "$1"
+        IFS=';' read -r -a cat <<< "$2"
+        echo /home/HPL/tkehl/workspace/genetrail2/build/applications/enrichment/ora" ${COMMAND} ${INPUT} ${array[0]} ${OUTPUT} ${array[1]} ${CATEGORY} ${cat[1]} ${CATEGORY_NAME} ${cat[0]}"
+    }
+    export -f command 
+    
+    # Helper function to create script
+    create_script() {
+        tmpFILES="$(cat  $1)"
+        parallel command ::: "$tmpFILES" ::: "$CATEGORYLIST"
+    }
+    export -f create_script
+    
+    #Process input files in batches to avoid variable overflow
+    PREFIX="$RANDOM"tmp.
+    split --lines=500 $FILES ${PREFIX}
+    ls ${PREFIX}* | parallel create_script :::: - > $SCRIPT
+fi
 
 parallel --bar -j ${THREADS} :::: $SCRIPT > /dev/null
 
