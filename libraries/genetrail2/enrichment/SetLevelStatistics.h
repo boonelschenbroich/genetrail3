@@ -419,13 +419,14 @@ namespace GeneTrail
 		double computeRowWisePValue(EnrichmentResult* result) const
 		{
 			size_t csize = Category::intersect("null", *result->category, reference_set_).size();
-			return p_values_(csize, result->hits);
+            size_t hits = Category::intersect("null", *result->category, test_set_).size();
+			return p_values_(csize, hits);
 		}
 
 		private:
 
-		const Category& reference_set_;
-		const Category& test_set_;
+		Category reference_set_;
+		Category test_set_;
 		NullHypothesis hypothesis_;
 		OverRepresentationAnalysis test_;
 		const GeneTrail::DenseMatrix& p_values_;
