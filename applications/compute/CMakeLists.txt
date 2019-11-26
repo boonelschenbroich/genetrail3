@@ -54,6 +54,13 @@ set_target_properties(transformMatrix PROPERTIES
     INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
 )
 
+add_executable(reorderMatrix reorderMatrix.cpp)
+target_link_libraries(reorderMatrix applicationCommon gtcore ${BOOST_LIBRARIES})
+GT2_COMPILE_FLAGS(reorderMatrix)
+set_target_properties(reorderMatrix PROPERTIES
+    INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
+)
+
 add_executable(NAHandler naHandler.cpp)
 target_link_libraries(NAHandler applicationCommon gtcore ${BOOST_LIBRARIES})
 GT2_COMPILE_FLAGS(NAHandler)
@@ -72,7 +79,7 @@ set_target_properties(interactiveUDS PROPERTIES
 # Install
 ####################################################################################################
 
-install(TARGETS computeScores transformScores normalityCheck normalizeMatrix transformMatrix interactiveUDS
+install(TARGETS computeScores transformScores normalityCheck normalizeMatrix transformMatrix reorderMatrix interactiveUDS
 	RUNTIME DESTINATION bin
 	LIBRARY DESTINATION lib
 	ARCHIVE DESTINATION lib
