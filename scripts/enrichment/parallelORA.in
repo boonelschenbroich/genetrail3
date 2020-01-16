@@ -146,6 +146,10 @@ case $key in
     shift
     shift
     ;;
+    --reduced_output)
+    export COMMAND=${COMMAND}" --reduced_output "
+    shift
+    ;;
     -h|--help)
     help
     exit -1
@@ -160,7 +164,7 @@ case $key in
 esac 
 done
 
-export SCRIPT="$RANDOM"script.sh
+export SCRIPT=/tmp/"$RANDOM"script.sh
 
 if $USE_PREPROCESSED_P_VALUES; then
     # Helper function to create command
@@ -178,7 +182,7 @@ if $USE_PREPROCESSED_P_VALUES; then
     export -f create_script
 
     #Process input files in batches to avoid variable overflow
-    PREFIX="$RANDOM"tmp.
+    PREFIX=/tmp/"$RANDOM"tmp.
     split --lines=100 $FILES ${PREFIX}
     ls ${PREFIX}* | parallel create_script :::: - > $SCRIPT
 else
@@ -200,7 +204,7 @@ else
     export -f create_script
     
     #Process input files in batches to avoid variable overflow
-    PREFIX="$RANDOM"tmp.
+    PREFIX=/tmp/"$RANDOM"tmp.
     split --lines=100 $FILES ${PREFIX}
     ls ${PREFIX}* | parallel create_script :::: - > $SCRIPT
 fi

@@ -45,6 +45,7 @@ namespace GeneTrail {
 			("scores,s",       value(&p.scores_), "A whitespace separated file containing identifier and scores.")
 			("minimum,n",      value(&p.minimum)->default_value(0), "Minimum number of genes allowed in categories.")
 			("maximum,x",      value(&p.maximum)->default_value(1000), "Maximum number of genes allowed in categories.")
+			("reduced_output,f",    value(&p.reducedOutput)->default_value(false)->zero_tokens(), "If provided, only print the category name and the p-value. Default: false")
 			("output,o",       value(&p.out_)->required(), "Output prefix for text files.")
 			("adjustment,a",   value(&p.adjustment)->default_value(boost::none, "none"), "P-value adjustment method for multiple testing.")
 			("adjust_separately,u", value(&p.adjustSeparately)->default_value(false)->zero_tokens(), "Indicates if databases are adjusted separatly or combined.")

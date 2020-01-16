@@ -52,36 +52,45 @@ namespace GeneTrail
 		double score;
 		double expected_score;
 
-		virtual std::string header() const
+		virtual std::string header(const bool reducedOutput) const
 		{
 			std::string header = "#";
-			header += "Name\t";
-			header += "Reference\t";
-			header += "Hits\t";
-			header += "Score\t";
-			header += "Expected Score\t";
-			header += "P-value\t";
-			header += "Info\t";
-			header += "Regulation_direction";
+			if(reducedOutput){
+				header += "Name\t";
+				header += "P-value";
+			} else {
+				header += "Name\t";
+				header += "Reference\t";
+				header += "Hits\t";
+				header += "Score\t";
+				header += "Expected Score\t";
+				header += "P-value\t";
+				header += "Info\t";
+				header += "Regulation_direction";
+			}
 			return header;
 		}
 
-		virtual void serialize(std::ostream& strm) const
+		virtual void serialize(std::ostream& strm, const bool reducedOutput) const
 		{
-			strm << category->name() << '\t'
-			     << category->reference() << '\t'
-			     << hits << '\t'
-			     << score << '\t'
-			     << expected_score << '\t'
-			     << pvalue << '\t'
-			     << info << '\t'
-			     << enriched;
+			if(reducedOutput){
+				strm << category->name() << '\t' << pvalue;
+			} else {
+				strm << category->name() << '\t'
+					<< category->reference() << '\t'
+					<< hits << '\t'
+					<< score << '\t'
+					<< expected_score << '\t'
+					<< pvalue << '\t'
+					<< info << '\t'
+					<< enriched;
+			}
 		}
 	};
 
 	inline std::ostream& operator<<(std::ostream& strm, const EnrichmentResult& result)
 	{
-		result.serialize(strm);
+		result.serialize(strm, false);
 		return strm;
 	}
 

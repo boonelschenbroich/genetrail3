@@ -104,6 +104,7 @@ namespace GeneTrail {
 		size_t randomSeed;
 
 		bool adjustSeparately;
+		bool reducedOutput;
 		bool verbose;
 
 		boost::optional<MultipleTestingCorrection> adjustment;

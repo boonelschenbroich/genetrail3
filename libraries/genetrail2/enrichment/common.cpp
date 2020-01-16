@@ -119,7 +119,7 @@ processCategory(const Category& c, const Scores& test_set, const Params& p)
 	return std::make_tuple(p.minimum <= subset.size() && subset.size() <= p.maximum, subset.size(), std::move(entries));
 }
 
-static void writeFiles(const std::string& output_dir, const AllResults& all_results)
+static void writeFiles(const std::string& output_dir, const AllResults& all_results, const bool reducedOutput)
 {
 
 	size_t size = 0;
@@ -136,9 +136,10 @@ static void writeFiles(const std::string& output_dir, const AllResults& all_resu
 		if(!output) {
 			throw GeneTrail::IOError("No input file specified.");
 		}
-		output << database.second.begin()->second->header() << std::endl;
+		output << database.second.begin()->second->header(reducedOutput) << std::endl;
 		for(const auto& ele : database.second) {
-			output << *ele.second << std::endl;
+			ele.second->serialize(output, reducedOutput);
+			output << std::endl;
 		}
 		output.close();
 	}
@@ -404,6 +405,6 @@ void run(Scores& test_set, CategoryList& cat_list,
                 }
         }
 
-        writeFiles(p.out(), name_to_cat_results);
+        writeFiles(p.out(), name_to_cat_results, p.reducedOutput);
 }
 
