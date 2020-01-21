@@ -209,17 +209,17 @@ static AllResults compute(Scores& test_set, CategoryList& cat_list,
 				auto processed = processCategory(c, test_set, p);
 
 				std::shared_ptr<EnrichmentResult> result;
-
-				if(!std::get<0>(processed)) {
-					continue;
-				}
+				auto isValid = std::get<0>(processed);
 
 				// TODO: get rid of this
 				auto tmp_cat = std::make_shared<Category>(c);
-				if(!algorithm->canUseCategory(c, std::get<1>(processed))) {
-					result = std::make_shared<EnrichmentResult>(tmp_cat);
-				} else {
+				if(algorithm->canUseCategory(c, std::get<1>(processed)) && isValid) {
 					result = algorithm->computeEnrichment(tmp_cat);
+				} else {
+					if(!isValid && !p.includeAll){
+						continue;
+					}
+					result = std::make_shared<EnrichmentResult>(tmp_cat);
 				}
 
 				result->hits = std::get<1>(processed);

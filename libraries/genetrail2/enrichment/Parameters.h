@@ -104,6 +104,7 @@ namespace GeneTrail {
 		size_t randomSeed;
 
 		bool adjustSeparately;
+		bool includeAll;
 		bool reducedOutput;
 		bool verbose;
 

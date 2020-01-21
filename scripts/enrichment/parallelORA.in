@@ -150,6 +150,10 @@ case $key in
     export COMMAND=${COMMAND}" --reduced_output "
     shift
     ;;
+    --include_all)
+    export COMMAND=${COMMAND}" --include_all "
+    shift
+    ;;
     -h|--help)
     help
     exit -1
