@@ -26,6 +26,7 @@
 
 #include <istream>
 #include <vector>
+#include <map>
 #include <set>
 #include <initializer_list>
 
@@ -34,25 +35,24 @@ namespace GeneTrail{
 	public:
 		CombineReducedEnrichments() = default;
 		
-		void readConfig(const std::string& sampleOutDirs, const std::string& matrixOutFiles);
-		void write();
+		void writeFiles(const std::string& sampleOutDirs, const std::string& matrixOutFiles);
 
 	private:
-		using Readers = std::vector<std::ifstream>;
-		using ReadersPerCategoryDB = std::vector<Readers>;
 		using WriterPerCategoryDB = std::vector<std::ofstream>;
 		using CategoryDBs = std::vector<std::string>;
 		using Samples = std::vector<std::string>;
 		
 		WriterPerCategoryDB allWriters;
-		ReadersPerCategoryDB allReaders;
 		CategoryDBs categoryDBs;
-		Samples samples;
+		std::vector<std::string> samples;
+		std::vector<std::string> dirs;
 		
-		void parseSampleOutDirs(const std::string& sampleOutDirs);
 		void parseMatrixOutFiles(const std::string& matrixOutFiles);
+		void parseSampleOutDirs(const std::string& sampleOutDirs);
+		void write(size_t idx);
+		void readSample(std::map<std::string, std::vector<std::string>>& result, size_t idx_sample, const std::string& category);
+		void writeMatrix(std::map<std::string, std::vector<std::string>>& result, std::ofstream& writer);
 		void writeHeader(unsigned int idx);
-		void writeBody(unsigned int idx);
 	};
 }
 

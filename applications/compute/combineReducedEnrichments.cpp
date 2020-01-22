@@ -36,8 +36,7 @@ int main(int argc, char* argv[]){
 
 	try{
 		CombineReducedEnrichments c;
-		c.readConfig(samples, output);
-		c.write();
+		c.writeFiles(samples, output);
 	} catch(const IOError& e) {
 		std::cerr << "ERROR: " << e.what() << std::endl;
 		return -1;
