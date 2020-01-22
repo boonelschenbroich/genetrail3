@@ -53,7 +53,7 @@ namespace GeneTrail{
 		skipEmptyLines_(input, line);
 
 		std::vector<std::string> fields;
-		boost::split(fields, line, boost::is_any_of(" \t"), boost::token_compress_on);
+		boost::split(fields, line, boost::is_any_of("\t"), boost::token_compress_on);
 		
 		unsigned int column_index = 0;
 		for(const std::string& field: fields){
@@ -73,7 +73,7 @@ namespace GeneTrail{
 			boost::trim(line);
 			if(line.empty()) continue;
 
-			boost::split(fields, line, boost::is_any_of(" \t"), boost::token_compress_on);
+			boost::split(fields, line, boost::is_any_of("\t"), boost::token_compress_on);
 
 			if(fields.size() != num_fields){
 				throw IOError(
