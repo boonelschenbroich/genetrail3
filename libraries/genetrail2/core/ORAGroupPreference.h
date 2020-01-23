@@ -23,7 +23,7 @@
 #include "macros.h"
 #include "DenseMatrix.h"
 #include "Metadata.h"
-#include "HypergeometricTest.h"
+#include <boost/math/distributions/chi_squared.hpp>
 #include "multiprecision.h"
 
 
@@ -32,12 +32,13 @@
 
 #include <boost/math/special_functions/binomial.hpp>
 
+using boost::math::chi_squared;
 namespace GeneTrail {
 
     class GT2_EXPORT ORAGroupPreference {
 		public:
-			ORAGroupPreference() = default;
-			ORAGroupPreference(double threshold): threshold_(threshold){}
+			ORAGroupPreference():test_(3){};
+			ORAGroupPreference(double threshold): threshold_(threshold), test_(3){};
 
 			/**
 			 * This method accepts a (category x sample) matrix file containing p-values
@@ -66,12 +67,11 @@ namespace GeneTrail {
 			unsigned int NINDEX = 2;
 			unsigned int KINDEX = 3;
 			double threshold_;
+			chi_squared test_;
 			
 			void addToTable(std::vector<size_t>& table, double p_value, bool is_current_group) const;
 			double computePValue_(const std::vector<size_t>& table) const;
 			double computePValue_(size_t m, size_t l, size_t n, size_t k) const;
-
-			HypergeometricTest<uint64_t, big_float> hyperTest_;
 			
 			template <typename T>
 			static std::vector<std::vector<T>> getGroupIndices_(

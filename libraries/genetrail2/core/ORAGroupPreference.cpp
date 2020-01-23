@@ -84,15 +84,23 @@ double ORAGroupPreference::computePValue_(const std::vector<size_t>& table) cons
 }
 
 double ORAGroupPreference::computePValue_(size_t m, size_t l, size_t n, size_t k) const {
-	auto expected_k = ((double)l * n) / ((double)m);
-	bool enriched = expected_k < k;
-	big_float p;
-	if(enriched) {
-		p = hyperTest_.upperTailedPValue(m, l, n, k);
-	} else {
-		p = hyperTest_.lowerTailedPValue(m, l, n, k);
+	if(l == 0) return 1.0;
+	auto p_11 = (l*n)/((double)m*m), p_12 = ((m-l)*n)/((double)m*m);
+	auto p_21 = (l*(m-n))/((double)m*m), p_22 = ((m-l)*(m-n))/((double)m*m);
+	auto p_1_ = p_11 + p_12, p_2_ = p_21 + p_22;
+	auto p__1 = p_11 + p_21, p__2 = p_12 + p_22;
+	auto E_11 = m*p_1_*p__1, E_12 = m*p_1_*p__2;
+	auto E_21 = m*p_2_*p__1, E_22 = m*p_2_*p__2;
+	auto o_11 = (double)k,   o_12 = (double)n-k;
+	auto o_21 = (double)l-k, o_22 = (m-l)-o_12;
+	auto chi = (o_11-E_11)*(o_11-E_11)/E_11 +
+			   (o_12-E_12)*(o_12-E_12)/E_12 +
+			   (o_21-E_21)*(o_21-E_21)/E_21 +
+			   (o_22-E_22)*(o_22-E_22)/E_22;
+	if(E_11 < o_11){
+		return -boost::math::cdf(test_, chi);
 	}
-	return enriched ? p.convert_to<double>() : -1.0 * p.convert_to<double>();
+	return boost::math::cdf(complement(test_, chi));
 }
 
 
