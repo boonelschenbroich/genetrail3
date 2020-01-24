@@ -84,7 +84,13 @@ double ORAGroupPreference::computePValue_(const std::vector<size_t>& table) cons
 }
 
 double ORAGroupPreference::computePValue_(size_t m, size_t l, size_t n, size_t k) const {
-	if(l == 0) return 1.0;
+	// Ensures that E != 0
+	if(l == 0) return -1.0;
+	if(l == m) return 1.0;
+	if(n == 0) return 1.0;
+	if(n == m) return 1.0;
+	
+	// Calculate E and chi^2
 	auto p_11 = (l*n)/((double)m*m), p_12 = ((m-l)*n)/((double)m*m);
 	auto p_21 = (l*(m-n))/((double)m*m), p_22 = ((m-l)*(m-n))/((double)m*m);
 	auto p_1_ = p_11 + p_12, p_2_ = p_21 + p_22;
@@ -97,6 +103,8 @@ double ORAGroupPreference::computePValue_(size_t m, size_t l, size_t n, size_t k
 			   (o_12-E_12)*(o_12-E_12)/E_12 +
 			   (o_21-E_21)*(o_21-E_21)/E_21 +
 			   (o_22-E_22)*(o_22-E_22)/E_22;
+	
+	// Calculate p-value from chi^2
 	if(E_11 < o_11){
 		return -boost::math::cdf(test_, chi);
 	}
