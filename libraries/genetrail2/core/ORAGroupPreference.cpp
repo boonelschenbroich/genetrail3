@@ -93,10 +93,8 @@ double ORAGroupPreference::computePValue_(size_t m, size_t l, size_t n, size_t k
 	// Calculate E and chi^2
 	auto p_11 = (l*n)/((double)m*m), p_12 = ((m-l)*n)/((double)m*m);
 	auto p_21 = (l*(m-n))/((double)m*m), p_22 = ((m-l)*(m-n))/((double)m*m);
-	auto p_1_ = p_11 + p_12, p_2_ = p_21 + p_22;
-	auto p__1 = p_11 + p_21, p__2 = p_12 + p_22;
-	auto E_11 = m*p_1_*p__1, E_12 = m*p_1_*p__2;
-	auto E_21 = m*p_2_*p__1, E_22 = m*p_2_*p__2;
+	auto E_11 = m*p_11, E_12 = m*p_12;
+	auto E_21 = m*p_21, E_22 = m*p_22;
 	auto o_11 = (double)k,   o_12 = (double)n-k;
 	auto o_21 = (double)l-k, o_22 = (m-l)-o_12;
 	auto chi = (o_11-E_11)*(o_11-E_11)/E_11 +
@@ -105,10 +103,11 @@ double ORAGroupPreference::computePValue_(size_t m, size_t l, size_t n, size_t k
 			   (o_22-E_22)*(o_22-E_22)/E_22;
 	
 	// Calculate p-value from chi^2
-	if(E_11 < o_11){
-		return -boost::math::cdf(test_, chi);
+	double res = boost::math::cdf(complement(test_, chi));
+	if(o_11 < E_11){
+		res = -1*res;
 	}
-	return boost::math::cdf(complement(test_, chi));
+	return res;
 }
 
 
