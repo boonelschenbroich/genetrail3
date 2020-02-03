@@ -406,8 +406,8 @@ namespace GeneTrail
 		  reduced_output_(reduced_output)
 		{};
 
-		bool canUseCategory(const Category&, size_t) const { 
-			return true; 
+		bool canUseCategory(const Category& c, size_t) const {
+			return c.size() <= 1000;
 		}
 
 		std::tuple<double, double> computeScore(const Category& c) const
