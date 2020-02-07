@@ -45,13 +45,19 @@ namespace GeneTrail {
 			 * many tests (specified by method) testing a group versus all other groups.
 			 * The resulting (gene x group) matrix is stored in 'result'.
 			 */
-			void calculateGroupedScores(DenseMatrix& matrix, const Metadata& metadata,
-										const std::string method, DenseMatrix& result) const;
+			void calculateGroupedScores(
+				DenseMatrix& matrix,
+				const std::vector<Metadata>& metadata,
+				const std::string method, DenseMatrix& result
+			) const;
 			
 		private:
-			Samples getNames(const std::vector<Samples>& group_samples, size_t group_idx) const;
-			
-			Samples getOtherNames(const std::vector<Samples>& group_samples, size_t group_idx) const;
+			void createSamples(
+				const DenseMatrix& matrix,
+				const std::map<std::string, std::vector<unsigned int>>& group_indices,
+				const std::string& current_group,
+				Samples& g1, Samples& g2
+			) const;
 			
 			void addToResult(DenseMatrix& result, const Scores& gene_set, size_t column_idx) const;
 	};

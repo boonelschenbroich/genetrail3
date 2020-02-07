@@ -24,36 +24,56 @@
 using namespace GeneTrail;
 
 
-void GroupedScores::calculateGroupedScores(DenseMatrix& matrix, const Metadata& metadata,
-							const std::string method, DenseMatrix& result) const{
-	auto groups = ORAGroupPreference::getGroups(metadata);
-	auto group_samples = ORAGroupPreference::getGroupedSamples(matrix, metadata, groups);
-	result = DenseMatrix(matrix.rows(), groups.size());
+void GroupedScores::calculateGroupedScores(
+	DenseMatrix& matrix,
+	const std::vector<Metadata>& meta,
+	const std::string method,
+	DenseMatrix& result
+) const{
+	std::map<std::string, std::vector<unsigned int>> group_indices;
+	ORAGroupPreference::parseGroups(matrix, meta, group_indices);
+	std::vector<std::string> groups;
+	for(const auto& entry: group_indices) groups.push_back(entry.first);
+	
+	result = DenseMatrix(matrix.rows(), group_indices.size());
 	result.setColNames(groups);
 	result.setRowNames(matrix.rowNames());
 	MatrixHTest htest;
 	MatrixTools mtools;
 	
-	for(size_t group_idx=0; group_idx < groups.size(); group_idx++){
-		auto g1 = getNames(group_samples, group_idx);
-		auto g2 = getOtherNames(group_samples, group_idx);
+	size_t group_idx=-1;
+	for(const auto& current_group: groups){
+		group_idx++;
+		Samples g1, g2;
+		createSamples(matrix, group_indices, current_group, g1, g2);
 		auto subset = mtools.splitMatrix(matrix, g1, g2);
 		auto gene_set = htest.test(method, std::get<0>(subset), std::get<1>(subset));
 		addToResult(result, gene_set, group_idx);
 	}
+	return;
 }
 
-auto GroupedScores::getNames(const std::vector<Samples>& group_samples, size_t group_idx) const -> Samples{
-	return Samples(group_samples[group_idx].begin(), group_samples[group_idx].end());
-}
-
-auto GroupedScores::getOtherNames(const std::vector<Samples>& group_samples, size_t group_idx) const -> Samples{
-	Samples result;
-	for(size_t i=0; i < group_samples.size(); i++){
-		if(i == group_idx) continue;
-		result.insert(result.begin(), group_samples[i].begin(), group_samples[i].end());
+void GroupedScores::createSamples(
+	const DenseMatrix& matrix,
+	const std::map<std::string, std::vector<unsigned int>>& group_indices,
+	const std::string& current_group,
+	Samples& g1, Samples& g2
+) const{
+	auto col_names = matrix.colNames();
+	auto entry = group_indices.find(current_group);
+	
+	// Here, we use that the vector of indices is sorted
+	unsigned int current_lookup = 0;
+	for(unsigned int i=0; i < col_names.size(); i++){
+		const auto& col_name = col_names[i];
+		if(current_lookup < entry->second.size() && entry->second[current_lookup] == i){
+			g1.push_back(col_name);
+			current_lookup++;
+		} else{
+			g2.push_back(col_name);
+		}
 	}
-	return result;
+	return;
 }
 
 void GroupedScores::addToResult(DenseMatrix& result, const Scores& gene_set, size_t column_idx) const{
