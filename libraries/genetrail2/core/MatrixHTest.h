@@ -93,7 +93,8 @@ namespace GeneTrail
 		MedianFoldDifference,
 		PearsonCorrelation,
 		SpearmanCorrelation,
-		ZScore
+		ZScore,
+		MeanFirstGroup
 	};
 
 	class GT2_EXPORT MatrixHTestFactory
@@ -228,6 +229,8 @@ namespace GeneTrail
 					    spearman_correlation<Iterator1, Iterator2>>();
 				case MatrixHTests::ZScore:
 					return std::make_unique<z_score<Iterator1, Iterator2>>();
+				case MatrixHTests::MeanFirstGroup:
+					return std::make_unique<mean_first_group<Iterator1, Iterator2>>();
 				default:
 					throw std::invalid_argument("Reqested method does not "
 					                            "support the proper "
@@ -392,6 +395,16 @@ namespace GeneTrail
 			{
 				return statistic::mean_fold_quotient<double>(
 				    fst_begin, fst_end, snd_begin, snd_end);
+			}
+		};
+
+		template <class Iterator1, class Iterator2>
+		class mean_first_group : public Test<Iterator1, Iterator2>
+		{
+			double test(Iterator1 fst_begin, Iterator1 fst_end,
+			            Iterator2 snd_begin, Iterator2 snd_end) const override
+			{
+				return statistic::mean<double>(fst_begin, fst_end);
 			}
 		};
 

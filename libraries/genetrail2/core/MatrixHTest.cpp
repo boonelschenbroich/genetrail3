@@ -75,6 +75,11 @@ namespace GeneTrail
 			IsDependent::Independent,
 			SupportsVectors::Scalar};
 
+		MethodDescriptor mean_first_group_descriptor{
+			MatrixHTests::MeanFirstGroup,
+			IsDependent::Independent,
+			SupportsVectors::Scalar};
+
 		MethodDescriptor mean_fold_quotient_descriptor{
 			MatrixHTests::MeanFoldQuotient,
 			IsDependent::Independent,
@@ -127,6 +132,7 @@ namespace GeneTrail
 		ids_.emplace("pearson_correlation", MatrixHTests::PearsonCorrelation);
 		ids_.emplace("spearman_correlation", MatrixHTests::SpearmanCorrelation);
 		ids_.emplace("z-score", MatrixHTests::ZScore);
+		ids_.emplace("mean-first-group", MatrixHTests::MeanFirstGroup);
 
 		descriptors_ = std::vector<MethodDescriptor>{
 			independent_t_test_descriptor,
@@ -145,7 +151,9 @@ namespace GeneTrail
 			median_fold_difference_descriptor,
 			pearson_correlation_descriptor,
 			spearman_correlation_descriptor,
-			z_score_descriptor};
+			z_score_descriptor,
+			mean_first_group_descriptor
+		};
 
 		assert(descriptorsProperlyInitialized_());
 	}
