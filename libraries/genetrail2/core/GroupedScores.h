@@ -23,6 +23,7 @@
 #include "macros.h"
 #include "ORAGroupPreference.h"
 #include "DenseMatrix.h"
+#include "DenseColumnSubset.h"
 #include "Metadata.h"
 #include "MatrixHTest.h"
 
@@ -51,6 +52,19 @@ namespace GeneTrail {
 				const std::string method, DenseMatrix& result
 			) const;
 			
+			/**
+			 * Use this method if mean-fold-quotient is to be calculated and the group
+			 * means are already precomputed. The first row in the matrix is interpreted
+			 * as number of elements in the groups.
+			 */
+			void calculateGroupedScores(
+				DenseMatrix& matrix,
+				const std::vector<std::string>& sampleGroups,
+				const std::vector<std::string>& referenceGroups,
+				const std::string& method,
+				DenseMatrix& result
+			) const;
+			
 		private:
 			void createSamples(
 				const DenseMatrix& matrix,
@@ -59,7 +73,36 @@ namespace GeneTrail {
 				Samples& g1, Samples& g2
 			) const;
 			
+			void addGroupSizeToResult(
+				DenseMatrix& result,
+				const std::map<std::string, std::vector<unsigned int>>& group_indices
+			) const;
+			
 			void addToResult(DenseMatrix& result, const Scores& gene_set, size_t column_idx) const;
+			
+			void getIndices(
+				const DenseColumnSubset& sub,
+				const std::vector<std::string>& groups,
+				std::vector<size_t>& indices
+			) const;
+			
+			void getGroupSizes(
+				const DenseColumnSubset& sub,
+				const std::vector<size_t>& indices,
+				std::vector<size_t>& sizes
+			) const;
+			
+			size_t getTotalGroupSizes(
+				const std::vector<size_t>& sizes
+			) const;
+			
+			double getMeanScore(
+				size_t idx_row,
+				const DenseColumnSubset& sub,
+				const std::vector<size_t>& indices,
+				const std::vector<size_t>& sizes,
+				size_t n
+			) const;
 	};
 }
 

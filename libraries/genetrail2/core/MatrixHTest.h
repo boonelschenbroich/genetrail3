@@ -402,7 +402,7 @@ namespace GeneTrail
 		class mean_first_group : public Test<Iterator1, Iterator2>
 		{
 			double test(Iterator1 fst_begin, Iterator1 fst_end,
-			            Iterator2 snd_begin, Iterator2 snd_end) const override
+			            Iterator2, Iterator2) const override
 			{
 				return statistic::mean<double>(fst_begin, fst_end);
 			}

@@ -89,6 +89,13 @@ set_target_properties(computeGroupedScores PROPERTIES
     INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
 )
 
+add_executable(precomputedGroupedScores precomputedGroupedScores.cpp)
+target_link_libraries(precomputedGroupedScores applicationCommon gtcore ${BOOST_LIBRARIES})
+GT2_COMPILE_FLAGS(precomputedGroupedScores)
+set_target_properties(precomputedGroupedScores PROPERTIES
+    INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
+)
+
 add_executable(combineReducedEnrichments combineReducedEnrichments.cpp)
 target_link_libraries(combineReducedEnrichments applicationCommon gtcore ${BOOST_LIBRARIES})
 GT2_COMPILE_FLAGS(combineReducedEnrichments)
