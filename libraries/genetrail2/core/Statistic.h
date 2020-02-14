@@ -41,6 +41,25 @@ namespace GeneTrail
 namespace statistic
 {
 /**
+ * This method calculates the number of entries that are
+ * larger than some given threshold
+ *
+ * @param begin InputIterator corresponding to the start of the samples.
+ * @param end   InputIterator corresponding to the end of the samples.
+ *
+ * @return number of entries that are larger than the threshold
+ */
+template <typename value_type, typename InputIterator>
+value_type larger_than(value_type threshold, InputIterator begin, InputIterator end)
+{
+	value_type larger = 0;
+	for(auto iter = begin; iter != end; ++iter) {
+		if(*iter > threshold) larger++;
+	}
+	return larger;
+}
+
+/**
  * This method calculates the absolute value for each entry of a given
  * range. The results are updated in place.
  *
@@ -499,6 +518,55 @@ value_type cov(InputIterator first_begin, InputIterator first_end,
 	}
 
 	return cov / (n - 1);
+}
+
+/**
+ * This method calculates the mean of all entries that are larger than
+ * a specified threshold
+ *
+ * @param begin InputIterator corresponding to the start of the samples.
+ * @param end   InputIterator corresponding to the end of the samples.
+ *
+ * @return mean of entries larger than the threshold
+ */
+template <typename value_type, typename InputIterator>
+value_type mean_larger(value_type threshold, InputIterator begin, InputIterator end)
+{
+	value_type mean = 0;
+	value_type elements = 0;
+	for(auto iter = begin; iter != end; ++iter) {
+		if(*iter > threshold){
+			mean += *iter;
+			elements++;
+		}
+	}
+	if(elements == 0) return value_type();
+	return mean/elements;
+}
+
+/**
+ * This method calculates the mean difference of all entries that are above
+ * a certain threshold. The other entries are ignored.
+ *
+ * @param first_begin  InputIterator corresponding to the start of the first
+ *group.
+ * @param first_end    InputIterator corresponding to the end of the first
+ *group.
+ * @param second_begin InputIterator corresponding to the start of the second
+ *group.
+ * @param second_end   InputIterator corresponding to the end of the second
+ *group.
+ *
+ * @return mean difference of all entries larger than a given threshold
+ */
+template <typename value_type, typename InputIterator1, typename InputIterator2>
+value_type mean_larger_than(value_type threshold,
+					   InputIterator1 first_begin, InputIterator1 first_end,
+					   InputIterator2 second_begin, InputIterator2 second_end)
+{
+	value_type v1 = mean_larger(threshold, first_begin, first_end);
+	value_type v2 = mean_larger(threshold, second_begin, second_end);
+	return v1-v2;
 }
 
 /**

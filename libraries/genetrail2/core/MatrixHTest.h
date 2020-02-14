@@ -94,7 +94,9 @@ namespace GeneTrail
 		PearsonCorrelation,
 		SpearmanCorrelation,
 		ZScore,
-		MeanFirstGroup
+		MeanFirstGroup,
+		MeanLargerZero,
+		LargerZero
 	};
 
 	class GT2_EXPORT MatrixHTestFactory
@@ -231,6 +233,10 @@ namespace GeneTrail
 					return std::make_unique<z_score<Iterator1, Iterator2>>();
 				case MatrixHTests::MeanFirstGroup:
 					return std::make_unique<mean_first_group<Iterator1, Iterator2>>();
+				case MatrixHTests::MeanLargerZero:
+					return std::make_unique<mean_larger_zero<Iterator1, Iterator2>>();
+				case MatrixHTests::LargerZero:
+					return std::make_unique<larger_zero<Iterator1, Iterator2>>();
 				default:
 					throw std::invalid_argument("Reqested method does not "
 					                            "support the proper "
@@ -407,6 +413,29 @@ namespace GeneTrail
 				return statistic::mean<double>(fst_begin, fst_end);
 			}
 		};
+		
+		template <class Iterator1, class Iterator2>
+		class mean_larger_zero : public Test<Iterator1, Iterator2>
+		{
+			double test(Iterator1 fst_begin, Iterator1 fst_end,
+			            Iterator2 snd_begin, Iterator2 snd_end) const override
+			{
+				return statistic::mean_larger_than<double>(
+					0.0, fst_begin, fst_end, snd_begin, snd_end);
+			}
+		};
+		
+		template <class Iterator1, class Iterator2>
+		class larger_zero : public Test<Iterator1, Iterator2>
+		{
+			double test(Iterator1 fst_begin, Iterator1 fst_end,
+			            Iterator2, Iterator2) const override
+			{
+				return statistic::larger_than<double>(
+					0.0, fst_begin, fst_end);
+			}
+		};
+
 
 		template <class Iterator1, class Iterator2>
 		class mean_fold_difference : public Test<Iterator1, Iterator2>
