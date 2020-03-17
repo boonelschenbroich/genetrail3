@@ -429,7 +429,6 @@ namespace GeneTrail
 		{
 			size_t csize = Category::intersect("null", *result->category, reference_set_).size();
             size_t hits = Category::intersect("null", *result->category, test_set_).size();
-			std::cout << csize << ", " << hits << std::endl;
 			return p_values_(csize, hits);
 		}
 
