@@ -25,6 +25,7 @@
 #include "EnrichmentAlgorithm.h"
 
 #include <genetrail2/core/MatrixHTest.h>
+#include <genetrail2/core/CategoryDatabase.h>
 #include <genetrail2/core/macros.h>
 #include <genetrail2/core/PValue.h>
 
@@ -57,6 +58,7 @@ typedef std::map<std::string, Results> AllResults;
 typedef std::vector<std::pair<std::string, double>> PValueList;
 
 using CategoryList = std::list<std::pair<std::string, std::string>>;
+using CategoryDBList = std::vector<CategoryDatabase>;
 
 /**
  * This function initializes the needed attributes.
@@ -68,6 +70,10 @@ using CategoryList = std::list<std::pair<std::string, std::string>>;
  */
 GT2_EXPORT int init(GeneSet& test_set, CategoryList& cat_list, const Params& p);
 
+GT2_EXPORT int initTestSet(GeneSet& test_set, const Params& p);
+
+GT2_EXPORT int initCategories(CategoryList& cat_list, const Params& p);
+
 /**
  * This function runs the entire pipeline.
  *
@@ -75,6 +81,7 @@ GT2_EXPORT int init(GeneSet& test_set, CategoryList& cat_list, const Params& p);
  * @param cat_list List of categories for the computation
  * @param p
  */
-GT2_EXPORT void run(Scores& test_set, CategoryList& cat_list, EnrichmentAlgorithmPtr& algorithm, const Params& p, bool computePValues);
+template <typename Categories>
+GT2_EXPORT void run(Scores& test_set, const Categories& cat_list, EnrichmentAlgorithmPtr& algorithm, const Params& p, bool computePValues);
 
 #endif // GT2_APPLICATIONS_ENRICHMENT_COMMON_H

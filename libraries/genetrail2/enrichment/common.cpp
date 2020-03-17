@@ -145,9 +145,7 @@ static void writeFiles(const std::string& output_dir, const AllResults& all_resu
 	}
 }
 
-int init(GeneSet& test_set, CategoryList& cat_list, const Params& p)
-{
-
+int initTestSet(GeneSet& test_set, const Params& p){
 	try {
 		readTestSet(test_set, p);
 	} catch(IOError& exn) {
@@ -155,7 +153,10 @@ int init(GeneSet& test_set, CategoryList& cat_list, const Params& p)
 		          << std::endl;
 		return -1;
 	}
+	return 0;
+}
 
+int initCategories(CategoryList& cat_list, const Params& p){
 	try {
 		if (p.categories() != ""){
 			// TODO: Add single category feature
@@ -169,6 +170,12 @@ int init(GeneSet& test_set, CategoryList& cat_list, const Params& p)
 		return -1;
 	}
 	return 0;
+}
+
+int init(GeneSet& test_set, CategoryList& cat_list, const Params& p)
+{
+	if(initTestSet(test_set, p) != 0) return -1;
+	return initCategories(cat_list, p);
 }
 
 static void updatePValues(Results& results, const PValueList& pvalues)
@@ -187,53 +194,72 @@ static void updatePValues(AllResults& results, const PValueList& pvalues)
 	}
 }
 
-static AllResults compute(Scores& test_set, CategoryList& cat_list,
+static void computeOne(AllResults& name_to_cat_results, Scores& test_set,
+					   const CategoryDatabase& category_db,
+					   EnrichmentAlgorithmPtr& algorithm, const Params& p)
+{
+	Results name_to_result;
+	for(const auto& c : category_db) {
+		if(p.verbose) std::cout << "INFO: Processing - " << category_db.name() << " - " << c.name() << std::endl;
+		auto processed = processCategory(c, test_set, p);
+
+		std::shared_ptr<EnrichmentResult> result;
+		auto isValid = std::get<0>(processed);
+
+		// TODO: get rid of this
+		auto tmp_cat = std::make_shared<Category>(c);
+		if(algorithm->canUseCategory(c, std::get<1>(processed)) && isValid) {
+			result = algorithm->computeEnrichment(tmp_cat);
+		} else {
+			if(!isValid && !p.includeAll){
+				continue;
+			}
+			result = std::make_shared<EnrichmentResult>(tmp_cat);
+		}
+
+		result->hits = std::get<1>(processed);
+		result->info = std::move(std::get<2>(processed));
+
+		name_to_result.emplace(c.name(), std::move(result));
+	}
+	//std::cerr << "[" << category_db.name() << "]";
+	name_to_cat_results.emplace(category_db.name(), std::move(name_to_result));
+}
+
+static AllResults compute(Scores& test_set, const CategoryList& cat_list,
                    EnrichmentAlgorithmPtr& algorithm, const Params& p)
 {
 	AllResults name_to_cat_results;
 	for(const auto& cat : cat_list) {
 		try {
 			GMTFile input(test_set.db(), cat.second);
-
 			if(!input) {
 				std::cerr << "WARNING: Could not open database " + cat.first +
-				                 " for reading! Skipping database."
-				          << std::endl;
+									" for reading! Skipping database."
+							<< std::endl;
 				continue;
 			}
 
 			auto category_db = input.read();
-			Results name_to_result;
-			for(const auto& c : category_db) {
-				if(p.verbose) std::cout << "INFO: Processing - " << cat.first << " - " << c.name() << std::endl;
-				auto processed = processCategory(c, test_set, p);
-
-				std::shared_ptr<EnrichmentResult> result;
-				auto isValid = std::get<0>(processed);
-
-				// TODO: get rid of this
-				auto tmp_cat = std::make_shared<Category>(c);
-				if(algorithm->canUseCategory(c, std::get<1>(processed)) && isValid) {
-					result = algorithm->computeEnrichment(tmp_cat);
-				} else {
-					if(!isValid && !p.includeAll){
-						continue;
-					}
-					result = std::make_shared<EnrichmentResult>(tmp_cat);
-				}
-
-				result->hits = std::get<1>(processed);
-				result->info = std::move(std::get<2>(processed));
-
-				name_to_result.emplace(c.name(), std::move(result));
-			}
-			name_to_cat_results.emplace(cat.first, std::move(name_to_result));
+			category_db.setName(cat.first);
+			computeOne(name_to_cat_results, test_set, category_db, algorithm, p);
 		} catch(IOError& exn) {
 			std::cerr << "WARNING: Could not process category file "
-			          << cat.first << "! " << std::endl;
+				<< cat.first << "! " << std::endl;
 		}
 	}
 
+	return name_to_cat_results;
+}
+
+static AllResults compute(Scores& test_set, const CategoryDBList& category_db,
+						  EnrichmentAlgorithmPtr& algorithm, const Params& p)
+{
+	AllResults name_to_cat_results;
+	for(const auto& db : category_db) {
+		computeOne(name_to_cat_results, test_set, db, algorithm, p);
+	}
+	
 	return name_to_cat_results;
 }
 
@@ -386,7 +412,8 @@ static void computePValues(EnrichmentAlgorithmPtr& algorithm,
         }
 }
 
-void run(Scores& test_set, CategoryList& cat_list,
+template <typename Categories>
+void run(Scores& test_set, const Categories& cat_list,
          EnrichmentAlgorithmPtr& algorithm, const Params& p, bool computePValue)
 {
         test_set.sortByIndex();
@@ -408,3 +435,10 @@ void run(Scores& test_set, CategoryList& cat_list,
         writeFiles(p.out(), name_to_cat_results, p.reducedOutput);
 }
 
+template
+void run(Scores& test_set, const CategoryList& cat_list,
+         EnrichmentAlgorithmPtr& algorithm, const Params& p, bool computePValue);
+
+template
+void run(Scores& test_set, const CategoryDBList& cat_list,
+         EnrichmentAlgorithmPtr& algorithm, const Params& p, bool computePValue);

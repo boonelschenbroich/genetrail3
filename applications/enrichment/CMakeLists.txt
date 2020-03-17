@@ -6,7 +6,7 @@ project(Enrich)
 
 macro(add_enrichment NAME)
 	add_executable(${NAME} ${NAME}.cpp)
-	target_link_libraries(${NAME} gtcore gtenrichment ${BOOST_LIBRARIES})
+	target_link_libraries(${NAME} gtcore pthread gtenrichment ${BOOST_LIBRARIES})
 	GT2_COMPILE_FLAGS(${NAME})
 	set_target_properties(${NAME} PROPERTIES
 	    INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
@@ -36,6 +36,7 @@ add_enrichment(wilcoxon)
 add_enrichment(enrichment enrichment.cpp)
 add_enrichment(contingency_ora)
 add_enrichment(ora_preprocessor)
+add_enrichment(multi-threaded-ora)
 
 ####################################################################################################
 # Build executable
