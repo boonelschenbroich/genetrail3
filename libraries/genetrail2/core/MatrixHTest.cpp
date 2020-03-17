@@ -84,6 +84,11 @@ namespace GeneTrail
 			MatrixHTests::MeanLargerZero,
 			IsDependent::Independent,
 			SupportsVectors::Scalar};
+			
+		MethodDescriptor mean_first_larger_zero_descriptor{
+			MatrixHTests::MeanFirstLargerZero,
+			IsDependent::Independent,
+			SupportsVectors::Scalar};
 
 		MethodDescriptor larger_zero_descriptor{
 			MatrixHTests::LargerZero,
@@ -145,6 +150,7 @@ namespace GeneTrail
 		ids_.emplace("mean-first-group", MatrixHTests::MeanFirstGroup);
 		ids_.emplace("mean-larger-zero", MatrixHTests::MeanLargerZero);
 		ids_.emplace("larger-zero", MatrixHTests::LargerZero);
+		ids_.emplace("mean-first-larger-zero", MatrixHTests::MeanFirstLargerZero);
 
 		descriptors_ = std::vector<MethodDescriptor>{
 			independent_t_test_descriptor,
@@ -166,7 +172,9 @@ namespace GeneTrail
 			z_score_descriptor,
 			mean_first_group_descriptor,
 			mean_larger_zero_descriptor,
-			larger_zero_descriptor
+			larger_zero_descriptor,
+			mean_first_larger_zero_descriptor
+			
 		};
 
 		assert(descriptorsProperlyInitialized_());

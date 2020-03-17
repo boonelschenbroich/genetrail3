@@ -96,7 +96,8 @@ namespace GeneTrail
 		ZScore,
 		MeanFirstGroup,
 		MeanLargerZero,
-		LargerZero
+		LargerZero,
+		MeanFirstLargerZero
 	};
 
 	class GT2_EXPORT MatrixHTestFactory
@@ -237,6 +238,8 @@ namespace GeneTrail
 					return std::make_unique<mean_larger_zero<Iterator1, Iterator2>>();
 				case MatrixHTests::LargerZero:
 					return std::make_unique<larger_zero<Iterator1, Iterator2>>();
+				case MatrixHTests::MeanFirstLargerZero:
+					return std::make_unique<mean_first_larger_zero<Iterator1, Iterator2>>();
 				default:
 					throw std::invalid_argument("Reqested method does not "
 					                            "support the proper "
@@ -422,6 +425,17 @@ namespace GeneTrail
 			{
 				return statistic::mean_larger_than<double>(
 					0.0, fst_begin, fst_end, snd_begin, snd_end);
+			}
+		};
+		
+		template <class Iterator1, class Iterator2>
+		class mean_first_larger_zero : public Test<Iterator1, Iterator2>
+		{
+			double test(Iterator1 fst_begin, Iterator1 fst_end,
+			            Iterator2, Iterator2) const override
+			{
+				return statistic::mean_larger<double>(
+					0.0, fst_begin, fst_end);
 			}
 		};
 		
