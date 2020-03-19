@@ -13,7 +13,6 @@
 #include <genetrail2/enrichment/Parameters.h>
 
 #include <boost/program_options.hpp>
-#include <boost/asio.hpp>
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -65,6 +64,7 @@ bool parseArguments(int argc, char* argv[], Params& p)
 	return checkCLIArgs(p);
 }
 
+namespace threadNamespace2{
 void thread_job(const DenseMatrix& p_values, const CategoryDBList& cat_list,
 				const Category& reference_set, std::shared_ptr<EntityDatabase> db,
 				Params p, NullHypothesis& hypothesis_)
@@ -119,13 +119,16 @@ void thread_job(const DenseMatrix& p_values, const CategoryDBList& cat_list,
 	//boost::lock_guard<boost::mutex> lock{mutex_out};
 	//std::cout << "I died" << std::endl;
 }
+}
 
+namespace threadNamespace1{
 void input_loader(std::ifstream& input){
 	std::string line;
 	while(std::getline(input, line)){
 		boost::lock_guard<boost::mutex> lock{mutex_q};
 		queue.push(line);
 	}
+}
 }
 
 NullHypothesis getHypothesis(const std::string& hypothesis){
@@ -196,15 +199,18 @@ int main(int argc, char* argv[]){
 		std::cerr << "Could not open " << input << " for reading." << std::endl;
 		return -1;
 	}
-	boost::asio::thread_pool pool(threads);
-	boost::asio::post(pool, boost::bind(input_loader, boost::ref(input_strm)));
+	std::vector<std::thread> thread_jobs;
+	thread_jobs.emplace_back(threadNamespace1::input_loader, boost::ref(input_strm));
 	for(int i=0; i < threads; i++){
-		boost::asio::post(pool, boost::bind(
-			thread_job, boost::cref(p_values), boost::cref(category_dbs),
-			boost::cref(ref), db, p, hypothesis_)
+		thread_jobs.emplace_back(
+			threadNamespace2::thread_job,
+			boost::cref(p_values), boost::cref(category_dbs),
+			boost::cref(ref), db, p, boost::ref(hypothesis_)
 		);
 	}
-	pool.join();
+	for(auto& t: thread_jobs){
+		t.join();
+	}
 	input_strm.close();
 	
 	return 0;
