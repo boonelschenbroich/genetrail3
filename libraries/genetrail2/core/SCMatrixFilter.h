@@ -1,7 +1,7 @@
 /*
  * GeneTrail2 - An efficient library for interpreting genetic data
- * Copyright (C) 2013-2014 Daniel Stöckel <dstoeckel@bioinf.uni-sb.de>
- *               2014 Tim Kehl <tkehl@bioinf.uni-sb.de>
+ * Copyright (C) 2020 Nico Gerstner <ngerstner@bioinf.uni-sb.de>
+ *               2020 Tim Kehl <tkehl@bioinf.uni-sb.de>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the Lesser GNU General Public License as
@@ -30,6 +30,7 @@
 #include <istream>
 #include <fstream>
 #include <vector>
+#include <set>
 #include <limits>
 
 namespace GeneTrail{
@@ -50,12 +51,12 @@ namespace GeneTrail{
 	public:
 		SCMatrixFilter() = default;
 		
-		void filterMatrix(DenseMatrix& matrix, const FilterParams& params);
+		void filterMatrix(DenseMatrix& matrix, std::set<std::string> mito_genes, const FilterParams& params);
 		
 	private:
-		void fillColumnStatistics(const DenseMatrix& matrix, std::vector<double>& total_count, std::vector<double>& mito_count,
+		void fillColumnStatistics(const DenseMatrix& matrix, std::set<std::string> mito_genes, std::vector<double>& total_count, std::vector<double>& mito_count,
 		                      std::vector<double>& nonzero_features, const FilterParams& params);
-		bool passFilter(double total_count, double nonzero_features, const FilterParams& params);
+		bool passFilter(double total_count, double nonzero_features, double mito_count, const FilterParams& params);
 		void writeFilteredMatrix(const DenseColumnSubset& result, const FilterParams& params);
 		void writeFiles(const std::string& sampleOutDirs, const std::string& matrixOutFiles);
 		void writeStatisticsFile(const std::vector<double>& total_count, const std::vector<double>& mito_count,

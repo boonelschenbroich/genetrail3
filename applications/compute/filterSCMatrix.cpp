@@ -2,6 +2,10 @@
 #include <cmath>
 #include <cstdlib>
 #include <tuple>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <set>
 
 #include <boost/program_options.hpp>
 
@@ -48,6 +52,17 @@ bool parseArguments(int argc, char* argv[]){
 	return true;
 }
 
+std::set<std::string> parseMitochondrialGenes() {
+	std::set<std::string> genes;
+	std::ifstream infile(params.mito_genes);
+	std::string line;
+	while (std::getline(infile, line))
+	{
+		genes.emplace(line);
+	}
+	return std::move(genes);
+}
+
 int main(int argc, char* argv[]){
 	if(!parseArguments(argc, argv)) return -1;
 
@@ -55,9 +70,10 @@ int main(int argc, char* argv[]){
 		std::cout << "Reading matrix..." << std::endl;
 		options.split_only_tab = true;
 		auto m = readDenseMatrix(matrix, options);
+		std::set<std::string> mito_genes = parseMitochondrialGenes();
 		
 		SCMatrixFilter filter;
-		filter.filterMatrix(m, params);
+		filter.filterMatrix(m, mito_genes, params);
 	} catch (std::invalid_argument e){
 		std::cout << e.what() << std::endl;
 		return -1;
