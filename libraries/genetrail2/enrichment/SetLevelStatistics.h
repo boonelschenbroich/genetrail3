@@ -398,13 +398,14 @@ namespace GeneTrail
 	                                      StatTags::Identifiers>
 	{
 		public:
-		PreprocessedORA(const Category& reference_set, const Category& test_set, NullHypothesis hypothesis, const DenseMatrix& p_values, const bool reduced_output)
+		PreprocessedORA(const Category& reference_set, const Category& test_set, NullHypothesis hypothesis, const DenseMatrix& p_values, const bool justScores, const bool justPvalues)
 		: reference_set_(reference_set), 
 		  test_set_(test_set),
 		  hypothesis_(hypothesis), 
 		  test_(reference_set, test_set),
 		  p_values_(p_values),
-		  reduced_output_(reduced_output)
+		  just_scores_(justScores),
+		  just_pvalues_(justPvalues)
 		{};
 
 		bool canUseCategory(const Category& c, size_t) const {
@@ -415,7 +416,7 @@ namespace GeneTrail
 		{
 			//!! IMPORTANT:
 			//!! Here we need to compare the number of hits and the expected number of hits.
-			if(reduced_output_){
+			if(just_pvalues_){
 				// If we are in reduced_output mode, only the p-value is interesting,
 				// so we don't calculate the number of hits and the expected number
 				// number of hits (Note that by doing this result->enriched is always
@@ -439,7 +440,51 @@ namespace GeneTrail
 		NullHypothesis hypothesis_;
 		OverRepresentationAnalysis test_;
 		const GeneTrail::DenseMatrix& p_values_;
-		const bool reduced_output_;
+		const bool just_scores_;
+		const bool just_pvalues_;
+	};
+	
+	class IntersectionPercentage : public SetLevelStatistics<StatTags::Direct,
+	                                      StatTags::DoesNotSupportIndices,
+	                                      StatTags::Identifiers>
+	{
+		public:
+		IntersectionPercentage(const Category& reference_set, const Category& test_set, NullHypothesis hypothesis, const bool justScores, const bool justPvalues)
+		: reference_set_(reference_set),
+		  test_set_(test_set),
+		  hypothesis_(hypothesis),
+		  test_(reference_set, test_set),
+		  just_scores_(justScores),
+		  just_pvalues_(justPvalues)
+		{};
+
+		bool canUseCategory(const Category&, size_t) const {
+			return true;
+		}
+
+		std::tuple<double, double> computeScore(const Category& c) const
+		{
+			//!! IMPORTANT:
+			//!! Here we need to compare the number of hits and the expected number of hits.
+			if(just_pvalues_){
+				return std::make_tuple(0, 0);
+			}
+			return std::make_tuple(test_.numberOfHits(c)/c.size() , 0.0);
+		}
+
+		double computeRowWisePValue(EnrichmentResult*) const
+		{
+			return 1.0;
+		}
+
+		private:
+
+		Category reference_set_;
+		Category test_set_;
+		NullHypothesis hypothesis_;
+		OverRepresentationAnalysis test_;
+		const bool just_scores_;
+		const bool just_pvalues_;
 	};
 	
 	class WilcoxonRSTest : public SetLevelStatistics<StatTags::Direct, StatTags::DoesNotSupportIndices>

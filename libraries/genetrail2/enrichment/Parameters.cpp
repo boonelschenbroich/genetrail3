@@ -30,7 +30,8 @@ Params::Params()
 	randomSeed(std::random_device{}()),
 	adjustSeparately(false),
 	includeAll(false),
-	reducedOutput(false),
+	justScores(false),
+	justPvalues(false),
 	verbose(true),
 	pValueMode(PValueMode::RowWise)
 	{

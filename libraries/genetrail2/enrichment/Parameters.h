@@ -105,7 +105,8 @@ namespace GeneTrail {
 
 		bool adjustSeparately;
 		bool includeAll;
-		bool reducedOutput;
+		bool justScores;
+		bool justPvalues;
 		bool verbose;
 
 		boost::optional<MultipleTestingCorrection> adjustment;

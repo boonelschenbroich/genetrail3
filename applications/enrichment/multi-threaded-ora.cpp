@@ -28,7 +28,7 @@ using namespace GeneTrail;
 using namespace std::chrono_literals;
 namespace bpo = boost::program_options;
 
-std::string input, reference, hypothesis, preComputedPValues;
+std::string input, reference, hypothesis, preComputedPValues, method;
 int threads = 8;
 int already_finished = 0;
 int to_do = 0;
@@ -46,8 +46,9 @@ bool parseArguments(int argc, char* argv[], Params& p)
 		("reference, r", bpo::value<std::string>(&reference)->required(), "A file containing identifier line by line.")
 		("hypothesis, h", bpo::value<std::string>(&hypothesis)->default_value("two-sided"), "Null hypothesis that should be used.")
 		("total-tasks, a", bpo::value<int>(&to_do)->required(), "How many ORAs should be performed.")
-		("precomputed-p-values, p", bpo::value<std::string>(&preComputedPValues)->required(), "Precomputed p-values.")
-		("threads, t", bpo::value<int>(&threads)->default_value(8), "The number of threads to compute the values. Defaults to 8.");
+		("precomputed-p-values, p", bpo::value<std::string>(&preComputedPValues)->default_value(""), "Precomputed p-values.")
+		("threads, t", bpo::value<int>(&threads)->default_value(8), "The number of threads to compute the values. Defaults to 8.")
+		("method", bpo::value<std::string>(&method)->default_value("ora"), "The enrichment method to use. Defaults to ora. ");
 		
 	try
 	{
@@ -99,14 +100,27 @@ void thread_job(const DenseMatrix& p_values, const CategoryDBList& cat_list,
 		GeneSet test_set;
 		if(initTestSet(test_set, p) != 0) continue;
 		
-		
-		auto enrichmentAlgorithm = createEnrichmentAlgorithm<PreprocessedORA>(
-			p.pValueMode, reference_set, test_set.toCategory(db, "test"),
-			hypothesis_, p_values, p.reducedOutput
-		);
-		Scores scores(test_set, db);
 		try{
-			run(scores, cat_list, enrichmentAlgorithm, p, true);
+			Scores scores(test_set, db);
+			if(method == "ora"){
+				auto enrichmentAlgorithm = createEnrichmentAlgorithm<Ora>(
+					p.pValueMode, reference_set, test_set.toCategory(db, "test"),
+					hypothesis_
+				);
+				run(scores, cat_list, enrichmentAlgorithm, p, true);
+			} else if(method == "parallel_ora"){
+				auto enrichmentAlgorithm = createEnrichmentAlgorithm<PreprocessedORA>(
+					p.pValueMode, reference_set, test_set.toCategory(db, "test"),
+					hypothesis_, p_values, p.justScores, p.justPvalues
+				);
+				run(scores, cat_list, enrichmentAlgorithm, p, true);
+			} else if(method == "percentage"){
+				auto enrichmentAlgorithm = createEnrichmentAlgorithm<IntersectionPercentage>(
+					p.pValueMode, reference_set, test_set.toCategory(db, "test"),
+					hypothesis_, p.justScores, p.justPvalues
+				);
+				run(scores, cat_list, enrichmentAlgorithm, p, true);
+			}
 		} catch(IOError& exn){
 			std::cerr << "ERROR: Problem loading the output directory " << fields[1];
 			std::cerr << " or elements within: " << exn.what() << std::endl;
@@ -161,16 +175,19 @@ int main(int argc, char* argv[]){
 	auto db = std::make_shared<EntityDatabase>();
 	NullHypothesis hypothesis_ = getHypothesis(hypothesis);
 	
-	DenseMatrixReader dm_reader;
-	std::ifstream file(preComputedPValues);
-	if(!file) {
-		std::cerr << "Could not open " << preComputedPValues << " for reading." << std::endl;
-		return -1;
+	DenseMatrix p_values(1,1);
+	if(preComputedPValues != ""){
+		DenseMatrixReader dm_reader;
+		std::ifstream file(preComputedPValues);
+		if(!file) {
+			std::cerr << "Could not open " << preComputedPValues << " for reading." << std::endl;
+			return -1;
+		}
+		//This is needed since our matrix does not contain any row/col names
+		unsigned int opts = DenseMatrixReader::NO_OPTIONS;
+		p_values = dm_reader.read(file, opts);
+		file.close();
 	}
-	//This is needed since our matrix does not contain any row/col names
-	unsigned int opts = DenseMatrixReader::NO_OPTIONS;
-	DenseMatrix p_values = dm_reader.read(file, opts);
-	file.close();
 	
 	Category ref = reference_set.toCategory(db, "reference");
 	

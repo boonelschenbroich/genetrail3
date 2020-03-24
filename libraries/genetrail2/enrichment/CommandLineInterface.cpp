@@ -45,7 +45,8 @@ namespace GeneTrail {
 			("scores,s",       value(&p.scores_), "A whitespace separated file containing identifier and scores.")
 			("minimum,n",      value(&p.minimum)->default_value(0), "Minimum number of genes allowed in categories.")
 			("maximum,x",      value(&p.maximum)->default_value(1000), "Maximum number of genes allowed in categories.")
-			("reduced_output,f",    value(&p.reducedOutput)->default_value(false)->zero_tokens(), "If provided, only print the category name and the p-value. Default: false")
+			("just_scores",    value(&p.justScores)->default_value(false)->zero_tokens(), "If provided, only print the category name and the scores. Default: false")
+			("just_pvalues",    value(&p.justPvalues)->default_value(false)->zero_tokens(), "If provided, only print the category name and the pvalues. Default: false")
 			("include_all,i",    value(&p.includeAll)->default_value(false)->zero_tokens(), "If provided, all categories from the desired category database are included in the output. If not provided, categories that are filtered due to their size are ignored in the output. Default: false")
 			("output,o",       value(&p.out_)->required(), "Output prefix for text files.")
 			("adjustment,a",   value(&p.adjustment)->default_value(boost::none, "none"), "P-value adjustment method for multiple testing.")
@@ -60,6 +61,10 @@ namespace GeneTrail {
 	}
 
 	bool checkCLIArgs(const Params& p) {
+		if(p.justPvalues && p.justScores){
+			std::cerr << "just_scores and just_pvalues can not be applied together" << std::endl;
+				return false;
+		}
 		if(p.pValueMode == PValueMode::ColumnWise || p.pValueMode == PValueMode::Restandardize) {
 			if(!p.scoringMethod) {
 				std::cerr << "You must specify a valid scoring method for this pvalue strategy" << std::endl;

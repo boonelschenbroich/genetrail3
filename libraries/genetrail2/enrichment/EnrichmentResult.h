@@ -52,13 +52,16 @@ namespace GeneTrail
 		double score;
 		double expected_score;
 
-		virtual std::string header(const bool reducedOutput) const
+		virtual std::string header(const bool justScores, const bool justPvalues) const
 		{
 			std::string header = "#";
-			if(reducedOutput){
+			if(justPvalues){
 				header += "Name\t";
 				header += "P-value";
-			} else {
+			} else if(justScores){
+				header += "Name\t";
+				header += "Score";
+			} else{
 				header += "Name\t";
 				header += "Reference\t";
 				header += "Hits\t";
@@ -71,10 +74,12 @@ namespace GeneTrail
 			return header;
 		}
 
-		virtual void serialize(std::ostream& strm, const bool reducedOutput) const
+		virtual void serialize(std::ostream& strm, const bool justScores, const bool justPvalues) const
 		{
-			if(reducedOutput){
+			if(justPvalues){
 				strm << category->name() << '\t' << pvalue;
+			} else if(justScores){
+				strm << category->name() << '\t' << score;
 			} else {
 				strm << category->name() << '\t'
 					<< category->reference() << '\t'
@@ -90,7 +95,7 @@ namespace GeneTrail
 
 	inline std::ostream& operator<<(std::ostream& strm, const EnrichmentResult& result)
 	{
-		result.serialize(strm, false);
+		result.serialize(strm, false, false);
 		return strm;
 	}
 

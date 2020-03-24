@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
 
 		p.verbose = false;
                 //start = std::chrono::high_resolution_clock::now();
-		auto enrichmentAlgorithm = createEnrichmentAlgorithm<PreprocessedORA>(p.pValueMode, reference_set.toCategory(db, "reference"), test_set.toCategory(db, "test"), hypothesis_, p_values, p.reducedOutput);
+		auto enrichmentAlgorithm = createEnrichmentAlgorithm<PreprocessedORA>(p.pValueMode, reference_set.toCategory(db, "reference"), test_set.toCategory(db, "test"), hypothesis_, p_values, p.justScores, p.justPvalues);
 		Scores scores(test_set, db);
 		run(scores, cat_list, enrichmentAlgorithm, p, true);
 		//finish = std::chrono::high_resolution_clock::now();
