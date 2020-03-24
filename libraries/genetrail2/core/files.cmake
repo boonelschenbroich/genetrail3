@@ -43,6 +43,7 @@ add_header_to_library(ORAGroupPreference.h)
 add_header_to_library(GroupedScores.h)
 add_header_to_library(MatrixTools.h)
 add_header_to_library(CombineReducedEnrichments.h)
+add_header_to_library(SCMatrixFilter.h)
 
 # Sources
 add_to_library(AbstractMatrix)
@@ -88,3 +89,4 @@ add_to_library(GroupedScores)
 add_to_library(MatrixTools)
 add_to_library(ORAPreprocessor)
 add_to_library(CombineReducedEnrichments)
+add_to_library(SCMatrixFilter)

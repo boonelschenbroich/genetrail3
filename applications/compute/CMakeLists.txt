@@ -103,6 +103,13 @@ set_target_properties(combineReducedEnrichments PROPERTIES
     INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
 )
 
+add_executable(filterSCMatrix filterSCMatrix.cpp)
+target_link_libraries(filterSCMatrix applicationCommon gtcore ${BOOST_LIBRARIES})
+GT2_COMPILE_FLAGS(filterSCMatrix)
+set_target_properties(filterSCMatrix PROPERTIES
+    INCLUDE_DIRS ${Boost_INCLUDE_DIRS}
+)
+
 ####################################################################################################
 # Install
 ####################################################################################################
