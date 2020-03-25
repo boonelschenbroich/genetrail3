@@ -29,6 +29,7 @@ using namespace std::chrono_literals;
 namespace bpo = boost::program_options;
 
 std::string input, reference, hypothesis, preComputedPValues, method;
+bool absolute = false, increasing = false;
 int threads = 8;
 int already_finished = 0;
 int to_do = 0;
@@ -66,6 +67,16 @@ bool parseArguments(int argc, char* argv[], Params& p)
 }
 
 namespace threadNamespace2{
+void prepareScores(Scores& scores) {
+	if(absolute) {
+		std::transform(scores.scores().begin(), scores.scores().end(),
+		               scores.scores().begin(),
+		               static_cast<double (*)(double)>(std::abs));
+	}
+
+	scores.sortByScore(increasing ? Order::Increasing : Order::Decreasing);
+}
+
 void thread_job(const DenseMatrix& p_values, const CategoryDBList& cat_list,
 				const Category& reference_set, std::shared_ptr<EntityDatabase> db,
 				Params p, NullHypothesis& hypothesis_)
@@ -94,8 +105,13 @@ void thread_job(const DenseMatrix& p_values, const CategoryDBList& cat_list,
 		std::vector<std::string> fields;
 		boost::split(fields, line, boost::is_any_of(";"), boost::token_compress_on);
 		if(fields.size() < 2) continue;
-		p.identifier_ = FilePath(fields[0]);
+		if(method == "wilcoxon"){
+			p.scores_ = FilePath(fields[0]);
+		} else{
+			p.identifier_ = FilePath(fields[0]);
+		}
 		p.out_ = DirectoryPath(fields[1]);
+		
 		
 		GeneSet test_set;
 		if(initTestSet(test_set, p) != 0) continue;
@@ -120,6 +136,21 @@ void thread_job(const DenseMatrix& p_values, const CategoryDBList& cat_list,
 					hypothesis_, p.justScores, p.justPvalues
 				);
 				run(scores, cat_list, enrichmentAlgorithm, p, true);
+			} else if(method == "wilcoxon"){
+				auto db = std::make_shared<EntityDatabase>();
+				GeneSet test_set;
+				CategoryList cat_list;
+
+				if(init(test_set, cat_list, p) != 0) {
+					return;
+				}
+				Scores scores(test_set, db);
+				prepareScores(scores);
+				
+				auto gsea = createEnrichmentAlgorithm<WilcoxonRSTest>(
+					p.pValueMode, scores.indices().begin(), scores.indices().end(), increasing ? Order::Increasing : Order::Decreasing);
+
+				run(scores, cat_list, gsea, p, true);
 			}
 		} catch(IOError& exn){
 			std::cerr << "ERROR: Problem loading the output directory " << fields[1];
