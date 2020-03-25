@@ -147,8 +147,9 @@ void thread_job(const DenseMatrix& p_values, const CategoryDBList& cat_list,
 				Scores scores(test_set, db);
 				prepareScores(scores);
 				
+				Order order = increasing ? Order::Increasing : Order::Decreasing;
 				auto gsea = createEnrichmentAlgorithm<WilcoxonRSTest>(
-					p.pValueMode, scores.indices().begin(), scores.indices().end(), increasing ? Order::Increasing : Order::Decreasing);
+					p.pValueMode, scores.indices().begin(), scores.indices().end(), order, hypothesis_);
 
 				run(scores, cat_list, gsea, p, true);
 			}

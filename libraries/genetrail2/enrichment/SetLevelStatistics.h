@@ -492,7 +492,13 @@ namespace GeneTrail
 		public:
 		template <typename Iterator>
 		WilcoxonRSTest(const Iterator& beginIds, const Iterator& endIds, Order order)
-		    : order_(order), ids_(beginIds, endIds)
+		    : order_(order), ids_(beginIds, endIds), hypothesis_(NullHypothesis::TWO_SIDED)
+		{
+		}
+		
+		template <typename Iterator>
+		WilcoxonRSTest(const Iterator& beginIds, const Iterator& endIds, Order order, NullHypothesis hypothesis)
+		    : order_(order), ids_(beginIds, endIds), hypothesis_(hypothesis)
 		{
 		}
 
@@ -522,10 +528,21 @@ namespace GeneTrail
 
 			double p_value = 1.0;	
 
-			if(result->score > 0.0) {
-				p_value = HTest::upperTailedPValue(test_, result->score);
-			} else {
-				p_value = HTest::lowerTailedPValue(test_, result->score);
+			switch(hypothesis_){
+				case UPPER_TAILED:
+					p_value = HTest::upperTailedPValue(test_, result->score);
+					break;
+				case LOWER_TAILED:
+					p_value = HTest::lowerTailedPValue(test_, result->score);
+					break;
+				case TWO_SIDED:
+				default:
+					if(result->score > 0.0) {
+						p_value = HTest::upperTailedPValue(test_, result->score);
+					} else {
+						p_value = HTest::lowerTailedPValue(test_, result->score);
+					}
+					break;
 			}
 	
 			return p_value;
@@ -535,6 +552,7 @@ namespace GeneTrail
 		Order order_;
 		std::vector<size_t> ids_;
 		WilcoxonRankSumTest<double> test_;
+		NullHypothesis hypothesis_;
 	};
 
 	class KolmogorovSmirnov : public SetLevelStatistics<StatTags::Direct, StatTags::SupportsIndices>
