@@ -77,14 +77,14 @@ namespace GeneTrail
 
 		if(split_it == end_it) {
 			//TODO: Better exception
-			throw IOError("To few arguments in line");
+			throw IOError("To few arguments in line " + next_line_);
 		}
 
 		auto name = copy_range<std::string>(*split_it++);
 
 		if(split_it == end_it) {
 			//TODO: Better exception
-			throw IOError("To few arguments in line");
+			throw IOError("To few arguments in line " + next_line_);
 		}
 
 		auto url = copy_range<std::string>(*split_it++);

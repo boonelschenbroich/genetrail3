@@ -245,7 +245,7 @@ static AllResults compute(Scores& test_set, const CategoryList& cat_list,
 			computeOne(name_to_cat_results, test_set, category_db, algorithm, p);
 		} catch(IOError& exn) {
 			std::cerr << "WARNING: Could not process category file "
-				<< cat.first << "! " << std::endl;
+				<< cat.first << "! " << exn.what() << std::endl;
 		}
 	}
 
