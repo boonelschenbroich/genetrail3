@@ -67,13 +67,11 @@ int main(int argc, char* argv[]){
 	if(!parseArguments(argc, argv)) return -1;
 
 	try{
-		std::cout << "Reading matrix..." << std::endl;
 		options.split_only_tab = true;
-		auto m = readDenseMatrix(matrix, options);
 		std::set<std::string> mito_genes = parseMitochondrialGenes();
 		
 		SCMatrixFilter filter;
-		filter.filterMatrix(m, mito_genes, params);
+		filter.filterMatrix(matrix, mito_genes, params);
 	} catch (std::invalid_argument e){
 		std::cout << e.what() << std::endl;
 		return -1;

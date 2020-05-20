@@ -51,13 +51,13 @@ namespace GeneTrail{
 	public:
 		SCMatrixFilter() = default;
 		
-		void filterMatrix(DenseMatrix& matrix, std::set<std::string> mito_genes, const FilterParams& params);
+		void filterMatrix(const std::string& matrix, std::set<std::string> mito_genes, const FilterParams& params);
 		
 	private:
-		void fillColumnStatistics(const DenseMatrix& matrix, std::set<std::string> mito_genes, std::vector<double>& total_count, std::vector<double>& mito_count,
+		void fillColumnStatistics(const std::string& matrix, std::set<std::string> mito_genes, std::vector<double>& total_count, std::vector<double>& mito_count,
 		                      std::vector<double>& nonzero_features, const FilterParams& params);
 		bool passFilter(double total_count, double nonzero_features, double mito_count, const FilterParams& params);
-		void writeFilteredMatrix(const DenseColumnSubset& result, const FilterParams& params);
+		void writeFilteredMatrix(const std::string& matrix, const std::vector<size_t>& keep_idx, const FilterParams& params);
 		void writeFiles(const std::string& sampleOutDirs, const std::string& matrixOutFiles);
 		void writeStatisticsFile(const std::vector<double>& total_count, const std::vector<double>& mito_count,
 											 const std::vector<double>& nonzero_features, const std::vector<std::string>& keep,
@@ -67,7 +67,9 @@ namespace GeneTrail{
 											 const std::vector<size_t>& keep_idx);
 
 	private:
-		
+		size_t cols;
+		std::vector<std::string> col_names;
+		std::vector<std::string> row_names;
 	};
 }
 
