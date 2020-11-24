@@ -30,12 +30,13 @@ GPL_Parser::~GPL_Parser()
 {
 }
 
-void GPL_Parser::downloadGPLFile(const std::string& filename,
+void GPL_Parser::downloadGPLFile(const std::string& platform,
                                  const std::string& geo_dir)
 {
+	std::string gplnnn = platform.substr(0, platform.size()-3);
+	gplnnn = gplnnn.size() > 2 ? gplnnn : "GPL";
 	int r = system(
-	    ("wget ftp://ftp.ncbi.nlm.nih.gov/pub/geo/DATA/annotation/platforms/" +
-	     filename + " -P " + geo_dir).c_str());
+	    ("wget ftp://ftp.ncbi.nlm.nih.gov/geo/platforms/" + gplnnn + "nnn/" + platform + "/annot/" + platform + ".annot.gz -P " + geo_dir).c_str());
 	if (r != 0)
 	{
 		std::cerr << "Could not download GPL file." << std::endl;
@@ -131,7 +132,7 @@ GPL_Parser::annotate(const std::string& geo_dir,
 	std::ifstream file(path.c_str(), std::ios_base::in | std::ios_base::binary);
 
 	if(!file) {
-		downloadGPLFile(filename, geo_dir);
+		downloadGPLFile(platform, geo_dir);
 		std::cout << "Downloading: " << filename << " to " << geo_dir
 		          << std::endl;
 	}
@@ -145,7 +146,7 @@ GPL_Parser::annotate(const std::string& geo_dir,
 	}
 
 	if(input.empty()) {
-		downloadGPLFile(filename, geo_dir);
+		downloadGPLFile(platform, geo_dir);
 		std::cout << "Downloading: " << filename << " to " << geo_dir
 		          << std::endl;
 	}
