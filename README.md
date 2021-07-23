@@ -1,13 +1,18 @@
-GeneTrail2
+GeneTrail 3
 ==========
-This is the GeneTrail2 C++ library, a collection of algorithms and statistics
+This is the GeneTrail 3 C++ library, a collection of algorithms and statistics
 for processing gene expression data. It provides the compute kernels for the
-[GeneTrail2 web service](https://genetrail2.bioinf.uni-sb.de).
+[GeneTrail 3 web service](https://genetrail.bioinf.uni-sb.de).
 
 Citing
 ------
 If you use this code in your publication, please consider citing the following
 publication:
+
+> Gerstner N., Kehl T., Lenhof K., M{\"u}ller A., Mayer C., Eckhart L., Grammes N. L.,
+> Diener C., Hart M., Hahn O., Walter J., Wyss-Coray T., Meese E., Keller A., Lenhof H.-P.
+> *GeneTrail 3: advanced high-throughput enrichment analysis*, Nucleic acids research 2020,
+> [doi: https://doi.org/10.1093/nar/gkaa306](https://academic.oup.com/nar/article/48/W1/W515/5831750?login=true)
 
 > Stöckel D., Kehl T., Trampert P., Schneider L., Backes C., Ludwig N., Gerasch A.,
 > Kaufmann M., Gessler M., Graf N., Meese E., Keller A., Lenhof H.-P.,
@@ -16,8 +21,8 @@ publication:
 
 Installation
 ------------
-Currently we only support building GeneTrail2 under Linux. Windows and MacOS X
-are not supported. For compiling GeneTrail2 you need the following software:
+Currently we only support building GeneTrail 3 under Linux. Windows and MacOS X
+are not supported. For compiling GeneTrail 3 you need the following software:
 
 - [GCC](https://gcc.gnu.org/) >= 4.9 or [clang](http://clang.llvm.org/) >= 3.5
 - [CMake](https://cmake.org/) >= 2.8.12.2
@@ -53,7 +58,7 @@ A suite of more expensive integration tests can be started by typing
 
 License
 -------
-The code of the GeneTrail2 C++ library is licensed under the *GNU Lesser General
+The code of the GeneTrail 3 C++ library is licensed under the *GNU Lesser General
 Public License 3 (LGPL v3)*. This means you are allowed to use the library in
 your code with little restrictions. Especially you do not need to make your
 source code available as long as you are just using the library. However, you
