@@ -37,8 +37,8 @@ namespace GeneTrail {
 
     class GT2_EXPORT ORAGroupPreference {
 		public:
-			ORAGroupPreference():test_(3){};
-			ORAGroupPreference(double threshold): threshold_(threshold), test_(3){};
+			ORAGroupPreference():test_(1){};
+			ORAGroupPreference(double threshold): threshold_(threshold), test_(1){};
 
 			/**
 			 * This method accepts a (category x sample) matrix file containing p-values
