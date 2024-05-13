@@ -19,6 +19,8 @@
  */
 #include "TextFile.h"
 
+#include <iostream>
+
 using namespace boost;
 
 namespace GeneTrail

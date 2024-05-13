@@ -178,6 +178,7 @@ namespace GeneTrail
 
 		std::shared_ptr<Category> parent_;
 		std::forward_list<std::shared_ptr<Category>> children_;
+
 	};
 
 	GT2_EXPORT std::ostream& operator<<(std::ostream& strm,

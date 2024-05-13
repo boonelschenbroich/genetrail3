@@ -25,6 +25,7 @@
 #include <functional>
 #include <unordered_map>
 #include <vector>
+#include <iostream>
 
 #include "macros.h"
 

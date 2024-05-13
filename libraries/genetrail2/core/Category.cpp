@@ -21,6 +21,7 @@
 
 #include <algorithm>
 #include <exception>
+#include <iostream>
 
 namespace GeneTrail
 {
@@ -135,7 +136,7 @@ namespace GeneTrail
 	std::ostream& operator<<(std::ostream& strm, const Category& cat)
 	{
 		strm << &cat << std::endl << std::endl;
-		strm << cat.name() << '\t' << cat.reference();
+		strm << cat.name() << "\t" << cat.reference();
 
 		std::copy(cat.names().begin(), cat.names().end(),
 		          std::ostream_iterator<std::string>(strm, "\t"));

@@ -23,6 +23,7 @@
 #include "Exception.h"
 
 #include <algorithm>
+#include <cassert>
 
 namespace GeneTrail
 {
